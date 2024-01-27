@@ -4,6 +4,7 @@ from fastapi import APIRouter
 userRouter = APIRouter()
 
 # [정보] tags는 docs에 사용되는 별칭입니다.
-@userRouter.get("/users/", tags=["users"])
+@userRouter.get("/users/", tags=['users'])
 async def read_users():
     return [{"username":"Rick"},{"username":"Morty"}]
+
