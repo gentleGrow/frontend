@@ -1,7 +1,6 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from .app.database import Base, SQLALCHEMY_DATABASE_URL
-from .app.models import User, Item  
+from app.database.config import Base, SQLALCHEMY_DATABASE_URL
+from app.database import models 
 
 def create_tables():
     engine = create_engine(SQLALCHEMY_DATABASE_URL)
@@ -9,4 +8,4 @@ def create_tables():
 
 if __name__ == "__main__":
     create_tables()
-    print("Tables created successfully.")
+    print("[정보] 성공적으로 테이블을 생성하였습니다.")

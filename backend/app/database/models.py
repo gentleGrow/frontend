@@ -1,25 +1,29 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
+# Library
+from sqlalchemy import Column, String, Enum, DateTime
+from sqlalchemy.dialects.postgresql import UUID
+import enum
+import uuid
+# Module
+from app.database.config import Base
 
-from database import Base
+class ProviderEnum(enum.Enum):
+    google = "google"
+    facebook = "facebook"
+    twitter = "twitter"
 
+class RoleEnum(enum.Enum):
+    admin = "admin"
+    user = "user"
+    guest = "guest"
 
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True)
-    email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
-    is_active = Column(Boolean, default=True)
-    # [정보] back_populates 인자를 통해 2개의 테이블의 객체 상태를 연결시킵니다.
-    items = relationship("Item", back_populates="owner")
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    social_id = Column(String, index=True)
+    provider = Column(Enum(ProviderEnum))
+    role = Column(Enum(RoleEnum))
+    nickname = Column(String)
+    created_at = Column(DateTime)
+    deleted_at = Column(DateTime)
 
-
-class Item(Base):
-    __tablename__ = "items"
-
-    id = Column(Integer, primary_key=True)
-    title = Column(String, index=True)
-    description = Column(String, index=True)
-    owner_id = Column(Integer, ForeignKey("users.id"))
-    owner = relationship("User", back_populates="items")

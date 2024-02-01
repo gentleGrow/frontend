@@ -1,31 +1,28 @@
 from pydantic import BaseModel
+from datetime import datetime
+import uuid
+import enum
 
-class ItemBase(BaseModel):
-    title: str
-    description: str | None = None
+class ProviderEnum(str, enum.Enum):
+    google = "google"
+    kakao = "kakao"
+    naver = "naver"
 
-class ItemCreate(ItemBase):
-    pass
+class RoleEnum(str, enum.Enum):
+    admin = "admin"
+    user = "user"
+    guest = "guest"
 
-class Item(ItemBase):
-    id: int
-    owner_id: int
+class User(BaseModel):
+    social_id: str 
+    provider: ProviderEnum
+    role: RoleEnum
+    nickname: str | None
+
     #[정보] Config을 통해서 DB 데이터의 직렬화/비직렬화를 설정합니다. 이를 통해 직접 db에서 endpoint까지 데이터 변환 과정없이 전달이 가능합니다.
     class Config:
-        orm_mode = True
+            orm_mode = True
+            
+class UserCreate(User):
+    created_at: datetime | None
 
-class UserBase(BaseModel):
-    email: str
-
-class UserCreate(UserBase):
-    password: str
-
-class User(UserBase):
-    id: int
-    is_active: bool
-    #[정보] 기본값 설정으로 빈 배열을 설정하였습니다.
-    items: list[Item] = []
-
-    class Config:
-        orm_mode = True
-        
