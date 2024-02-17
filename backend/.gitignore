@@ -29,5 +29,4 @@ archive.zip
 # macOS
 .DS_Store
 __pycache__
-temp.py
-temp2.py
+temp*.py

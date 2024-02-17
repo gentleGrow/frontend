@@ -1,15 +1,14 @@
-#[정보] Library
-from fastapi import Depends, FastAPI, HTTPException
-from sqlalchemy.orm import Session
-#[정보] module
-import models
-from router import users_router, items_router
-from database import engine
+from fastapi import FastAPI
+from app.database.config import Base
+from app.router.login_router import loginRouter
+from app.database.config import engine
 
-
-#[정보] Base는 해당 객체를 상속받은 클래스의 모든 정보를 담습니다. 현 engine을 연결시켜 스키마를 확인합니다.
-models.Base.metadata.create_all(bind=engine)
+#[정보] Base 객체를 상속받은 모든 클래스 정보를 담습니다. 애플리케이션 실행 전에, 정의된 테이블이 존재하지 않으면 추가합니다.
+#[주의] production에서는 사용하지 않습니다.
+Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
-app.include_router(users_router.usersRouter, prefix="/users", tags=["users"])
-app.include_router(items_router.itemsRouter, prefix="/items", tags=["items"])
+# [정보] 라우터를 설정합니다.
+app.include_router(loginRouter, prefix="/api/login", tags=["login"])
+
+
