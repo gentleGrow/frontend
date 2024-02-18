@@ -1,14 +1,31 @@
+# Library
 from fastapi import FastAPI
-from app.database.config import Base
-from app.router.login_router import loginRouter
-from app.database.config import engine
+from fastapi.responses import JSONResponse
+from starlette.middleware.sessions import SessionMiddleware
+from dotenv import load_dotenv
+from os import getenv
+# Module
+from auth.database.config import Base
+from auth.router.auth_router import authRouter
+from auth.database.config import engine
 
-#[정보] Base 객체를 상속받은 모든 클래스 정보를 담습니다. 애플리케이션 실행 전에, 정의된 테이블이 존재하지 않으면 추가합니다.
-#[주의] production에서는 사용하지 않습니다.
-Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
+# [정보] .env 변수값을 environment에 설정합니다.
+# [주의] production에서는 절대사용하지 않습니다!!!
+Base.metadata.create_all(bind=engine)
+load_dotenv()
+
+SESSION_KEY = getenv('SESSION_KEY', None)
+
+app.add_middleware(
+    SessionMiddleware, 
+    secret_key=SESSION_KEY
+)
+
 # [정보] 라우터를 설정합니다.
-app.include_router(loginRouter, prefix="/api/login", tags=["login"])
+app.include_router(authRouter, prefix="/api/auth", tags=["auth"])
 
-
+@app.get("/")
+def read_root():
+    return JSONResponse(content={"message": "Hello World"})
