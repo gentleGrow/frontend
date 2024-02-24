@@ -5,9 +5,9 @@ from authlib.integrations.starlette_client import OAuthError
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 # Module
-from auth.service.auth_service import AuthenticationBuilder  
-from auth.database.config import get_db 
-from auth.service.config import oauth
+from api.v1.auth.service.auth_service import AuthenticationBuilder  
+from dependencies.dependencies import get_RDB 
+from api.v1.auth.service.config import oauth
 
 authRouter = APIRouter()
 authBuilder = AuthenticationBuilder()
@@ -18,7 +18,7 @@ async def redirect_to_naver_login(request: Request):
     return await oauth.naver.authorize_redirect(request, redirect_uri)
 
 @authRouter.get("/naver/callback", summary="네이버 로그인 작업을 합니다.", description="로그인 심사후 홈페이지로 이동합니다.")
-async def naver_callback(request: Request, db: Session = Depends(get_db)):
+async def naver_callback(request: Request, db: Session = Depends(get_RDB)):
     try:
         await authBuilder.naver_authenticate(db,request)
         return RedirectResponse(url='/', status_code=303)
@@ -31,7 +31,7 @@ async def redirect_to_kakao_login(request: Request):
     return await oauth.kakao.authorize_redirect(request, redirect_uri)
 
 @authRouter.get("/kakao/callback", summary="카카오 로그인 작업을 합니다.", description="로그인 심사후 홈페이지로 이동합니다.")
-async def kakao_callback(request: Request, db: Session = Depends(get_db)):
+async def kakao_callback(request: Request, db: Session = Depends(get_RDB)):
     try:
         await authBuilder.kakao_authenticate(db,request)
         return RedirectResponse(url='/', status_code=303)
@@ -44,7 +44,7 @@ async def redirect_to_google_callback(request: Request):
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 @authRouter.get("/google/callback", summary='구글 로그인 작업을 합니다.', description='로그인 심사후 홈페이지로 이동합니다.')
-async def google_callback(request: Request, db: Session = Depends(get_db)):
+async def google_callback(request: Request, db: Session = Depends(get_RDB)):
     try:
         await authBuilder.google_authenticate(db, request)
         return RedirectResponse(url='/', status_code=303)

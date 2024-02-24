@@ -5,9 +5,9 @@ from starlette.middleware.sessions import SessionMiddleware
 from dotenv import load_dotenv
 from os import getenv
 # Module
-from auth.database.config import Base
-from auth.router.auth_router import authRouter
-from auth.database.config import engine
+from database.config import Base
+from api.v1.auth.router.auth_router import authRouter
+from database.config import engine
 
 app = FastAPI()
 

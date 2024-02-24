@@ -29,7 +29,6 @@ KAKAO_CLIENT_SECRET = getenv('KAKAO_CLIENT_SECRET',None)
 oauth.register(
     name='kakao',
     client_id=KAKAO_CLIENT_RESTAPI_KEY,
-    # client_secret=KAKAO_CLIENT_SECRET,
     authorize_url='https://kauth.kakao.com/oauth/authorize',
     authorize_params=None,
     access_token_url='https://kauth.kakao.com/oauth/token',

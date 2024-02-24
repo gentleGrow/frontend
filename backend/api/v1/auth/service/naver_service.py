@@ -4,7 +4,7 @@ from starlette.requests import Request
 from authlib.integrations.starlette_client import OAuthError
 from httpx import AsyncClient
 # Module
-from auth.service.config import oauth
+from api.v1.auth.service.config import oauth
 
 async def fetch_naver_user_info(access_token: str):
     url = "https://openapi.naver.com/v1/nid/me"  

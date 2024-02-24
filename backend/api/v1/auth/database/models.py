@@ -4,8 +4,8 @@ from sqlalchemy.dialects.postgresql import UUID
 from uuid import uuid4
 
 # Module
-from auth.database.config import Base
-from auth.database.schemas import ProviderEnum, UserRoleEnum
+from database.config import Base
+from api.v1.auth.database.schemas import UserRoleEnum
 
 class User(Base):
     __tablename__ = "users"

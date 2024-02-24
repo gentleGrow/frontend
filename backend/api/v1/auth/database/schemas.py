@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 from uuid import uuid4, UUID
 # Module
-from auth.database.config import Base
+from database.config import Base
 
 class ProviderEnum(str, Enum):
     google = "google"
