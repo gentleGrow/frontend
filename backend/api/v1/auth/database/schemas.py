@@ -3,21 +3,23 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from enum import Enum
 from uuid import uuid4, UUID
+# Module
+from database.config import Base
 
 class ProviderEnum(str, Enum):
     google = "google"
     kakao = "kakao"
     naver = "naver"
 
-class RoleEnum(str, Enum):
+class UserRoleEnum(str, Enum):
     admin = "admin"
     user = "user"
 
 class User(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     social_id: str 
-    provider: ProviderEnum | None
-    role: RoleEnum | None
+    provider: ProviderEnum 
+    role: UserRoleEnum | None
     nickname: str | None
     created_at: datetime
     deleted_at: datetime | None
