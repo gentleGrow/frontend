@@ -21,10 +21,10 @@ async def authenticate_with_kakao(request: Request):
         
         social_id = user_info.get('id')
         if not social_id:
-            raise HTTPException(status_code=400, detail="카카오 로그인이 실패하였습니다.")
+            raise HTTPException(status_code=400, detail="구글 토큰 내에 유저 고유 ID가 존재하지 않습니다.")
         return social_id
     except OAuthError as error:
-        raise HTTPException(status_code=400, detail=f"OAuth error: {error.error}")
+        raise HTTPException(status_code=400, detail=f"OAuth 에러가 발생하였습니다 : {error.error}")
 
     
     

@@ -17,7 +17,7 @@ oauth.register(
     client_secret=GOOGLE_CLIENT_SECRET,
     client_kwargs={
         'scope': 'email openid profile',
-        'redirect_url': 'http://localhost:8000/'
+        # 'redirect_url': 'http://localhost:8000/'
     }
 )
 

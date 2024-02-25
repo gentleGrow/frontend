@@ -13,7 +13,7 @@ async def fetch_naver_user_info(access_token: str):
         response = await client.get(url, headers=headers)
         if response.status_code != 200:
             raise HTTPException(status_code=400, detail="네이버 사용자 정보를 가져오는 데 실패하였습니다.")
-        user_info = response.json()
+        user_info = await response.json()
         return user_info.get('response', {})
 
 async def authenticate_with_naver(request: Request):
@@ -22,10 +22,10 @@ async def authenticate_with_naver(request: Request):
         user_info = await fetch_naver_user_info(token['access_token'])
         
         if not user_info:
-            raise HTTPException(status_code=400, detail="네이버 로그인이 실패하였습니다.")
+            raise HTTPException(status_code=400, detail="네이버 토큰 내에 유저 고유 ID가 존재하지 않습니다.")
         
         social_id = user_info.get('id')
         return social_id
     except OAuthError as error:
-        raise HTTPException(status_code=400, detail=f"OAuth error: {error.error}")
+        raise HTTPException(status_code=400, detail=f"OAuth 에러가 발생하였습니다 : {error.error}")
     

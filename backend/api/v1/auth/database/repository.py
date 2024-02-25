@@ -6,8 +6,6 @@ from datetime import datetime
 from api.v1.auth.database.models import User
 from api.v1.auth.database.schemas import ProviderEnum, UserRoleEnum
 
-
-# Repository 디렉터리 혹은 database안에 repository.py로 이동합니다.
 class DBHandler():
     def get_user(self, db: Session, social_id: str, provider: ProviderEnum):
         return db.query(User).filter(User.social_id == social_id, User.provider == provider.value).first()

@@ -17,9 +17,10 @@ class AuthenticationBuilder(DBHandler):
         except HTTPException as e:
             raise e
         except OAuthError as error:
-            raise HTTPException(status_code=400, detail=f"OAuth error: {error.error}")
+            raise HTTPException(status_code=400, detail=f"OAuth 에러가 발생하였습니다 : {error.error}")
 
         social_id = str(social_id)
+        
         user = self.get_user(db, social_id, ProviderEnum.naver)
         if user is None:
             user = self.create_user(db, social_id, ProviderEnum.naver)
@@ -31,7 +32,7 @@ class AuthenticationBuilder(DBHandler):
         except HTTPException as e:
             raise e
         except OAuthError as error:
-            raise HTTPException(status_code=400, detail=f"OAuth error: {error.error}")
+            raise HTTPException(status_code=400, detail=f"OAuth 에러가 발생하였습니다 : {error.error}")
 
         social_id = str(social_id)
         user = self.get_user(db, social_id, ProviderEnum.kakao)
@@ -41,13 +42,11 @@ class AuthenticationBuilder(DBHandler):
     
     async def google_authenticate(self, db: Session, request: Request):
         try:
-            user_info = await authenticate_with_google(request)
+            social_id = await authenticate_with_google(request)
         except HTTPException as e:
             raise e
         except OAuthError as error:
-            raise HTTPException(status_code=400, detail=f"OAuth error: {error.error}")
-
-        social_id = user_info.get('sub')
+            raise HTTPException(status_code=400, detail=f"OAuth 에러가 발생하였습니다 : {error.error}")
         
         user = self.get_user(db, social_id, ProviderEnum.google)
         if user is None:
