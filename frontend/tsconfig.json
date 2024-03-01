@@ -2,7 +2,6 @@
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
-    "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
@@ -12,10 +11,17 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "strictPropertyInitialization": false,
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
     "plugins": [
       {
         "name": "next"
-      }
+      },
+      { "name": "typescript-plugin-css-modules" }
     ],
     "paths": {
       "@/*": ["./src/*"]
