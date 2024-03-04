@@ -1,5 +1,6 @@
-import Login from '@/components/pop/login/Login';
 import '../../styles/global.scss';
+import Provider from '@/components/provider/Provider';
+import Header from '@/components/header/Header';
 export const metadata = {
   title: '젠틀그로우',
   description:
@@ -10,8 +11,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <Login />
-        {children}
+        <Provider>
+          <Header />
+          {children}
+        </Provider>
       </body>
     </html>
   );

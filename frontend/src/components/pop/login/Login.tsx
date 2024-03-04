@@ -1,6 +1,11 @@
 'use client';
+import { Dispatch, SetStateAction } from 'react';
 import S from './Login.module.scss';
+import { signIn } from 'next-auth/react';
 export default function Login() {
+  const handleKaKao = async () => {
+    await signIn('kakao', { callbackUrl: '/' });
+  };
   return (
     <div className={S.modalWrap}>
       <div className={S.loginContainer}>
@@ -13,7 +18,9 @@ export default function Login() {
           </p>
         </div>
         <div className={S.loginForm}>
-          <button className={S.kakaoBtn}>카카오로 계속하기</button>
+          <button className={S.kakaoBtn} onClick={handleKaKao}>
+            카카오로 계속하기
+          </button>
           <button className={S.naverBtn}>네이버로 계속하기</button>
           <button className={S.googleBtn}>구글로 계속하기</button>
         </div>
