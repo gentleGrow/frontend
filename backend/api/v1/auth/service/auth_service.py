@@ -10,6 +10,8 @@ from api.v1.auth.service.kakao_service import authenticate_with_kakao
 from api.v1.auth.service.naver_service import authenticate_with_naver
 from api.v1.auth.database.repository import DBHandler
 
+# [수정] Strategy Pattern을 활용해, social auth따라 인증합니다.
+
 class AuthenticationBuilder(DBHandler):
     async def naver_authenticate(self, db:Session, request: Request):
         try:

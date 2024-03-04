@@ -7,7 +7,7 @@ from starlette.requests import Request
 # Module
 from api.v1.auth.service.auth_service import AuthenticationBuilder  
 from dependencies.dependencies import get_RDB 
-from api.v1.auth.service.config import oauth
+from backend.api.v1.auth.service.config_service import oauth
 
 authRouter = APIRouter()
 authBuilder = AuthenticationBuilder()

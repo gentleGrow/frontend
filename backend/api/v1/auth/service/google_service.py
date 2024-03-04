@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from starlette.requests import Request
 from authlib.integrations.starlette_client import OAuthError
 # Module
-from api.v1.auth.service.config import oauth
+from backend.api.v1.auth.service.config_service import oauth
 
 async def authenticate_with_google(request: Request):
     try:
