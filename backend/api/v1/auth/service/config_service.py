@@ -16,11 +16,9 @@ oauth.register(
     client_id=GOOGLE_CLIENT_ID,
     client_secret=GOOGLE_CLIENT_SECRET,
     client_kwargs={
-        'scope': 'email openid profile',
-        # 'redirect_url': 'http://localhost:8000/'
+        'scope': 'email openid profile'
     }
 )
-
 
 # [정보] 카카오 configuration
 KAKAO_CLIENT_RESTAPI_KEY = getenv('KAKAO_CLIENT_RESTAPI_KEY', None)
@@ -42,7 +40,6 @@ oauth.register(
 
 NAVER_CLIENT_ID = getenv('NAVER_CLIENT_ID', None)
 NAVER_CLIENT_SECRET = getenv('NAVER_CLIENT_SECRET', None)
-
 
 oauth.register(
     name='naver',

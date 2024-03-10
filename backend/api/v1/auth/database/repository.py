@@ -7,6 +7,12 @@ from api.v1.auth.database.models import User
 from api.v1.auth.database.schemas import ProviderEnum, UserRoleEnum
 
 class DBHandler():
+    def get_or_create_user(self, db:Session, social_id: str, provider: ProviderEnum):
+        user = self.get_user(db, social_id, provider)
+        if user is None:
+            user = self.create_user(db, social_id, provider)
+        return user
+    
     def get_user(self, db: Session, social_id: str, provider: ProviderEnum):
         return db.query(User).filter(User.social_id == social_id, User.provider == provider.value).first()
 

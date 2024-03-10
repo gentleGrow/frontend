@@ -4,7 +4,7 @@ from starlette.requests import Request
 from authlib.integrations.starlette_client import OAuthError
 from httpx import AsyncClient
 # Module
-from backend.api.v1.auth.service.config_service import oauth
+from api.v1.auth.service.config_service import oauth
 
 async def fetch_kakao_user_info(access_token: str):
     url = "https://kapi.kakao.com/v2/user/me"

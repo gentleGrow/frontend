@@ -10,7 +10,7 @@ from os import getenv
 from api.v1.auth.database.repository import DBHandler
 from api.v1.auth.database.schemas import ProviderEnum, UserRoleEnum
 from api.v1.auth.database.models import User
-from database.config import Base  
+from database.config import PostgresBase  
 
 load_dotenv()
 TEST_POSTGRESSQL_URL = getenv('TEST_POSTGRESSQL_URL', None)
@@ -21,7 +21,7 @@ TestingSessionLocal = sessionmaker(autoflush=False, bind=engine)
 # [정보] pytest.fixture는 테스트 환경 생성 및 삭제를 위한 데코레이터입니다.
 @pytest.fixture
 def db_session():
-    Base.metadata.create_all(bind=engine)
+    PostgresBase.metadata.create_all(bind=engine)
     db = TestingSessionLocal()
     try:
         yield db

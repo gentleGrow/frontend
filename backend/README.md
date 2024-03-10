@@ -9,9 +9,17 @@
 5. touch .env 
 6. uvicorn main:app --reload --port 8000
 
+### 테스트 실행
+1. pytest
+
+### Redis 실행 (mac)
+- brew services start redis
+- brew services info redis
+
 ### [프로젝트 참조사항]
 #### service
 - Exception 처리
+- type 정의
 
 #### main.py
 - Database Connection Pool 설정
@@ -76,3 +84,37 @@
     - Template Method
     - Visitor
 - [참조] https://refactoring.guru/
+
+
+#### 폴더 구조
+backend
+-api
+--v1
+---auth
+----router
+——-auth_router.py
+----database
+——-models.py
+——-repository.py
+——-schemas.py
+----service
+-----auth_service.py
+-----config.py
+-----google_service.py
+-----naver_service.py
+-----kakao_service.py
+-data
+—finance_reader.py
+-database
+—config.py
+-dependencies
+—dependencies.py
+-test
+—auth
+—-database
+——test_repository.py
+—-service
+——test_auth_service.py
+——test_google_service.py
+——test_kakao_service.py
+——test_naver_service.py
