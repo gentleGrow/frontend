@@ -3,8 +3,6 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from enum import Enum
 from uuid import uuid4, UUID
-# Module
-from database.config import Base
 
 class ProviderEnum(str, Enum):
     google = "google"
@@ -29,3 +27,6 @@ class User(BaseModel):
         from_attributes = True
             
 
+class TokenRequest(BaseModel):
+    access_token: str = Field(..., description="client에게 전달 받은 구글 access token입니다.")
+    refresh_token: str = Field(..., description="client에게 전달 받은 구글 refresh token입니다.")

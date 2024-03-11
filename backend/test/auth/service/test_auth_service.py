@@ -10,7 +10,7 @@ from starlette.requests import Request
 # Module
 from api.v1.auth.service.auth_service import AuthenticationBuilder
 from api.v1.auth.database.models import User 
-from database.config import Base
+from database.config import PostgresBase
 from api.v1.auth.database.schemas import ProviderEnum
 
 load_dotenv()
@@ -21,7 +21,7 @@ TestingSessionLocal = sessionmaker(autoflush=False, bind=engine)
 
 @pytest.fixture
 def db_session():
-    Base.metadata.create_all(bind=engine)
+    PostgresBase.metadata.create_all(bind=engine)
     db = TestingSessionLocal()
     try:
         yield db
