@@ -34,6 +34,6 @@ repos:
     hooks:
     -   id: pytest
         name: pytest
-        entry: pytest backend/
+        entry: poetry run pytest
         language: system
         types: [python]
