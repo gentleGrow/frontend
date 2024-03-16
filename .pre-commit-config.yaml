@@ -29,3 +29,11 @@ repos:
     hooks:
     -   id: mypy
         files: ^backend/
+
+-   repo: local
+    hooks:
+    -   id: pytest
+        name: pytest
+        entry: pytest backend/
+        language: system
+        types: [python]
