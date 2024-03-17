@@ -19,6 +19,10 @@ warn_unused_ignores = true
 warn_redundant_casts = true
 warn_unreachable = true
 
+[tool.flake8]
+max-line-length = 88
+ignore = ["E203","W501"]
+
 [tool.poetry]
 name = "backend"
 version = "0.1.0"
@@ -215,6 +219,8 @@ websocket-client = "1.7.0"
 wsproto = "1.2.0"
 xattr = "1.1.0"
 zipp = "3.18.1"
+flake8 = "^7.0.0"
+flake8-pyproject = "^1.2.3"
 
 [build-system]
 requires = ["poetry-core"]

@@ -14,28 +14,28 @@ from api.v1.auth.service.naver_service import authenticate_with_naver
 
 class AuthenticationBuilder(DBHandler):
     async def google_authenticate(
-        self, db: Session, redis: StrictRedis, access_token: str, refresh_token: str
+        self, db: Session, redis: StrictRedis, accessToken: str, refreshToken: str
     ):
         try:
-            id_info = await verify_google_token(access_token)
+            idInfo = await verify_google_token(accessToken)
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
         except HTTPException as e:
             raise e
 
-        user_info = id_info.get("userinfo")
-        social_id = user_info.get("sub")
+        userInfo = idInfo.get("userinfo")
+        socialId = userInfo.get("sub")
 
-        user = self.get_or_create_user(db, social_id, ProviderEnum.google)
-        jwt_token = generate_jwt(user.id, refresh_token)
+        user = self.get_or_create_user(db, socialId, ProviderEnum.google)
+        jwtToken = generate_jwt(user.id, refreshToken)
 
-        await redis.set(f"google_{user.id}", refresh_token, ex=3600)
+        await redis.set(f"google_{user.id}", refreshToken, ex=3600)
 
-        return jwt_token
+        return jwtToken
 
     async def naver_authenticate(self, db: Session, request: Request):
         try:
-            social_id = await authenticate_with_naver(request)
+            socialId = await authenticate_with_naver(request)
         except HTTPException as e:
             raise e
         except OAuthError as error:
@@ -43,16 +43,16 @@ class AuthenticationBuilder(DBHandler):
                 status_code=400, detail=f"OAuth 에러가 발생하였습니다 : {error.error}"
             )
 
-        social_id = str(social_id)
+        socialId = str(socialId)
 
-        user = self.get_user(db, social_id, ProviderEnum.naver)
+        user = self.get_user(db, socialId, ProviderEnum.naver)
         if user is None:
-            user = self.create_user(db, social_id, ProviderEnum.naver)
+            user = self.create_user(db, socialId, ProviderEnum.naver)
         return user
 
     async def kakao_authenticate(self, db: Session, request: Request):
         try:
-            social_id = await authenticate_with_kakao(request)
+            socialId = await authenticate_with_kakao(request)
         except HTTPException as e:
             raise e
         except OAuthError as error:
@@ -60,8 +60,8 @@ class AuthenticationBuilder(DBHandler):
                 status_code=400, detail=f"OAuth 에러가 발생하였습니다 : {error.error}"
             )
 
-        social_id = str(social_id)
-        user = self.get_user(db, social_id, ProviderEnum.kakao)
+        socialId = str(socialId)
+        user = self.get_user(db, socialId, ProviderEnum.kakao)
         if user is None:
-            user = self.create_user(db, social_id, ProviderEnum.kakao)
+            user = self.create_user(db, socialId, ProviderEnum.kakao)
         return user
