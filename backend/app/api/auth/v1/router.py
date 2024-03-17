@@ -1,11 +1,11 @@
 from aredis import StrictRedis
+from dependencies.dependencies import get_postgres_session, get_redis_pool
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
-from api.v1.auth.database.schemas import TokenRequest
-from api.v1.auth.service.auth_service import AuthenticationBuilder
-from dependencies.dependencies import get_postgres_session, get_redis_pool
+from app.modules.auth.handlers import AuthenticationBuilder
+from app.modules.auth.schemas import TokenRequest
 
 authRouter = APIRouter()
 authBuilder = AuthenticationBuilder()

@@ -3,8 +3,8 @@ from uuid import uuid4
 
 from sqlalchemy.orm import Session
 
-from api.v1.auth.database.models import User
-from api.v1.auth.database.schemas import ProviderEnum, UserRoleEnum
+from app.modules.auth.enums import ProviderEnum, UserRoleEnum
+from app.modules.auth.models import User
 
 
 class DBHandler:

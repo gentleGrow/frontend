@@ -16,5 +16,4 @@ engine = create_engine(POSTGRESSQL_URL)
 
 PostgresSession = sessionmaker(autoflush=True, bind=engine)
 
-
 PostgresBase = declarative_base()
