@@ -1,19 +1,9 @@
 from datetime import datetime
-from enum import Enum
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
 
-
-class ProviderEnum(str, Enum):
-    google = "google"
-    kakao = "kakao"
-    naver = "naver"
-
-
-class UserRoleEnum(str, Enum):
-    admin = "admin"
-    user = "user"
+from app.modules.auth.enums import ProviderEnum, UserRoleEnum
 
 
 class User(BaseModel):

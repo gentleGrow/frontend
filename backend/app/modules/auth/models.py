@@ -3,7 +3,7 @@ from uuid import uuid4
 from sqlalchemy import Column, DateTime, Enum, String
 from sqlalchemy.dialects.postgresql import UUID
 
-from api.v1.auth.database.schemas import UserRoleEnum
+from app.modules.auth.enums import UserRoleEnum
 from database.config import PostgresBase
 
 
