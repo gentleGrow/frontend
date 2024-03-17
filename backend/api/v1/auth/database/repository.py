@@ -8,37 +8,37 @@ from api.v1.auth.database.schemas import ProviderEnum, UserRoleEnum
 
 
 class DBHandler:
-    def get_or_create_user(self, db: Session, social_id: str, provider: ProviderEnum):
-        user = self.get_user(db, social_id, provider)
+    def get_or_create_user(self, db: Session, socialId: str, provider: ProviderEnum):
+        user = self.get_user(db, socialId, provider)
         if user is None:
-            user = self.create_user(db, social_id, provider)
+            user = self.create_user(db, socialId, provider)
         return user
 
-    def get_user(self, db: Session, social_id: str, provider: ProviderEnum):
+    def get_user(self, db: Session, socialId: str, provider: ProviderEnum):
         return (
             db.query(User)
-            .filter(User.social_id == social_id, User.provider == provider.value)
+            .filter(User.socialId == socialId, User.provider == provider.value)
             .first()
         )
 
     def create_user(
         self,
         db: Session,
-        social_id: str,
+        socialId: str,
         provider: ProviderEnum,
         role: UserRoleEnum = None,
         nickname: str = None,
     ):
-        new_user = User(
+        newUser = User(
             id=uuid4(),
-            social_id=social_id,
+            socialId=socialId,
             provider=provider,
             role=role,
             nickname=nickname,
             created_at=datetime.now(),
         )
 
-        db.add(new_user)
+        db.add(newUser)
         db.commit()
-        db.refresh(new_user)
-        return new_user
+        db.refresh(newUser)
+        return newUser

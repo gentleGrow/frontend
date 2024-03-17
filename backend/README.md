@@ -30,8 +30,9 @@
 
 ## [프로젝트 참조사항]
 ### 코드리뷰
-- 불필요한 주석 제거
+- 불필요한 주석 제거[V]
 - models.py > provider > type enum 설정
+- env setting > pydantic 사용 [참조] https://docs.pydantic.dev/latest/concepts/pydantic_settings/
 - role > nullable이 아닌 기본값 설정
 - 리턴 타입 설정
 - status code 매직 넘버가 아닌 HTTPStatus.BAD_REQUEST 처리
