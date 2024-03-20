@@ -39,19 +39,18 @@
 ## [프로젝트 참조사항]
 ### 코드리뷰
 - 불필요한 주석 제거[V]
-- models.py > provider > type enum 설정
+- models.py > provider > type enum 설정[V]
 - env setting > pydantic 사용 [참조] https://docs.pydantic.dev/latest/concepts/pydantic_settings/
-- role > nullable이 아닌 기본값 설정
-- 리턴 타입 설정
-- status code 매직 넘버가 아닌 HTTPStatus.BAD_REQUEST 처리
-- 상태코드 명시적으로 표시 > 400x, 401 혹은 403처럼 명시적 코드 제시
+- role > nullable이 아닌 기본값 설정[V]
+- 리턴 타입 설정[V]
+- status code 매직 넘버가 아닌 HTTPStatus.BAD_REQUEST 처리[V]
+- 상태코드 명시적으로 표시 > 400x, 401 혹은 403처럼 명시적 코드 제시[V]
 - pre-commit > black, isort, mypy, flake8 [참조] https://medium.com/daangn/%ED%8C%8C%EC%9D%B4%EC%8D%AC%EC%9D%84-%EC%B2%98%EC%9D%8C-%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94-%EB%8F%99%EB%A3%8C%EC%99%80-%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C-%EC%9D%BC%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95-bb52c3a433fa [V]
 - enum 클래스 > 별도 enums.py에 옮깁니다. [V]
 - snake case 처리로 변경 > auth_router > authRouter [V]
 - fixture는 conftest.py에 옮깁니다. > db_session 등등
-- db_handler는 상속 대신해 composition으로 전달합니다.
-    - CRUD_repository 클래스를 만든 후, 특별한 로직이 담길 경우 CRUD_repository를 상속받는 식으로 진행하는 건 괜찮습니다.
-- JSONRespones 대시해, response model를 만들어 반환하는 식으로 하여서 반환하는 객체의 직렬화 및 타입 체킹을 합니다. [참조] https://fastapi.tiangolo.com/ko/tutorial/response-model/
+- db_handler는 상속 대신해 composition으로 전달합니다.[V]
+- JSONRespones 대시해, response model를 만들어 반환하는 식으로 하여서 반환하는 객체의 직렬화 및 타입 체킹을 합니다. [참조] https://fastapi.tiangolo.com/ko/tutorial/response-model/ [V]
 - 매직넘버나 상수는 constants.py에 모아서 관리합니다.
 
 
@@ -134,47 +133,79 @@
 #### 폴더 구조
 .
 ├── README.md
-├── __pycache__
-│   └── main.cpython-39.pyc
 ├── app
-│   ├── __init__.py
-│   ├── api
-│   │   ├── __init__.py
-│   │   └── v1
-│   │       ├── __init__.py
-│   │       └── auth
-│   │           ├── README.md
-│   │           ├── __init__.py
-│   │           └── router.py
-│   ├── common
-│   │   ├── __init__.py
-│   │   └── auth
-│   │       ├── __init__.py
-│   │       ├── config.py
-│   │       ├── jwt.py
-│   │       └── social_auth.py
-│   ├── dependencies
-│   │   ├── __init__.py
-│   │   └── dependencies.py
-│   └── modules
-│       ├── __init__.py
-│       └── auth
-│           ├── __init__.py
-│           ├── handlers.py
-│           ├── models.py
-│           ├── repository.py
-│           ├── schemas.py
-│           └── service
-│               ├── __init__.py
-│               ├── google.py
-│               ├── kakao.py
-│               └── naver.py
+│   ├── __init__.py
+│   ├── api
+│   │   ├── __init__.py
+│   │   └── auth
+│   │       ├── README.md
+│   │       ├── __init__.py
+│   │       └── v1
+│   │           ├── __init__.py
+│   │           └── router.py
+│   ├── common
+│   │   ├── __init__.py
+│   │   └── auth
+│   │       ├── __init__.py
+│   │       ├── config.py
+│   │       └── jwt.py
+│   ├── dependencies
+│   │   ├── __init__.py
+│   │   └── dependencies.py
+│   └── modules
+│       ├── __init__.py
+│       └── auth
+│           ├── __init__.py
+│           ├── enums.py
+│           ├── handlers.py
+│           ├── models.py
+│           ├── repository.py
+│           ├── schemas.py
+│           └── service
+│               ├── __init__.py
+│               ├── google.py
+│               ├── kakao.py
+│               └── naver.py
 ├── data
-│   └── finance_reader.py
+│   └── finance_reader.py
 ├── database
-│   ├── __init__.py
-│   └── config.py
+│   ├── __init__.py
+│   └── config.py
 ├── main.py
+├── poetry.lock
+├── pyproject.toml
 ├── pytest.ini
 ├── requirements.txt
-└── test # 테스트 부분은 app 폴더 이하의 구조와 똑같이 가져 갑니다
+└── test
+    ├── __init__.py
+    └── app
+        ├── __init__.py
+        ├── api
+        │   ├── __init__.py
+        │   └── auth
+        │       └── v1
+        │           ├── __init__.py
+        │           └── test_router.py
+        ├── common
+        │   ├── __init__.py
+        │   └── auth
+        │       ├── __init__.py
+        │       ├── test_config.py
+        │       └── test_jwt.py
+        ├── dependencies
+        │   ├── __init__.py
+        │   └── test_dependencies.py
+        └── modules
+            ├── __init__.py
+            └── auth
+                ├── __init__.py
+                ├── service
+                │   ├── __init__.py
+                │   ├── test_google.py
+                │   ├── test_kakao.py
+                │   └── test_naver.py
+                ├── test_enums.py
+                ├── test_handlers.py
+                ├── test_models.py
+                ├── test_repository.py
+                └── test_schemas.py
