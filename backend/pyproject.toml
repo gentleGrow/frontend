@@ -221,6 +221,7 @@ xattr = "1.1.0"
 zipp = "3.18.1"
 flake8 = "^7.0.0"
 flake8-pyproject = "^1.2.3"
+tree = "^0.2.4"
 
 [build-system]
 requires = ["poetry-core"]
