@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from sqlalchemy import Column, DateTime, Enum, String
+from sqlalchemy import Column, DateTime, String
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.modules.auth.enums import UserRoleEnum
@@ -13,7 +13,7 @@ class User(PostgresBase):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     socialId = Column(String, index=True, nullable=False)
     provider = Column(String, nullable=False)
-    role = Column(Enum(UserRoleEnum), nullable=True)
+    role = Column(String, default=UserRoleEnum.user)
     nickname = Column(String, nullable=True)
     createdAt = Column(DateTime, nullable=False)
     deletedAt = Column(DateTime, nullable=True)

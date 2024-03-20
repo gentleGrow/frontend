@@ -2,12 +2,20 @@
 ### application 실행
 [주의] 파이썬 버전 3.10이상 필요
 [주의] 테스트시 반드시 포트 8000으로 실행해야합니다.
+- curl -sSL https://install.python-poetry.org | python3 -
+- export PATH="$HOME/.local/bin:$PATH"
+- source ~/.zshrc
+- poetry shell
+- poetry install
 1. cd /assetmanagement/backend
 2. python3 -m venv venv
 3. source ./venv/bin/activate
 4. pip install -r requirements
 5. touch .env
 6. uvicorn main:app --reload --port 8000
+
+- brew services start redis
+- brew services list
 
 ### 테스트 실행
 - pytest
@@ -37,9 +45,9 @@
 - 리턴 타입 설정
 - status code 매직 넘버가 아닌 HTTPStatus.BAD_REQUEST 처리
 - 상태코드 명시적으로 표시 > 400x, 401 혹은 403처럼 명시적 코드 제시
-- pre-commit > black, isort, mypy, flake8 [참조] https://medium.com/daangn/%ED%8C%8C%EC%9D%B4%EC%8D%AC%EC%9D%84-%EC%B2%98%EC%9D%8C-%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94-%EB%8F%99%EB%A3%8C%EC%99%80-%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C-%EC%9D%BC%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95-bb52c3a433fa
-- enum 클래스 > 별도 enums.py에 옮깁니다.
-- snake case 처리로 변경 > auth_router > authRouter
+- pre-commit > black, isort, mypy, flake8 [참조] https://medium.com/daangn/%ED%8C%8C%EC%9D%B4%EC%8D%AC%EC%9D%84-%EC%B2%98%EC%9D%8C-%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94-%EB%8F%99%EB%A3%8C%EC%99%80-%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C-%EC%9D%BC%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95-bb52c3a433fa [V]
+- enum 클래스 > 별도 enums.py에 옮깁니다. [V]
+- snake case 처리로 변경 > auth_router > authRouter [V]
 - fixture는 conftest.py에 옮깁니다. > db_session 등등
 - db_handler는 상속 대신해 composition으로 전달합니다.
     - CRUD_repository 클래스를 만든 후, 특별한 로직이 담길 경우 CRUD_repository를 상속받는 식으로 진행하는 건 괜찮습니다.
@@ -140,7 +148,7 @@
 │   │           └── router.py
 │   ├── common
 │   │   ├── __init__.py
-│   │   └── authentication
+│   │   └── auth
 │   │       ├── __init__.py
 │   │       ├── config.py
 │   │       ├── jwt.py
@@ -150,7 +158,7 @@
 │   │   └── dependencies.py
 │   └── modules
 │       ├── __init__.py
-│       └── authentication
+│       └── auth
 │           ├── __init__.py
 │           ├── handlers.py
 │           ├── models.py
