@@ -1,44 +1,53 @@
 from datetime import datetime
 from uuid import uuid4
 
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.modules.auth.enums import ProviderEnum, UserRoleEnum
-from app.modules.auth.models import User
+from app.modules.auth.models import User as UserModel
+from app.modules.auth.schemas import User as UserSchema
 
 
-class DBHandler:
-    def get_or_create_user(self, db: Session, socialId: str, provider: ProviderEnum):
-        user = self.get_user(db, socialId, provider)
-        if user is None:
-            user = self.create_user(db, socialId, provider)
-        return user
-
-    def get_user(self, db: Session, socialId: str, provider: ProviderEnum):
-        return (
-            db.query(User)
-            .filter(User.socialId == socialId, User.provider == provider.value)
+class UserHandler:
+    def get(
+        self, db: Session, socialId: str, provider: ProviderEnum
+    ) -> UserSchema | None:
+        result = (
+            db.query(UserModel)
+            .filter(
+                UserModel.socialId == socialId, UserModel.provider == provider.value
+            )
             .first()
         )
 
-    def create_user(
+        if result is None:
+            return None
+        return UserSchema.model_validate(result)
+
+    def create(
         self,
         db: Session,
         socialId: str,
         provider: ProviderEnum,
         role: UserRoleEnum = None,
         nickname: str = None,
-    ):
-        newUser = User(
+    ) -> UserSchema:
+        newUser = UserModel(
             id=uuid4(),
             socialId=socialId,
             provider=provider,
             role=role,
             nickname=nickname,
-            created_at=datetime.now(),
+            createdAt=datetime.now(),
         )
+
+        if newUser is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="유저 생성에 실패하였습니다."
+            )
 
         db.add(newUser)
         db.commit()
         db.refresh(newUser)
-        return newUser
+        return UserSchema.model_validate(newUser)

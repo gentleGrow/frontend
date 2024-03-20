@@ -10,15 +10,18 @@ class User(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     socialId: str
     provider: ProviderEnum
-    role: UserRoleEnum | None
+    role: UserRoleEnum
     nickname: str | None
-    created_at: datetime
-    deleted_at: datetime | None
+    createdAt: datetime
+    deletedAt: datetime | None
 
     class Config:
         from_attributes = True
 
 
 class TokenRequest(BaseModel):
-    access_token: str = Field(..., description="client에게 전달 받은 구글 access token입니다.")
-    refresh_token: str = Field(..., description="client에게 전달 받은 구글 refresh token입니다.")
+    idToken: str
+
+
+class TokenResponse(BaseModel):
+    token: str

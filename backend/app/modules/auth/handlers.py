@@ -1,30 +1,59 @@
+from abc import ABC, abstractmethod
+from os import getenv
+
 from aredis import StrictRedis
-from fastapi import HTTPException
+from dotenv import load_dotenv
+from fastapi import HTTPException, status
+from google.auth.transport import requests
+from google.oauth2 import id_token
 from sqlalchemy.orm import Session
 
-from app.common.auth.jwt import generate_jwt
 from app.modules.auth.enums import ProviderEnum
-from app.modules.auth.repository import DBHandler
-from app.modules.auth.service.google import verify_google_token
+
+load_dotenv()
+GOOGLE_CLIENT_ID = getenv("GOOGLE_CLIENT_ID", None)
 
 
-class AuthenticationBuilder(DBHandler):
-    async def google_authenticate(
-        self, db: Session, redis: StrictRedis, accessToken: str, refreshToken: str
-    ):
+class SocialLoginAuthentication(ABC):
+    def __init__(self, dbHandler, tokenBuilder):
+        self.dbHandler = dbHandler
+        self.tokenBuilder = tokenBuilder
+
+    @abstractmethod
+    async def verifyToken(self, accessToken: str):
+        raise NotImplementedError("authenticate method is not implemented.")
+
+    @abstractmethod
+    async def generateToken(self, db: Session, redis: StrictRedis, idInfo: dict):
+        raise NotImplementedError("authenticate method is not implemented.")
+
+
+class Google(SocialLoginAuthentication):
+    def __init__(self, dbHandler, tokenBuilder):
+        self.dbHandler = dbHandler
+        self.tokenBuilder = tokenBuilder
+
+    async def verifyToken(self, idToken: str) -> dict:
         try:
-            idInfo = await verify_google_token(accessToken)
+            idInfo = id_token.verify_oauth2_token(
+                idToken, requests.Request(), GOOGLE_CLIENT_ID
+            )
+            return idInfo
         except ValueError as e:
-            raise HTTPException(status_code=400, detail=str(e))
-        except HTTPException as e:
-            raise e
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
-        userInfo = idInfo.get("userinfo")
-        socialId = userInfo.get("sub")
+    async def generateToken(self, db: Session, redis: StrictRedis, idInfo: dict) -> str:
+        socialId = idInfo.get("sub")
 
-        user = self.get_or_create_user(db, socialId, ProviderEnum.google)
-        jwtToken = generate_jwt(user.id, refreshToken)
+        user = self.dbHandler.get(db, socialId, ProviderEnum.google)
+        if user is None:
+            try:
+                user = self.dbHandler.create(db, socialId, ProviderEnum.google)
+            except HTTPException as e:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+                )
 
-        await redis.set(f"google_{user.id}", refreshToken, ex=3600)
+        jwtToken = self.tokenBuilder.generate(user.id)
 
         return jwtToken

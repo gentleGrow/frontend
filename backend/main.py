@@ -5,12 +5,12 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from starlette.middleware.sessions import SessionMiddleware
 
-from api.v1.auth.router.auth_router import authRouter
+from app.api.auth.v1.router import authRouter
 from database.config import PostgresBase, engine
 
 app = FastAPI()
 
-# [주의] production에서는 절대사용하지 않습니다!!!
+# [주의] production에서는 절대 사용하지 않습니다!!!
 PostgresBase.metadata.create_all(bind=engine)
 load_dotenv()
 
