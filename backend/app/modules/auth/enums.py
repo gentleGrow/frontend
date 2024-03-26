@@ -1,12 +1,12 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class ProviderEnum(str, Enum):
+class ProviderEnum(StrEnum):
     google = "google"
     kakao = "kakao"
     naver = "naver"
 
 
-class UserRoleEnum(str, Enum):
+class UserRoleEnum(StrEnum):
     admin = "admin"
     user = "user"

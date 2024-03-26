@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from starlette.middleware.sessions import SessionMiddleware
 
-from app.api.auth.v1.router import authRouter
+from app.api.auth.v1.router import auth_router
 from database.config import PostgresBase, engine
 
 app = FastAPI()
@@ -18,7 +18,7 @@ SESSION_KEY = getenv("SESSION_KEY", None)
 
 app.add_middleware(SessionMiddleware, secret_key=SESSION_KEY)
 
-app.include_router(authRouter, prefix="/api/auth", tags=["auth"])
+app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 
 
 @app.get("/")

@@ -1,6 +1,14 @@
-from aredis import StrictRedis
+from os import getenv
+
+from dotenv import load_dotenv
+from redis import Redis
 
 from database.config import PostgresSession
+
+load_dotenv()
+
+REDIS_HOST = getenv("REDIS_HOST", None)
+REDIS_PORT = getenv("REDIS_PORT", None)
 
 
 def get_postgres_session():
@@ -11,6 +19,5 @@ def get_postgres_session():
         db.close()
 
 
-async def get_redis_pool() -> StrictRedis:
-    redis = StrictRedis(host="localhost", port=6379, db=0, decode_responses=True)
-    return redis
+async def get_redis_pool() -> Redis:
+    return Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)

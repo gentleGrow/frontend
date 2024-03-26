@@ -2,64 +2,26 @@
 ### application 실행
 [주의] 파이썬 버전 3.10이상 필요
 [주의] 테스트시 반드시 포트 8000으로 실행해야합니다.
-- curl -sSL https://install.python-poetry.org | python3 -
-- export PATH="$HOME/.local/bin:$PATH"
-- source ~/.zshrc
-- poetry shell
-- poetry install
 1. cd /assetmanagement/backend
-2. python3 -m venv venv
-3. source ./venv/bin/activate
-4. pip install -r requirements
-5. touch .env
-6. uvicorn main:app --reload --port 8000
-
-- brew services start redis
-- brew services list
-
-### 테스트 실행
-- pytest
+2. curl -sSL https://install.python-poetry.org | python3 -
+3. export PATH="$HOME/.local/bin:$PATH"
+4. source ~/.zshrc
+5. poetry shell
+6. poetry install
+7. uvicorn main:app --reload --port 8000
 
 ### Redis 실행 (mac)
 - brew services start redis
 - brew services info redis
 
-### black 실행
-- black .
-- black path/file.py
-
-### isort 실행
-- isort .
-- isort path/file.py
-
-### mypy 실행
-- mypy .
-- mypy path/file.py
 
 ## [프로젝트 참조사항]
 ### 코드리뷰
-- 불필요한 주석 제거[V]
-- models.py > provider > type enum 설정[V]
-- env setting > pydantic 사용 [참조] https://docs.pydantic.dev/latest/concepts/pydantic_settings/
-- role > nullable이 아닌 기본값 설정[V]
-- 리턴 타입 설정[V]
-- status code 매직 넘버가 아닌 HTTPStatus.BAD_REQUEST 처리[V]
-- 상태코드 명시적으로 표시 > 400x, 401 혹은 403처럼 명시적 코드 제시[V]
-- pre-commit > black, isort, mypy, flake8 [참조] https://medium.com/daangn/%ED%8C%8C%EC%9D%B4%EC%8D%AC%EC%9D%84-%EC%B2%98%EC%9D%8C-%EC%82%AC%EC%9A%A9%ED%95%98%EB%8A%94-%EB%8F%99%EB%A3%8C%EC%99%80-%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C-%EC%9D%BC%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95-bb52c3a433fa [V]
-- enum 클래스 > 별도 enums.py에 옮깁니다. [V]
-- snake case 처리로 변경 > auth_router > authRouter [V]
-- fixture는 conftest.py에 옮깁니다. > db_session 등등
-- db_handler는 상속 대신해 composition으로 전달합니다.[V]
-- JSONRespones 대시해, response model를 만들어 반환하는 식으로 하여서 반환하는 객체의 직렬화 및 타입 체킹을 합니다. [참조] https://fastapi.tiangolo.com/ko/tutorial/response-model/ [V]
-- 매직넘버나 상수는 constants.py에 모아서 관리합니다.
-
-
-### Model
-- Mixin
-    - TimeStampMixin [참조] https://docs.sqlalchemy.org/en/13/orm/extensions/declarative/mixins.html#mixing-in-columns
-
-### 버전관리
-- poetry
+- flake 80 > 120 설정 [V]
+- snake case으로 변경 [V]
+- models.py > role 변경 [V]
+- repository.py > UserHandler에서 UserRepository로 변경 [V]
+- lambda 보다 func.now()나 custom 함수를 사용 [V]
 
 #### service
 - Exception 처리
