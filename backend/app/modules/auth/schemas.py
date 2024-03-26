@@ -8,20 +8,21 @@ from app.modules.auth.enums import ProviderEnum, UserRoleEnum
 
 class User(BaseModel):
     id: UUID = Field(default_factory=uuid4)
-    socialId: str
+    social_id: str
     provider: ProviderEnum
     role: UserRoleEnum
     nickname: str | None
-    createdAt: datetime
-    deletedAt: datetime | None
+    created_at: datetime
+    deleted_at: datetime | None
 
     class Config:
         from_attributes = True
 
 
 class TokenRequest(BaseModel):
-    idToken: str
+    id_token: str
 
 
 class TokenResponse(BaseModel):
-    token: str
+    access_token: str
+    refresh_token: str

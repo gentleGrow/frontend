@@ -8,8 +8,6 @@ from sqlalchemy.orm import sessionmaker
 load_dotenv()
 
 POSTGRESSQL_URL = getenv("POSTGRESSQL_URL", None)
-REDIS_URL = getenv("REDIS_URL", None)
-REDIS_ENCODING = "utf-8"
 
 
 engine = create_engine(POSTGRESSQL_URL)

@@ -1,15 +1,12 @@
-from datetime import datetime, timezone
-
 from sqlalchemy import Column, DateTime
+from sqlalchemy.sql import func
 
 
 class TimestampMixin:
-    createdAt = Column(
-        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
-    )
-    updatedAt = Column(
+    created_at = Column(DateTime, default=func.now(), nullable=False)
+    updated_at = Column(
         DateTime,
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        default=func.now(),
+        onupdate=func.now(),
         nullable=False,
     )
