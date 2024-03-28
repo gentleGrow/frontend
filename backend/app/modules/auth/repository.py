@@ -26,13 +26,13 @@ class RedisTokenRepository(AbstractTokenRepository):
         self.redis = redis_client
 
     async def save(self, user_id: str, token: str, expiry: int) -> None:
-        self.redis.set(user_id, token)
-        self.redis.expire(user_id, expiry)
+        await self.redis.set(user_id, token)
+        await self.redis.expire(user_id, expiry)
         return
 
     async def get(self, user_id: str) -> str | None:
         token = await self.redis.get(user_id)
-        return token.decode("utf-8") if token else None
+        return token
 
 
 class UserRepository:

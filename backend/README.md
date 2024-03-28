@@ -14,14 +14,7 @@
 - brew services start redis
 - brew services info redis
 
-
 ## [프로젝트 참조사항]
-### 코드리뷰
-- flake 80 > 120 설정 [V]
-- snake case으로 변경 [V]
-- models.py > role 변경 [V]
-- repository.py > UserHandler에서 UserRepository로 변경 [V]
-- lambda 보다 func.now()나 custom 함수를 사용 [V]
 
 #### service
 - Exception 처리
@@ -32,6 +25,9 @@
 - Close Event
 - CORS Middleware
 - Logging Configuration
+
+#### redis
+- asyncrhous client으로 변경
 
 #### test
 - mocking
@@ -63,7 +59,7 @@
 - [trun-base] main > feature * 단점 : 테스트 자동화 요구, 장점 : 적은 브런치 관리 [v]
 - [참조] https://www.youtube.com/watch?v=EV3FZ3cWBp8
 
-#### Design Patter
+#### Design Pattern
 - Creational
     - Factory Method
     - Abstract Factory
@@ -90,7 +86,6 @@
     - Template Method
     - Visitor
 - [참조] https://refactoring.guru/
-
 
 #### 폴더 구조
 .

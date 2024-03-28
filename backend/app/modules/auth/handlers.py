@@ -33,8 +33,8 @@ class SocialLoginAuthentication(ABC):
 
 
 class Google(SocialLoginAuthentication):
-    def __init__(self, db_handler, token_builder):
-        self.db_handler = db_handler
+    def __init__(self, db_repository, token_builder):
+        self.db_repository = db_repository
         self.token_builder = token_builder
 
     async def verify_token(self, token: str) -> dict:
@@ -45,10 +45,10 @@ class Google(SocialLoginAuthentication):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     async def get_access_token(self, db: Session, social_id: str) -> str:
-        user = self.db_handler.get(db, social_id, ProviderEnum.google)
+        user = self.db_repository.get(db, social_id, ProviderEnum.google)
         if user is None:
             try:
-                user = self.db_handler.create(db, social_id, ProviderEnum.google)
+                user = self.db_repository.create(db, social_id, ProviderEnum.google)
             except HTTPException as e:
                 raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
         try:
@@ -59,7 +59,7 @@ class Google(SocialLoginAuthentication):
         return result
 
     async def get_refresh_token(self, db: Session, social_id: str) -> str:
-        user = self.db_handler.get(db, social_id, ProviderEnum.google)
+        user = self.db_repository.get(db, social_id, ProviderEnum.google)
         try:
             result = self.token_builder.generate_refresh_token(user.id)
         except HTTPException as e:
