@@ -26,9 +26,8 @@ class RedisTokenRepository(AbstractTokenRepository):
         self.redis = redis_client
 
     async def save(self, user_id: str, token: str, expiry: int) -> None:
-        await self.redis.set(user_id, token)
-        await self.redis.expire(user_id, expiry)
-        return
+        self.redis.set(user_id, token)
+        self.redis.expire(user_id, expiry)
 
     async def get(self, user_id: str) -> str | None:
         token = await self.redis.get(user_id)
@@ -41,9 +40,7 @@ class UserRepository:
             db.query(UserModel).filter(UserModel.social_id == social_id, UserModel.provider == provider.value).first()
         )
 
-        if result is None:
-            return None
-        return UserSchema.model_validate(result)
+        return UserSchema.model_validate(result) if result is not None else None
 
     def create(
         self,
