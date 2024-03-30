@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from redis import Redis
 from sqlalchemy.orm import Session
 
 from app.common.auth.constants import REDIS_EXPIRE_TIME
 from app.common.auth.jwt import JWTBuilder
-from app.dependencies.dependencies import get_postgres_session, get_redis_pool
+from app.dependencies.database import get_mysql_session
 from app.modules.auth.enums import ProviderEnum
 from app.modules.auth.handlers import Google
-from app.modules.auth.repository import RedisTokenRepository, UserRepository
+from app.modules.auth.repository import UserRepository
 from app.modules.auth.schemas import TokenRefreshRequest, TokenRequest, TokenResponse
+from app.service.singleton import redis_repository
 
 auth_router = APIRouter()
 user_repository = UserRepository()
@@ -22,11 +22,7 @@ google_builder = Google(user_repository, jwt_builder)
     description="client 구글 토큰이 넘어오는 지 확인후, 해당 토큰으로 유저확인을 합니다. 신규 유저인 경우 DB에 저장한후, jwt를 반환합니다.",
     response_model=TokenResponse,
 )
-async def google_login(
-    request: TokenRequest,
-    db: Session = Depends(get_postgres_session),
-    redis: Redis = Depends(get_redis_pool),
-) -> TokenResponse:
+async def google_login(request: TokenRequest, db: Session = Depends(get_mysql_session)) -> TokenResponse:
     id_token = request.id_token
     if not id_token:
         raise HTTPException(
@@ -43,22 +39,15 @@ async def google_login(
     if social_id is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="인증되지 않은 유저입니다.")
 
-    try:
-        access_token = await google_builder.get_access_token(db, social_id)
-        refresh_token = await google_builder.get_refresh_token(db, social_id)
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
     user = user_repository.get(db, social_id, ProviderEnum.google)
     if user is None:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="유저가 정상적으로 생성되지 않았습니다.")
+        user = user_repository.create(db, social_id, ProviderEnum.google)
 
-    try:
-        redis_handler = RedisTokenRepository(redis)
-        user_string_id = str(user.id)
-        await redis_handler.save(user_string_id, refresh_token, REDIS_EXPIRE_TIME)
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    access_token = await google_builder.get_access_token(user)
+    refresh_token = await google_builder.get_refresh_token(user)
+
+    user_string_id = str(user.id)
+    await redis_repository.save(user_string_id, refresh_token, REDIS_EXPIRE_TIME)
 
     return TokenResponse(access_token=access_token, refresh_token=refresh_token)
 
@@ -69,26 +58,26 @@ async def google_login(
     description="클라이언트로부터 유저 ID를 받아, Redis에서 해당 유저의 리프레시 토큰을 검색 후, 새로운 액세스 토큰을 발급하여 반환합니다.",
     response_model=TokenResponse,
 )
-async def refresh_access_token(
-    request: TokenRefreshRequest,
-    redis: Redis = Depends(get_redis_pool),
-) -> TokenResponse:
+async def refresh_access_token(request: TokenRefreshRequest) -> TokenResponse:
     refresh_token = request.refresh_token
-    try:
-        decoded = jwt_builder.decode_token(refresh_token)
-        user_id = decoded.get("sub")
+    decoded = jwt_builder.decode_token(refresh_token)
+    user_id = decoded.get("sub")
 
-        if user_id is None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="refresh token안에 유저 정보가 들어있지 않습니다.")
-    except HTTPException as e:
-        raise e
+    if user_id is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="refresh token안에 유저 정보가 들어있지 않습니다.")
 
-    redis_repository = RedisTokenRepository(redis)
     stored_refresh_token = redis_repository.get(user_id)
-    if stored_refresh_token is None or stored_refresh_token != refresh_token:
+
+    if stored_refresh_token is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="서버에 저장된 refresh token이 없습니다.",
+        )
+
+    if stored_refresh_token != refresh_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="서버에 저장된 refresh token과 다른 refresh token을 반환하였습니다.",
         )
 
     access_token = jwt_builder.generate_access_token(user_id)

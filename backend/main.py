@@ -6,12 +6,12 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.api.auth.v1.router import auth_router
-from database.config import PostgresBase, engine
+from database.config import MySQLBase, engine
 
 app = FastAPI()
 
 # [주의] production에서는 절대 사용하지 않습니다!!!
-PostgresBase.metadata.create_all(bind=engine)
+MySQLBase.metadata.create_all(bind=engine)
 load_dotenv()
 
 SESSION_KEY = getenv("SESSION_KEY", None)

@@ -221,6 +221,8 @@ flake8 = "^7.0.0"
 flake8-pyproject = "^1.2.3"
 tree = "^0.2.4"
 types-redis = "4.6.0.20240311"
+pymysql = "^1.1.0"
+mysqlclient = "^2.2.4"
 
 [build-system]
 requires = ["poetry-core"]

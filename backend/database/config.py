@@ -7,11 +7,10 @@ from sqlalchemy.orm import sessionmaker
 
 load_dotenv()
 
-POSTGRESSQL_URL = getenv("POSTGRESSQL_URL", None)
+MYSQL_URL = getenv("MYSQL_URL", None)
 
+engine = create_engine(MYSQL_URL)
 
-engine = create_engine(POSTGRESSQL_URL)
+MySQLSession = sessionmaker(autoflush=True, bind=engine)
 
-PostgresSession = sessionmaker(autoflush=True, bind=engine)
-
-PostgresBase = declarative_base()
+MySQLBase = declarative_base()
