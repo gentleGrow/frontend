@@ -2,7 +2,6 @@ from os import getenv
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.api.auth.v1.router import auth_router
@@ -19,8 +18,3 @@ SESSION_KEY = getenv("SESSION_KEY", None)
 app.add_middleware(SessionMiddleware, secret_key=SESSION_KEY)
 
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
-
-
-@app.get("/")
-def read_root():
-    return JSONResponse(content={"message": "Hello World"})

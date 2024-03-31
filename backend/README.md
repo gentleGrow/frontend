@@ -14,12 +14,6 @@
 - brew services start redis
 - brew services info redis
 
-### [코드 리뷰]
-- 함수에 return을 명시하지 않으면 None을 반환하기에 빈 return은 지움 []
-- Redis 의존성 주입 대신 싱글톤으로 재사용 []
-- mypy 오류 시, # type: ignore으로 대체 []
-- 불필요한 try-except 제거 및 개별 오류당 별도의 오류 메세지를 반환할 수 있게 분리 []
-
 ## [프로젝트 참조사항]
 #### service
 - Exception 처리
