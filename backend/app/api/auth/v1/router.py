@@ -7,7 +7,7 @@ from app.dependencies.database import get_mysql_session
 from app.modules.auth.enums import ProviderEnum
 from app.modules.auth.handlers import Google
 from app.modules.auth.repository import UserRepository
-from app.modules.auth.schemas import TokenRefreshRequest, TokenRequest, TokenResponse
+from app.modules.auth.schemas import NewAccessTokenResponse, TokenRefreshRequest, TokenRequest, TokenResponse
 from app.service.singleton import redis_repository
 
 auth_router = APIRouter()
@@ -56,7 +56,7 @@ async def google_login(request: TokenRequest, db: Session = Depends(get_mysql_se
     "/refresh",
     summary="새로운 JWT 액세스 토큰을 발급합니다.",
     description="클라이언트로부터 유저 ID를 받아, Redis에서 해당 유저의 리프레시 토큰을 검색 후, 새로운 액세스 토큰을 발급하여 반환합니다.",
-    response_model=TokenResponse,
+    response_model=NewAccessTokenResponse,
 )
 async def refresh_access_token(request: TokenRefreshRequest) -> TokenResponse:
     refresh_token = request.refresh_token
@@ -66,7 +66,7 @@ async def refresh_access_token(request: TokenRefreshRequest) -> TokenResponse:
     if user_id is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="refresh token안에 유저 정보가 들어있지 않습니다.")
 
-    stored_refresh_token = redis_repository.get(user_id)
+    stored_refresh_token = await redis_repository.get(user_id)
 
     if stored_refresh_token is None:
         raise HTTPException(
@@ -82,4 +82,4 @@ async def refresh_access_token(request: TokenRefreshRequest) -> TokenResponse:
 
     access_token = jwt_builder.generate_access_token(user_id)
 
-    return TokenResponse(access_token=access_token)
+    return NewAccessTokenResponse(access_token=access_token)

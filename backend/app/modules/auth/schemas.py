@@ -29,3 +29,8 @@ class TokenRefreshRequest(BaseModel):
 
 class TokenResponse(BaseModel):
     access_token: str
+    refresh_token: str
+
+
+class NewAccessTokenResponse(BaseModel):
+    access_token: str

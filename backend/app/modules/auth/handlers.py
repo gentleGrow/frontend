@@ -15,10 +15,9 @@ GOOGLE_CLIENT_ID = getenv("GOOGLE_CLIENT_ID", None)
 
 
 class SocialLoginAuthentication(ABC):
-    def __init__(self, db_handler, token_builder, cache_db_handler):
+    def __init__(self, db_handler, token_builder):
         self.db_handler = db_handler
         self.token_builder = token_builder
-        self.cache_db_handler = cache_db_handler
 
     @abstractmethod
     async def verify_token(self, access_token: str):
