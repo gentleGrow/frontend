@@ -40,7 +40,7 @@ class UserRepository:
             db.query(UserModel).filter(UserModel.social_id == social_id, UserModel.provider == provider.value).first()
         )
 
-        return UserSchema.model_validate(result) if result is not None else None
+        return result and UserSchema.model_validate(result)
 
     def create(
         self,

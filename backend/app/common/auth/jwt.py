@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from os import getenv
-from typing import Any, Dict
+from typing import Any
 
 from dotenv import load_dotenv
 from fastapi import HTTPException, status
@@ -26,7 +26,7 @@ class JWTBuilder:
         result = encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
         return result
 
-    def decode_token(self, token: str) -> Dict[str, Any]:
+    def decode_token(self, token: str) -> dict[str, Any]:
         try:
             payload = decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
             return payload

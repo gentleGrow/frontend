@@ -1,5 +1,6 @@
 from unittest.mock import AsyncMock
 
+from fastapi import status
 from fastapi.testclient import TestClient
 
 from main import app
@@ -17,7 +18,7 @@ def test_google_login(mocker, mock_session):
     payload = {"id_token": "valid_token"}
     response = client.post("/api/auth/google", json=payload)
 
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     response_data = response.json()
     assert response_data["access_token"] == "mocked_access_token"
     assert response_data["refresh_token"] == "mocked_refresh_token"
@@ -31,5 +32,5 @@ def test_refresh_access_token(mocker):
     payload = {"refresh_token": "valid_refresh_token"}
     response = client.post("/api/auth/refresh", json=payload)
 
-    assert response.status_code == 200, response.text
+    assert response.status_code == status.HTTP_200_OK, response.text
     assert response.json() == {"access_token": "new_access_token"}

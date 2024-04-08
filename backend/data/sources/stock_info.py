@@ -1,6 +1,5 @@
 import json
 from os import getenv
-from typing import List, Tuple
 
 import pandas
 import requests
@@ -35,19 +34,19 @@ def get_current_price(access_token: str, code: str) -> int:
     return int(res.json()["output"]["stck_prpr"])
 
 
-def read_stock_codes_from_excel(filepath: str) -> List[Tuple[str, str]]:
+def read_stock_codes_from_excel(filepath: str) -> list[tuple[str, str]]:
     df = pandas.read_excel(filepath, usecols=[0, 1], header=None, skiprows=1)
     stock_codes = list(zip(df[0], df[1]))
     return stock_codes
 
 
-async def batch_subscribe_to_stocks(approval_key: str, stock_code_list: List[Tuple[str, str]], batch_size: int):
+async def batch_subscribe_to_stocks(approval_key: str, stock_code_list: list[tuple[str, str]], batch_size: int):
     for i in range(0, len(stock_code_list), batch_size):
         batch = stock_code_list[i : i + batch_size]
         await subscribe_to_stock_batch(approval_key, batch)
 
 
-async def subscribe_to_stock_batch(approval_key: str, batch: List[Tuple[str, str]]):
+async def subscribe_to_stock_batch(approval_key: str, batch: list[tuple[str, str]]):
     PATH = "tryitout/H0STCNT0"
     ws_uri = f"{KOREA_URL_WEBSOCKET}/{PATH}"
     async with websockets.connect(ws_uri) as websocket:
