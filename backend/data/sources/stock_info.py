@@ -3,7 +3,7 @@ from os import getenv
 
 import pandas
 import requests
-import websockets
+import websocket
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,7 +11,6 @@ load_dotenv()
 KOREA_INVESTMENT_KEY = getenv("KOREA_INVESTMENT_KEY", None)
 KOREA_INVESTMENT_SECRET = getenv("KOREA_INVESTMENT_SECRET", None)
 KOREA_URL_BASE = getenv("KOREA_URL_BASE", None)
-KOREA_URL_WEBSOCKET = getenv("KOREA_URL_WEBSOCKET", None)
 
 
 def get_current_price(access_token: str, code: str) -> int:
@@ -40,23 +39,40 @@ def read_stock_codes_from_excel(filepath: str) -> list[tuple[str, str]]:
     return stock_codes
 
 
-async def batch_subscribe_to_stocks(approval_key: str, stock_code_list: list[tuple[str, str]], batch_size: int):
-    for i in range(0, len(stock_code_list), batch_size):
-        batch = stock_code_list[i : i + batch_size]
-        await subscribe_to_stock_batch(approval_key, batch)
+def parse_error_stock_data(data: str) -> None:
+    jsonObject = json.loads(data)
+    trid = jsonObject["header"]["tr_id"]
+
+    if trid != "PINGPONG":
+        rt_cd = jsonObject["body"]["rt_cd"]
+        if rt_cd == "1":
+            print("### ERROR RETURN CODE [ %s ] MSG [ %s ]" % (rt_cd, jsonObject["body"]["msg1"]))
+            pass
+        elif rt_cd == "0":
+            print("### RETURN CODE [ %s ] MSG [ %s ]" % (rt_cd, jsonObject["body"]["msg1"]))
+
+            if trid == "K0STCNI0" or trid == "K0STCNI9" or trid == "H0STCNI0" or trid == "H0STCNI9":
+                aes_key = jsonObject["body"]["output"]["key"]
+                aes_iv = jsonObject["body"]["output"]["iv"]
+                print("### TRID [%s] KEY[%s] IV[%s]" % (trid, aes_key, aes_iv))
+
+    elif trid == "PINGPONG":
+        print("### RECV [PINGPONG] [%s]" % (data))
+        print("### SEND [PINGPONG] [%s]" % (data))
 
 
-async def subscribe_to_stock_batch(approval_key: str, batch: list[tuple[str, str]]):
-    PATH = "tryitout/H0STCNT0"
-    ws_uri = f"{KOREA_URL_WEBSOCKET}/{PATH}"
-    async with websockets.connect(ws_uri) as websocket:
-        for stock_code, stock_name in batch:
-            subscription_msg = {
-                "header": {"approval_key": approval_key, "custtype": "P", "tr_type": "1", "content-type": "utf-8"},
-                "body": {"input": {"tr_id": "H0STCNT0", "tr_key": stock_code}},
-            }
-            await websocket.send(json.dumps(subscription_msg))
+def parse_stock_name_price(data: str) -> list[str]:
+    data_array = data.split("^")
+    stock_code = data_array[0]
+    stock_price = data_array[2]
+    return [stock_code, stock_price]
 
-        while True:
-            message = await websocket.recv()
-            print(message)
+
+def subscribe_to_stock_batch(approval_key: str, batch: list[tuple[str, str]], ws: websocket) -> None:
+    for stock_code, stock_name in batch:
+        subscription_msg = {
+            "header": {"approval_key": approval_key, "custtype": "P", "tr_type": "1", "content-type": "utf-8"},
+            "body": {"input": {"tr_id": "H0STCNT0", "tr_key": stock_code}},
+        }
+
+        ws.send(json.dumps(subscription_msg))
