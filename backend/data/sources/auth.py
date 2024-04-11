@@ -20,12 +20,13 @@ def get_access_token(app_key: str, app_secret: str) -> str:
 
 
 def get_approval_key(appkey: str, secretkey: str) -> str | None:
-    url = f"{KOREA_URL_BASE}/oauth2/Approval"
+    PATH = "oauth2/Approval"
+    URL = f"{KOREA_URL_BASE}/{PATH}"
     headers = {"Content-Type": "application/json; utf-8"}
 
     payload = {"grant_type": "client_credentials", "appkey": appkey, "secretkey": secretkey}
 
-    response = requests.post(url, json=payload, headers=headers)
+    response = requests.post(URL, json=payload, headers=headers)
 
     if response.status_code == status.HTTP_200_OK:
         return response.json().get("approval_key")
