@@ -3,12 +3,13 @@
 [주의] 파이썬 버전 3.10이상 필요
 [주의] 테스트시 반드시 포트 8000으로 실행해야합니다.
 1. cd /assetmanagement/backend
-2. python3 -m venv venv 
-3. source ./venv/bin/activate
-4. pip install -r requirements
-5. touch .env 
-6. uvicorn main:app --reload --port 8000
-
+2. curl -sSL https://install.python-poetry.org | python3 -
+3. export PATH="$HOME/.local/bin:$PATH"
+4. source ~/.zshrc
+5. poetry shell
+6. poetry install
+7. (만약 terminal 옆에  backend-py3.12가 없는경우)  source ./.venv/bin/activate
+8. uvicorn main:app --reload --port 8000
 ### Frontend
 1. cd /assetmanagement/frontend
 2. sudo npm i
