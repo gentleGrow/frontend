@@ -1831,6 +1831,16 @@ files = [
 pydantic = ">=1.9.0"
 
 [[package]]
+name = "logging"
+version = "0.4.9.6"
+description = "A logging module for Python"
+optional = false
+python-versions = "*"
+files = [
+    {file = "logging-0.4.9.6.tar.gz", hash = "sha256:26f6b50773f085042d301085bd1bf5d9f3735704db9f37c1ce6d8b85c38f2417"},
+]
+
+[[package]]
 name = "lxml"
 version = "5.1.0"
 description = "Powerful and Pythonic XML processing library combining libxml2/libxslt with the ElementTree API."
@@ -4860,4 +4870,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "490385434355a582c6ad3dd546e7a396abc4c2ddd94767cf51a3bc918873a3b2"
+content-hash = "5d0a417e67cbe4d6b551123920bc9401b7880dd2d59c93a2c4d3ea66adfb97ce"

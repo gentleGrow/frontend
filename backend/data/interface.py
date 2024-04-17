@@ -1,3 +1,5 @@
+import json
+import logging
 import sys
 import threading
 import time
@@ -8,6 +10,7 @@ from dotenv import load_dotenv
 
 from data.sources.auth import get_approval_key
 from data.sources.constant import MAXIMUM_WEBSOCKET_CONNECTION, PING_INTERVAL, TIMEOUT_SECOND
+from data.sources.enums import StockType
 from data.sources.stock_info import (
     parse_error_stock_data,
     parse_stock_name_price,
@@ -34,16 +37,16 @@ def set_timeout(timeout_seconds: int, flag: list):
 
 def main():
     if KOREA_INVESTMENT_KEY is None or KOREA_INVESTMENT_SECRET is None:
-        print("환경변수를 확인해주세요")
+        logging.info("환경변수를 확인해주세요")
         sys.exit(1)
 
     approval_key = get_approval_key(KOREA_INVESTMENT_KEY, KOREA_INVESTMENT_SECRET)
 
     if approval_key is None:
-        print("웹 소켓 연결 키가 없습니다.")
+        logging.info("웹 소켓 연결 키가 없습니다.")
         sys.exit(1)
 
-    filepath = "/Users/kcw2297/Desktop/stock_list.xlsx"
+    filepath = "/etc/files/stock_list.xlsx"
     stock_code_list = read_stock_codes_from_excel(filepath)
 
     stock_code_chunks = list(divide_chunks(stock_code_list, MAXIMUM_WEBSOCKET_CONNECTION))
@@ -71,13 +74,13 @@ def main():
                             data_array = data.split("|")
                             stock_type = data_array[1]
 
-                            if stock_type == "H0STCNT0":
+                            if stock_type == StockType.H0STCNT0:
                                 stock_raw_info = data_array[3]
                                 current_stock_info = parse_stock_name_price(stock_raw_info)
-                                print(f"current_stock_info : {current_stock_info}")
-
+                                logging.info(f"current_stock_info : {current_stock_info}")
                         else:
-                            parse_error_stock_data(data)
+                            stock_data = json.loads(data)
+                            parse_error_stock_data(stock_data)
 
                 except websocket.WebSocketConnectionClosedException:
                     break
