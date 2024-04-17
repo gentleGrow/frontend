@@ -10,6 +10,10 @@
 6. poetry install
 7. uvicorn main:app --reload --port 8000
 
+### 한국투자증권 데이터 수집
+- export PYTHONPATH="/path/to/project/root:$PYTHONPATH"
+- python ./data/interface.py
+
 ### Redis 실행 (mac)
 - brew services start redis
 - brew services info redis
@@ -29,6 +33,9 @@
 - docker-compose down > 모든 container, network, db를 제거합니다.
 - docker-compose ps > docker-compose.yaml에 정의된 실행 중인 container의 list를 반환합니다.
 - docker logs container_name > 컨테이너 log를 봅니다.
+
+### 폴더 구조 확인
+- tree -I '__pycache__'
 
 
 ## [프로젝트 참조사항]

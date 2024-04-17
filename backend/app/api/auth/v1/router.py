@@ -8,7 +8,7 @@ from app.modules.auth.enums import ProviderEnum
 from app.modules.auth.handlers import Google
 from app.modules.auth.repository import UserRepository
 from app.modules.auth.schemas import NewAccessTokenResponse, TokenRefreshRequest, TokenRequest, TokenResponse
-from app.service.singleton import redis_repository
+from database.singleton import redis_repository
 
 auth_router = APIRouter()
 user_repository = UserRepository()
