@@ -25,7 +25,7 @@ def test_google_login(mocker, mock_session):
 
 
 def test_refresh_access_token(mocker):
-    mocker.patch("app.service.singleton.redis_repository.get", AsyncMock(return_value="valid_refresh_token"))
+    mocker.patch("database.singleton.redis_repository.get", AsyncMock(return_value="valid_refresh_token"))
     mocker.patch("app.common.auth.jwt.JWTBuilder.decode_token", return_value={"sub": "user_id"})
     mocker.patch("app.common.auth.jwt.JWTBuilder.generate_access_token", return_value="new_access_token")
 
