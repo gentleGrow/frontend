@@ -1,7 +1,7 @@
 from enum import StrEnum
 
 
-class StockType(StrEnum):
+class TradeType(StrEnum):
     H0STCNT0 = "H0STCNT0"
     H0STCNI9 = "H0STCNI9"
     PINGPONG = "PINGPONG"
@@ -9,6 +9,6 @@ class StockType(StrEnum):
     K0STCNI9 = "K0STCNI9"
 
 
-class SocketCode(StrEnum):
-    zero = "0"
-    one = "1"
+class SuccessCode(StrEnum):
+    success = "0"
+    fail = "1"
