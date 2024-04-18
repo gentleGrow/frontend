@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 from os import getenv
 
 import pandas
@@ -18,44 +19,114 @@ KOREA_INVESTMENT_SECRET = getenv("KOREA_INVESTMENT_SECRET", None)
 KOREA_URL_BASE = getenv("KOREA_URL_BASE", None)
 
 
-def get_stock_code_list() -> list:
+def divide_stock_list(stock_code_list: list, MAXIMUM_WEBSOCKET_CONNECTION: int):
+    for idx in range(0, len(stock_code_list), MAXIMUM_WEBSOCKET_CONNECTION):
+        yield stock_code_list[idx : idx + MAXIMUM_WEBSOCKET_CONNECTION]
+
+
+def set_timeout(timeout_seconds: int, flag: list):
+    time.sleep(timeout_seconds)
+    flag[0] = True
+
+
+def get_realtime_stock_code_list() -> list:
     korea_filepath = "./etc/files/korea_stock_list.xlsx"
     etf_filepath = "./etc/files/etf_stock_list.xlsx"
-    japan_filepath = "./etc/files/japan_stock_list.xlsx"
-    nas_filepath = "./etc/files/nas_stock_list.xlsx"
-    nys_filepath = "./etc/files/nys_stock_list.xlsx"
-    korea_stock_code_list = read_stock_codes_from_excel(korea_filepath)
-    etf_stock_code_list = read_stock_codes_from_excel(etf_filepath)
-    japan_stock_code_list = read_stock_codes_from_excel(japan_filepath)
-    nas_stock_code_list = read_stock_codes_from_excel(nas_filepath)
-    nys_stock_code_list = read_stock_codes_from_excel(nys_filepath)
+    nas_filepath = "./etc/files/nas_realtime_stock_list.xlsx"
+    nys_filepath = "./etc/files/nys_realtime_stock_list.xlsx"
+    japan_filepath = "./etc/files/japan_realtime_stock_list.xlsx"
+    korea_stock_code_list = read_realtime_stock_codes_from_excel(korea_filepath)
+    etf_stock_code_list = read_realtime_stock_codes_from_excel(etf_filepath)
+    nas_stock_code_list = read_realtime_stock_codes_from_excel(nas_filepath)
+    nys_stock_code_list = read_realtime_stock_codes_from_excel(nys_filepath)
+    japan_stock_code_list = read_realtime_stock_codes_from_excel(japan_filepath)
     return (
-        korea_stock_code_list + etf_stock_code_list + japan_stock_code_list + nas_stock_code_list + nys_stock_code_list
+        korea_stock_code_list + etf_stock_code_list + nas_stock_code_list + nys_stock_code_list + japan_stock_code_list
     )
 
 
-def get_current_price(access_token: str, code: str) -> int:
+def get_korea_stock_code_list() -> list:
+    korea_filepath = "./etc/files/korea_stock_list.xlsx"
+    etf_filepath = "./etc/files/etf_stock_list.xlsx"
+    korea_stock_code_list = read_stock_codes_from_excel(korea_filepath)
+    etf_stock_code_list = read_stock_codes_from_excel(etf_filepath)
+    return korea_stock_code_list + etf_stock_code_list
+
+
+def get_oversea_stock_code_list() -> list:
+    nas_filepath = "./etc/files/nas_stock_list.xlsx"
+    nys_filepath = "./etc/files/nys_stock_list.xlsx"
+    japan_filepath = "./etc/files/japan_stock_list.xlsx"
+    nas_stock_code_list = read_stock_codes_from_excel(nas_filepath)
+    nys_stock_code_list = read_stock_codes_from_excel(nys_filepath)
+    japan_stock_code_list = read_stock_codes_from_excel(japan_filepath)
+    return nas_stock_code_list + nys_stock_code_list + japan_stock_code_list
+
+
+def get_oversea_current_price(access_token: str, stock_code: str, excd: str) -> int | None:
+    logging.info(f"[분석] access_token : {access_token}")
+    logging.info(f"[분석] stock_code : {stock_code}")
+    logging.info(f"[분석] exchange_code : {excd}")
+
     headers = {
         "Content-Type": "application/json",
+        "Authorization": f"Bearer {access_token}",
+        "appKey": KOREA_INVESTMENT_KEY,
+        "appSecret": KOREA_INVESTMENT_SECRET,
+        "tr_id": "HHDFS00000300",
+        "custtype": "P",
+    }
+
+    params = {"AUTH": "", "EXCD": excd, "SYMB": stock_code}
+
+    url = f"{KOREA_URL_BASE}/uapi/overseas-price/v1/quotations/price"
+
+    logging.info(f"[분석] headers : {headers}")
+    logging.info(f"[분석] params : {params}")
+
+    response = requests.get(url, headers=headers, params=params)
+    logging.info(f"[분석] response : {response}")
+
+    if response.status_code == 200:
+        return int(response.json()["output"]["stck_prpr"])
+    else:
+        logging.error(f"{response.status_code}: {response.text}")
+        return None
+
+
+def get_korea_current_price(access_token: str, stock_code: str) -> int:
+    logging.info(f"[분석] access_token : {access_token}")
+    logging.info(f"[분석] stock_code : {stock_code}")
+    headers = {
+        "content-type": "application/json",
         "authorization": f"Bearer {access_token}",
         "appKey": KOREA_INVESTMENT_KEY,
         "appSecret": KOREA_INVESTMENT_SECRET,
         "tr_id": "FHKST01010100",
+        "custtype": "P",
     }
     params = {
-        "fid_cond_mrkt_div_code": "J",
-        "fid_input_iscd": code,
+        "FID_COND_MRKT_DIV_CODE": "J",
+        "FID_INPUT_ISCD": stock_code,
     }
+    logging.info(f"[분석] headers : {headers}")
+    logging.info(f"[분석] params : {params}")
+
     res = requests.get(
         f"{KOREA_URL_BASE}/uapi/domestic-stock/v1/quotations/inquire-price", headers=headers, params=params
     )
-
+    logging.info(f"[분석] res : {res}")
     return int(res.json()["output"]["stck_prpr"])
 
 
-def read_stock_codes_from_excel(filepath: str) -> list[tuple[str, str]]:
+def read_realtime_stock_codes_from_excel(filepath: str) -> list[tuple[str, str]]:
     df = pandas.read_excel(filepath, usecols=[0, 1], header=None)
     return list(zip(df[0], df[1]))
+
+
+def read_stock_codes_from_excel(filepath: str) -> list[tuple[str, str, str]]:
+    df = pandas.read_excel(filepath, usecols=[0, 1, 2], header=None)
+    return list(zip(df[0], df[1], df[2]))
 
 
 def socket_subscribe_message(stock_data: StockData) -> None:

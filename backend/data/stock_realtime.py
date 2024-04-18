@@ -3,7 +3,6 @@ import json
 import logging
 import sys
 import threading
-import time
 from os import getenv
 
 import websocket
@@ -13,8 +12,10 @@ from data.sources.auth import get_approval_key
 from data.sources.constant import MAXIMUM_WEBSOCKET_CONNECTION, PING_INTERVAL, REDIS_STOCK_EXPIRE, TIMEOUT_SECOND
 from data.sources.enums import TradeType
 from data.sources.stock_info import (
-    get_stock_code_list,
+    divide_stock_list,
+    get_realtime_stock_code_list,
     parse_stock_data,
+    set_timeout,
     socket_subscribe_message,
     subscribe_to_stock_batch,
 )
@@ -29,16 +30,6 @@ KOREA_URL_WEBSOCKET = getenv("KOREA_URL_WEBSOCKET", None)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
-def divide_stock_list(stock_code_list: list, MAXIMUM_WEBSOCKET_CONNECTION: int):
-    for idx in range(0, len(stock_code_list), MAXIMUM_WEBSOCKET_CONNECTION):
-        yield stock_code_list[idx : idx + MAXIMUM_WEBSOCKET_CONNECTION]
-
-
-def set_timeout(timeout_seconds: int, flag: list):
-    time.sleep(timeout_seconds)
-    flag[0] = True
-
-
 async def main():
     if KOREA_INVESTMENT_KEY is None or KOREA_INVESTMENT_SECRET is None:
         logging.error("환경변수를 확인해주세요")
@@ -50,7 +41,7 @@ async def main():
         logging.error("웹 소켓 연결 키가 없습니다.")
         sys.exit(1)
 
-    stock_code_list = get_stock_code_list()
+    stock_code_list = get_realtime_stock_code_list()
     stock_code_chunks = list(divide_stock_list(stock_code_list, MAXIMUM_WEBSOCKET_CONNECTION))
 
     URL = f"{KOREA_URL_WEBSOCKET}/tryitout/H0STCNT0"
