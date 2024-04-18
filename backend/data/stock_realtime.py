@@ -13,8 +13,8 @@ from data.sources.auth import get_approval_key
 from data.sources.constant import MAXIMUM_WEBSOCKET_CONNECTION, PING_INTERVAL, REDIS_STOCK_EXPIRE, TIMEOUT_SECOND
 from data.sources.enums import TradeType
 from data.sources.stock_info import (
+    get_stock_code_list,
     parse_stock_data,
-    read_stock_codes_from_excel,
     socket_subscribe_message,
     subscribe_to_stock_batch,
 )
@@ -50,13 +50,7 @@ async def main():
         logging.error("웹 소켓 연결 키가 없습니다.")
         sys.exit(1)
 
-    korea_filepath = "./etc/files/korea_stock_list.xlsx"
-    etf_filepath = "./etc/files/etf_stock_list.xlsx"
-    korea_stock_code_list = read_stock_codes_from_excel(korea_filepath)
-    etf_stock_code_list = read_stock_codes_from_excel(etf_filepath)
-
-    stock_code_list = korea_stock_code_list + etf_stock_code_list
-
+    stock_code_list = get_stock_code_list()
     stock_code_chunks = list(divide_stock_list(stock_code_list, MAXIMUM_WEBSOCKET_CONNECTION))
 
     URL = f"{KOREA_URL_WEBSOCKET}/tryitout/H0STCNT0"

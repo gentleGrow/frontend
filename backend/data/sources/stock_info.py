@@ -18,6 +18,22 @@ KOREA_INVESTMENT_SECRET = getenv("KOREA_INVESTMENT_SECRET", None)
 KOREA_URL_BASE = getenv("KOREA_URL_BASE", None)
 
 
+def get_stock_code_list() -> list:
+    korea_filepath = "./etc/files/korea_stock_list.xlsx"
+    etf_filepath = "./etc/files/etf_stock_list.xlsx"
+    japan_filepath = "./etc/files/japan_stock_list.xlsx"
+    nas_filepath = "./etc/files/nas_stock_list.xlsx"
+    nys_filepath = "./etc/files/nys_stock_list.xlsx"
+    korea_stock_code_list = read_stock_codes_from_excel(korea_filepath)
+    etf_stock_code_list = read_stock_codes_from_excel(etf_filepath)
+    japan_stock_code_list = read_stock_codes_from_excel(japan_filepath)
+    nas_stock_code_list = read_stock_codes_from_excel(nas_filepath)
+    nys_stock_code_list = read_stock_codes_from_excel(nys_filepath)
+    return (
+        korea_stock_code_list + etf_stock_code_list + japan_stock_code_list + nas_stock_code_list + nys_stock_code_list
+    )
+
+
 def get_current_price(access_token: str, code: str) -> int:
     headers = {
         "Content-Type": "application/json",
