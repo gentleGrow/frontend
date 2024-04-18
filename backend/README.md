@@ -11,7 +11,7 @@
 7. uvicorn main:app --reload --port 8000
 
 ### 한국투자증권 데이터 수집
-- export PYTHONPATH="/path/to/project/root:$PYTHONPATH"
+- export PYTHONPATH="./:$PYTHONPATH"
 - python ./data/interface.py
 
 ### Redis 실행 (mac)

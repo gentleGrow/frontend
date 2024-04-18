@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 import sys
@@ -10,11 +11,11 @@ from dotenv import load_dotenv
 
 from data.sources.auth import get_approval_key
 from data.sources.constant import MAXIMUM_WEBSOCKET_CONNECTION, PING_INTERVAL, REDIS_STOCK_EXPIRE, TIMEOUT_SECOND
-from data.sources.enums import StockType
+from data.sources.enums import TradeType
 from data.sources.stock_info import (
-    parse_error_stock_data,
-    parse_stock_name_price,
+    parse_stock_data,
     read_stock_codes_from_excel,
+    socket_subscribe_message,
     subscribe_to_stock_batch,
 )
 from database.singleton import redis_repository
@@ -24,6 +25,8 @@ load_dotenv()
 KOREA_INVESTMENT_KEY = getenv("KOREA_INVESTMENT_KEY", None)
 KOREA_INVESTMENT_SECRET = getenv("KOREA_INVESTMENT_SECRET", None)
 KOREA_URL_WEBSOCKET = getenv("KOREA_URL_WEBSOCKET", None)
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
 def divide_stock_list(stock_code_list: list, MAXIMUM_WEBSOCKET_CONNECTION: int):
@@ -47,8 +50,12 @@ async def main():
         logging.error("웹 소켓 연결 키가 없습니다.")
         sys.exit(1)
 
-    filepath = "./etc/files/stock_list.xlsx"
-    stock_code_list = read_stock_codes_from_excel(filepath)
+    korea_filepath = "./etc/files/korea_stock_list.xlsx"
+    etf_filepath = "./etc/files/etf_stock_list.xlsx"
+    korea_stock_code_list = read_stock_codes_from_excel(korea_filepath)
+    etf_stock_code_list = read_stock_codes_from_excel(etf_filepath)
+
+    stock_code_list = korea_stock_code_list + etf_stock_code_list
 
     stock_code_chunks = list(divide_stock_list(stock_code_list, MAXIMUM_WEBSOCKET_CONNECTION))
 
@@ -68,18 +75,24 @@ async def main():
                 try:
                     while not timeout_flag[0]:
                         raw_stock_data = ws.recv()
-                        time.sleep(0.1)
-                        data_array = raw_stock_data.split("|")
-                        stock_type = data_array[1]
+
+                        logging.info(f"[분석] raw_stock_data : {raw_stock_data}")
 
                         if raw_stock_data[0] != "0":
                             stock_data = json.loads(raw_stock_data)
-                            parse_error_stock_data(stock_data)
+                            socket_subscribe_message(stock_data)
                             continue
 
-                        if stock_type == StockType.H0STCNT0:
-                            stock_raw_info = data_array[3]
-                            [stock_code, stock_price] = parse_stock_name_price(stock_raw_info)
+                        data_array = raw_stock_data.split("|")
+                        stock_type = data_array[1]
+
+                        logging.info(f"[분석] stock_type: {stock_type}")
+
+                        if stock_type == TradeType.H0STCNT0:
+                            stock_transaction = parse_stock_data(data_array[3])
+
+                            stock_code = stock_transaction.stock_code
+                            stock_price = stock_transaction.current_price
 
                             logging.info(f"[분석] stock_code: {stock_code}")
                             logging.info(f"[분석] stock_price: {stock_price}")
@@ -98,4 +111,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

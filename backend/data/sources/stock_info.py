@@ -6,8 +6,10 @@ import pandas
 import requests
 import websocket
 from dotenv import load_dotenv
+from pydantic import ValidationError
 
-from data.sources.enums import SocketCode, StockType
+from data.sources.enums import SuccessCode, TradeType
+from data.sources.schemas import StockData, StockTransaction
 
 load_dotenv()
 
@@ -36,49 +38,60 @@ def get_current_price(access_token: str, code: str) -> int:
 
 
 def read_stock_codes_from_excel(filepath: str) -> list[tuple[str, str]]:
-    df = pandas.read_excel(filepath, usecols=[0, 1], header=None, skiprows=1)
+    df = pandas.read_excel(filepath, usecols=[0, 1], header=None)
     return list(zip(df[0], df[1]))
 
 
-def parse_error_stock_data(stock_data: dict) -> None:
+def socket_subscribe_message(stock_data: StockData) -> None:
     trid = stock_data["header"]["tr_id"]
 
-    if trid == StockType.PINGPONG:
+    logging.info(f"[분석] trid : {trid}")
+
+    if trid == TradeType.PINGPONG:
         logging.info("RECV [PINGPONG] [%s]", stock_data)
         logging.info("SEND [PINGPONG] [%s]", stock_data)
         return
 
     rt_cd = stock_data["body"]["rt_cd"]
 
-    if rt_cd == SocketCode.one:
+    if rt_cd == SuccessCode.fail:
         logging.error(("### ERROR RETURN CODE [ %s ] MSG [ %s ]" % (rt_cd, stock_data["body"]["msg1"])))
+        return
 
-    if rt_cd == SocketCode.zero:
+    if rt_cd == SuccessCode.success:
         logging.info("RETURN CODE [ %s ] MSG [ %s ]", rt_cd, stock_data["body"]["msg1"])
 
         if (
-            trid == StockType.K0STCNI0
-            or trid == StockType.K0STCNI9
-            or trid == StockType.H0STCNT0
-            or trid == StockType.H0STCNI9
+            trid == TradeType.K0STCNI0
+            or trid == TradeType.K0STCNI9
+            or trid == TradeType.H0STCNT0
+            or trid == TradeType.H0STCNI9
         ):
             aes_key = stock_data["body"]["output"]["key"]
             aes_iv = stock_data["body"]["output"]["iv"]
             logging.info("TRID [%s] KEY[%s] IV[%s]", trid, aes_key, aes_iv)
 
 
-def parse_stock_name_price(data: str) -> list[str]:
-    data_array = data.split("^")
-    stock_code = data_array[0]
-    stock_price = data_array[2]
-    return [stock_code, stock_price]
-
-
 def subscribe_to_stock_batch(approval_key: str, batch: list[tuple[str, str]], ws: websocket) -> None:
     for stock_code, stock_name in batch:
         subscription_msg = {
             "header": {"approval_key": approval_key, "custtype": "P", "tr_type": "1", "content-type": "utf-8"},
-            "body": {"input": {"tr_id": StockType.H0STCNT0, "tr_key": stock_code}},
+            "body": {"input": {"tr_id": TradeType.H0STCNT0, "tr_key": str(stock_code)}},
         }
 
         ws.send(json.dumps(subscription_msg))
+
+
+def parse_stock_data(data_string: str) -> StockTransaction | None:
+    data_fields = data_string.split("^")
+
+    field_names = [field for field in StockTransaction.model_fields]
+
+    data_dict = dict(zip(field_names, data_fields))
+
+    try:
+        stock_transaction = StockTransaction(**data_dict)
+        return stock_transaction
+    except ValidationError as e:
+        logging.error(f"Validation Error: {e}")
+        return None
