@@ -1,15 +1,8 @@
 ## 실행 방법
 ### Backend
-[주의] 파이썬 버전 3.10이상 필요
-[주의] 테스트시 반드시 포트 8000으로 실행해야합니다.
-1. cd /assetmanagement/backend
-2. curl -sSL https://install.python-poetry.org | python3 -
-3. export PATH="$HOME/.local/bin:$PATH"
-4. source ~/.zshrc
-5. poetry shell
-6. poetry install
-7. (만약 terminal 옆에  backend-py3.12가 없는경우)  source ./.venv/bin/activate
-8. uvicorn main:app --reload --port 8000
+1. backend 폴더 안에 .env파일이 있는지 확인합니다.
+2. make up을 실행합니다.
+
 ### Frontend
 1. cd /assetmanagement/frontend
 2. sudo npm i
