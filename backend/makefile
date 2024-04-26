@@ -7,6 +7,10 @@ all: build up
 build:
 	docker-compose build
 
+fastapi:
+	docker-compose build $(SERVICE_FASTAPI)
+	docker-compose up -d --force-recreate $(SERVICE_FASTAPI)
+
 up:
 	docker-compose up -d
 
