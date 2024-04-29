@@ -1,5 +1,10 @@
 ## [실행 방법]
-### application 실행
+### fastapi 실행 방법
+1. backend 폴더 안에 .env 파일을 추가합니다.
+2. make up을 실행합니다.
+3. localhost:8000/docs
+
+### 개발 환경 세팅
 [주의] 파이썬 버전 3.10이상 필요
 [주의] 테스트시 반드시 포트 8000으로 실행해야합니다.
 1. cd /assetmanagement/backend
