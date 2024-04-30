@@ -1,23 +1,26 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from data.sources.enums import SuccessCode, TradeType
 
 
 class Header(BaseModel):
     tr_id: TradeType
-    tr_key: str
-    encrypt: str
+    tr_key: str = Field(
+        ...,
+        description="거래 ID, '종목코드' 입력(tr_id가 H0STCNT0 or H0STASP0일 경우), 'HTS ID' 입력(tr_id가 H0STCNI0 or H0STCNI9일 경우",
+    )
+    encrypt: str = Field(..., description="암호화 여부", examples="N")
 
 
 class Output(BaseModel):
-    iv: str
+    iv: str = Field(..., description="Initial Vector, 암호화를 위해 사용되는 값입니다.")
     key: str
 
 
 class Body(BaseModel):
-    rt_cd: SuccessCode
-    msg_cd: str
-    msg1: str
+    rt_cd: SuccessCode = Field(..., description="웹 소켓 데이터 응답 값입니다")
+    msg_cd: str = Field(..., description="주식 종목 코드입니다.", examples="OPSP0000")
+    msg1: str = Field(..., description="웹 소켓 연결 결과입니다.", examples="SUBSCRIBE SUCCESS")
     output: Output
 
 
@@ -28,48 +31,4 @@ class StockData(BaseModel):
 
 class StockTransaction(BaseModel):
     stock_code: str | None
-    transaction_time: str | None
     current_price: str | None
-    change_sign: str | None
-    change: str | None
-    change_percentage: str | None
-    weighted_avg_price: str | None
-    opening_price: str | None
-    high_price: str | None
-    low_price: str | None
-    sell_price: str | None
-    buy_price: str | None
-    transaction_volume: str | None
-    cumulative_volume: str | None
-    cumulative_transaction_amount: str | None
-    sell_transaction_count: str | None
-    buy_transaction_count: str | None
-    net_buy_transaction_count: str | None
-    transaction_strength: str | None
-    total_sell_quantity: str | None
-    total_buy_quantity: str | None
-    transaction_type: str | None
-    buy_ratio: str | None
-    fluctuation_rate: str | None
-    opening_time: str | None
-    opening_price_indicator: str | None
-    price_change_since_open: str | None
-    high_price_time: str | None
-    high_price_indicator: str | None
-    price_change_since_high: str | None
-    low_price_time: str | None
-    low_price_indicator: str | None
-    price_change_since_low: str | None
-    business_day: str | None
-    operational_code: str | None
-    suspension_status: str | None
-    sell_order_book_quantity: str | None
-    buy_order_book_quantity: str | None
-    total_sell_order_book_quantity: str | None
-    total_buy_order_book_quantity: str | None
-    trading_turnover_rate: str | None
-    cumulative_volume_same_time_previous_day: str | None
-    cumulative_volume_ratio_previous_day: str | None
-    time_indicator: str | None
-    arbitrary_end_indicator: str | None
-    static_vi_activation_price: str | None

@@ -3,10 +3,12 @@ import json
 import logging
 import sys
 import threading
+from os import getenv
 
 import websocket
+from dotenv import load_dotenv
 
-from data.sources.auth import KOREA_INVESTMENT_KEY, KOREA_INVESTMENT_SECRET, KOREA_URL_WEBSOCKET, get_approval_key
+from data.sources.auth import get_approval_key
 from data.sources.constant import (
     MAXIMUM_WEBSOCKET_CONNECTION,
     PING_INTERVAL,
@@ -24,14 +26,24 @@ from data.sources.stock_info import (
 )
 from database.singleton import redis_repository
 
+load_dotenv()
+
+KOREA_INVESTMENT_KEY = getenv("KOREA_INVESTMENT_KEY", None)
+KOREA_INVESTMENT_SECRET = getenv("KOREA_INVESTMENT_SECRET", None)
+KOREA_URL_WEBSOCKET = getenv("KOREA_URL_WEBSOCKET", None)
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
 
 async def main():
     if KOREA_INVESTMENT_KEY is None or KOREA_INVESTMENT_SECRET is None:
+        logging.error("환경변수를 확인해주세요")
         sys.exit(1)
 
     approval_key = get_approval_key(KOREA_INVESTMENT_KEY, KOREA_INVESTMENT_SECRET)
 
     if approval_key is None:
+        logging.error("웹 소켓 연결 키가 없습니다.")
         sys.exit(1)
 
     stock_code_list = get_realtime_stock_code_list()
@@ -53,6 +65,7 @@ async def main():
                 try:
                     while not timeout_flag[0]:
                         raw_stock_data = ws.recv()
+                        logging.info(f"[분석] raw_stock_data : {raw_stock_data}")
 
                         if raw_stock_data[0] != "0":
                             stock_data = json.loads(raw_stock_data)
@@ -62,7 +75,7 @@ async def main():
                         data_array = raw_stock_data.split("|")
                         stock_type = data_array[1]
 
-                        if stock_type == TradeType.stock_price:
+                        if stock_type == TradeType.H0STCNT0:
                             stock_transaction = parse_stock_data(data_array[3])
 
                             stock_code = stock_transaction.stock_code
@@ -77,6 +90,7 @@ async def main():
 
                 ws.close()
                 ws.connect(URL, ping_interval=PING_INTERVAL)
+
     finally:
         ws.close()
 
