@@ -9,7 +9,7 @@ import websocket
 from dotenv import load_dotenv
 from pydantic import ValidationError
 
-from data.sources.enums import SuccessCode, TradeType
+from data.sources.enums import MarketType, SuccessCode, TradeType
 from data.sources.schemas import StockData, StockTransaction
 
 load_dotenv()
@@ -17,6 +17,12 @@ load_dotenv()
 KOREA_INVESTMENT_KEY = getenv("KOREA_INVESTMENT_KEY", None)
 KOREA_INVESTMENT_SECRET = getenv("KOREA_INVESTMENT_SECRET", None)
 KOREA_URL_BASE = getenv("KOREA_URL_BASE", None)
+
+KOREA_FILEPATH = "./etc/files/korea_stock_list.xlsx"
+ETC_FILEPATH = "./etc/files/etf_stock_list.xlsx"
+NAS_FILEPATH = "./etc/files/nas_realtime_stock_list.xlsx"
+NYS_FILEPATH = "./etc/files/nys_realtime_stock_list.xlsx"
+JAPAN_FILEPATH = "./etc/files/japan_realtime_stock_list.xlsx"
 
 
 def divide_stock_list(stock_code_list: list, MAXIMUM_WEBSOCKET_CONNECTION: int):
@@ -29,45 +35,42 @@ def set_timeout(timeout_seconds: int, flag: list):
     flag[0] = True
 
 
+def get_stock_code_list(market: MarketType) -> list:
+    if market == MarketType.korea:
+        return get_korea_stock_code_list()
+    elif market == MarketType.overseas:
+        return get_oversea_stock_code_list()
+    elif market == MarketType.realtime:
+        return get_realtime_stock_code_list()
+    else:
+        return []
+
+
 def get_realtime_stock_code_list() -> list:
-    korea_filepath = "./etc/files/korea_stock_list.xlsx"
-    etf_filepath = "./etc/files/etf_stock_list.xlsx"
-    nas_filepath = "./etc/files/nas_realtime_stock_list.xlsx"
-    nys_filepath = "./etc/files/nys_realtime_stock_list.xlsx"
-    japan_filepath = "./etc/files/japan_realtime_stock_list.xlsx"
-    korea_stock_code_list = read_realtime_stock_codes_from_excel(korea_filepath)
-    etf_stock_code_list = read_realtime_stock_codes_from_excel(etf_filepath)
-    nas_stock_code_list = read_realtime_stock_codes_from_excel(nas_filepath)
-    nys_stock_code_list = read_realtime_stock_codes_from_excel(nys_filepath)
-    japan_stock_code_list = read_realtime_stock_codes_from_excel(japan_filepath)
+    korea_stock_code_list = read_realtime_stock_codes_from_excel(KOREA_FILEPATH)
+    etf_stock_code_list = read_realtime_stock_codes_from_excel(ETC_FILEPATH)
+    nas_stock_code_list = read_realtime_stock_codes_from_excel(NAS_FILEPATH)
+    nys_stock_code_list = read_realtime_stock_codes_from_excel(NYS_FILEPATH)
+    japan_stock_code_list = read_realtime_stock_codes_from_excel(JAPAN_FILEPATH)
     return (
         korea_stock_code_list + etf_stock_code_list + nas_stock_code_list + nys_stock_code_list + japan_stock_code_list
     )
 
 
 def get_korea_stock_code_list() -> list:
-    korea_filepath = "./etc/files/korea_stock_list.xlsx"
-    etf_filepath = "./etc/files/etf_stock_list.xlsx"
-    korea_stock_code_list = read_stock_codes_from_excel(korea_filepath)
-    etf_stock_code_list = read_stock_codes_from_excel(etf_filepath)
+    korea_stock_code_list = read_stock_codes_from_excel(KOREA_FILEPATH)
+    etf_stock_code_list = read_stock_codes_from_excel(ETC_FILEPATH)
     return korea_stock_code_list + etf_stock_code_list
 
 
 def get_oversea_stock_code_list() -> list:
-    nas_filepath = "./etc/files/nas_stock_list.xlsx"
-    nys_filepath = "./etc/files/nys_stock_list.xlsx"
-    japan_filepath = "./etc/files/japan_stock_list.xlsx"
-    nas_stock_code_list = read_stock_codes_from_excel(nas_filepath)
-    nys_stock_code_list = read_stock_codes_from_excel(nys_filepath)
-    japan_stock_code_list = read_stock_codes_from_excel(japan_filepath)
+    nas_stock_code_list = read_stock_codes_from_excel(NAS_FILEPATH)
+    nys_stock_code_list = read_stock_codes_from_excel(NYS_FILEPATH)
+    japan_stock_code_list = read_stock_codes_from_excel(JAPAN_FILEPATH)
     return nas_stock_code_list + nys_stock_code_list + japan_stock_code_list
 
 
 def get_oversea_current_price(access_token: str, stock_code: str, excd: str) -> int | None:
-    logging.info(f"[분석] access_token : {access_token}")
-    logging.info(f"[분석] stock_code : {stock_code}")
-    logging.info(f"[분석] exchange_code : {excd}")
-
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {access_token}",
@@ -80,23 +83,15 @@ def get_oversea_current_price(access_token: str, stock_code: str, excd: str) -> 
     params = {"AUTH": "", "EXCD": excd, "SYMB": stock_code}
 
     url = f"{KOREA_URL_BASE}/uapi/overseas-price/v1/quotations/price"
-
-    logging.info(f"[분석] headers : {headers}")
-    logging.info(f"[분석] params : {params}")
-
     response = requests.get(url, headers=headers, params=params)
-    logging.info(f"[분석] response : {response}")
 
     if response.status_code == 200:
         return int(response.json()["output"]["stck_prpr"])
     else:
-        logging.error(f"{response.status_code}: {response.text}")
         return None
 
 
 def get_korea_current_price(access_token: str, stock_code: str) -> int:
-    logging.info(f"[분석] access_token : {access_token}")
-    logging.info(f"[분석] stock_code : {stock_code}")
     headers = {
         "content-type": "application/json",
         "authorization": f"Bearer {access_token}",
@@ -105,17 +100,16 @@ def get_korea_current_price(access_token: str, stock_code: str) -> int:
         "tr_id": "FHKST01010100",
         "custtype": "P",
     }
+
     params = {
         "FID_COND_MRKT_DIV_CODE": "J",
         "FID_INPUT_ISCD": stock_code,
     }
-    logging.info(f"[분석] headers : {headers}")
-    logging.info(f"[분석] params : {params}")
 
     res = requests.get(
         f"{KOREA_URL_BASE}/uapi/domestic-stock/v1/quotations/inquire-price", headers=headers, params=params
     )
-    logging.info(f"[분석] res : {res}")
+
     return int(res.json()["output"]["stck_prpr"])
 
 
@@ -132,38 +126,30 @@ def read_stock_codes_from_excel(filepath: str) -> list[tuple[str, str, str]]:
 def socket_subscribe_message(stock_data: StockData) -> None:
     trid = stock_data["header"]["tr_id"]
 
-    logging.info(f"[분석] trid : {trid}")
-
-    if trid == TradeType.PINGPONG:
-        logging.info("RECV [PINGPONG] [%s]", stock_data)
-        logging.info("SEND [PINGPONG] [%s]", stock_data)
+    if trid == TradeType.end_stock_time:
+        logging.info("RECV [PINGPONG] [{stock_data}]")
         return
 
     rt_cd = stock_data["body"]["rt_cd"]
 
     if rt_cd == SuccessCode.fail:
-        logging.error(("### ERROR RETURN CODE [ %s ] MSG [ %s ]" % (rt_cd, stock_data["body"]["msg1"])))
         return
 
     if rt_cd == SuccessCode.success:
-        logging.info("RETURN CODE [ %s ] MSG [ %s ]", rt_cd, stock_data["body"]["msg1"])
-
         if (
             trid == TradeType.K0STCNI0
             or trid == TradeType.K0STCNI9
-            or trid == TradeType.H0STCNT0
-            or trid == TradeType.H0STCNI9
+            or trid == TradeType.stock_price
+            or trid == TradeType.mock_stock_execution
         ):
-            aes_key = stock_data["body"]["output"]["key"]
-            aes_iv = stock_data["body"]["output"]["iv"]
-            logging.info("TRID [%s] KEY[%s] IV[%s]", trid, aes_key, aes_iv)
+            return
 
 
 def subscribe_to_stock_batch(approval_key: str, batch: list[tuple[str, str]], ws: websocket) -> None:
     for stock_code, stock_name in batch:
         subscription_msg = {
             "header": {"approval_key": approval_key, "custtype": "P", "tr_type": "1", "content-type": "utf-8"},
-            "body": {"input": {"tr_id": TradeType.H0STCNT0, "tr_key": str(stock_code)}},
+            "body": {"input": {"tr_id": TradeType.stock_price, "tr_key": str(stock_code)}},
         }
 
         ws.send(json.dumps(subscription_msg))
@@ -179,6 +165,5 @@ def parse_stock_data(data_string: str) -> StockTransaction | None:
     try:
         stock_transaction = StockTransaction(**data_dict)
         return stock_transaction
-    except ValidationError as e:
-        logging.error(f"Validation Error: {e}")
+    except ValidationError:
         return None
