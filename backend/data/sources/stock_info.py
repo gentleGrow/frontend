@@ -34,13 +34,16 @@ def set_timeout(timeout_seconds: int, flag: list):
     time.sleep(timeout_seconds)
     flag[0] = True
 
-def get_stock_code_list(market:MarketType) -> list:
+
+def get_stock_code_list(market: MarketType) -> list:
     if market == MarketType.korea:
         return get_korea_stock_code_list()
     elif market == MarketType.overseas:
         return get_oversea_stock_code_list()
     elif market == MarketType.realtime:
         return get_realtime_stock_code_list()
+    else:
+        return []
 
 
 def get_realtime_stock_code_list() -> list:
@@ -107,7 +110,6 @@ def get_korea_current_price(access_token: str, stock_code: str) -> int:
         f"{KOREA_URL_BASE}/uapi/domestic-stock/v1/quotations/inquire-price", headers=headers, params=params
     )
 
-
     return int(res.json()["output"]["stck_prpr"])
 
 
@@ -131,7 +133,6 @@ def socket_subscribe_message(stock_data: StockData) -> None:
     rt_cd = stock_data["body"]["rt_cd"]
 
     if rt_cd == SuccessCode.fail:
-        logging.error((f"### ERROR RETURN CODE [ {rt_cd} ] MSG [ {stock_data["body"]["msg1"]} ]"))
         return
 
     if rt_cd == SuccessCode.success:
@@ -141,8 +142,7 @@ def socket_subscribe_message(stock_data: StockData) -> None:
             or trid == TradeType.stock_price
             or trid == TradeType.mock_stock_execution
         ):
-            aes_key = stock_data["body"]["output"]["key"]
-            aes_iv = stock_data["body"]["output"]["iv"]
+            return
 
 
 def subscribe_to_stock_batch(approval_key: str, batch: list[tuple[str, str]], ws: websocket) -> None:
@@ -165,5 +165,5 @@ def parse_stock_data(data_string: str) -> StockTransaction | None:
     try:
         stock_transaction = StockTransaction(**data_dict)
         return stock_transaction
-    except ValidationError as e:
+    except ValidationError:
         return None
