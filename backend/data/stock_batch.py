@@ -22,12 +22,12 @@ async def main(market_type: MarketType):
     for stock_data in stock_code_list:
         if market_type == MarketType.korea:
             stock_code, stock_name, stock_index = stock_data
-            current_price = await get_korea_current_price(approval_key, stock_code)
+            current_price = get_korea_current_price(approval_key, stock_code)
         elif market_type == MarketType.overseas:
             stock_code, stock_name, excd = stock_data
-            current_price, excd = await get_oversea_current_price(approval_key, stock_code, excd)
+            current_price = get_oversea_current_price(approval_key, stock_code, excd)
 
-        await redis_repository.save(stock_code, current_price, REDIS_STOCK_EXPIRE_SECONDS)
+        await redis_repository.save(stock_code, str(current_price), REDIS_STOCK_EXPIRE_SECONDS)
 
 
 if __name__ == "__main__":
@@ -36,6 +36,6 @@ if __name__ == "__main__":
     while input_type not in {"korea", "oversea"}:
         input_type = input("[korea 혹은 oversea] 2개 중 1개를 입력해주세요: ")
 
-    market_type = MarketType(input_type)
+    market_type = MarketType(input_type)  # type: ignore
 
     asyncio.run(main(market_type))

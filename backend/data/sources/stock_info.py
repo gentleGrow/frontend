@@ -70,7 +70,7 @@ def get_oversea_stock_code_list() -> list:
     return nas_stock_code_list + nys_stock_code_list + japan_stock_code_list
 
 
-def get_oversea_current_price(access_token: str, stock_code: str, excd: str) -> int | None:
+def get_oversea_current_price(access_token: str, stock_code: str, excd: str) -> int:
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {access_token}",
@@ -88,7 +88,7 @@ def get_oversea_current_price(access_token: str, stock_code: str, excd: str) -> 
     if response.status_code == 200:
         return int(response.json()["output"]["stck_prpr"])
     else:
-        return None
+        return -1
 
 
 def get_korea_current_price(access_token: str, stock_code: str) -> int:
@@ -106,11 +106,14 @@ def get_korea_current_price(access_token: str, stock_code: str) -> int:
         "FID_INPUT_ISCD": stock_code,
     }
 
-    res = requests.get(
-        f"{KOREA_URL_BASE}/uapi/domestic-stock/v1/quotations/inquire-price", headers=headers, params=params
-    )
-
-    return int(res.json()["output"]["stck_prpr"])
+    try:
+        res = requests.get(
+            f"{KOREA_URL_BASE}/uapi/domestic-stock/v1/quotations/inquire-price", headers=headers, params=params
+        )
+        res.raise_for_status()
+        return int(res.json()["output"]["stck_prpr"])
+    except requests.exceptions.HTTPError:
+        return -1
 
 
 def read_realtime_stock_codes_from_excel(filepath: str) -> list[tuple[str, str]]:
