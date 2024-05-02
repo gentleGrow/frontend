@@ -1,12 +1,17 @@
 import asyncio
 import json
-import logging
 import sys
 import threading
 
 import websocket
 
-from data.sources.auth import KOREA_INVESTMENT_KEY, KOREA_INVESTMENT_SECRET, KOREA_URL_WEBSOCKET, get_approval_key
+from data.sources.auth import (
+    KOREA_INVESTMENT_KEY,
+    KOREA_INVESTMENT_SECRET,
+    KOREA_URL_WEBSOCKET,
+    get_approval_key,
+    logging,
+)
 from data.sources.constant import (
     MAXIMUM_WEBSOCKET_CONNECTION,
     PING_INTERVAL,
@@ -39,6 +44,8 @@ async def main():
 
     URL = f"{KOREA_URL_WEBSOCKET}/tryitout/H0STCNT0"
     ws = websocket.WebSocket()
+
+    logging.info("실시간 웹 소켓을 실행합니다.")
 
     try:
         ws.connect(URL, ping_interval=PING_INTERVAL)
