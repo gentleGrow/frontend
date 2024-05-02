@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 from sqlalchemy import Column, DateTime, Enum, String
+from sqlalchemy.orm import relationship
 
 from app.common.mixins.timestamps import TimestampMixin
 from app.modules.auth.enums import UserRoleEnum
@@ -20,3 +21,5 @@ class User(TimestampMixin, MySQLBase):
     role = Column(Enum(UserRoleEnum), default=UserRoleEnum.user)
     nickname = Column(String(100), nullable=True)
     deleted_at = Column(DateTime, nullable=True)
+
+    transactions = relationship("StockTransaction", back_populates="user")
