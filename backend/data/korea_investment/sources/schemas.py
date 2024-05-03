@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from data.sources.enums import SuccessCode, TradeType
+from data.common.enums import SuccessCode, TradeType
 
 
 class Header(BaseModel):

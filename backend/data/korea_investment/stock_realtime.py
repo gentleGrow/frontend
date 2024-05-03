@@ -5,21 +5,16 @@ import threading
 
 import websocket
 
-from data.sources.auth import (
+from data.common.constant import MAXIMUM_WEBSOCKET_CONNECTION, PING_INTERVAL, REDIS_STOCK_EXPIRE_SECONDS, TIMEOUT_SECOND
+from data.common.enums import TradeType
+from data.korea_investment.sources.auth import (
     KOREA_INVESTMENT_KEY,
     KOREA_INVESTMENT_SECRET,
     KOREA_URL_WEBSOCKET,
     get_approval_key,
     logging,
 )
-from data.sources.constant import (
-    MAXIMUM_WEBSOCKET_CONNECTION,
-    PING_INTERVAL,
-    REDIS_STOCK_EXPIRE_SECONDS,
-    TIMEOUT_SECOND,
-)
-from data.sources.enums import TradeType
-from data.sources.stock_info import (
+from data.korea_investment.sources.service import (
     divide_stock_list,
     get_realtime_stock_code_list,
     parse_stock_data,

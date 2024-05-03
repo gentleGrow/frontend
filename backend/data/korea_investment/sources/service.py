@@ -1,28 +1,24 @@
 import json
 import logging
 import time
-from os import getenv
 
 import pandas
 import requests
 import websocket
-from dotenv import load_dotenv
 from pydantic import ValidationError
 
-from data.sources.enums import MarketType, SuccessCode, TradeType
-from data.sources.schemas import StockData, StockTransaction
-
-load_dotenv()
-
-KOREA_INVESTMENT_KEY = getenv("KOREA_INVESTMENT_KEY", None)
-KOREA_INVESTMENT_SECRET = getenv("KOREA_INVESTMENT_SECRET", None)
-KOREA_URL_BASE = getenv("KOREA_URL_BASE", None)
-
-KOREA_FILEPATH = "./etc/files/korea_stock_list.xlsx"
-ETC_FILEPATH = "./etc/files/etf_stock_list.xlsx"
-NAS_FILEPATH = "./etc/files/nas_realtime_stock_list.xlsx"
-NYS_FILEPATH = "./etc/files/nys_realtime_stock_list.xlsx"
-JAPAN_FILEPATH = "./etc/files/japan_realtime_stock_list.xlsx"
+from data.common.config import (
+    ETC_STOCK_FILEPATH,
+    JAPAN_STOCK_FILEPATH,
+    KOREA_INVESTMENT_KEY,
+    KOREA_INVESTMENT_SECRET,
+    KOREA_STOCK_FILEPATH,
+    KOREA_URL_BASE,
+    NAS_STOCK_FILEPATH,
+    NYS_STOCK_FILEPATH,
+)
+from data.common.enums import MarketType, SuccessCode, TradeType
+from data.korea_investment.sources.schemas import StockData, StockTransaction
 
 
 def divide_stock_list(stock_code_list: list, MAXIMUM_WEBSOCKET_CONNECTION: int):
@@ -47,26 +43,26 @@ def get_stock_code_list(market: MarketType) -> list:
 
 
 def get_realtime_stock_code_list() -> list:
-    korea_stock_code_list = read_realtime_stock_codes_from_excel(KOREA_FILEPATH)
-    etf_stock_code_list = read_realtime_stock_codes_from_excel(ETC_FILEPATH)
-    nas_stock_code_list = read_realtime_stock_codes_from_excel(NAS_FILEPATH)
-    nys_stock_code_list = read_realtime_stock_codes_from_excel(NYS_FILEPATH)
-    japan_stock_code_list = read_realtime_stock_codes_from_excel(JAPAN_FILEPATH)
+    korea_stock_code_list = read_realtime_stock_codes_from_excel(KOREA_STOCK_FILEPATH)
+    etf_stock_code_list = read_realtime_stock_codes_from_excel(ETC_STOCK_FILEPATH)
+    nas_stock_code_list = read_realtime_stock_codes_from_excel(NAS_STOCK_FILEPATH)
+    nys_stock_code_list = read_realtime_stock_codes_from_excel(NYS_STOCK_FILEPATH)
+    japan_stock_code_list = read_realtime_stock_codes_from_excel(JAPAN_STOCK_FILEPATH)
     return (
         korea_stock_code_list + etf_stock_code_list + nas_stock_code_list + nys_stock_code_list + japan_stock_code_list
     )
 
 
 def get_korea_stock_code_list() -> list:
-    korea_stock_code_list = read_stock_codes_from_excel(KOREA_FILEPATH)
-    etf_stock_code_list = read_stock_codes_from_excel(ETC_FILEPATH)
+    korea_stock_code_list = read_stock_codes_from_excel(KOREA_STOCK_FILEPATH)
+    etf_stock_code_list = read_stock_codes_from_excel(ETC_STOCK_FILEPATH)
     return korea_stock_code_list + etf_stock_code_list
 
 
 def get_oversea_stock_code_list() -> list:
-    nas_stock_code_list = read_stock_codes_from_excel(NAS_FILEPATH)
-    nys_stock_code_list = read_stock_codes_from_excel(NYS_FILEPATH)
-    japan_stock_code_list = read_stock_codes_from_excel(JAPAN_FILEPATH)
+    nas_stock_code_list = read_stock_codes_from_excel(NAS_STOCK_FILEPATH)
+    nys_stock_code_list = read_stock_codes_from_excel(NYS_STOCK_FILEPATH)
+    japan_stock_code_list = read_stock_codes_from_excel(JAPAN_STOCK_FILEPATH)
     return nas_stock_code_list + nys_stock_code_list + japan_stock_code_list
 
 
