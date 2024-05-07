@@ -7,7 +7,7 @@ from app.common.mixins.timestamps import TimestampMixin
 from database.config import MySQLBase
 
 
-class StockIndex(MySQLBase):
+class StockIndex(TimestampMixin, MySQLBase):
     __tablename__ = "stock_indices"
 
     id = Column(String(36), primary_key=True)
@@ -16,7 +16,7 @@ class StockIndex(MySQLBase):
     stocks = relationship("Stock", back_populates="index")
 
 
-class Stock(MySQLBase):
+class Stock(TimestampMixin, MySQLBase):
     __tablename__ = "stocks"
 
     id = Column(String(36), primary_key=True)

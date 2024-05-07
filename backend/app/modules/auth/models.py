@@ -18,7 +18,7 @@ class User(TimestampMixin, MySQLBase):
     id = Column(String(36), primary_key=True, default=get_uuid)
     social_id = Column(String(255), index=True, nullable=False)
     provider = Column(String(50), nullable=False)
-    role = Column(Enum(UserRoleEnum), default=UserRoleEnum.user)
+    role = Column(Enum(UserRoleEnum), default=UserRoleEnum.USER)
     nickname = Column(String(100), nullable=True)
     deleted_at = Column(DateTime, nullable=True)
 

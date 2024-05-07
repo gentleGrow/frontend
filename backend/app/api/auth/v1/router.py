@@ -39,9 +39,9 @@ async def google_login(request: TokenRequest, db: Session = Depends(get_mysql_se
     if social_id is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="인증되지 않은 유저입니다.")
 
-    user = user_repository.get(db, social_id, ProviderEnum.google)
+    user = user_repository.get(db, social_id, ProviderEnum.GOOGLE)
     if user is None:
-        user = user_repository.create(db, social_id, ProviderEnum.google)
+        user = user_repository.create(db, social_id, ProviderEnum.GOOGLE)
 
     access_token = await google_builder.get_access_token(user)
     refresh_token = await google_builder.get_refresh_token(user)

@@ -10,7 +10,7 @@ from data.naver.sources.service import get_current_stock_price
 async def main(market_type: MarketType):
     stock_code_list = get_stock_code_list(market_type)
 
-    if market_type == MarketType.korea:
+    if market_type == MarketType.KOREA:
         for i in range(0, len(stock_code_list), STOCK_CHUNK_SIZE):
             stock_code_chunk = stock_code_list[i : i + STOCK_CHUNK_SIZE]
             await get_current_stock_price(stock_code_chunk)
@@ -22,6 +22,4 @@ if __name__ == "__main__":
     while input_type not in {"korea", "oversea"}:
         input_type = input("[korea 혹은 oversea] 2개 중 1개를 입력해주세요: ")
 
-    market_type = MarketType(input_type)  # type: ignore
-
-    asyncio.run(main(market_type))
+    asyncio.run(main(market_type=MarketType(input_type)))
