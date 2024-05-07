@@ -1,23 +1,12 @@
 import json
-import logging
 import time
 
-import pandas
 import requests
 import websocket
 from pydantic import ValidationError
 
-from data.common.config import (
-    ETC_STOCK_FILEPATH,
-    JAPAN_STOCK_FILEPATH,
-    KOREA_INVESTMENT_KEY,
-    KOREA_INVESTMENT_SECRET,
-    KOREA_STOCK_FILEPATH,
-    KOREA_URL_BASE,
-    NAS_STOCK_FILEPATH,
-    NYS_STOCK_FILEPATH,
-)
-from data.common.enums import MarketType, SuccessCode, TradeType
+from data.common.config import KOREA_INVESTMENT_KEY, KOREA_INVESTMENT_SECRET, KOREA_URL_BASE, logging
+from data.common.enums import SuccessCode, TradeType
 from data.korea_investment.sources.schemas import StockData, StockTransaction
 
 
@@ -29,38 +18,6 @@ def divide_stock_list(stock_code_list: list, MAXIMUM_WEBSOCKET_CONNECTION: int):
 def set_timeout(timeout_seconds: int, flag: list):
     time.sleep(timeout_seconds)
     flag[0] = True
-
-
-def get_stock_code_list(market: MarketType) -> list:
-    return {
-        MarketType.KOREA: get_korea_stock_code_list(),
-        MarketType.OVERSEAS: get_oversea_stock_code_list(),
-        MarketType.REALTIME: get_realtime_stock_code_list(),
-    }.get(market, [])
-
-
-def get_realtime_stock_code_list() -> list:
-    korea_stock_code_list = read_realtime_stock_codes_from_excel(KOREA_STOCK_FILEPATH)
-    etf_stock_code_list = read_realtime_stock_codes_from_excel(ETC_STOCK_FILEPATH)
-    nas_stock_code_list = read_realtime_stock_codes_from_excel(NAS_STOCK_FILEPATH)
-    nys_stock_code_list = read_realtime_stock_codes_from_excel(NYS_STOCK_FILEPATH)
-    japan_stock_code_list = read_realtime_stock_codes_from_excel(JAPAN_STOCK_FILEPATH)
-    return (
-        korea_stock_code_list + etf_stock_code_list + nas_stock_code_list + nys_stock_code_list + japan_stock_code_list
-    )
-
-
-def get_korea_stock_code_list() -> list:
-    korea_stock_code_list = read_stock_codes_from_excel(KOREA_STOCK_FILEPATH)
-    etf_stock_code_list = read_stock_codes_from_excel(ETC_STOCK_FILEPATH)
-    return korea_stock_code_list + etf_stock_code_list
-
-
-def get_oversea_stock_code_list() -> list:
-    nas_stock_code_list = read_stock_codes_from_excel(NAS_STOCK_FILEPATH)
-    nys_stock_code_list = read_stock_codes_from_excel(NYS_STOCK_FILEPATH)
-    japan_stock_code_list = read_stock_codes_from_excel(JAPAN_STOCK_FILEPATH)
-    return nas_stock_code_list + nys_stock_code_list + japan_stock_code_list
 
 
 def get_oversea_current_price(access_token: str, stock_code: str, excd: str) -> int | None:
@@ -112,16 +69,6 @@ def get_korea_current_price(access_token: str, stock_code: str) -> int:
             raise e
 
 
-def read_realtime_stock_codes_from_excel(filepath: str) -> list[tuple[str, str]]:
-    df = pandas.read_excel(filepath, usecols=[0, 1], header=None)
-    return list(zip(df[0], df[1]))
-
-
-def read_stock_codes_from_excel(filepath: str) -> list[tuple[str, str, str]]:
-    df = pandas.read_excel(filepath, usecols=[0, 1, 2], header=None)
-    return list(zip(df[0], df[1], df[2]))
-
-
 def socket_subscribe_message(stock_data: StockData) -> None:
     trid = stock_data["header"]["tr_id"]
 
@@ -148,7 +95,7 @@ def subscribe_to_stock_batch(approval_key: str, batch: list[tuple[str, str]], ws
     for stock_code, stock_name in batch:
         subscription_msg = {
             "header": {"approval_key": approval_key, "custtype": "P", "tr_type": "1", "content-type": "utf-8"},
-            "body": {"input": {"tr_id": TradeType.stock_price, "tr_key": str(stock_code)}},
+            "body": {"input": {"tr_id": TradeType.STOCK_PRICE, "tr_key": str(stock_code)}},
         }
 
         ws.send(json.dumps(subscription_msg))

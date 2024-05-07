@@ -5,18 +5,18 @@ import threading
 
 import websocket
 
+from data.common.config import logging
 from data.common.constant import MAXIMUM_WEBSOCKET_CONNECTION, PING_INTERVAL, REDIS_STOCK_EXPIRE_SECONDS, TIMEOUT_SECOND
 from data.common.enums import TradeType
+from data.common.service import get_realtime_stock_code_list
 from data.korea_investment.sources.auth import (
     KOREA_INVESTMENT_KEY,
     KOREA_INVESTMENT_SECRET,
     KOREA_URL_WEBSOCKET,
     get_approval_key,
-    logging,
 )
 from data.korea_investment.sources.service import (
     divide_stock_list,
-    get_realtime_stock_code_list,
     parse_stock_data,
     set_timeout,
     socket_subscribe_message,
@@ -64,7 +64,7 @@ async def main():
                         data_array = raw_stock_data.split("|")
                         stock_type = data_array[1]
 
-                        if stock_type == TradeType.stock_price:
+                        if stock_type == TradeType.STOCK_PRICE:
                             stock_transaction = parse_stock_data(data_array[3])
 
                             stock_code = stock_transaction.stock_code
