@@ -1,9 +1,11 @@
+import logging
 from os import getenv
 
 from dotenv import load_dotenv
 
 load_dotenv()
 
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 KOREA_INVESTMENT_KEY = getenv("KOREA_INVESTMENT_KEY", None)
 KOREA_INVESTMENT_SECRET = getenv("KOREA_INVESTMENT_SECRET", None)

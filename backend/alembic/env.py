@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
+from app.modules.asset_management.models import Stock, StockTransaction  # noqa: F401 > alembic에서 생성할 model을 가져와야합니다.
+from app.modules.auth.models import User  # noqa: F401 > alembic에서 생성할 model을 가져와야합니다.
 from database.config import MySQLBase
 
 load_dotenv()
@@ -33,7 +35,6 @@ def run_migrations_offline():
 
 
 def run_migrations_online():
-    """Run migrations in 'online' mode."""
     configuration = config.get_section(config.config_ini_section)
     configuration["sqlalchemy.url"] = os.getenv("MYSQL_URL")
     connectable = engine_from_config(

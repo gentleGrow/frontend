@@ -1,5 +1,4 @@
 import json
-import logging
 import sys
 from os import getenv
 
@@ -13,8 +12,6 @@ KOREA_URL_BASE = getenv("KOREA_URL_BASE", None)
 KOREA_INVESTMENT_KEY = getenv("KOREA_INVESTMENT_KEY", None)
 KOREA_INVESTMENT_SECRET = getenv("KOREA_INVESTMENT_SECRET", None)
 KOREA_URL_WEBSOCKET = getenv("KOREA_URL_WEBSOCKET", None)
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
 def get_verified_approval_key():

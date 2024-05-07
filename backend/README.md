@@ -15,6 +15,9 @@
 6. poetry install
 7. uvicorn main:app --reload --port 8000
 
+### Alembic 세팅
+1. alembic revision --autogenerate -m "commit message"
+2. alembic upgrade head
 
 ### 한국투자증권 데이터 수집
 - export PYTHONPATH="./:$PYTHONPATH"
@@ -24,21 +27,6 @@
 - brew services start redis
 - brew services info redis
 
-### Docker 실행
-- docker-compose up --build
-- docker build -t your_image_name:tag . > 현재 directory에 있는 Dockerfile으로부터 image를 생성합니다.
-- docker images > 현재 image list
-- docker rmi your_image_name:tag > 현재 image를 제거합니다.
-- docker run -d -p host_port:container_port --name your_container_name your_image_name:tag
-- docker ps > 현재 실행 중인 container를 확인합니다.
-- docker stop container_name > 현재 실행 중인 container를 중지 시킵니다.
-- docker start container_name > container를 실행 시킵니다.
-- docker rm container_name > container를 삭제합니다.
-- docker-compose build > docker-compose.yaml에 정의된 service를 build/rebuild 합니다.
-- docker-compose up > docker-compose.yaml에 정의된 전체 application을 실행합니다. -d를 하면 daemon입니다.
-- docker-compose down > 모든 container, network, db를 제거합니다.
-- docker-compose ps > docker-compose.yaml에 정의된 실행 중인 container의 list를 반환합니다.
-- docker logs container_name > 컨테이너 log를 봅니다.
 
 ### 폴더 구조 확인
 - tree -I '__pycache__'
