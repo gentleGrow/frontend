@@ -30,14 +30,14 @@ class UserRepositoryTest:
         user_model = UserModel(
             id=uuid4(),
             social_id="social_test",
-            provider=ProviderEnum.google,
+            provider=ProviderEnum.GOOGLE,
             role=UserRoleEnum.user,
             nickname="test_user",
             created_at=datetime.now(),
         )
         mock_session.query.return_value.filter.return_value.first.return_value = user_model
 
-        user = user_repository.get(mock_session, "social_test", ProviderEnum.google)
+        user = user_repository.get(mock_session, "social_test", ProviderEnum.GOOGLE)
         assert user is not None
         assert user.social_id == "social_test"
         mock_session.query.assert_called_once_with(UserModel)
@@ -46,8 +46,8 @@ class UserRepositoryTest:
         user_schema = user_repository.create(
             mock_session,
             social_id="social_test",
-            provider=ProviderEnum.google,
-            role=UserRoleEnum.user,
+            provider=ProviderEnum.GOOGLE,
+            role=UserRoleEnum.USER,
             nickname="test_user",
         )
 

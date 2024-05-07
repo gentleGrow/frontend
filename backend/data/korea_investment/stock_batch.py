@@ -30,6 +30,8 @@ async def main(market_type: MarketType):
         elif market_type == MarketType.overseas:
             stock_code, stock_name, excd = stock_data
             current_price = get_oversea_current_price(approval_key, stock_code, excd)
+        else:
+            raise ValueError("market_type is invalid")
 
         await redis_repository.save(stock_code, str(current_price), REDIS_STOCK_EXPIRE_SECONDS)
 
@@ -40,6 +42,4 @@ if __name__ == "__main__":
     while input_type not in {"korea", "oversea"}:
         input_type = input("[korea 혹은 oversea] 2개 중 1개를 입력해주세요: ")
 
-    market_type = MarketType(input_type)  # type: ignore
-
-    asyncio.run(main(market_type))
+    asyncio.run(main(market_type=MarketType(input_type)))

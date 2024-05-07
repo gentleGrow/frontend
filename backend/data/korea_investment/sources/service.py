@@ -32,14 +32,11 @@ def set_timeout(timeout_seconds: int, flag: list):
 
 
 def get_stock_code_list(market: MarketType) -> list:
-    if market == MarketType.korea:
-        return get_korea_stock_code_list()
-    elif market == MarketType.overseas:
-        return get_oversea_stock_code_list()
-    elif market == MarketType.realtime:
-        return get_realtime_stock_code_list()
-    else:
-        return []
+    return {
+        MarketType.KOREA: get_korea_stock_code_list(),
+        MarketType.OVERSEAS: get_oversea_stock_code_list(),
+        MarketType.REALTIME: get_realtime_stock_code_list(),
+    }.get(market, [])
 
 
 def get_realtime_stock_code_list() -> list:
@@ -66,7 +63,7 @@ def get_oversea_stock_code_list() -> list:
     return nas_stock_code_list + nys_stock_code_list + japan_stock_code_list
 
 
-def get_oversea_current_price(access_token: str, stock_code: str, excd: str) -> int:
+def get_oversea_current_price(access_token: str, stock_code: str, excd: str) -> int | None:
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {access_token}",
@@ -84,7 +81,7 @@ def get_oversea_current_price(access_token: str, stock_code: str, excd: str) -> 
     if response.status_code == 200:
         return int(response.json()["output"]["stck_prpr"])
     else:
-        return -1
+        return None
 
 
 def get_korea_current_price(access_token: str, stock_code: str) -> int:
@@ -108,8 +105,11 @@ def get_korea_current_price(access_token: str, stock_code: str) -> int:
         )
         res.raise_for_status()
         return int(res.json()["output"]["stck_prpr"])
-    except requests.exceptions.HTTPError:
-        return -1
+    except requests.exceptions.HTTPError as e:
+        if res.status_code == 500:
+            raise ValueError("Server error occurred while fetching stock price.") from e
+        else:
+            raise e
 
 
 def read_realtime_stock_codes_from_excel(filepath: str) -> list[tuple[str, str]]:
@@ -125,21 +125,21 @@ def read_stock_codes_from_excel(filepath: str) -> list[tuple[str, str, str]]:
 def socket_subscribe_message(stock_data: StockData) -> None:
     trid = stock_data["header"]["tr_id"]
 
-    if trid == TradeType.end_stock_time:
+    if trid == TradeType.END_STOCK_TIME:
         logging.info("RECV [PINGPONG] [{stock_data}]")
         return
 
     rt_cd = stock_data["body"]["rt_cd"]
 
-    if rt_cd == SuccessCode.fail:
+    if rt_cd == SuccessCode.FAIL:
         return
 
-    if rt_cd == SuccessCode.success:
+    if rt_cd == SuccessCode.SUCCESS:
         if (
             trid == TradeType.K0STCNI0
             or trid == TradeType.K0STCNI9
-            or trid == TradeType.stock_price
-            or trid == TradeType.mock_stock_execution
+            or trid == TradeType.STOCK_PRICE
+            or trid == TradeType.MOCK_STOCK_EXECUTION
         ):
             return
 
