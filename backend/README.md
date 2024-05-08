@@ -27,10 +27,16 @@
 - brew services start redis
 - brew services info redis
 
+### Redis 실행 (window)
+- wsl -l -v
+- wsl -d 설치한 리눅스 버전
+- redis-server
+- redis-cli
+- ping
+
 
 ### 폴더 구조 확인
 - tree -I '__pycache__'
-
 
 ## [프로젝트 참조사항]
 #### service

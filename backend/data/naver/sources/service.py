@@ -1,10 +1,9 @@
 import asyncio
 
-# import aiohttp
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
-from data.common.schemas import StockPrice, StockPriceList
+from data.common.schemas import StockList, StockPrice, StockPriceList
 
 
 async def fetch_stock_price(session: ClientSession, code: str) -> int:
@@ -20,8 +19,8 @@ async def fetch_stock_price(session: ClientSession, code: str) -> int:
         return StockPrice(price=price_number)
 
 
-async def get_stock_prices(code_list) -> StockPriceList:
+async def get_stock_prices(code_list: StockList) -> StockPriceList:
     async with ClientSession() as session:
-        tasks = [fetch_stock_price(session, str(stock_code)) for stock_code, stock_name, stock_index in code_list]
+        tasks = [fetch_stock_price(session, stock.code) for stock in code_list.stocks]
         prices = await asyncio.gather(*tasks)
         return StockPriceList(prices=prices)

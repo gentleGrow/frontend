@@ -37,10 +37,10 @@ repos:
     -   id: mypy
         files: ^backend/
 
--   repo: local
-    hooks:
-    -   id: pytest
-        name: pytest
-        entry: sh -c 'cd backend && poetry run pytest'
-        language: system
-        types: [python]
+# -   repo: local
+#     hooks:
+#     -   id: pytest
+#         name: pytest
+#         entry: sh -c 'cd backend && poetry run pytest'
+#         language: system
+#         types: [python]

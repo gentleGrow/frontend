@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from datetime import datetime
 from uuid import uuid4
 
@@ -6,22 +5,13 @@ from fastapi import HTTPException, status
 from redis import Redis
 from sqlalchemy.orm import Session
 
+from app.common.repository.base_repository import AbstractCRUDRepository
 from app.modules.auth.enums import ProviderEnum, UserRoleEnum
 from app.modules.auth.models import User as UserModel
 from app.modules.auth.schemas import User as UserSchema
 
 
-class AbstractTokenRepository(ABC):
-    @abstractmethod
-    async def save(self, token_key: str, jwt_token: str, expiry: int) -> None:
-        pass
-
-    @abstractmethod
-    async def get(self, token_key: str) -> str | None:
-        pass
-
-
-class RedisTokenRepository(AbstractTokenRepository):
+class RedisJWTTokenRepository(AbstractCRUDRepository):
     def __init__(self, redis_client: Redis):
         self.redis = redis_client
 
