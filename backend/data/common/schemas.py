@@ -16,4 +16,4 @@ class StockList(BaseModel):
 
 
 class StockPriceList(BaseModel):
-    price: list[StockPrice]
+    prices: list[StockPrice]
