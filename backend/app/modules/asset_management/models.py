@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, Date, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from app.common.mixins.timestamps import TimestampMixin
@@ -16,10 +16,16 @@ class Stock(TimestampMixin, MySQLBase):
         return str(uuid4())
 
     id = Column(String(36), primary_key=True, default=get_uuid)
-    code = Column(String(255), nullable=False)
-    name = Column(String(255), nullable=False)
-    market_index = Column(String(255), nullable=False)
-    price = Column(Integer, nullable=False)
+    code = Column(String(255), nullable=False, info={"description": ""})
+    name = Column(String(255), nullable=False, info={"description": ""})
+    market_index = Column(String(255), nullable=False, info={"description": ""})
+    date = Column(Date, nullable=False, info={"description": "stock closing day"})
+    open = Column(Float, nullable=False, info={"description": "Opening price of the stock"})
+    high = Column(Float, nullable=False, info={"description": "Highest price of the stock"})
+    low = Column(Float, nullable=False, info={"description": "Lowest price of the stock"})
+    close = Column(Float, nullable=False, info={"description": "Closing price of the stock"})
+    adj_close = Column(Float, nullable=False, info={"description": "Adjusted closing price of the stock"})
+    volume = Column(Integer, nullable=False, info={"description": "Volume of stock traded"})
 
     transactions = relationship("StockTransaction", back_populates="stock")
 
