@@ -8,7 +8,6 @@ from data.common.schemas import StockInfo, StockList, StockPriceList
 from data.common.service import get_stock_code_list
 from data.naver.sources.repository import StockRepository
 from data.naver.sources.service import get_stock_prices
-from database.config import AsyncDBSession
 from database.singleton import redis_stock_repository
 
 stock_repository = StockRepository()
@@ -26,10 +25,7 @@ async def main(market_type: MarketType):
             stock_code_chunk: StockList = StockList(stocks=stock_chunk_dicts)
             price_list: StockPriceList = await get_stock_prices(stock_code_chunk)
 
-            await asyncio.gather(
-                stock_repository.save(AsyncDBSession, stock_code_chunk, price_list),
-                redis_stock_repository.save(stock_code_chunk, price_list, REDIS_STOCK_EXPIRE_SECOND),
-            )
+            redis_stock_repository.save(stock_code_chunk, price_list, REDIS_STOCK_EXPIRE_SECOND),
 
 
 if __name__ == "__main__":

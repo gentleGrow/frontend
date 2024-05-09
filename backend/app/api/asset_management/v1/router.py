@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.dependencies.database import get_mysql_session
-from app.dependencies.security import verify_jwt_token
+from app.common.auth.security import verify_jwt_token
 from app.modules.asset_management.models import Stock
 from app.modules.asset_management.schemas import StockResponse
+from database.dependencies import get_mysql_session
 
 asset_management_router = APIRouter()
 
