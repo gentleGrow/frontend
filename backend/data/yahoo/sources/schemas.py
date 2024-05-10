@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 
 
-class StockRow(BaseModel):
+class StockDataFrame(BaseModel):
     date: str = Field(..., description="Date of the stock entry")
     open: float = Field(..., description="Opening price of the stock")
     high: float = Field(..., description="Highest price of the stock")

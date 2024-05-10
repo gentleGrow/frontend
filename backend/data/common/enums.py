@@ -18,3 +18,7 @@ class MarketType(StrEnum):
     KOREA = "korea"
     OVERSEAS = "overseas"
     REALTIME = "realtime"
+
+    @classmethod
+    def valid_inputs(cls):
+        return {item.value for item in cls}

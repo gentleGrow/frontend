@@ -1,4 +1,4 @@
-from fastapi import HTTPException, Security
+from fastapi import Security
 from fastapi.security import OAuth2PasswordBearer
 
 from app.common.auth.jwt import JWTBuilder
@@ -8,8 +8,5 @@ jwt_builder = JWTBuilder()
 
 
 def verify_jwt_token(token: str = Security(oauth2_scheme)) -> str:
-    try:
-        jwt_builder.decode_token(token)
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    jwt_builder.decode_token(token)
     return token
