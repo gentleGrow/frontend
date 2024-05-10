@@ -7,7 +7,7 @@ from data.common.schemas import StockList
 from data.common.service import get_oversea_stock_code_list
 from data.yahoo.sources.constants import STOCK_HISTORY_TIMERANGE, STOCK_TIME_INTERVAL
 from data.yahoo.sources.repository import StockRepository
-from data.yahoo.sources.schemas import StockRow
+from data.yahoo.sources.schemas import StockDataFrame
 from data.yahoo.sources.service import get_period_bounds
 from database.dependencies import get_mysql_async_session
 
@@ -20,15 +20,15 @@ async def main():
         stock_repository = StockRepository(session)
 
         for stock_info in stock_list.stocks:
-            query_string = (
+            url = (
                 f"https://query1.finance.yahoo.com/v7/finance/download/{stock_info.code}"
                 f"?period1={start_period}&period2={end_period}&interval={STOCK_TIME_INTERVAL}"
                 f"&events=history&includeAdjustedClose=true"
             )
-            df = pd.read_csv(query_string)
+            df = pd.read_csv(url)
 
             for _, row in df.iterrows():
-                stock_row = StockRow(
+                stock_row = StockDataFrame(
                     date=row["Date"],
                     open=row["Open"],
                     high=row["High"],

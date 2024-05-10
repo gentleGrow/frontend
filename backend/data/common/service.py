@@ -7,6 +7,7 @@ from data.common.config import (
     NAS_STOCK_FILEPATH,
     NYS_STOCK_FILEPATH,
 )
+from data.common.constant import MARKET_TYPE_N_STOCK_CODE_FUNC_MAP
 from data.common.enums import MarketType
 from data.common.schemas import StockInfo, StockList
 
@@ -18,22 +19,13 @@ def read_realtime_stock_codes_from_excel(filepath: str) -> list[tuple[str, str]]
 
 def read_stock_codes_from_excel(filepath: str) -> StockList:
     df = pandas.read_excel(filepath, usecols=[0, 1, 2], header=None)
-    stock_infos = [StockInfo(code=str(row[0]), name=str(row[1]), market_index=str(row[2])) for _, row in df.iterrows()]
-    return StockList(stocks=stock_infos)
+    return StockList(
+        [StockInfo(code=str(row[0]), name=str(row[1]), market_index=str(row[2])) for _, row in df.iterrows()]
+    )
 
 
 def get_stock_code_list(market: MarketType):
-    stock_code_functions = {
-        MarketType.KOREA: get_korea_stock_code_list,
-        MarketType.OVERSEAS: get_oversea_stock_code_list,
-        MarketType.REALTIME: get_realtime_stock_code_list,
-    }
-
-    stock_code_list_function = stock_code_functions.get(market)
-    if stock_code_list_function:
-        return stock_code_list_function()
-    else:
-        return []
+    return MARKET_TYPE_N_STOCK_CODE_FUNC_MAP[market]()
 
 
 def get_realtime_stock_code_list() -> list:
