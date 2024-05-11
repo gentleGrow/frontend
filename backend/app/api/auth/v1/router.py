@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.common.auth.constants import REDIS_EXPIRE_TIME_SECOND
 from app.common.auth.jwt import JWTBuilder
@@ -22,7 +22,7 @@ google_builder = Google(user_repository, jwt_builder)
     description="client 구글 토큰이 넘어오는 지 확인후, 해당 토큰으로 유저확인을 합니다. 신규 유저인 경우 DB에 저장한후, jwt를 반환합니다.",
     response_model=TokenResponse,
 )
-async def google_login(request: TokenRequest, db: Session = Depends(get_mysql_session)) -> TokenResponse:
+async def google_login(request: TokenRequest, db: AsyncSession = Depends(get_mysql_session)) -> TokenResponse:
     id_token = request.id_token
     if not id_token:
         raise HTTPException(
@@ -36,14 +36,16 @@ async def google_login(request: TokenRequest, db: Session = Depends(get_mysql_se
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
     social_id = id_info.get("sub")
+
     if social_id is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="인증되지 않은 유저입니다.")
 
-    user = user_repository.get(db, social_id, ProviderEnum.GOOGLE)
+    user = await user_repository.get(db, social_id, ProviderEnum.GOOGLE)
     if user is None:
-        user = user_repository.create(db, social_id, ProviderEnum.GOOGLE)
+        user = await user_repository.create(db, social_id, ProviderEnum.GOOGLE)
 
     access_token = await google_builder.get_access_token(user)
+
     refresh_token = await google_builder.get_refresh_token(user)
 
     user_string_id = str(user.id)

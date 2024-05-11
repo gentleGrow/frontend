@@ -17,5 +17,4 @@ class RedisStockRepository(AbstractCRUDRepository):
             await pipe.execute()
 
     async def get(self, stock_code: str) -> int:
-        price = await self.redis.get(stock_code)
-        return price
+        return await self.redis.get(stock_code)

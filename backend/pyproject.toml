@@ -231,6 +231,8 @@ logging = "^0.4.9.6"
 pypdf2 = "^3.0.1"
 yfinance = "^0.2.38"
 pandas-datareader = "^0.10.0"
+aiomysql = "^0.2.0"
+alembic = "^1.13.1"
 
 [build-system]
 requires = ["poetry-core"]

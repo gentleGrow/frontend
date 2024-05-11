@@ -4,7 +4,6 @@ from sqlalchemy import Column, Date, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from app.common.mixins.timestamps import TimestampMixin
-from app.modules.auth.models import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.config import MySQLBase
 
 
