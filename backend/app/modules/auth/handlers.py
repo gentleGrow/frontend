@@ -39,15 +39,12 @@ class Google(SocialLoginAuthentication):
 
     async def verify_token(self, token: str) -> dict:
         try:
-            id_info = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
-            return id_info
+            return id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
         except ValueError as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     async def get_access_token(self, user: UserSchema) -> str:
-        result = self.token_builder.generate_access_token(user.id)
-        return result
+        return self.token_builder.generate_access_token(user.id)
 
     async def get_refresh_token(self, user: UserSchema) -> str:
-        result = self.token_builder.generate_refresh_token(user.id)
-        return result
+        return self.token_builder.generate_refresh_token(user.id)

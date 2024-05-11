@@ -3,7 +3,7 @@ from os import getenv
 from dotenv import load_dotenv
 from redis import Redis
 
-from database.config import AsyncDBSession, MySQLSession
+from database.config import MySQLSession
 
 load_dotenv()
 
@@ -11,20 +11,12 @@ REDIS_HOST = getenv("REDIS_HOST", None)
 REDIS_PORT = getenv("REDIS_PORT", None)
 
 
-async def get_mysql_async_session():
-    db = AsyncDBSession()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-def get_mysql_session():
+async def get_mysql_session():
     db = MySQLSession()
     try:
         yield db
     finally:
-        db.close()
+        await db.close()
 
 
 def get_redis_pool() -> Redis:
