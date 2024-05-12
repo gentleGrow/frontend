@@ -2,16 +2,15 @@ import asyncio
 import sys
 
 from app.modules.asset_management.constants import REDIS_STOCK_EXPIRE_SECOND
-from data.common.constant import STOCK_CHUNK_SIZE
+from data.common.constant import MARKET_TYPE_N_STOCK_CODE_FUNC_MAP, STOCK_CHUNK_SIZE
 from data.common.enums import MarketType
 from data.common.schemas import StockInfo, StockList, StockPriceList
-from data.common.service import get_stock_code_list
 from data.naver.sources.service import get_stock_prices
 from database.singleton import redis_stock_repository
 
 
 async def main(market_type: MarketType):
-    stock_code_list = get_stock_code_list(market_type)
+    stock_code_list = MARKET_TYPE_N_STOCK_CODE_FUNC_MAP[market_type]()
 
     if market_type == MarketType.KOREA:
         for i in range(0, len(stock_code_list), STOCK_CHUNK_SIZE):
