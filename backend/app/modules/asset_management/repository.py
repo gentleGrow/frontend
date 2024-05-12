@@ -1,4 +1,4 @@
-from redis import Redis
+from redis.asyncio import Redis
 
 from app.common.repository.base_repository import AbstractCRUDRepository
 from data.common.schemas import StockList, StockPriceList
