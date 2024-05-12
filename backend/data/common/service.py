@@ -6,9 +6,8 @@ from data.common.config import (
     KOREA_STOCK_FILEPATH,
     NAS_STOCK_FILEPATH,
     NYS_STOCK_FILEPATH,
+    logging,
 )
-from data.common.constant import MARKET_TYPE_N_STOCK_CODE_FUNC_MAP
-from data.common.enums import MarketType
 from data.common.schemas import StockInfo, StockList
 
 
@@ -18,14 +17,18 @@ def read_realtime_stock_codes_from_excel(filepath: str) -> list[tuple[str, str]]
 
 
 def read_stock_codes_from_excel(filepath: str) -> StockList:
-    df = pandas.read_excel(filepath, usecols=[0, 1, 2], header=None)
-    return StockList(
-        [StockInfo(code=str(row[0]), name=str(row[1]), market_index=str(row[2])) for _, row in df.iterrows()]
-    )
+    try:
+        df = pandas.read_excel(filepath, usecols=[0, 1, 2], header=None, names=["code", "name", "market_index"])
 
+        stock_infos = [
+            StockInfo(code=str(row["code"]), name=str(row["name"]), market_index=str(row["market_index"]))
+            for _, row in df.iterrows()
+        ]
 
-def get_stock_code_list(market: MarketType):
-    return MARKET_TYPE_N_STOCK_CODE_FUNC_MAP[market]()
+        return StockList(stocks=stock_infos)
+    except Exception as e:
+        logging.error(f"Error reading Excel file: {e}")
+        raise
 
 
 def get_realtime_stock_code_list() -> list:
