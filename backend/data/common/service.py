@@ -45,7 +45,7 @@ def get_realtime_stock_code_list() -> list:
 def get_korea_stock_code_list() -> StockList:
     korea_stock_code_list = read_stock_codes_from_excel(KOREA_STOCK_FILEPATH)
     etf_stock_code_list = read_stock_codes_from_excel(ETC_STOCK_FILEPATH)
-    return korea_stock_code_list + etf_stock_code_list
+    return StockList(stocks=korea_stock_code_list.stocks + etf_stock_code_list.stocks)
 
 
 def get_oversea_stock_code_list() -> StockList:

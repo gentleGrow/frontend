@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from redis import Redis
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -55,9 +55,8 @@ class RedisJWTTokenRepository(AbstractCRUDRepository):
         self.redis = redis_client
 
     async def save(self, user_id: str, token: str, expiry: int) -> None:
-        self.redis.set(user_id, token)
-        self.redis.expire(user_id, expiry)
+        await self.redis.set(user_id, token)
+        await self.redis.expire(user_id, expiry)
 
     async def get(self, user_id: str) -> str | None:
-        token = await self.redis.get(user_id)
-        return token
+        return await self.redis.get(user_id)
