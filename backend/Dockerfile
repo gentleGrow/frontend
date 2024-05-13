@@ -11,8 +11,8 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
 
 RUN pip install poetry
 RUN poetry config virtualenvs.create false
-RUN poetry install --no-dev
+RUN poetry install --only main
 
 ENV NAME World
 
-CMD dockerize -wait tcp://db:3306 -timeout 30s && uvicorn main:app --host 0.0.0.0 --reload
+CMD dockerize -wait tcp://db:3306 -timeout 60s && uvicorn main:app --host 0.0.0.0 --reload

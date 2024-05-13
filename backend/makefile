@@ -1,6 +1,8 @@
 SERVICE_FASTAPI=fastapi
 SERVICE_DB=db
 SERVICE_REDIS=redis
+SERVICE_STOCK_HOURLY=stock_hourly
+SERVICE_REDISINSIGHT=redisinsight
 
 all: build up
 
@@ -31,6 +33,9 @@ logs-db:
 
 logs-redis:
 	docker-compose logs -f $(SERVICE_REDIS)
+
+logs-redis-insight:
+	docker-compose logs -f $(SERVICE_REDISINSIGHT)
 
 shell-fastapi:
 	docker-compose exec $(SERVICE_FASTAPI) /bin/bash
