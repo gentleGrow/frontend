@@ -6,9 +6,9 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 load_dotenv()
 
-ASYNC_MYSQL_URL = getenv("ASYNC_MYSQL_URL", None)
+MYSQL_URL = getenv("MYSQL_URL", None)
 
-mysql_engine = create_async_engine(ASYNC_MYSQL_URL)
+mysql_engine = create_async_engine(MYSQL_URL)
 MySQLSession = sessionmaker(bind=mysql_engine, class_=AsyncSession, expire_on_commit=False)
 
 MySQLBase = declarative_base()
