@@ -4,7 +4,6 @@ import pandas as pd
 
 from app.modules.asset_management.models import Stock
 from app.modules.auth.models import User  # noqa: F401 > relationship 설정시 필요합니다.
-from data.common.config import logging
 from data.common.schemas import StockList
 from data.common.service import get_oversea_stock_code_list
 from data.yahoo.sources.constants import STOCK_HISTORY_TIMERANGE_YEAR, STOCK_TIME_INTERVAL
@@ -22,8 +21,6 @@ async def main():
         stock_repository = StockRepository(session)
 
         for stock_info in stock_list.stocks:
-            logging.info(f"{stock_info=}")
-
             url = (
                 f"https://query1.finance.yahoo.com/v7/finance/download/{stock_info.code}"
                 f"?period1={start_period}&period2={end_period}&interval={STOCK_TIME_INTERVAL}"
@@ -32,6 +29,7 @@ async def main():
             df = pd.read_csv(url)
 
             for _, row in df.iterrows():
+
                 stock_dataframe = StockDataFrame(
                     date=row["Date"],
                     open=row["Open"],
@@ -41,8 +39,6 @@ async def main():
                     adj_close=row["Adj Close"],
                     volume=row["Volume"],
                 )
-
-                logging.info(f"{stock_dataframe=}")
 
                 stock = Stock(
                     code=stock_info.code,
@@ -56,7 +52,6 @@ async def main():
                     adj_close_price=stock_dataframe.adj_close,
                     trade_volume=stock_dataframe.volume,
                 )
-                logging.info(f"{stock=}")
 
                 await stock_repository.save(stock)
 

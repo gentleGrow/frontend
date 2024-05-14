@@ -1,8 +1,8 @@
 from datetime import datetime, timezone
-from unittest.mock import AsyncMock, create_autospec
+from unittest.mock import AsyncMock, MagicMock, create_autospec
 
 import pytest
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.common.auth.jwt import JWTBuilder
 from app.modules.auth.handlers import Google
@@ -44,10 +44,19 @@ def mock_jwt_datetime(monkeypatch):
 
 @pytest.fixture
 def mock_redis():
-    mock = AsyncMock()
-    return mock
+    return AsyncMock()
 
 
 @pytest.fixture
 def mock_session():
-    return create_autospec(Session, instance=True)
+    return create_autospec(AsyncSession, instance=True)
+
+
+async def mock_get_mysql_session():
+    session = MagicMock(spec=AsyncSession)
+    yield session
+
+
+@pytest.fixture
+def get_mysql_session_fixture():
+    return mock_get_mysql_session

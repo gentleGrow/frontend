@@ -34,7 +34,6 @@
 - redis-cli
 - ping
 
-
 ### 폴더 구조 확인
 - tree -I '__pycache__'
 
