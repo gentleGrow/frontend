@@ -1,7 +1,6 @@
 import asyncio
 import sys
 
-from app.common.utils.logging import logging
 from app.modules.asset_management.constants import REDIS_STOCK_EXPIRE_SECOND
 from data.common.constant import MARKET_TYPE_N_STOCK_CODE_FUNC_MAP, STOCK_CHUNK_SIZE
 from data.common.enums import MarketType
@@ -19,7 +18,6 @@ async def main(market_type: MarketType):
             stock_code_chunk: StockList = StockList(stocks=stocks[i : i + STOCK_CHUNK_SIZE])
             price_list: StockPriceList = await get_stock_prices(stock_code_chunk)
 
-            logging.info(f"{stock_code_chunk=} {price_list=}")
             await redis_stock_repository.save(stock_code_chunk, price_list, REDIS_STOCK_EXPIRE_SECOND)
 
 
