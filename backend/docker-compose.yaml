@@ -25,6 +25,31 @@ services:
     depends_on:
       - db
       - redis
+    volumes:
+      - .:/code
+
+  stock_hourly:
+    build: .
+    command: ["python", "-m", "data.naver.stock_hourly", "korea"]
+    depends_on:
+      - fastapi
+    environment:
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+    volumes:
+      - .:/code
+
+  redisinsight:
+    image: redis/redisinsight:latest
+    ports:
+      - "5540:5540"
+    volumes:
+      - redisinsight-data:/data
+    environment:
+      VERBOSE_LOGGING: "true"
+    depends_on:
+      - redis
 
 volumes:
   db-data:
+  redisinsight-data:

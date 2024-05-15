@@ -1,5 +1,10 @@
 ## [실행 방법]
-### application 실행
+### fastapi 실행 방법
+1. backend 폴더 안에 .env 파일을 추가합니다.
+2. make up을 실행합니다.
+3. localhost:8000/docs
+
+### 개발 환경 세팅 (mac)
 [주의] 파이썬 버전 3.10이상 필요
 [주의] 테스트시 반드시 포트 8000으로 실행해야합니다.
 1. cd /assetmanagement/backend
@@ -10,6 +15,10 @@
 6. poetry install
 7. uvicorn main:app --reload --port 8000
 
+### Alembic 세팅
+1. alembic revision --autogenerate -m "commit message"
+2. alembic upgrade head
+
 ### 한국투자증권 데이터 수집
 - export PYTHONPATH="./:$PYTHONPATH"
 - python ./data/interface.py
@@ -18,25 +27,16 @@
 - brew services start redis
 - brew services info redis
 
-### Docker 실행
-- docker-compose up --build
-- docker build -t your_image_name:tag . > 현재 directory에 있는 Dockerfile으로부터 image를 생성합니다.
-- docker images > 현재 image list
-- docker rmi your_image_name:tag > 현재 image를 제거합니다.
-- docker run -d -p host_port:container_port --name your_container_name your_image_name:tag
-- docker ps > 현재 실행 중인 container를 확인합니다.
-- docker stop container_name > 현재 실행 중인 container를 중지 시킵니다.
-- docker start container_name > container를 실행 시킵니다.
-- docker rm container_name > container를 삭제합니다.
-- docker-compose build > docker-compose.yaml에 정의된 service를 build/rebuild 합니다.
-- docker-compose up > docker-compose.yaml에 정의된 전체 application을 실행합니다. -d를 하면 daemon입니다.
-- docker-compose down > 모든 container, network, db를 제거합니다.
-- docker-compose ps > docker-compose.yaml에 정의된 실행 중인 container의 list를 반환합니다.
-- docker logs container_name > 컨테이너 log를 봅니다.
+### Redis 실행 (window)
+- wsl -l -v
+- wsl -d 설치한 리눅스 버전
+- redis-server
+- redis-cli
+- ping
+
 
 ### 폴더 구조 확인
 - tree -I '__pycache__'
-
 
 ## [프로젝트 참조사항]
 #### service

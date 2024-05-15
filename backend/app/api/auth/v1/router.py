@@ -1,14 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.common.auth.constants import REDIS_EXPIRE_TIME
+from app.common.auth.constants import REDIS_EXPIRE_TIME_SECOND
 from app.common.auth.jwt import JWTBuilder
-from app.dependencies.database import get_mysql_session
+from app.common.utils.logging import logging
 from app.modules.auth.enums import ProviderEnum
 from app.modules.auth.handlers import Google
 from app.modules.auth.repository import UserRepository
 from app.modules.auth.schemas import NewAccessTokenResponse, TokenRefreshRequest, TokenRequest, TokenResponse
-from database.singleton import redis_repository
+from database.dependencies import get_mysql_session
+from database.singleton import redis_user_repository
 
 auth_router = APIRouter()
 user_repository = UserRepository()
@@ -22,7 +23,7 @@ google_builder = Google(user_repository, jwt_builder)
     description="client 구글 토큰이 넘어오는 지 확인후, 해당 토큰으로 유저확인을 합니다. 신규 유저인 경우 DB에 저장한후, jwt를 반환합니다.",
     response_model=TokenResponse,
 )
-async def google_login(request: TokenRequest, db: Session = Depends(get_mysql_session)) -> TokenResponse:
+async def google_login(request: TokenRequest, db: AsyncSession = Depends(get_mysql_session)) -> TokenResponse:
     id_token = request.id_token
     if not id_token:
         raise HTTPException(
@@ -36,18 +37,20 @@ async def google_login(request: TokenRequest, db: Session = Depends(get_mysql_se
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
     social_id = id_info.get("sub")
+
     if social_id is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="인증되지 않은 유저입니다.")
 
-    user = user_repository.get(db, social_id, ProviderEnum.google)
+    user = await user_repository.get(db, social_id, ProviderEnum.GOOGLE)
     if user is None:
-        user = user_repository.create(db, social_id, ProviderEnum.google)
+        user = await user_repository.create(db, social_id, ProviderEnum.GOOGLE)
 
     access_token = await google_builder.get_access_token(user)
+
     refresh_token = await google_builder.get_refresh_token(user)
 
     user_string_id = str(user.id)
-    await redis_repository.save(user_string_id, refresh_token, REDIS_EXPIRE_TIME)
+    await redis_user_repository.save(user_string_id, refresh_token, REDIS_EXPIRE_TIME_SECOND)
 
     return TokenResponse(access_token=access_token, refresh_token=refresh_token)
 
@@ -60,13 +63,17 @@ async def google_login(request: TokenRequest, db: Session = Depends(get_mysql_se
 )
 async def refresh_access_token(request: TokenRefreshRequest) -> TokenResponse:
     refresh_token = request.refresh_token
+    logging.info(f"{refresh_token=}")
     decoded = jwt_builder.decode_token(refresh_token)
+    logging.info(f"{decoded=}")
     user_id = decoded.get("sub")
+    logging.info(f"{user_id=}")
 
     if user_id is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="refresh token안에 유저 정보가 들어있지 않습니다.")
 
-    stored_refresh_token = await redis_repository.get(user_id)
+    stored_refresh_token = await redis_user_repository.get(user_id)
+    logging.info(f"{stored_refresh_token=}")
 
     if stored_refresh_token is None:
         raise HTTPException(
@@ -81,5 +88,7 @@ async def refresh_access_token(request: TokenRefreshRequest) -> TokenResponse:
         )
 
     access_token = jwt_builder.generate_access_token(user_id)
+
+    logging.info(f"{access_token=}")
 
     return NewAccessTokenResponse(access_token=access_token)
