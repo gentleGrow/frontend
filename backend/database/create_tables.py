@@ -6,6 +6,7 @@ from app.modules.asset_management.models import (  # noqa: F401 > table 생성 �
     StockDaily,
     StockMonthly,
     StockTransaction,
+    StockWeekly,
 )
 from app.modules.auth.models import User  # noqa: F401 > table 생성 시 필요합니다.
 from database.config import MYSQL_URL, MySQLBase
@@ -15,5 +16,7 @@ if MYSQL_URL is not None:
     sync_engine = create_engine(sync_mysql_url)
 
     MySQLBase.metadata.create_all(sync_engine)
+
+    logging.info("테이블이 성공적으로 생성되었습니다.")
 else:
-    logging.info(f"SQL URL을 확인해주세요, {MYSQL_URL=}")
+    logging.error(f"SQL URL을 확인해주세요, {MYSQL_URL=}")
