@@ -1,6 +1,17 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.asset_management.models import StockDaily, StockMonthly, StockWeekly
+from app.modules.asset_management.models import Stock, StockDaily, StockMonthly, StockWeekly
+
+
+class StockRepository:
+    def __init__(self, session: AsyncSession):
+        self.session = session
+
+    async def save(self, stock: Stock) -> Stock:
+        self.session.add(stock)
+        await self.session.commit()
+        await self.session.refresh(stock)
+        return stock
 
 
 class StockDailyRepository:

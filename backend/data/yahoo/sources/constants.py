@@ -1,6 +1,6 @@
 from app.modules.asset_management.models import StockDaily, StockMonthly, StockWeekly
+from data.common.repository import StockDailyRepository, StockMonthlyRepository, StockWeeklyRepository
 from data.yahoo.sources.enums import TimeInterval
-from data.yahoo.sources.repository import StockDailyRepository, StockMonthlyRepository, StockWeeklyRepository
 
 STOCK_TIME_INTERVAL = "1d"
 STOCK_HISTORY_TIMERANGE_YEAR = 1
