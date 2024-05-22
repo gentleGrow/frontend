@@ -3,7 +3,7 @@ import asyncio
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
-from app.common.utils.logging import logging  # Assuming you have a logging utility
+from app.common.utils.logging import logging
 from data.common.schemas import StockList, StockPrice, StockPriceList
 
 
@@ -17,14 +17,14 @@ async def fetch_stock_price(session: ClientSession, code: str) -> StockPrice:
             soup = BeautifulSoup(html, "html.parser")
             today = soup.select_one("#chart_area > div.rate_info > div")
             if today is None:
-                logging.warning(f"Could not find price information for stock code: {code}")
+                logging.warning(f"[fetch_stock_price] Could not find price information for stock code: {code}")
                 return StockPrice(price=0)
 
             price_text = today.select_one(".blind").get_text()
             price_number = int(price_text.replace(",", ""))
             return StockPrice(price=price_number)
     except Exception as e:
-        logging.error(f"Error fetching stock price for code {code}: {e}")
+        logging.error(f"[fetch_stock_price] Error fetching stock price for code {code}: {e}")
         return StockPrice(price=0)
 
 

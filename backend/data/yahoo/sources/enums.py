@@ -2,6 +2,6 @@ from enum import StrEnum
 
 
 class TimeInterval(StrEnum):
-    day = "1d"
-    week = "1wk"
-    month = "1mo"
+    DAY = "1d"
+    WEEK = "1wk"
+    MONTH = "1mo"

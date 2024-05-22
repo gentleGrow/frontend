@@ -19,14 +19,14 @@ async def main():
         for stock_info in stock_list.stocks:
             stock_info: StockInfo
 
-            logging.info(f"{stock_info=}")
+            logging.info(f"[stock_codes] {stock_info=}")
 
             try:
                 await stock_repository.save(
                     Stock(code=stock_info.code, name=stock_info.name, market_index=stock_info.market_index)
                 )
             except IntegrityError as e:
-                logging.error(f"IntegrityError: {e} - Skipping stock code {stock_info.code}")
+                logging.error(f"[stock_codes] IntegrityError: {e} - Skipping stock code {stock_info.code}")
                 await session.rollback()
                 continue
 

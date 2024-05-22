@@ -11,6 +11,7 @@ from app.modules.asset_management.models import (  # noqa: F401 > relationship �
     StockWeekly,
 )
 from app.modules.auth.models import User  # noqa: F401 > relationship 설정시 필요합니다.
+from data.common.repository import StockRepository
 from data.common.schemas import StockList
 from data.common.service import get_oversea_stock_code_list
 from data.yahoo.sources.constants import STOCK_HISTORY_TIMERANGE_YEAR, TIME_INTERVAL_MODEL_REPO_MAP
@@ -23,8 +24,8 @@ from database.dependencies import transactional_session
 async def process_stock_data(session, stock_list: StockList, start_period: int, end_period: int):
     for stock_info in stock_list.stocks:
         for interval in TimeInterval:
-            stock_model, stock_repository = TIME_INTERVAL_MODEL_REPO_MAP[interval]
-            stock_repository_instance = stock_repository(session)
+            stock_model = TIME_INTERVAL_MODEL_REPO_MAP[interval]
+            stock_repository = StockRepository(session)
 
             url = (
                 f"https://query1.finance.yahoo.com/v7/finance/download/{stock_info.code}"
@@ -55,12 +56,12 @@ async def process_stock_data(session, stock_list: StockList, start_period: int, 
                     trade_volume=stock_dataframe.volume,
                 )
 
-                logging.info(f"{stock_row}")
+                logging.info(f"[process_stock_data] {stock_row}")
 
                 try:
-                    await stock_repository_instance.save(stock_row)  # type: ignore
+                    await stock_repository.save(stock_row)  # type: ignore
                 except IntegrityError as e:
-                    logging.error(f"IntegrityError: {e} - Skipping stock code {stock_info.code}")
+                    logging.error(f"[process_stock_data] IntegrityError: {e} - Skipping stock code {stock_info.code}")
                     await session.rollback()
                     continue
 

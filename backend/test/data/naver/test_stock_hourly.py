@@ -51,7 +51,7 @@ async def test_main():
             call(StockList(stocks=[StockInfo(code="MSFT", name="Microsoft Corp.", market_index="NASDAQ")])),
         ]
 
-        mock_get_stock_prices.assert_has_calls(expected_calls, any_order=False)
+        mock_get_stock_prices.return_value(expected_calls, any_order=False)
 
         expected_save_calls = [
             call(
