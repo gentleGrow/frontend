@@ -24,7 +24,7 @@ async def get_current_stock_price(
         if price is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"해당 종목의 코드는 존재하지 않습니다: {code}")
 
-        logging.info(f"{code=} {price=}")
+        logging.info(f"[get_current_stock_price] {code=} {price=}")
         result.append(StockResponse(code=code, price=float(price)))
 
     return result

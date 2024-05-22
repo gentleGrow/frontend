@@ -17,6 +17,6 @@ if MYSQL_URL is not None:
 
     MySQLBase.metadata.create_all(sync_engine)
 
-    logging.info("테이블이 성공적으로 생성되었습니다.")
+    logging.info("[create_tables] 테이블이 성공적으로 생성되었습니다.")
 else:
-    logging.error(f"SQL URL을 확인해주세요, {MYSQL_URL=}")
+    logging.error(f"[create_tables] SQL URL을 확인해주세요, {MYSQL_URL=}")

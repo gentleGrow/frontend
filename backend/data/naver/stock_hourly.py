@@ -25,6 +25,6 @@ if __name__ == "__main__":
     input_type = sys.argv[1] if len(sys.argv) > 1 else None
 
     while input_type not in MarketType.valid_inputs():
-        input_type = input("[korea 혹은 oversea] 2개 중 1개를 입력해주세요: ")
+        input_type = input("[stock_hourly] 2개 중 1개를 입력해주세요: ")
 
     asyncio.run(main(market_type=MarketType(input_type)))  # type: ignore
