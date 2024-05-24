@@ -1,0 +1,39 @@
+SERVICE_FASTAPI=fastapi
+SERVICE_STOCK_HOURLY=stock_hourly
+SERVICE_REDISINSIGHT=redisinsight
+
+COMPOSE_FILES= -f docker-compose.aws.yml
+
+all: build up
+
+build:
+	docker-compose $(COMPOSE_FILES) build
+
+fastapi:
+	docker-compose $(COMPOSE_FILES) build $(SERVICE_FASTAPI)
+	docker-compose $(COMPOSE_FILES) up -d --force-recreate $(SERVICE_FASTAPI)
+
+up:
+	docker-compose $(COMPOSE_FILES) up -d
+
+down:
+	docker-compose $(COMPOSE_FILES) down
+
+clean:
+	docker-compose $(COMPOSE_FILES) down -v
+
+logs:
+	docker-compose $(COMPOSE_FILES) logs -f
+
+logs-fastapi:
+	docker-compose $(COMPOSE_FILES) logs -f $(SERVICE_FASTAPI)
+
+logs-redis-insight:
+	docker-compose $(COMPOSE_FILES) logs -f $(SERVICE_REDISINSIGHT)
+
+shell-fastapi:
+	docker-compose $(COMPOSE_FILES) exec $(SERVICE_FASTAPI) /bin/bash
+
+rebuild: build up
+
+.PHONY: all build up down clean logs logs-fastapi logs-redis-insight shell-fastapi rebuild

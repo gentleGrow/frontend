@@ -1,0 +1,47 @@
+SERVICE_FASTAPI=fastapi
+SERVICE_DB=db
+SERVICE_REDIS=redis
+SERVICE_STOCK_HOURLY=stock_hourly
+SERVICE_REDISINSIGHT=redisinsight
+
+COMPOSE_FILE=-f docker-compose.local.yaml
+
+all: build up
+
+build:
+	docker-compose $(COMPOSE_FILE) build
+
+fastapi:
+	docker-compose $(COMPOSE_FILE) build $(SERVICE_FASTAPI)
+	docker-compose $(COMPOSE_FILE) up -d --force-recreate $(SERVICE_FASTAPI)
+
+up:
+	docker-compose $(COMPOSE_FILE) up -d
+
+down:
+	docker-compose $(COMPOSE_FILE) down
+
+clean:
+	docker-compose $(COMPOSE_FILE) down -v
+
+logs:
+	docker-compose $(COMPOSE_FILE) logs -f
+
+logs-fastapi:
+	docker-compose $(COMPOSE_FILE) logs -f $(SERVICE_FASTAPI)
+
+logs-db:
+	docker-compose $(COMPOSE_FILE) logs -f $(SERVICE_DB)
+
+logs-redis:
+	docker-compose $(COMPOSE_FILE) logs -f $(SERVICE_REDIS)
+
+logs-redis-insight:
+	docker-compose $(COMPOSE_FILE) logs -f $(SERVICE_REDISINSIGHT)
+
+shell-fastapi:
+	docker-compose $(COMPOSE_FILE) exec $(SERVICE_FASTAPI) /bin/bash
+
+rebuild: build up
+
+.PHONY: all build up down clean logs logs-fastapi logs-db logs-redis logs-redis-insight shell-fastapi rebuild

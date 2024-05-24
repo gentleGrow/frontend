@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  fastapi:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env
+    environment:
+      REDIS_HOST: "${REDIS_HOST}"
+      REDIS_PORT: "${REDIS_PORT}"
+    depends_on:
+      - redisinsight
+    volumes:
+      - .:/code
+
+  stock_hourly:
+    build: .
+    command: ["python", "-m", "data.naver.stock_hourly", "korea"]
+    depends_on:
+      - fastapi
+    environment:
+      REDIS_HOST: "${REDIS_HOST}"
+      REDIS_PORT: "${REDIS_PORT}"
+    volumes:
+      - .:/code
+
+  redisinsight:
+    image: redis/redisinsight:latest
+    ports:
+      - "5540:5540"
+    volumes:
+      - redisinsight-data:/data
+    environment:
+      VERBOSE_LOGGING: "true"
+
+volumes:
+  redisinsight-data:
