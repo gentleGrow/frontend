@@ -22,7 +22,7 @@ from data.korea_investment.sources.service import (
     socket_subscribe_message,
     subscribe_to_stock_batch,
 )
-from database.singleton import redis_repository
+from database.singleton import redis_stock_repository
 
 
 async def main():
@@ -40,7 +40,7 @@ async def main():
     URL = f"{KOREA_URL_WEBSOCKET}/tryitout/H0STCNT0"
     ws = websocket.WebSocket()
 
-    logging.info("실시간 웹 소켓을 실행합니다.")
+    logging.info("[stock_realtime] 실시간 웹 소켓을 실행합니다.")
 
     try:
         ws.connect(URL, ping_interval=PING_INTERVAL)
@@ -70,7 +70,7 @@ async def main():
                             stock_code = stock_transaction.stock_code
                             stock_price = stock_transaction.current_price
 
-                            await redis_repository.save(stock_code, stock_price, REDIS_STOCK_EXPIRE_SECONDS)
+                            await redis_stock_repository.save(stock_code, stock_price, REDIS_STOCK_EXPIRE_SECONDS)
 
                 except websocket.WebSocketConnectionClosedException:
                     break

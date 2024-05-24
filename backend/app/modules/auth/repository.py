@@ -18,7 +18,7 @@ class UserRepository:
 
         result = await db.execute(select_instance)
         user = result.scalars().first()
-        return UserSchema.model_validate(user) if user else None
+        return user and UserSchema.model_validate(user)
 
     async def create(
         self,

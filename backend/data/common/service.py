@@ -19,16 +19,16 @@ def read_realtime_stock_codes_from_excel(filepath: str) -> list[tuple[str, str]]
 def read_stock_codes_from_excel(filepath: str) -> StockList:
     try:
         df = pandas.read_excel(filepath, usecols=[0, 1, 2], header=None, names=["code", "name", "market_index"])
-
+    except Exception as e:
+        logging.error(f"Error reading Excel file: {e}")
+        raise
+    else:
         stock_infos = [
             StockInfo(code=str(row["code"]), name=str(row["name"]), market_index=str(row["market_index"]))
             for _, row in df.iterrows()
         ]
 
         return StockList(stocks=stock_infos)
-    except Exception as e:
-        logging.error(f"Error reading Excel file: {e}")
-        raise
 
 
 def get_realtime_stock_code_list() -> list:
@@ -53,3 +53,18 @@ def get_oversea_stock_code_list() -> StockList:
     nys_stock_code_list = read_stock_codes_from_excel(NYS_STOCK_FILEPATH)
     japan_stock_code_list = read_stock_codes_from_excel(JAPAN_STOCK_FILEPATH)
     return StockList(stocks=nas_stock_code_list.stocks + nys_stock_code_list.stocks + japan_stock_code_list.stocks)
+
+
+def get_all_stock_code_list() -> StockList:
+    korea_stock_code_list = read_stock_codes_from_excel(KOREA_STOCK_FILEPATH)
+    etf_stock_code_list = read_stock_codes_from_excel(ETC_STOCK_FILEPATH)
+    nas_stock_code_list = read_stock_codes_from_excel(NAS_STOCK_FILEPATH)
+    nys_stock_code_list = read_stock_codes_from_excel(NYS_STOCK_FILEPATH)
+    japan_stock_code_list = read_stock_codes_from_excel(JAPAN_STOCK_FILEPATH)
+    return StockList(
+        stocks=korea_stock_code_list.stocks
+        + etf_stock_code_list.stocks
+        + nas_stock_code_list.stocks
+        + nys_stock_code_list.stocks
+        + japan_stock_code_list.stocks
+    )

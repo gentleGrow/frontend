@@ -6,8 +6,8 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app.api.asset_management.v1.router import asset_management_router
 from app.api.auth.v1.router import auth_router
-from app.modules.asset_management.models import StockTransaction  # noqa: F401 > relationship 설정시 필요합니다.
-from app.modules.auth.models import User  # noqa: F401 > relationship 설정시 필요합니다.
+from app.modules.asset_management.models import StockTransaction  # noqa: F401 > table 생성 시 필요합니다.
+from app.modules.auth.models import User  # noqa: F401 > table 생성 시 필요합니다.
 from database.config import MySQLBase, mysql_engine
 
 app = FastAPI()
