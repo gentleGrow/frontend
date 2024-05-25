@@ -15,4 +15,4 @@ RUN poetry install --only main
 
 ENV NAME World
 
-CMD dockerize -wait tcp://db:3306 -timeout 60s && uvicorn main:app --host 0.0.0.0 --reload
+CMD ["sh", "-c", "dockerize -wait tcp://${MYSQL_HOST}:3306 -timeout 60s && uvicorn main:app --host 0.0.0.0 --reload"]

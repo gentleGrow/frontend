@@ -1,18 +1,5 @@
 version: '3.8'
 services:
-  redis:
-    image: "redis:alpine"
-    platform: linux/amd64
-
-  db:
-    image: "mysql:5.7"
-    platform: linux/amd64
-    environment:
-      MYSQL_DATABASE: 'assetmanagement'
-      MYSQL_ROOT_PASSWORD: 'qwerasdf12'
-    volumes:
-      - db-data:/var/lib/mysql
-
   fastapi:
     build: .
     ports:
@@ -20,11 +7,10 @@ services:
     env_file:
       - ./.env
     environment:
-      REDIS_HOST: "redis"
-      REDIS_PORT: "6379"
+      REDIS_HOST: "${REDIS_HOST}"
+      REDIS_PORT: "${REDIS_PORT}"
     depends_on:
-      - db
-      - redis
+      - redisinsight
     volumes:
       - .:/code
 
@@ -34,8 +20,8 @@ services:
     depends_on:
       - fastapi
     environment:
-      REDIS_HOST: "redis"
-      REDIS_PORT: "6379"
+      REDIS_HOST: "${REDIS_HOST}"
+      REDIS_PORT: "${REDIS_PORT}"
     volumes:
       - .:/code
 
@@ -47,9 +33,6 @@ services:
       - redisinsight-data:/data
     environment:
       VERBOSE_LOGGING: "true"
-    depends_on:
-      - redis
 
 volumes:
-  db-data:
   redisinsight-data:
