@@ -1,6 +1,4 @@
 SERVICE_FASTAPI=fastapi
-SERVICE_DB=db
-SERVICE_REDIS=redis
 SERVICE_STOCK_HOURLY=stock_hourly
 SERVICE_REDISINSIGHT=redisinsight
 
@@ -28,18 +26,18 @@ logs:
 logs-fastapi:
 	docker-compose logs -f $(SERVICE_FASTAPI)
 
-logs-db:
-	docker-compose logs -f $(SERVICE_DB)
-
-logs-redis:
-	docker-compose logs -f $(SERVICE_REDIS)
-
 logs-redis-insight:
 	docker-compose logs -f $(SERVICE_REDISINSIGHT)
+
+logs-stock_hourly:
+	docker-compose logs -f $(SERVICE_STOCK_HOURLY)
 
 shell-fastapi:
 	docker-compose exec $(SERVICE_FASTAPI) /bin/bash
 
 rebuild: build up
 
-.PHONY: all build up down clean logs logs-fastapi logs-db logs-redis shell-fastapi rebuild
+prune: down
+	-docker system prune -a --volumes -f
+
+.PHONY: all build up down clean logs logs-fastapi logs-redis-insight logs-stock_hourly shell-fastapi rebuild prune

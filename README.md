@@ -2,7 +2,8 @@
 ### Backend
 1. backend 폴더 안에 .env 파일을 추가합니다.
 2. make up을 실행합니다.
-3. Api 명세서는 다음 링크에서 확인합니다 : http://localhost:8000/docs
+3. Api 명세서는 다음 링크에서 확인합니다 :  
+http://13.125.175.100/:8000/docs
 4. 데이터 수집 현황은 아래 이미지를 참고하십시오:
 ![Docker Container](./backend/etc/readme/dockercontainer.PNG)
 - Docker containers : db, redis, redisinsight, fastapi가 정상 실행되는지 확인합니다.

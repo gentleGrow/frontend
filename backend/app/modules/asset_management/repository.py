@@ -16,11 +16,12 @@ class RedisStockRepository(AbstractCRUDRepository):
             for code, price in [
                 (stock.code, price.price) for stock, price in zip(stock_code_chunk.stocks, price_list.prices)
             ]:
-                pipe.set(code, price, ex=expiry)
+                key = f"{{stock_prices}}:{code}"
+                pipe.set(key, price, ex=expiry)
             await pipe.execute()
 
     async def get(self, stock_code: str) -> int:
-        return await self.redis.get(stock_code)
+        return await self.redis.get(f"{{stock_prices}}:{stock_code}")
 
 
 class StockTransactionRepository:
