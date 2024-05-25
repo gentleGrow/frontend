@@ -1,7 +1,9 @@
 version: '3.8'
 services:
   fastapi:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.aws
     ports:
       - "8000:8000"
     env_file:
@@ -15,7 +17,9 @@ services:
       - .:/code
 
   stock_hourly:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.aws
     command: ["python", "-m", "data.naver.stock_hourly", "korea"]
     depends_on:
       - fastapi

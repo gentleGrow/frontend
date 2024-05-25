@@ -2,7 +2,7 @@ SERVICE_FASTAPI=fastapi
 SERVICE_STOCK_HOURLY=stock_hourly
 SERVICE_REDISINSIGHT=redisinsight
 
-COMPOSE_FILES= -f docker-compose.aws.yml
+COMPOSE_FILES= -f docker-compose.aws.yaml
 
 all: build up
 
@@ -31,9 +31,15 @@ logs-fastapi:
 logs-redis-insight:
 	docker-compose $(COMPOSE_FILES) logs -f $(SERVICE_REDISINSIGHT)
 
+logs-stock_hourly:
+	docker-compose $(COMPOSE_FILES) logs -f $(SERVICE_STOCK_HOURLY)
+
 shell-fastapi:
 	docker-compose $(COMPOSE_FILES) exec $(SERVICE_FASTAPI) /bin/bash
 
 rebuild: build up
+
+prune: down
+	-docker system prune -a --volumes -f
 
 .PHONY: all build up down clean logs logs-fastapi logs-redis-insight shell-fastapi rebuild
