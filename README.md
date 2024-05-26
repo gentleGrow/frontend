@@ -1,27 +1,32 @@
-## 실행 방법
-### Backend
-1. backend 폴더 안에 .env 파일을 추가합니다.
-2. make up을 실행합니다.
-3. Api 명세서는 다음 링크에서 확인합니다 :  
-http://13.125.175.100/:8000/docs
-4. 데이터 수집 현황은 아래 이미지를 참고하십시오:
-![Docker Container](./backend/etc/readme/dockercontainer.PNG)
-- Docker containers : db, redis, redisinsight, fastapi가 정상 실행되는지 확인합니다.
-- 정상적으로 실행되지 않다면 .env파일을 확인해서 db 경로가 올바로 되어 있는지 확인합니다.
-![Redis Insight](./backend/etc/readme/redisinsight1.PNG)
-- redis 데이터가 자동으로 수집 됩니다.
-- Add connection details manually를 눌러 redis와 연결합니다.
-![Redis Insight](./backend/etc/readme/redisinsight2.PNG)
-- Host 명을 redis로 변경합니다.
-- Database Alias는 redis:6379로 변경합니다.
-![Redis Insight](./backend/etc/readme/redisinsight3.PNG)
-- 연결된 데이터베이스를 클릭합니다.
-![Redis Insight](./backend/etc/readme/redisinsight4.PNG)
-- stock_code : stock_price 형태로 저장되어 있는걸 확인합니다.
+# 개미스쿨
 
-### Frontend
-1. cd /assetmanagement/frontend
-2. sudo npm i
-3. sudo npm run dev
+## 목차
+1. [프로젝트 개요](#프로젝트-개요)
+2. [API 명세서](#api-명세서)
+3. [ERD](#erd)
+4. [DESIGN](#design)
 
+## 프로젝트 개요
+제작 기간 : 2024.02.24 ~ 진행중  
+팀원 : 2명  
 
+- 김채욱 : (Backend)
+- 정다혜 : (Design)
+
+> "노후 빈곤율 1위를 해결하기 위해 자산 관리 서비스를 기획하게 되었습니다. 주변 10명 이상의 지인들에게 재테크 현황을 물어본 결과, 제대로 자산 관리를 하고 있는 사람은 1명에 불과하다는 사실을 알게 되었습니다. 효과적인 자산 관리는 개인의 재정적 안정성을 높여주어, 미래에 노후 빈곤 문제를 해결하는 데 중요한 역할을 할 수 있습니다. 이러한 문제를 해결하기 위해, 누구나 쉽게 재테크를 시작할 수 있도록 진입 장벽을 낮추는 프로젝트를 시작하게 되었습니다”  
+
+<a name="api-명세서"></a>
+## API 명세서
+http://www.gaemischool.com:8000/docs
+
+<a name="erd"></a>
+## ERD
+![ERD](./backend/etc/erd/erd.png)
+
+## REDIS INSIGHT
+설명 : 실시간 주가 및 유저 세션 정보를 담고 있습니다.  
+http://www.gaemischool.com:5540
+
+<a name="design"></a>
+## DESIGN
+![DESIGN](./backend/etc/readme/design.png)
