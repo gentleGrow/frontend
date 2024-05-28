@@ -4,6 +4,7 @@ import boto3
 import pandas as pd
 
 from data.common.config import (
+    ENVIRONMENT,
     ETC_STOCK_FILEPATH,
     JAPAN_STOCK_FILEPATH,
     KOREA_STOCK_FILEPATH,
@@ -17,12 +18,12 @@ from data.common.schemas import StockInfo, StockList
 s3_client = boto3.client("s3")
 
 
-def download_file_from_s3(bucket, key, local_path):
+def download_file_from_s3(bucket, key, local_path) -> None:
     try:
         s3_client.download_file(bucket, key, local_path)
-        logging.info(f"Downloaded {key} from S3 to {local_path}")
-    except Exception as e:
-        logging.error(f"Error downloading {key} from S3: {e}")
+        logging.info(f"{local_path}경로에 ${key}를 저장하였습니다.")
+    except Exception:
+        logging.error("파일을 다운로드하는데 실패하였습니다.")
         raise
 
 
@@ -46,35 +47,35 @@ def read_stock_codes_from_excel(filepath: str) -> StockList:
 
 
 def get_realtime_stock_code_list() -> list:
-    korea_stock_code_list = read_realtime_stock_codes_from_excel(download_and_get_path(KOREA_STOCK_FILEPATH))
-    etf_stock_code_list = read_realtime_stock_codes_from_excel(download_and_get_path(ETC_STOCK_FILEPATH))
-    nas_stock_code_list = read_realtime_stock_codes_from_excel(download_and_get_path(NAS_STOCK_FILEPATH))
-    nys_stock_code_list = read_realtime_stock_codes_from_excel(download_and_get_path(NYS_STOCK_FILEPATH))
-    japan_stock_code_list = read_realtime_stock_codes_from_excel(download_and_get_path(JAPAN_STOCK_FILEPATH))
+    korea_stock_code_list = read_realtime_stock_codes_from_excel(get_path(KOREA_STOCK_FILEPATH))
+    etf_stock_code_list = read_realtime_stock_codes_from_excel(get_path(ETC_STOCK_FILEPATH))
+    nas_stock_code_list = read_realtime_stock_codes_from_excel(get_path(NAS_STOCK_FILEPATH))
+    nys_stock_code_list = read_realtime_stock_codes_from_excel(get_path(NYS_STOCK_FILEPATH))
+    japan_stock_code_list = read_realtime_stock_codes_from_excel(get_path(JAPAN_STOCK_FILEPATH))
     return (
         korea_stock_code_list + etf_stock_code_list + nas_stock_code_list + nys_stock_code_list + japan_stock_code_list
     )
 
 
 def get_korea_stock_code_list() -> StockList:
-    korea_stock_code_list = read_stock_codes_from_excel(download_and_get_path(KOREA_STOCK_FILEPATH))
-    etf_stock_code_list = read_stock_codes_from_excel(download_and_get_path(ETC_STOCK_FILEPATH))
+    korea_stock_code_list = read_stock_codes_from_excel(get_path(KOREA_STOCK_FILEPATH))
+    etf_stock_code_list = read_stock_codes_from_excel(get_path(ETC_STOCK_FILEPATH))
     return StockList(stocks=korea_stock_code_list.stocks + etf_stock_code_list.stocks)
 
 
 def get_oversea_stock_code_list() -> StockList:
-    nas_stock_code_list = read_stock_codes_from_excel(download_and_get_path(NAS_STOCK_FILEPATH))
-    nys_stock_code_list = read_stock_codes_from_excel(download_and_get_path(NYS_STOCK_FILEPATH))
-    japan_stock_code_list = read_stock_codes_from_excel(download_and_get_path(JAPAN_STOCK_FILEPATH))
+    nas_stock_code_list = read_stock_codes_from_excel(get_path(NAS_STOCK_FILEPATH))
+    nys_stock_code_list = read_stock_codes_from_excel(get_path(NYS_STOCK_FILEPATH))
+    japan_stock_code_list = read_stock_codes_from_excel(get_path(JAPAN_STOCK_FILEPATH))
     return StockList(stocks=nas_stock_code_list.stocks + nys_stock_code_list.stocks + japan_stock_code_list.stocks)
 
 
 def get_all_stock_code_list() -> StockList:
-    korea_stock_code_list = read_stock_codes_from_excel(download_and_get_path(KOREA_STOCK_FILEPATH))
-    etf_stock_code_list = read_stock_codes_from_excel(download_and_get_path(ETC_STOCK_FILEPATH))
-    nas_stock_code_list = read_stock_codes_from_excel(download_and_get_path(NAS_STOCK_FILEPATH))
-    nys_stock_code_list = read_stock_codes_from_excel(download_and_get_path(NYS_STOCK_FILEPATH))
-    japan_stock_code_list = read_stock_codes_from_excel(download_and_get_path(JAPAN_STOCK_FILEPATH))
+    korea_stock_code_list = read_stock_codes_from_excel(get_path(KOREA_STOCK_FILEPATH))
+    etf_stock_code_list = read_stock_codes_from_excel(get_path(ETC_STOCK_FILEPATH))
+    nas_stock_code_list = read_stock_codes_from_excel(get_path(NAS_STOCK_FILEPATH))
+    nys_stock_code_list = read_stock_codes_from_excel(get_path(NYS_STOCK_FILEPATH))
+    japan_stock_code_list = read_stock_codes_from_excel(get_path(JAPAN_STOCK_FILEPATH))
     return StockList(
         stocks=korea_stock_code_list.stocks
         + etf_stock_code_list.stocks
@@ -84,7 +85,16 @@ def get_all_stock_code_list() -> StockList:
     )
 
 
-def download_and_get_path(s3_key):
+def get_path(filepath) -> str:
+    if ENVIRONMENT == "local":
+        return filepath
+    elif ENVIRONMENT == "cloud":
+        return download_and_get_path(filepath)
+    else:
+        return ""
+
+
+def download_and_get_path(s3_key) -> str:
     local_path = f"/tmp/{os.path.basename(s3_key)}"
     download_file_from_s3(S3_BUCKET_STOCK_FILES, s3_key, local_path)
     return local_path
