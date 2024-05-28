@@ -1,8 +1,8 @@
 import os
 import subprocess
 
-setup_sh_path = "/home/assetManagement/backend/etc/cronjob/set_up.sh"
-stock_jobs_sh_path = "/home/assetManagement/backend/etc/cronjob/stock_jobs.sh"
+setup_sh_path = "./etc/cronjob/setup.sh"
+stock_jobs_sh_path = "./etc/cronjob/stock_jobs.sh"
 
 
 def make_executable(script_path):

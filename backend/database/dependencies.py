@@ -10,7 +10,15 @@ from database.config import MySQLSession
 
 load_dotenv()
 
-REDIS_HOST = getenv("REDIS_HOST", "localhost")
+ENVIRONMENT = getenv("ENVIRONMENT", None)
+
+if ENVIRONMENT == "local":
+    REDIS_HOST = getenv("LOCAL_REDIS_HOST", None)
+elif ENVIRONMENT == "cloud":
+    REDIS_HOST = getenv("REDIS_HOST", None)
+else:
+    REDIS_HOST = ""
+
 REDIS_PORT = int(getenv("REDIS_PORT", 6379))
 
 

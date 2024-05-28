@@ -14,17 +14,6 @@ services:
     volumes:
       - .:/code
 
-  stock_hourly:
-    build: .
-    command: ["python", "-m", "data.naver.stock_hourly", "korea"]
-    depends_on:
-      - fastapi
-    environment:
-      REDIS_HOST: "${REDIS_HOST}"
-      REDIS_PORT: "${REDIS_PORT}"
-    volumes:
-      - .:/code
-
   redisinsight:
     image: redis/redisinsight:latest
     ports:
