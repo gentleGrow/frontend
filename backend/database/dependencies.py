@@ -7,14 +7,16 @@ from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.config import MySQLSession
+from database.enums import EnvironmentType
 
 load_dotenv()
 
 ENVIRONMENT = getenv("ENVIRONMENT", None)
 
-if ENVIRONMENT == "local":
+
+if ENVIRONMENT == EnvironmentType.LOCAL:
     REDIS_HOST = getenv("LOCAL_REDIS_HOST", None)
-elif ENVIRONMENT == "cloud":
+elif ENVIRONMENT == EnvironmentType.CLOUD:
     REDIS_HOST = getenv("REDIS_HOST", None)
 else:
     REDIS_HOST = ""

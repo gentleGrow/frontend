@@ -13,7 +13,8 @@ from data.common.config import (
     S3_BUCKET_STOCK_FILES,
     logging,
 )
-from data.common.schemas import StockInfo, StockList
+from data.common.schemas import RealtimeStockInfo, StockInfo, StockList, realtimeStockList
+from database.enums import EnvironmentType
 
 s3_client = boto3.client("s3")
 
@@ -27,9 +28,15 @@ def download_file_from_s3(bucket, key, local_path) -> None:
         raise
 
 
-def read_realtime_stock_codes_from_excel(filepath: str) -> list[tuple[str, str]]:
-    df = pd.read_excel(filepath, usecols=[0, 1], header=None)
-    return list(zip(df[0], df[1]))
+def read_realtime_stock_codes_from_excel(filepath: str) -> realtimeStockList:
+    try:
+        df = pd.read_excel(filepath, usecols=[0, 1], header=None, names=["code", "name"])
+    except Exception as e:
+        logging.error(f"Error reading Excel file: {e}")
+        raise
+    else:
+        stock_infos = [RealtimeStockInfo(code=str(row["code"]), name=str(row["name"])) for _, row in df.iterrows()]
+        return realtimeStockList(stocks=stock_infos)
 
 
 def read_stock_codes_from_excel(filepath: str) -> StockList:
@@ -46,14 +53,18 @@ def read_stock_codes_from_excel(filepath: str) -> StockList:
         return StockList(stocks=stock_infos)
 
 
-def get_realtime_stock_code_list() -> list:
+def get_realtime_stock_code_list() -> realtimeStockList:
     korea_stock_code_list = read_realtime_stock_codes_from_excel(get_path(KOREA_STOCK_FILEPATH))
     etf_stock_code_list = read_realtime_stock_codes_from_excel(get_path(ETC_STOCK_FILEPATH))
     nas_stock_code_list = read_realtime_stock_codes_from_excel(get_path(NAS_STOCK_FILEPATH))
     nys_stock_code_list = read_realtime_stock_codes_from_excel(get_path(NYS_STOCK_FILEPATH))
     japan_stock_code_list = read_realtime_stock_codes_from_excel(get_path(JAPAN_STOCK_FILEPATH))
-    return (
-        korea_stock_code_list + etf_stock_code_list + nas_stock_code_list + nys_stock_code_list + japan_stock_code_list
+    return realtimeStockList(
+        stocks=korea_stock_code_list.stocks
+        + etf_stock_code_list.stocks
+        + nas_stock_code_list.stocks
+        + nys_stock_code_list.stocks
+        + japan_stock_code_list.stocks
     )
 
 
@@ -86,9 +97,9 @@ def get_all_stock_code_list() -> StockList:
 
 
 def get_path(filepath) -> str:
-    if ENVIRONMENT == "local":
+    if ENVIRONMENT == EnvironmentType.LOCAL:
         return filepath
-    elif ENVIRONMENT == "cloud":
+    elif ENVIRONMENT == EnvironmentType.CLOUD:
         return download_and_get_path(filepath)
     else:
         return ""
