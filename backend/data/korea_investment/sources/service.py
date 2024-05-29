@@ -1,5 +1,6 @@
 import json
 import time
+from typing import Generator
 
 import requests
 import websocket
@@ -7,12 +8,14 @@ from pydantic import ValidationError
 
 from data.common.config import KOREA_INVESTMENT_KEY, KOREA_INVESTMENT_SECRET, KOREA_URL_BASE, logging
 from data.common.enums import SuccessCode, TradeType
+from data.common.schemas import realtimeStockList
 from data.korea_investment.sources.schemas import StockData, StockTransaction
 
 
-def divide_stock_list(stock_code_list: list, MAXIMUM_WEBSOCKET_CONNECTION: int):
-    for idx in range(0, len(stock_code_list), MAXIMUM_WEBSOCKET_CONNECTION):
-        yield stock_code_list[idx : idx + MAXIMUM_WEBSOCKET_CONNECTION]
+def divide_stock_list(stock_code_list: realtimeStockList, chunk_size: int) -> Generator[list[str], None, None]:
+    stock_codes = [stock.code for stock in stock_code_list.stocks]
+    for idx in range(0, len(stock_codes), chunk_size):
+        yield stock_codes[idx : idx + chunk_size]
 
 
 def set_timeout(timeout_seconds: int, flag: list):
@@ -73,7 +76,7 @@ def socket_subscribe_message(stock_data: StockData) -> None:
     trid = stock_data["header"]["tr_id"]
 
     if trid == TradeType.END_STOCK_TIME:
-        logging.info("RECV [PINGPONG] [{stock_data}]")
+        logging.info(f"RECV [PINGPONG] [{stock_data=}]")
         return
 
     rt_cd = stock_data["body"]["rt_cd"]
@@ -91,8 +94,8 @@ def socket_subscribe_message(stock_data: StockData) -> None:
             return
 
 
-def subscribe_to_stock_batch(approval_key: str, batch: list[tuple[str, str]], ws: websocket) -> None:
-    for stock_code, stock_name in batch:
+def subscribe_to_stock_batch(approval_key: str, batch: list[str], ws: websocket) -> None:
+    for stock_code in batch:
         subscription_msg = {
             "header": {"approval_key": approval_key, "custtype": "P", "tr_type": "1", "content-type": "utf-8"},
             "body": {"input": {"tr_id": TradeType.STOCK_PRICE, "tr_key": str(stock_code)}},
