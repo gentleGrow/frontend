@@ -1,9 +1,12 @@
 #!/bin/bash
 
+# Activate the virtual environment
+source /opt/pysetup/.venv/bin/activate
+
 crontab -l > mycron
 
-echo "0 6 * * * /usr/bin/python3 /code/data/yahoo/stock_overseas.py >> /code/logs/cron.log 2>&1" >> mycron
-echo "0 * * * * /usr/bin/python3 /code/data/naver/stock_hourly.py >> /code/logs/cron.log 2>&1" >> mycron
+echo "0 6 * * * python ./data/yahoo/stock_overseas.py >> ./logs/cron.log 2>&1" >> mycron
+echo "0 * * * * python ./data/naver/stock_hourly.py >> ./logs/cron.log 2>&1" >> mycron
 
 crontab mycron
 rm mycron

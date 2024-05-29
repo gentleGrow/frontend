@@ -3,8 +3,8 @@ import subprocess
 
 from data.common.config import logging
 
-setup_sh_path = "/code/etc/cronjob/setup.sh"
-stock_jobs_sh_path = "/code/etc/cronjob/stock_jobs.sh"
+setup_sh_path = "./etc/cronjob/setup.sh"
+stock_jobs_sh_path = "./etc/cronjob/stock_jobs.sh"
 
 
 def make_executable(script_path):
