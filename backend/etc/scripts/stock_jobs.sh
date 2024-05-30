@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Activate the virtual environment
-source /opt/pysetup/.venv/bin/activate
-
 crontab -l > mycron
 
 echo "0 6 * * * python ./data/yahoo/stock_overseas.py >> ./logs/cron.log 2>&1" >> mycron
