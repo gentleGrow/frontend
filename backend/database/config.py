@@ -4,13 +4,15 @@ from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
+from database.enums import EnvironmentType
+
 load_dotenv()
 
 ENVIRONMENT = getenv("ENVIRONMENT", None)
 
-if ENVIRONMENT == "local":
+if ENVIRONMENT == EnvironmentType.LOCAL:
     MYSQL_URL = getenv("LOCAL_MYSQL_URL", None)
-elif ENVIRONMENT == "cloud":
+elif ENVIRONMENT == EnvironmentType.CLOUD:
     MYSQL_URL = getenv("MYSQL_URL", None)
 else:
     MYSQL_URL = ""

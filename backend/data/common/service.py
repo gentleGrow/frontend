@@ -2,6 +2,7 @@ import os
 
 import boto3
 import pandas as pd
+from dotenv import find_dotenv, load_dotenv
 
 from data.common.config import (
     ENVIRONMENT,
@@ -16,7 +17,16 @@ from data.common.config import (
 from data.common.schemas import RealtimeStockInfo, StockInfo, StockList, realtimeStockList
 from database.enums import EnvironmentType
 
-s3_client = boto3.client("s3")
+load_dotenv(find_dotenv())
+
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+
+s3_client = boto3.client(
+    "s3",
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+)
 
 
 def download_file_from_s3(bucket, key, local_path) -> None:
