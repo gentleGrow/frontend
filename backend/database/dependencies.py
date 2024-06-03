@@ -14,12 +14,10 @@ load_dotenv()
 ENVIRONMENT = getenv("ENVIRONMENT", None)
 
 
-if ENVIRONMENT == EnvironmentType.LOCAL:
+if ENVIRONMENT == EnvironmentType.DEV:
     REDIS_HOST = getenv("LOCAL_REDIS_HOST", None)
-elif ENVIRONMENT == EnvironmentType.CLOUD:
-    REDIS_HOST = getenv("REDIS_HOST", None)
 else:
-    REDIS_HOST = ""
+    REDIS_HOST = getenv("REDIS_HOST", None)
 
 REDIS_PORT = int(getenv("REDIS_PORT", 6379))
 

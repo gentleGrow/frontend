@@ -1,7 +1,7 @@
 import asyncio
 import sys
 
-from app.modules.asset_management.constants import REDIS_STOCK_EXPIRE_SECOND
+from app.modules.asset.constants import REDIS_STOCK_EXPIRE_SECOND
 from data.common.constant import MARKET_TYPE_N_STOCK_CODE_FUNC_MAP, STOCK_CHUNK_SIZE
 from data.common.enums import MarketType
 from data.common.schemas import StockList, StockPriceList

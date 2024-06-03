@@ -24,5 +24,5 @@ class RealtimeStockInfo(BaseModel):
     name: str = Field(..., description="종목명", examples="BGF리테일")
 
 
-class realtimeStockList(BaseModel):
+class RealtimeStockList(BaseModel):
     stocks: list[RealtimeStockInfo]

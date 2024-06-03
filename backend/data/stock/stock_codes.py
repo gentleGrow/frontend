@@ -3,7 +3,7 @@ import asyncio
 from sqlalchemy.exc import IntegrityError
 
 from app.common.utils.logging import logging
-from app.modules.asset_management.models import Stock  # noqa: F401 > relationship 설정시 필요합니다.
+from app.modules.asset.models import Stock  # noqa: F401 > relationship 설정시 필요합니다.
 from app.modules.auth.models import User  # noqa: F401 > relationship 설정시 필요합니다.
 from data.common.repository import StockRepository
 from data.common.schemas import StockInfo, StockList

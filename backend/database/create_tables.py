@@ -4,11 +4,11 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.modules.asset_management.models import (  # noqa > relationship purpose
+from app.modules.asset.models import (  # noqa > relationship purpose
+    AssetTransaction,
     Stock,
     StockDaily,
     StockMonthly,
-    StockTransaction,
     StockWeekly,
 )
 from app.modules.auth.models import User  # noqa > relationship purpose

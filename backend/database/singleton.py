@@ -1,4 +1,4 @@
-from app.modules.asset_management.repository import RedisStockRepository
+from app.modules.asset.repository import RedisStockRepository
 from app.modules.auth.repository import RedisJWTTokenRepository
 from database.dependencies import get_redis_pool
 

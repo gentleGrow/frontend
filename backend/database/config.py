@@ -10,12 +10,10 @@ load_dotenv()
 
 ENVIRONMENT = getenv("ENVIRONMENT", None)
 
-if ENVIRONMENT == EnvironmentType.LOCAL:
+if ENVIRONMENT == EnvironmentType.DEV:
     MYSQL_URL = getenv("LOCAL_MYSQL_URL", None)
-elif ENVIRONMENT == EnvironmentType.CLOUD:
-    MYSQL_URL = getenv("MYSQL_URL", None)
 else:
-    MYSQL_URL = ""
+    MYSQL_URL = getenv("MYSQL_URL", None)
 
 mysql_engine = create_async_engine(MYSQL_URL)
 MySQLSession = sessionmaker(bind=mysql_engine, class_=AsyncSession, expire_on_commit=False)

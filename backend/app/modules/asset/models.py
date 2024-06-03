@@ -71,8 +71,8 @@ class StockMonthly(MySQLBase):
     __table_args__ = (PrimaryKeyConstraint("code", "date", name="pk_stock_monthly"),)
 
 
-class StockTransaction(TimestampMixin, MySQLBase):
-    __tablename__ = "stock_transactions"
+class AssetTransaction(TimestampMixin, MySQLBase):
+    __tablename__ = "asset_transactions"
 
     @staticmethod
     def get_uuid():
