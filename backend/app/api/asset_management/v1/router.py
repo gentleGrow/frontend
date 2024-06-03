@@ -9,7 +9,7 @@ from app.modules.asset_management.schemas import StockResponse, StockTransaction
 from database.dependencies import get_mysql_session
 from database.singleton import redis_stock_repository
 
-asset_management_router = APIRouter()
+asset_management_router = APIRouter(prefix="/v1")
 
 
 @asset_management_router.get("/stocks", summary="주식 현재가를 반환합니다.", response_model=list[StockResponse])
@@ -33,9 +33,7 @@ async def get_current_stock_price(
     return result
 
 
-@asset_management_router.get(
-    "/stock_transactions", summary="사용자의 자산관리 정보를 반환합니다.", response_model=list[StockTransaction]
-)
+@asset_management_router.get("/assets", summary="사용자의 자산관리 정보를 반환합니다.", response_model=list[StockTransaction])
 async def get_stock_transactions(
     token=Depends(verify_jwt_token), db: AsyncSession = Depends(get_mysql_session)
 ) -> list[StockTransaction]:
@@ -46,7 +44,7 @@ async def get_stock_transactions(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자의 자산관리 정보를 찾지 못하였습니다.")
 
 
-@asset_management_router.post("/stock_transactions", summary="자산관리 정보를 등록합니다.")
+@asset_management_router.post("/assets", summary="자산관리 정보를 등록합니다.")
 async def save_stock_transactions(
     transaction_data: StockTransactionRequest,
     token: str = Depends(verify_jwt_token),
@@ -59,7 +57,7 @@ async def save_stock_transactions(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="자산 정보를 저장하는데 실패하였습니다.")
 
 
-@asset_management_router.put("/stock_transactions", summary="자산관리 정보를 수정합니다.")
+@asset_management_router.put("/assets", summary="자산관리 정보를 수정합니다.")
 async def update_stock_transactions(
     transaction_data: StockTransactionRequest,
     token: str = Depends(verify_jwt_token),

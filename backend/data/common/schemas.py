@@ -17,3 +17,12 @@ class StockList(BaseModel):
 
 class StockPriceList(BaseModel):
     prices: list[StockPrice]
+
+
+class RealtimeStockInfo(BaseModel):
+    code: str = Field(..., description="종목 코드", examples="095570")
+    name: str = Field(..., description="종목명", examples="BGF리테일")
+
+
+class realtimeStockList(BaseModel):
+    stocks: list[RealtimeStockInfo]
