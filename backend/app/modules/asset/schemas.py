@@ -1,17 +1,17 @@
 from pydantic import BaseModel
 
 
-class StockResponse(BaseModel):
+class AssetResponse(BaseModel):
     code: str
     price: int | float
 
 
-class StockTransaction(BaseModel):
+class AssetTransaction(BaseModel):
     stock_code: str
     quantity: int
     investment_bank: str
     user_id: str
 
 
-class StockTransactionRequest(BaseModel):
-    transactions: list[StockTransaction]
+class AssetTransactionRequest(BaseModel):
+    transactions: list[AssetTransaction]

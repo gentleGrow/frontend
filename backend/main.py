@@ -18,4 +18,4 @@ SESSION_KEY = getenv("SESSION_KEY", None)
 app.add_middleware(SessionMiddleware, secret_key=SESSION_KEY)
 
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
-app.include_router(asset_router, prefix="/api/asset_management", tags=["asset_management"])
+app.include_router(asset_router, prefix="/api", tags=["asset"])
