@@ -9,7 +9,7 @@ from database.config import MySQLBase
 
 
 class User(TimestampMixin, MySQLBase):
-    __tablename__ = "users"
+    __tablename__ = "user"
 
     @staticmethod
     def get_uuid():
@@ -22,4 +22,4 @@ class User(TimestampMixin, MySQLBase):
     nickname = Column(String(100), nullable=True)
     deleted_at = Column(DateTime, nullable=True)
 
-    transactions = relationship("StockTransaction", back_populates="user")
+    asset = relationship("Asset", back_populates="user")

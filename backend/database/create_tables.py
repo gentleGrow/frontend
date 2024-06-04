@@ -4,12 +4,15 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.modules.asset.models import (  # noqa > relationship purpose
-    AssetTransaction,
+from app.modules.asset.model import (  # noqa > relationship purpose
+    Asset,
+    Bond,
+    Currency,
     Stock,
     StockDaily,
     StockMonthly,
     StockWeekly,
+    VirtualAsset,
 )
 from app.modules.auth.models import User  # noqa > relationship purpose
 from database.config import MYSQL_URL, MySQLBase
