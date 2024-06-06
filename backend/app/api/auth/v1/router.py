@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.common.auth.constants import REDIS_EXPIRE_TIME_SECOND
+from app.common.auth.constant import REDIS_EXPIRE_TIME_SECOND
 from app.common.auth.jwt import JWTBuilder
-from app.modules.auth.enums import ProviderEnum
-from app.modules.auth.handlers import Google
-from app.modules.auth.repository import UserRepository
-from app.modules.auth.schemas import NewAccessTokenResponse, TokenRefreshRequest, TokenRequest, TokenResponse
+from app.module.auth.enum import ProviderEnum
+from app.module.auth.handler import Google
+from app.module.auth.repository import UserRepository
+from app.module.auth.schema import NewAccessTokenResponse, TokenRefreshRequest, TokenRequest, TokenResponse
 from database.dependencies import get_mysql_session
 from database.singleton import redis_user_repository
 

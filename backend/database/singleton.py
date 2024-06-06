@@ -1,5 +1,5 @@
-from app.modules.asset.repository import RedisStockRepository
-from app.modules.auth.repository import RedisJWTTokenRepository
+from app.module.asset.repository import RedisStockRepository
+from app.module.auth.repository import RedisJWTTokenRepository
 from database.dependencies import get_redis_pool
 
 redis_client = get_redis_pool()

@@ -3,23 +3,23 @@ from uuid import uuid4
 
 import pytest
 
-from app.common.auth.constants import REDIS_EXPIRE_TIME
-from app.modules.auth.enums import ProviderEnum, UserRoleEnum
-from app.modules.auth.models import User as UserModel
-from app.modules.auth.repository import RedisTokenRepository
+from app.common.auth.constant import REDIS_EXPIRE_TIME_SECOND
+from app.module.auth.enum import ProviderEnum, UserRoleEnum
+from app.module.auth.model import User as UserModel
+from app.module.auth.repository import RedisJWTTokenRepository
 
 
 @pytest.mark.asyncio
 class RedisTokenRepositoryTest:
     async def test_save_token(mock_redis):
-        token_repository = RedisTokenRepository(redis_client=mock_redis)
-        await token_repository.save("user_id", "token_value", REDIS_EXPIRE_TIME)
+        token_repository = RedisJWTTokenRepository(redis_client=mock_redis)
+        await token_repository.save("user_id", "token_value", REDIS_EXPIRE_TIME_SECOND)
         mock_redis.set.assert_called_once_with("user_id", "token_value")
-        mock_redis.expire.assert_called_once_with("user_id", REDIS_EXPIRE_TIME)
+        mock_redis.expire.assert_called_once_with("user_id", REDIS_EXPIRE_TIME_SECOND)
 
     async def test_get_token(mock_redis):
         mock_redis.get.return_value = "token_value"
-        token_repository = RedisTokenRepository(redis_client=mock_redis)
+        token_repository = RedisJWTTokenRepository(redis_client=mock_redis)
         token = await token_repository.get("user_id")
         assert token == "token_value"
         mock_redis.get.assert_called_once_with("user_id")

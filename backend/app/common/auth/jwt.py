@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from fastapi import HTTPException, status
 from jwt import ExpiredSignatureError, InvalidTokenError, decode, encode
 
-from app.common.auth.constants import JWT_ACCESS_TIME_MINUTE, JWT_REFRESH_TIME_MINUTE
+from app.common.auth.constant import JWT_ACCESS_TIME_MINUTE, JWT_REFRESH_TIME_MINUTE
 
 load_dotenv()
 JWT_SECRET_KEY = getenv("JWT_SECRET", None)

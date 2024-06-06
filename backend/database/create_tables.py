@@ -4,14 +4,17 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.modules.asset.models import (  # noqa > relationship purpose
-    AssetTransaction,
+from app.module.asset.model import (  # noqa > relationship purpose
+    Asset,
+    Bond,
+    Currency,
     Stock,
     StockDaily,
     StockMonthly,
     StockWeekly,
+    VirtualAsset,
 )
-from app.modules.auth.models import User  # noqa > relationship purpose
+from app.module.auth.model import User  # noqa > relationship purpose
 from database.config import MYSQL_URL, MySQLBase
 
 os.makedirs("./logs", exist_ok=True)

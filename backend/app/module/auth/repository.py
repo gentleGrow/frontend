@@ -5,9 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.common.repository.base_repository import AbstractCRUDRepository
-from app.modules.auth.enums import ProviderEnum, UserRoleEnum
-from app.modules.auth.models import User as UserModel
-from app.modules.auth.schemas import User as UserSchema
+from app.module.auth.enum import ProviderEnum, UserRoleEnum
+from app.module.auth.model import User as UserModel
+from app.module.auth.schema import User as UserSchema
 
 
 class UserRepository:

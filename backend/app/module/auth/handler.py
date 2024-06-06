@@ -7,8 +7,8 @@ from google.auth.transport import requests
 from google.oauth2 import id_token
 
 from app.common.auth.jwt import JWTBuilder
-from app.modules.auth.repository import UserRepository
-from app.modules.auth.schemas import User as UserSchema
+from app.module.auth.repository import UserRepository
+from app.module.auth.schema import User as UserSchema
 
 load_dotenv()
 GOOGLE_CLIENT_ID = getenv("GOOGLE_CLIENT_ID", None)

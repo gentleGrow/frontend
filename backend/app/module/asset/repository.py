@@ -1,9 +1,11 @@
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.orm import joinedload
 
 from app.common.repository.base_repository import AbstractCRUDRepository
-from app.modules.asset.models import AssetTransaction
+from app.module.asset.enum import AssetType
+from app.module.asset.model import Asset
 from data.common.schemas import StockList, StockPriceList
 
 
@@ -23,17 +25,17 @@ class RedisStockRepository(AbstractCRUDRepository):
         return await self.redis.get(stock_code)
 
 
-class AssetTransactionRepository:
+class AssetRepository:
     @staticmethod
-    async def get_assets(db: AsyncSession, user_id: str) -> list[AssetTransaction]:
-        result = await db.execute(select(AssetTransaction).filter(AssetTransaction.user_id == user_id))
+    async def get_assets(db: AsyncSession, user_id: str) -> list[Asset]:
+        result = await db.execute(select(Asset).filter(Asset.user_id == user_id))
         return result.scalars().all()
 
     @staticmethod
-    async def save_assets(db: AsyncSession, asset_transactions: list[AssetTransaction]) -> bool:
-        transactions: list[AssetTransaction] = [
-            AssetTransaction(
-                id=AssetTransaction.get_uuid(),
+    async def save_assets(db: AsyncSession, asset_transactions: list[Asset]) -> bool:
+        transactions: list[Asset] = [
+            Asset(
+                id=Asset.get_uuid(),
                 quantity=asset_transaction.quantity,
                 investment_bank=asset_transaction.investment_bank,
                 stock_id=asset_transaction.stock_id,
@@ -46,12 +48,10 @@ class AssetTransactionRepository:
         return True
 
     @staticmethod
-    async def update_assets(db: AsyncSession, asset_transactions: list[AssetTransaction]) -> bool:
-        transaction_ids: list[AssetTransaction.id] = [asset_transaction.id for asset_transaction in asset_transactions]
+    async def update_assets(db: AsyncSession, asset_transactions: list[Asset]) -> bool:
+        transaction_ids: list[Asset.id] = [asset_transaction.id for asset_transaction in asset_transactions]
 
-        existing_transactions = await db.execute(
-            select(AssetTransaction).filter(AssetTransaction.id.in_(transaction_ids))
-        )
+        existing_transactions = await db.execute(select(Asset).filter(Asset.id.in_(transaction_ids)))
         existing_transactions = existing_transactions.scalars().all()
 
         transaction_map = {transaction.id: transaction for transaction in existing_transactions}
@@ -67,3 +67,12 @@ class AssetTransactionRepository:
 
         await db.commit()
         return True
+
+    @staticmethod
+    async def get_stock_assets_by_user_id(db: AsyncSession, user_id: str) -> list[Asset]:
+        result = await db.execute(
+            select(Asset)
+            .options(joinedload(Asset.user))
+            .filter(Asset.user_id == user_id, Asset.type == AssetType.STOCK)
+        )
+        return result.scalars().all()
