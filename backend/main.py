@@ -6,8 +6,8 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app.api.asset.v1.router import asset_router
 from app.api.auth.v1.router import auth_router
-from app.modules.asset.model import Asset  # noqa: F401 > table 생성 시 필요합니다.
-from app.modules.auth.models import User  # noqa: F401 > table 생성 시 필요합니다.
+from app.module.asset.model import Asset  # noqa: F401 > table 생성 시 필요합니다.
+from app.module.auth.model import User  # noqa: F401 > table 생성 시 필요합니다.
 
 app = FastAPI()
 

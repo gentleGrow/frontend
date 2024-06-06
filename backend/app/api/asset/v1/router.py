@@ -4,9 +4,9 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.common.auth.security import verify_jwt_token
-from app.common.schemas import JsonResponse
-from app.modules.asset.repository import AssetRepository
-from app.modules.asset.schemas import AssetTransaction, AssetTransactionRequest
+from app.common.schema import JsonResponse
+from app.module.asset.repository import AssetRepository
+from app.module.asset.schemas import AssetTransaction, AssetTransactionRequest
 from database.dependencies import get_mysql_session
 
 asset_router = APIRouter(prefix="/v1")

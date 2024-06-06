@@ -3,7 +3,7 @@ import asyncio
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
-from app.common.utils.logging import logging
+from app.common.util.logging import logging
 from data.common.schemas import StockList, StockPrice, StockPriceList
 
 

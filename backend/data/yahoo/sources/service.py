@@ -1,6 +1,6 @@
 import datetime
 
-from app.common.utils.time import end_timestamp, start_timestamp
+from app.common.util.time import end_timestamp, start_timestamp
 
 
 def get_period_bounds(stock_history_timerange: int) -> tuple[int, int]:

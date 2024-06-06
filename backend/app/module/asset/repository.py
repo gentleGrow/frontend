@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.common.repository.base_repository import AbstractCRUDRepository
-from app.modules.asset.model import Asset
+from app.module.asset.model import Asset
 from data.common.schemas import StockList, StockPriceList
 
 

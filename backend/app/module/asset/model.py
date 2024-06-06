@@ -3,8 +3,8 @@ from uuid import uuid4
 from sqlalchemy import Column, Date, Enum, Float, ForeignKey, Integer, PrimaryKeyConstraint, String, UniqueConstraint
 from sqlalchemy.orm import relationship
 
-from app.common.mixins.timestamps import TimestampMixin
-from app.modules.asset.enum import AssetType, CurrencyType, VirtualExchangeType
+from app.common.mixin.timestamp import TimestampMixin
+from app.module.asset.enum import AccountType, AssetType, CurrencyType, InvestmentBankType, VirtualExchangeType
 from database.config import MySQLBase
 
 
@@ -17,7 +17,8 @@ class Asset(TimestampMixin, MySQLBase):
 
     id = Column(String(36), primary_key=True, default=get_uuid)
     quantity = Column(Integer, nullable=False)
-    investment_bank = Column(String(255), nullable=False, info={"description": "증권사"})
+    investment_bank = Column(Enum(InvestmentBankType), nullable=False, info={"description": "증권사"})
+    account_type = Column(Enum(AccountType), nullable=False, info={"description": "계좌 종류"})
     type = Column(Enum(AssetType), nullable=False, info={"description": "자산 종류"})
     user_id = Column(String(36), ForeignKey("user.id"), nullable=False)
     asset_id = Column(String(36), nullable=False)

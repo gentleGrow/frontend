@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
 
-from app.modules.auth.enums import ProviderEnum, UserRoleEnum
+from app.module.auth.enum import ProviderEnum, UserRoleEnum
 
 
 class User(BaseModel):

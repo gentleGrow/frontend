@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.asset.model import Stock, StockDaily, StockMonthly, StockWeekly
+from app.module.asset.model import Stock, StockDaily, StockMonthly, StockWeekly
 
 
 class StockRepository:

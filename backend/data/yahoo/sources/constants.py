@@ -1,4 +1,4 @@
-from app.modules.asset.model import StockDaily, StockMonthly, StockWeekly
+from app.module.asset.model import StockDaily, StockMonthly, StockWeekly
 from data.yahoo.sources.enums import TimeInterval
 
 STOCK_TIME_INTERVAL = "1d"

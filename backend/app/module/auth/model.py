@@ -3,8 +3,8 @@ from uuid import uuid4
 from sqlalchemy import Column, DateTime, Enum, String
 from sqlalchemy.orm import relationship
 
-from app.common.mixins.timestamps import TimestampMixin
-from app.modules.auth.enums import UserRoleEnum
+from app.common.mixin.timestamp import TimestampMixin
+from app.module.auth.enum import UserRoleEnum
 from database.config import MySQLBase
 
 
