@@ -1,11 +1,29 @@
 from uuid import uuid4
 
-from sqlalchemy import Column, Date, Enum, Float, ForeignKey, Integer, PrimaryKeyConstraint, String, UniqueConstraint
+from sqlalchemy import (
+    Column,
+    Date,
+    Enum,
+    Float,
+    ForeignKey,
+    Integer,
+    PrimaryKeyConstraint,
+    String,
+    Table,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import relationship
 
 from app.common.mixin.timestamp import TimestampMixin
 from app.module.asset.enum import AccountType, AssetType, CurrencyType, InvestmentBankType, VirtualExchangeType
 from database.config import MySQLBase
+
+asset_stock = Table(
+    "asset_stock",
+    MySQLBase.metadata,
+    Column("asset_id", String(36), ForeignKey("asset.id"), primary_key=True),
+    Column("stock_code", String(255), ForeignKey("stock.code"), primary_key=True),
+)
 
 
 class Asset(TimestampMixin, MySQLBase):
@@ -19,13 +37,11 @@ class Asset(TimestampMixin, MySQLBase):
     quantity = Column(Integer, nullable=False)
     investment_bank = Column(Enum(InvestmentBankType), nullable=False, info={"description": "증권사"})
     account_type = Column(Enum(AccountType), nullable=False, info={"description": "계좌 종류"})
-    type = Column(Enum(AssetType), nullable=False, info={"description": "자산 종류"})
+    asset_type = Column(Enum(AssetType), nullable=False, info={"description": "자산 종류"})
     user_id = Column(String(36), ForeignKey("user.id"), nullable=False)
-    asset_id = Column(String(36), nullable=False)
 
     user = relationship("User", back_populates="asset")
-
-    __mapper_args__ = {"polymorphic_on": type, "polymorphic_identity": "asset"}
+    stocks = relationship("Stock", secondary=asset_stock, back_populates="assets")
 
 
 class Stock(TimestampMixin, MySQLBase):
@@ -35,7 +51,7 @@ class Stock(TimestampMixin, MySQLBase):
     name = Column(String(255), nullable=False)
     market_index = Column(String(255), nullable=False)
 
-    asset = relationship("Asset", back_populates="stock")
+    assets = relationship("Asset", secondary=asset_stock, back_populates="stocks")
     daily_price = relationship("StockDaily", back_populates="stock")
     weekly_price = relationship("StockWeekly", back_populates="stock")
     monthly_price = relationship("StockMonthly", back_populates="stock")
@@ -104,10 +120,6 @@ class Bond(TimestampMixin, MySQLBase):
     maturity_date = Column(Date, nullable=False, info={"description": "만기일"})
     coupon_rate = Column(Float, nullable=False, info={"description": "이자율"})
 
-    assets = relationship("Asset", primaryjoin="and_(Asset.asset_id == Bond.id, Asset.type == 'bond')")
-
-    __mapper_args__ = {"polymorphic_identity": AssetType.BOND}
-
 
 class VirtualAsset(TimestampMixin, MySQLBase):
     __tablename__ = "virtual_asset"
@@ -115,29 +127,11 @@ class VirtualAsset(TimestampMixin, MySQLBase):
     code = Column(String(255), primary_key=True, nullable=False)
     name = Column(String(255), nullable=False)
     exchange = Column(Enum(VirtualExchangeType), nullable=True, info={"description": "거래소"})
-    quantity = Column(Integer, nullable=False)
-
-    assets = relationship(
-        "Asset", primaryjoin="and_(Asset.asset_id == VirtualAsset.code, Asset.type == 'virtual_asset')"
-    )
-
-    __mapper_args__ = {"polymorphic_identity": AssetType.VIRTUAL_ASSET}
 
 
 class Currency(TimestampMixin, MySQLBase):
     __tablename__ = "currency"
 
-    @staticmethod
-    def get_uuid():
-        return str(uuid4())
+    type = Column(Enum(CurrencyType), primary_key=True, nullable=False)
 
-    id = Column(String(36), primary_key=True, default=get_uuid)
-    type = Column(Enum(CurrencyType), nullable=False)
-    amount = Column(Integer, nullable=False)
-    user_id = Column(String(36), ForeignKey("user.id"), nullable=False)
-
-    user = relationship("User", back_populates="currency")
-
-    __table_args__ = (UniqueConstraint("user_id", "type", name="uq_user_currency"),)
-
-    __mapper_args__ = {"polymorphic_identity": AssetType.CURRENCY}
+    __table_args__ = (UniqueConstraint("type", name="uq_currency_type"),)

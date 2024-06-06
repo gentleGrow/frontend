@@ -1,8 +1,10 @@
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.orm import joinedload
 
 from app.common.repository.base_repository import AbstractCRUDRepository
+from app.module.asset.enum import AssetType
 from app.module.asset.model import Asset
 from data.common.schemas import StockList, StockPriceList
 
@@ -65,3 +67,12 @@ class AssetRepository:
 
         await db.commit()
         return True
+
+    @staticmethod
+    async def get_stock_assets_by_user_id(db: AsyncSession, user_id: str) -> list[Asset]:
+        result = await db.execute(
+            select(Asset)
+            .options(joinedload(Asset.user))
+            .filter(Asset.user_id == user_id, Asset.type == AssetType.STOCK)
+        )
+        return result.scalars().all()

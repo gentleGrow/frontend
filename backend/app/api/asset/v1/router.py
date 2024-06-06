@@ -13,7 +13,7 @@ asset_router = APIRouter(prefix="/v1")
 
 
 @asset_router.get("/dummy/asset", summary="임시 자산 정보를 반환합니다.")
-async def get_dummy_assets(token: dict = Depends(verify_jwt_token), db: AsyncSession = Depends(get_mysql_session)):
+async def get_dummy_assets(db: AsyncSession = Depends(get_mysql_session)):
     return
 
 
