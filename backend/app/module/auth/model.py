@@ -1,6 +1,4 @@
-from uuid import uuid4
-
-from sqlalchemy import Column, DateTime, Enum, String
+from sqlalchemy import Column, DateTime, Enum, Integer, String
 from sqlalchemy.orm import relationship
 
 from app.common.mixin.timestamp import TimestampMixin
@@ -11,11 +9,7 @@ from database.config import MySQLBase
 class User(TimestampMixin, MySQLBase):
     __tablename__ = "user"
 
-    @staticmethod
-    def get_uuid():
-        return str(uuid4())
-
-    id = Column(String(36), primary_key=True, default=get_uuid)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     social_id = Column(String(255), index=True, nullable=False)
     provider = Column(String(50), nullable=False)
     role = Column(Enum(UserRoleEnum), default=UserRoleEnum.USER)

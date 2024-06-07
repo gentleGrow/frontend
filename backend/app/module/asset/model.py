@@ -1,5 +1,3 @@
-from uuid import uuid4
-
 from sqlalchemy import (
     Column,
     Date,
@@ -21,7 +19,7 @@ from database.config import MySQLBase
 asset_stock = Table(
     "asset_stock",
     MySQLBase.metadata,
-    Column("asset_id", String(36), ForeignKey("asset.id"), primary_key=True),
+    Column("asset_id", Integer, ForeignKey("asset.id"), primary_key=True),
     Column("stock_code", String(255), ForeignKey("stock.code"), primary_key=True),
 )
 
@@ -29,16 +27,12 @@ asset_stock = Table(
 class Asset(TimestampMixin, MySQLBase):
     __tablename__ = "asset"
 
-    @staticmethod
-    def get_uuid():
-        return str(uuid4())
-
-    id = Column(String(36), primary_key=True, default=get_uuid)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     quantity = Column(Integer, nullable=False)
     investment_bank = Column(Enum(InvestmentBankType), nullable=False, info={"description": "증권사"})
     account_type = Column(Enum(AccountType), nullable=False, info={"description": "계좌 종류"})
     asset_type = Column(Enum(AssetType), nullable=False, info={"description": "자산 종류"})
-    user_id = Column(String(36), ForeignKey("user.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
 
     user = relationship("User", back_populates="asset")
     stocks = relationship("Stock", secondary=asset_stock, back_populates="assets")
@@ -110,11 +104,7 @@ class StockMonthly(MySQLBase):
 class Bond(TimestampMixin, MySQLBase):
     __tablename__ = "bond"
 
-    @staticmethod
-    def get_uuid():
-        return str(uuid4())
-
-    id = Column(String(36), primary_key=True, default=get_uuid)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
     issuer = Column(String(255), nullable=False)
     maturity_date = Column(Date, nullable=False, info={"description": "만기일"})
