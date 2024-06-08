@@ -7,13 +7,12 @@ from app.module.auth.enum import ProviderEnum
 from app.module.auth.handler import Google
 from app.module.auth.repository import UserRepository
 from app.module.auth.schema import NewAccessTokenResponse, TokenRefreshRequest, TokenRequest, TokenResponse
-from database.dependencies import get_mysql_session
+from database.dependency import get_mysql_session
 from database.singleton import redis_user_repository
 
 auth_router = APIRouter()
-user_repository = UserRepository()
 jwt_builder = JWTBuilder()
-google_builder = Google(user_repository, jwt_builder)
+google_builder = Google(jwt_builder)
 
 
 @auth_router.post(
@@ -40,9 +39,9 @@ async def google_login(request: TokenRequest, db: AsyncSession = Depends(get_mys
     if social_id is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="인증되지 않은 유저입니다.")
 
-    user = await user_repository.get(db, social_id, ProviderEnum.GOOGLE)
+    user = await UserRepository.get_by_social_id(db, social_id, ProviderEnum.GOOGLE)
     if user is None:
-        user = await user_repository.create(db, social_id, ProviderEnum.GOOGLE)
+        user = await UserRepository.create(db, social_id, ProviderEnum.GOOGLE)
 
     access_token = await google_builder.get_access_token(user)
 

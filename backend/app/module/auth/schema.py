@@ -1,13 +1,12 @@
 from datetime import datetime
-from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from app.module.auth.enum import ProviderEnum, UserRoleEnum
 
 
 class User(BaseModel):
-    id: UUID = Field(default_factory=uuid4)
+    id: int
     social_id: str
     provider: ProviderEnum
     role: UserRoleEnum

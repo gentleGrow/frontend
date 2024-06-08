@@ -35,7 +35,7 @@ class Asset(TimestampMixin, MySQLBase):
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
 
     user = relationship("User", back_populates="asset")
-    stocks = relationship("Stock", secondary=asset_stock, back_populates="assets")
+    stock = relationship("Stock", secondary=asset_stock, back_populates="asset")
 
 
 class Stock(TimestampMixin, MySQLBase):
@@ -45,7 +45,7 @@ class Stock(TimestampMixin, MySQLBase):
     name = Column(String(255), nullable=False)
     market_index = Column(String(255), nullable=False)
 
-    assets = relationship("Asset", secondary=asset_stock, back_populates="stocks")
+    asset = relationship("Asset", secondary=asset_stock, back_populates="stock")
     daily_price = relationship("StockDaily", back_populates="stock")
     weekly_price = relationship("StockWeekly", back_populates="stock")
     monthly_price = relationship("StockMonthly", back_populates="stock")

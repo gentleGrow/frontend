@@ -4,7 +4,7 @@ from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
 from app.common.util.logging import logging
-from data.common.schemas import StockList, StockPrice, StockPriceList
+from app.module.asset.schema.stock_schema import StockList, StockPrice, StockPriceList
 
 
 async def fetch_stock_price(session: ClientSession, code: str) -> StockPrice:

@@ -11,7 +11,8 @@ from app.module.auth.schema import User as UserSchema
 
 
 class UserRepository:
-    async def get(self, db: AsyncSession, social_id: str, provider: ProviderEnum) -> UserSchema | None:
+    @staticmethod
+    async def get_by_social_id(db: AsyncSession, social_id: str, provider: ProviderEnum) -> UserSchema | None:
         select_instance = select(UserModel).where(
             UserModel.social_id == social_id, UserModel.provider == provider.value
         )
@@ -20,8 +21,15 @@ class UserRepository:
         user = result.scalars().first()
         return user and UserSchema.model_validate(user)
 
+    @staticmethod
+    async def get_by_id(db: AsyncSession, user_id: str) -> UserSchema | None:
+        select_instance = select(UserModel).where(UserModel.id == user_id)
+        result = await db.execute(select_instance)
+        user = result.scalars().first()
+        return user and UserSchema.model_validate(user)
+
+    @staticmethod
     async def create(
-        self,
         db: AsyncSession,
         social_id: str,
         provider: ProviderEnum,

@@ -5,16 +5,30 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.common.auth.security import verify_jwt_token
 from app.common.schema import JsonResponse
-from app.module.asset.repository import AssetRepository
-from app.module.asset.schemas import AssetTransaction, AssetTransactionRequest
-from database.dependencies import get_mysql_session
+from app.module.asset.repository.asset_repository import AssetRepository
+from app.module.asset.schema.asset_schema import AssetTransaction, AssetTransactionRequest
+
+# from app.module.auth.constant import DUMMY_USER_ID
+# from app.module.auth.repository import UserRepository
+from database.dependency import get_mysql_session
 
 asset_router = APIRouter(prefix="/v1")
 
+# 다음 커밋에 주석 해제 하겠습니다.
+# @asset_router.get("/dummy/asset", summary="임시 자산 정보를 반환합니다.")
+# async def get_dummy_assets(db: AsyncSession = Depends(get_mysql_session)):
+#     dummy_user = UserRepository.get_by_id(DUMMY_USER_ID)
 
-@asset_router.get("/dummy/asset", summary="임시 자산 정보를 반환합니다.")
-async def get_dummy_assets(db: AsyncSession = Depends(get_mysql_session)):
-    return
+#     if dummy_user is None:
+#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="더미 유저가 생성 되어 있지 않습니다.")
+
+#     dummy_user_assets = AssetRepository.get_assets(DUMMY_USER_ID)
+
+#     for asset in dummy_user_assets:
+#         for stock in asset.stock:
+#             print(f"[분석] {stock=}")
+
+#     return
 
 
 @asset_router.get("/asset", summary="사용자의 자산 정보를 반환합니다.", response_model=list[AssetTransaction])

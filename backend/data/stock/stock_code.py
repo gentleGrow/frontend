@@ -1,14 +1,21 @@
 import asyncio
+import logging
+import os
 
 from sqlalchemy.exc import IntegrityError
 
-from app.common.util.logging import logging
 from app.module.asset.model import Stock  # noqa: F401 > relationship 설정시 필요합니다.
+from app.module.asset.schema.stock_schema import StockInfo, StockList
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from data.common.repository import StockRepository
-from data.common.schemas import StockInfo, StockList
 from data.common.service import get_all_stock_code_list
-from database.dependencies import transactional_session
+from database.dependency import transactional_session
+
+logging.basicConfig(
+    filename="./logs/stock_code.log", level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+os.makedirs("./logs", exist_ok=True)
 
 
 async def main():
@@ -19,14 +26,14 @@ async def main():
         for stock_info in stock_list.stocks:
             stock_info: StockInfo
 
-            logging.info(f"[stock_codes] {stock_info=}")
+            logging.info(f"[stock_code] {stock_info=}")
 
             try:
                 await stock_repository.save(
                     Stock(code=stock_info.code, name=stock_info.name, market_index=stock_info.market_index)
                 )
             except IntegrityError as e:
-                logging.error(f"[stock_codes] IntegrityError: {e} - Skipping stock code {stock_info.code}")
+                logging.error(f"[stock_code] IntegrityError: {e} - Skipping stock code {stock_info.code}")
                 await session.rollback()
                 continue
 

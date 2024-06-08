@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.config import MySQLSession
-from database.enums import EnvironmentType
+from database.enum import EnvironmentType
 
 load_dotenv()
 

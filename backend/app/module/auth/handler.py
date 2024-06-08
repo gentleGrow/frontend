@@ -7,7 +7,6 @@ from google.auth.transport import requests
 from google.oauth2 import id_token
 
 from app.common.auth.jwt import JWTBuilder
-from app.module.auth.repository import UserRepository
 from app.module.auth.schema import User as UserSchema
 
 load_dotenv()
@@ -33,8 +32,7 @@ class SocialLoginAuthentication(ABC):
 
 
 class Google(SocialLoginAuthentication):
-    def __init__(self, user_repository: UserRepository, token_builder: JWTBuilder):
-        self.user_repository = user_repository
+    def __init__(self, token_builder: JWTBuilder):
         self.token_builder = token_builder
 
     async def verify_token(self, token: str) -> dict:

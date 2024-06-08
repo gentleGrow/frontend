@@ -6,13 +6,13 @@ import requests
 import websocket
 from pydantic import ValidationError
 
+from app.module.asset.schema.stock_schema import RealtimeStockList
 from data.common.config import KOREA_INVESTMENT_KEY, KOREA_INVESTMENT_SECRET, KOREA_URL_BASE, logging
-from data.common.enums import SuccessCode, TradeType
-from data.common.schemas import realtimeStockList
-from data.korea_investment.sources.schemas import StockData, StockTransaction
+from data.common.enum import SuccessCode, TradeType
+from data.korea_investment.source.schema import StockData, StockTransaction
 
 
-def divide_stock_list(stock_code_list: realtimeStockList, chunk_size: int) -> Generator[list[str], None, None]:
+def divide_stock_list(stock_code_list: RealtimeStockList, chunk_size: int) -> Generator[list[str], None, None]:
     stock_codes = [stock.code for stock in stock_code_list.stocks]
     for idx in range(0, len(stock_codes), chunk_size):
         yield stock_codes[idx : idx + chunk_size]

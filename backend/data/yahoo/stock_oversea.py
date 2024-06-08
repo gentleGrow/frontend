@@ -5,14 +5,14 @@ import os
 import pandas as pd
 from sqlalchemy.exc import IntegrityError
 
+from app.module.asset.schema.stock_schema import StockList
 from data.common.repository import StockRepository
-from data.common.schemas import StockList
 from data.common.service import get_oversea_stock_code_list
-from data.yahoo.sources.constants import STOCK_HISTORY_TIMERANGE_YEAR, TIME_INTERVAL_MODEL_REPO_MAP
-from data.yahoo.sources.enums import TimeInterval
-from data.yahoo.sources.schemas import StockDataFrame
-from data.yahoo.sources.service import get_period_bounds
-from database.dependencies import transactional_session
+from data.yahoo.source.constant import STOCK_HISTORY_TIMERANGE_YEAR, TIME_INTERVAL_MODEL_REPO_MAP
+from data.yahoo.source.enum import TimeInterval
+from data.yahoo.source.schema import StockDataFrame
+from data.yahoo.source.service import get_period_bounds
+from database.dependency import transactional_session
 
 # Configure logging
 log_dir = "./logs"

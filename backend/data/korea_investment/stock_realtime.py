@@ -7,19 +7,19 @@ from typing import Generator
 
 import websocket
 
+from app.module.asset.schema.stock_schema import RealtimeStockList
 from data.common.constant import (
     MAXIMUM_STOCK_CODES_CONNECTION,
     PING_INTERVAL,
     REDIS_STOCK_EXPIRE_SECONDS,
     TIMEOUT_SECOND,
 )
-from data.common.enums import TradeType
-from data.common.schemas import realtimeStockList
+from data.common.enum import TradeType
 from data.common.service import get_realtime_stock_code_list
-from data.korea_investment.sources.auth import KOREA_URL_WEBSOCKET, get_approval_key
-from data.korea_investment.sources.config import KOREA_INVESTMENT_KEYS
-from data.korea_investment.sources.schemas import StockTransaction
-from data.korea_investment.sources.service import (
+from data.korea_investment.source.auth import KOREA_URL_WEBSOCKET, get_approval_key
+from data.korea_investment.source.config import KOREA_INVESTMENT_KEYS
+from data.korea_investment.source.schema import StockTransaction
+from data.korea_investment.source.service import (
     divide_stock_list,
     parse_stock_data,
     set_timeout,
@@ -81,7 +81,7 @@ async def connect_and_subscribe(
 
 
 async def main():
-    stock_code_list: realtimeStockList = get_realtime_stock_code_list()
+    stock_code_list: RealtimeStockList = get_realtime_stock_code_list()
     tasks = []
 
     stock_code_generators = [

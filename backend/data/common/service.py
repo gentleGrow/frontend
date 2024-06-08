@@ -5,6 +5,7 @@ import pandas as pd
 from botocore.exceptions import ClientError, NoCredentialsError
 from dotenv import find_dotenv, load_dotenv
 
+from app.module.asset.schema.stock_schema import RealtimeStockInfo, RealtimeStockList, StockInfo, StockList
 from data.common.config import (
     ENVIRONMENT,
     ETC_STOCK_FILEPATH,
@@ -15,8 +16,7 @@ from data.common.config import (
     S3_BUCKET_STOCK_FILES,
     logging,
 )
-from data.common.schemas import RealtimeStockInfo, RealtimeStockList, StockInfo, StockList
-from database.enums import EnvironmentType
+from database.enum import EnvironmentType
 
 load_dotenv(find_dotenv())
 

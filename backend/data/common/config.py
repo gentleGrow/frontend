@@ -3,7 +3,7 @@ from os import getenv
 
 from dotenv import find_dotenv, load_dotenv
 
-from database.enums import EnvironmentType
+from database.enum import EnvironmentType
 
 load_dotenv(find_dotenv())
 

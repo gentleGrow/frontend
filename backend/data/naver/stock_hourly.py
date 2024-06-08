@@ -2,10 +2,10 @@ import asyncio
 import sys
 
 from app.module.asset.constant import REDIS_STOCK_EXPIRE_SECOND
+from app.module.asset.schema.stock_schema import StockList, StockPriceList
 from data.common.constant import MARKET_TYPE_N_STOCK_CODE_FUNC_MAP, STOCK_CHUNK_SIZE
-from data.common.enums import MarketType
-from data.common.schemas import StockList, StockPriceList
-from data.naver.sources.service import get_stock_prices
+from data.common.enum import MarketType
+from data.naver.source.service import get_stock_prices
 from database.singleton import redis_stock_repository
 
 
