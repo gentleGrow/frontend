@@ -1,20 +1,18 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.common.auth.constants import REDIS_EXPIRE_TIME_SECOND
+from app.common.auth.constant import REDIS_EXPIRE_TIME_SECOND
 from app.common.auth.jwt import JWTBuilder
-from app.common.utils.logging import logging
-from app.modules.auth.enums import ProviderEnum
-from app.modules.auth.handlers import Google
-from app.modules.auth.repository import UserRepository
-from app.modules.auth.schemas import NewAccessTokenResponse, TokenRefreshRequest, TokenRequest, TokenResponse
-from database.dependencies import get_mysql_session
+from app.module.auth.enum import ProviderEnum
+from app.module.auth.handler import Google
+from app.module.auth.repository import UserRepository
+from app.module.auth.schema import NewAccessTokenResponse, TokenRefreshRequest, TokenRequest, TokenResponse
+from database.dependency import get_mysql_session
 from database.singleton import redis_user_repository
 
 auth_router = APIRouter()
-user_repository = UserRepository()
 jwt_builder = JWTBuilder()
-google_builder = Google(user_repository, jwt_builder)
+google_builder = Google(jwt_builder)
 
 
 @auth_router.post(
@@ -41,9 +39,9 @@ async def google_login(request: TokenRequest, db: AsyncSession = Depends(get_mys
     if social_id is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="인증되지 않은 유저입니다.")
 
-    user = await user_repository.get(db, social_id, ProviderEnum.GOOGLE)
+    user = await UserRepository.get_by_social_id(db, social_id, ProviderEnum.GOOGLE)
     if user is None:
-        user = await user_repository.create(db, social_id, ProviderEnum.GOOGLE)
+        user = await UserRepository.create(db, social_id, ProviderEnum.GOOGLE)
 
     access_token = await google_builder.get_access_token(user)
 
@@ -63,17 +61,15 @@ async def google_login(request: TokenRequest, db: AsyncSession = Depends(get_mys
 )
 async def refresh_access_token(request: TokenRefreshRequest) -> TokenResponse:
     refresh_token = request.refresh_token
-    logging.info(f"{refresh_token=}")
+
     decoded = jwt_builder.decode_token(refresh_token)
-    logging.info(f"{decoded=}")
+
     user_id = decoded.get("sub")
-    logging.info(f"{user_id=}")
 
     if user_id is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="refresh token안에 유저 정보가 들어있지 않습니다.")
 
     stored_refresh_token = await redis_user_repository.get(user_id)
-    logging.info(f"{stored_refresh_token=}")
 
     if stored_refresh_token is None:
         raise HTTPException(
@@ -88,7 +84,5 @@ async def refresh_access_token(request: TokenRefreshRequest) -> TokenResponse:
         )
 
     access_token = jwt_builder.generate_access_token(user_id)
-
-    logging.info(f"{access_token=}")
 
     return NewAccessTokenResponse(access_token=access_token)

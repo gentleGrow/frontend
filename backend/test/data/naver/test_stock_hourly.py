@@ -2,8 +2,8 @@ from unittest.mock import AsyncMock, call, patch
 
 import pytest
 
-from data.common.enums import MarketType
-from data.common.schemas import StockInfo, StockList, StockPrice, StockPriceList
+from app.module.asset.schema.stock_schema import StockInfo, StockList, StockPrice, StockPriceList
+from data.common.enum import MarketType
 from data.naver.stock_hourly import main
 
 REDIS_STOCK_EXPIRE_SECOND = 60 * 60

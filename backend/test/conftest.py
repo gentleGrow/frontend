@@ -5,8 +5,8 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.common.auth.jwt import JWTBuilder
-from app.modules.auth.handlers import Google
-from app.modules.auth.repository import UserRepository
+from app.module.auth.handler import Google
+from app.module.auth.repository import UserRepository
 
 
 @pytest.fixture

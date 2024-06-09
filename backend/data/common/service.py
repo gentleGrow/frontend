@@ -2,8 +2,10 @@ import os
 
 import boto3
 import pandas as pd
+from botocore.exceptions import ClientError, NoCredentialsError
 from dotenv import find_dotenv, load_dotenv
 
+from app.module.asset.schema.stock_schema import RealtimeStockInfo, RealtimeStockList, StockInfo, StockList
 from data.common.config import (
     ENVIRONMENT,
     ETC_STOCK_FILEPATH,
@@ -14,8 +16,7 @@ from data.common.config import (
     S3_BUCKET_STOCK_FILES,
     logging,
 )
-from data.common.schemas import RealtimeStockInfo, StockInfo, StockList, realtimeStockList
-from database.enums import EnvironmentType
+from database.enum import EnvironmentType
 
 load_dotenv(find_dotenv())
 
@@ -33,27 +34,48 @@ def download_file_from_s3(bucket, key, local_path) -> None:
     try:
         s3_client.download_file(bucket, key, local_path)
         logging.info(f"{local_path}경로에 ${key}를 저장하였습니다.")
-    except Exception:
-        logging.error("파일을 다운로드하는데 실패하였습니다.")
+    except FileNotFoundError as e:
+        logging.error(f"Local path not found: {e}")
+        raise
+    except NoCredentialsError as e:
+        logging.error(f"AWS credentials not found: {e}")
+        raise
+    except ClientError as e:
+        logging.error(f"Client error: {e}")
+        raise
+    except Exception as e:
+        logging.error(f"Unexpected error: {e}")
         raise
 
 
-def read_realtime_stock_codes_from_excel(filepath: str) -> realtimeStockList:
+def read_realtime_stock_codes_from_excel(filepath: str) -> RealtimeStockList:
     try:
         df = pd.read_excel(filepath, usecols=[0, 1], header=None, names=["code", "name"])
+    except FileNotFoundError as e:
+        logging.error(f"File not found: {e}")
+        raise
+    except ValueError as e:
+        logging.error(f"Value error: {e}")
+        raise
     except Exception as e:
-        logging.error(f"Error reading Excel file: {e}")
+        logging.error(f"Unexpected error: {e}")
         raise
     else:
         stock_infos = [RealtimeStockInfo(code=str(row["code"]), name=str(row["name"])) for _, row in df.iterrows()]
-        return realtimeStockList(stocks=stock_infos)
+        return RealtimeStockList(stocks=stock_infos)
 
 
 def read_stock_codes_from_excel(filepath: str) -> StockList:
     try:
         df = pd.read_excel(filepath, usecols=[0, 1, 2], header=None, names=["code", "name", "market_index"])
+    except FileNotFoundError as e:
+        logging.error(f"File not found: {e}")
+        raise
+    except ValueError as e:
+        logging.error(f"Value error: {e}")
+        raise
     except Exception as e:
-        logging.error(f"Error reading Excel file: {e}")
+        logging.error(f"Unexpected error: {e}")
         raise
     else:
         stock_infos = [
@@ -63,13 +85,13 @@ def read_stock_codes_from_excel(filepath: str) -> StockList:
         return StockList(stocks=stock_infos)
 
 
-def get_realtime_stock_code_list() -> realtimeStockList:
+def get_realtime_stock_code_list() -> RealtimeStockList:
     korea_stock_code_list = read_realtime_stock_codes_from_excel(get_path(KOREA_STOCK_FILEPATH))
     etf_stock_code_list = read_realtime_stock_codes_from_excel(get_path(ETC_STOCK_FILEPATH))
     nas_stock_code_list = read_realtime_stock_codes_from_excel(get_path(NAS_STOCK_FILEPATH))
     nys_stock_code_list = read_realtime_stock_codes_from_excel(get_path(NYS_STOCK_FILEPATH))
     japan_stock_code_list = read_realtime_stock_codes_from_excel(get_path(JAPAN_STOCK_FILEPATH))
-    return realtimeStockList(
+    return RealtimeStockList(
         stocks=korea_stock_code_list.stocks
         + etf_stock_code_list.stocks
         + nas_stock_code_list.stocks
@@ -107,12 +129,10 @@ def get_all_stock_code_list() -> StockList:
 
 
 def get_path(filepath) -> str:
-    if ENVIRONMENT == EnvironmentType.LOCAL:
+    if ENVIRONMENT == EnvironmentType.DEV:
         return filepath
-    elif ENVIRONMENT == EnvironmentType.CLOUD:
-        return download_and_get_path(filepath)
     else:
-        return ""
+        return download_and_get_path(filepath)
 
 
 def download_and_get_path(s3_key) -> str:

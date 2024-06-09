@@ -9,11 +9,18 @@
 [주의] 테스트시 반드시 포트 8000으로 실행해야합니다.
 1. cd /assetmanagement/backend
 2. curl -sSL https://install.python-poetry.org | python3 -
-3. export PATH="$HOME/.local/bin:$PATH"
+3. export PATH="$HOME/.local/bin:$PATH" 혹은 export PYTHONPATH=$(pwd)
 4. source ~/.zshrc
 5. poetry shell
 6. poetry install
 7. uvicorn main:app --reload --port 8000
+
+### pre-commit 세팅
+1. cd /assetmanagement/.git/hooks
+2. touch pre-commit
+#!/bin/sh
+exec pre-commit run --all-files "$@"
+3. chmod +x pre-commit
 
 ### Redis 실행 (mac)
 - brew services start redis

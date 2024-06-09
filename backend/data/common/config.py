@@ -3,7 +3,7 @@ from os import getenv
 
 from dotenv import find_dotenv, load_dotenv
 
-from database.enums import EnvironmentType
+from database.enum import EnvironmentType
 
 load_dotenv(find_dotenv())
 
@@ -17,13 +17,13 @@ ENVIRONMENT = getenv("ENVIRONMENT", None)
 
 logging.info(f"[config] {ENVIRONMENT=}")
 
-if ENVIRONMENT == EnvironmentType.LOCAL:
+if ENVIRONMENT == EnvironmentType.DEV:
     KOREA_STOCK_FILEPATH = getenv("LOCAL_KOREA_STOCK_FILEPATH", None)
     ETC_STOCK_FILEPATH = getenv("LOCAL_ETC_STOCK_FILEPATH", None)
     NAS_STOCK_FILEPATH = getenv("LOCAL_NAS_STOCK_FILEPATH", None)
     NYS_STOCK_FILEPATH = getenv("LOCAL_NYS_STOCK_FILEPATH", None)
     JAPAN_STOCK_FILEPATH = getenv("LOCAL_JAPAN_STOCK_FILEPATH", None)
-elif ENVIRONMENT == EnvironmentType.CLOUD:
+else:
     KOREA_STOCK_FILEPATH = getenv("KOREA_STOCK_FILEPATH", None)
     ETC_STOCK_FILEPATH = getenv("ETC_STOCK_FILEPATH", None)
     NAS_STOCK_FILEPATH = getenv("NAS_STOCK_FILEPATH", None)

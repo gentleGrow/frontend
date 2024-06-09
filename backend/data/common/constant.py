@@ -1,6 +1,6 @@
 from typing import Callable
 
-from data.common.enums import MarketType
+from data.common.enum import MarketType
 from data.common.service import get_korea_stock_code_list, get_oversea_stock_code_list, get_realtime_stock_code_list
 
 MAXIMUM_STOCK_CODES_CONNECTION = 40
