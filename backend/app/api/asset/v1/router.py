@@ -2,31 +2,74 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.common.util.logging import logging
+from sqlalchemy.future import select
 
 from app.common.auth.security import verify_jwt_token
 from app.common.schema import JsonResponse
-from app.module.asset.model import Asset
+from app.common.util.logging import logging
+from app.module.asset.model import AssetStock
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.schema.asset_schema import AssetTransaction, AssetTransactionRequest
-
+from app.module.asset.schema.stock_schema import StockAsset, StockAssetResponse
 from app.module.auth.constant import DUMMY_USER_ID
 from database.dependency import get_mysql_session
 
 asset_router = APIRouter(prefix="/v1")
 
-@asset_router.get("/dummy/asset", summary="임시 자산 정보를 반환합니다.", response_model=list)
-async def get_dummy_assets(db: AsyncSession = Depends(get_mysql_session)) -> list:
-    dummy_assets:list[Asset] = await AssetRepository.get_asset_stock(db, DUMMY_USER_ID)
-    
+
+@asset_router.get("/dummy/asset", summary="임시 자산 정보를 반환합니다.", response_model=StockAssetResponse)
+async def get_dummy_assets(db: AsyncSession = Depends(get_mysql_session)) -> StockAssetResponse:
+    dummy_assets = await AssetRepository.get_asset_stock(db, DUMMY_USER_ID)
+
+    stock_assets = []
+    total_asset_amount = 0
+    total_asset_growth_rate = 0
+    total_invest_amount = 0
+    total_invest_growth_rate = 0
+    total_profit_amount = 0
+    total_profit_rate = 0
+    total_dividend_amount = 0
+    total_dividend_rate = 0
+
     for asset in dummy_assets:
-        logging.info(f"[분석]Asset ID: {asset.id}, Quantity: {asset.quantity}, Investment Bank: {asset.investment_bank}, User ID: {asset.user_id}")
-        for stock in asset.stock:
-            logging.info(f"[분석]Stock Code: {stock.code}, Stock Name: {stock.name}, Market Index: {stock.market_index}")
+        logging.info(
+            f"[분석]Asset ID: {asset.id}, Quantity: {asset.quantity}, Investment Bank: {asset.investment_bank}, User ID: {asset.user_id}"
+        )
+        for stock in asset.stocks:
+            asset_stock = await db.execute(
+                select(AssetStock).filter(AssetStock.asset_id == asset.id, AssetStock.stock_code == stock.code)
+            )
+            asset_stock = asset_stock.scalar_one_or_none()
+            if asset_stock is not None:
+                logging.info(
+                    f"[분석]Stock Code: {stock.code}, Stock Name: {stock.name}, Market Index: {stock.market_index}, Purchase Price: {asset_stock.purchase_price}"
+                )
+                stock_asset = StockAsset(
+                    stock_name=stock.name,
+                    quantity=asset.quantity,
+                    buy_date=asset.purchase_date,
+                    profit=0,
+                    highest_price=0,
+                    lowest_price=0,
+                    stock_volume=0,
+                    investment_bank=asset.investment_bank,
+                    dividend=stock.dividend,
+                    purchase_price=asset_stock.purchase_price,
+                    purchase_amount=asset_stock.purchase_price * asset.quantity,
+                )
+                stock_assets.append(stock_asset)
 
-    return []
-
+    return StockAssetResponse(
+        stock_assets=stock_assets,
+        total_asset_amount=total_asset_amount,
+        total_asset_growth_rate=total_asset_growth_rate,
+        total_invest_amount=total_invest_amount,
+        total_invest_growth_rate=total_invest_growth_rate,
+        total_profit_amount=total_profit_amount,
+        total_profit_rate=total_profit_rate,
+        total_dividend_amount=total_dividend_amount,
+        total_dividend_rate=total_dividend_rate,
+    )
 
 
 @asset_router.get("/asset", summary="사용자의 자산 정보를 반환합니다.", response_model=list[AssetTransaction])

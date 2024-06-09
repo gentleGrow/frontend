@@ -31,8 +31,8 @@ async def get_mysql_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 @asynccontextmanager
-async def transactional_session() -> AsyncGenerator[AsyncSession, None]:
-    async with get_mysql_session() as session:
+async def transactional_session() -> AsyncGenerator[AsyncSession, None]:  # type: ignore
+    async with get_mysql_session() as session:  # type: ignore
         try:
             yield session
             await session.commit()

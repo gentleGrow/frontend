@@ -1,27 +1,17 @@
-from sqlalchemy import (
-    Column,
-    Date,
-    Enum,
-    Float,
-    ForeignKey,
-    Integer,
-    PrimaryKeyConstraint,
-    String,
-    Table,
-    UniqueConstraint,
-)
+from sqlalchemy import Column, Date, Enum, Float, ForeignKey, Integer, PrimaryKeyConstraint, String, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from app.common.mixin.timestamp import TimestampMixin
 from app.module.asset.enum import AccountType, AssetType, CurrencyType, InvestmentBankType, VirtualExchangeType
 from database.config import MySQLBase
 
-asset_stock = Table(
-    "asset_stock",
-    MySQLBase.metadata,
-    Column("asset_id", Integer, ForeignKey("asset.id"), primary_key=True),
-    Column("stock_code", String(255), ForeignKey("stock.code"), primary_key=True),
-)
+
+class AssetStock(MySQLBase):
+    __tablename__ = "asset_stock"
+
+    asset_id = Column(Integer, ForeignKey("asset.id"), primary_key=True)
+    stock_code = Column(String(255), ForeignKey("stock.code"), primary_key=True)
+    purchase_price = Column(Float, nullable=True, info={"description": "매입가"})
 
 
 class Asset(TimestampMixin, MySQLBase):
@@ -32,10 +22,11 @@ class Asset(TimestampMixin, MySQLBase):
     investment_bank = Column(Enum(InvestmentBankType), nullable=False, info={"description": "증권사"})
     account_type = Column(Enum(AccountType), nullable=False, info={"description": "계좌 종류"})
     asset_type = Column(Enum(AssetType), nullable=False, info={"description": "자산 종류"})
+    purchase_date = Column(Date, nullable=False, info={"description": "구매일자"})
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
 
     user = relationship("User", back_populates="asset")
-    stock = relationship("Stock", secondary=asset_stock, back_populates="asset")
+    stock = relationship("Stock", secondary="asset_stock", back_populates="asset")
 
 
 class Stock(TimestampMixin, MySQLBase):
@@ -44,8 +35,9 @@ class Stock(TimestampMixin, MySQLBase):
     code = Column(String(255), primary_key=True, nullable=False)
     name = Column(String(255), nullable=False)
     market_index = Column(String(255), nullable=False)
+    dividend = Column(Float, nullable=True, info={"description": "배당금"})
 
-    asset = relationship("Asset", secondary=asset_stock, back_populates="stock")
+    asset = relationship("Asset", secondary="asset_stock", back_populates="stock")
     daily_price = relationship("StockDaily", back_populates="stock")
     weekly_price = relationship("StockWeekly", back_populates="stock")
     monthly_price = relationship("StockMonthly", back_populates="stock")

@@ -15,6 +15,13 @@
 6. poetry install
 7. uvicorn main:app --reload --port 8000
 
+### pre-commit 세팅
+1. cd /assetmanagement/.git/hooks
+2. touch pre-commit
+#!/bin/sh
+exec pre-commit run --all-files "$@"
+3. chmod +x pre-commit
+
 ### Redis 실행 (mac)
 - brew services start redis
 - brew services info redis

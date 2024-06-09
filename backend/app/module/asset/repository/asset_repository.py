@@ -54,4 +54,3 @@ class AssetRepository:
             .filter(Asset.user_id == user_id, Asset.asset_type == AssetType.STOCK)
         )
         return result.scalars().all()
-
