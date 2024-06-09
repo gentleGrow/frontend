@@ -3,32 +3,30 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.common.util.logging import logging
+
 from app.common.auth.security import verify_jwt_token
 from app.common.schema import JsonResponse
+from app.module.asset.model import Asset
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.schema.asset_schema import AssetTransaction, AssetTransactionRequest
 
-# from app.module.auth.constant import DUMMY_USER_ID
-# from app.module.auth.repository import UserRepository
+from app.module.auth.constant import DUMMY_USER_ID
 from database.dependency import get_mysql_session
 
 asset_router = APIRouter(prefix="/v1")
 
-# 다음 커밋에 주석 해제 하겠습니다.
-# @asset_router.get("/dummy/asset", summary="임시 자산 정보를 반환합니다.")
-# async def get_dummy_assets(db: AsyncSession = Depends(get_mysql_session)):
-#     dummy_user = UserRepository.get_by_id(DUMMY_USER_ID)
+@asset_router.get("/dummy/asset", summary="임시 자산 정보를 반환합니다.", response_model=list)
+async def get_dummy_assets(db: AsyncSession = Depends(get_mysql_session)) -> list:
+    dummy_assets:list[Asset] = await AssetRepository.get_asset_stock(db, DUMMY_USER_ID)
+    
+    for asset in dummy_assets:
+        logging.info(f"[분석]Asset ID: {asset.id}, Quantity: {asset.quantity}, Investment Bank: {asset.investment_bank}, User ID: {asset.user_id}")
+        for stock in asset.stock:
+            logging.info(f"[분석]Stock Code: {stock.code}, Stock Name: {stock.name}, Market Index: {stock.market_index}")
 
-#     if dummy_user is None:
-#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="더미 유저가 생성 되어 있지 않습니다.")
+    return []
 
-#     dummy_user_assets = AssetRepository.get_assets(DUMMY_USER_ID)
-
-#     for asset in dummy_user_assets:
-#         for stock in asset.stock:
-#             print(f"[분석] {stock=}")
-
-#     return
 
 
 @asset_router.get("/asset", summary="사용자의 자산 정보를 반환합니다.", response_model=list[AssetTransaction])

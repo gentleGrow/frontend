@@ -6,7 +6,7 @@ import redis.asyncio as aioredis
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.config import MySQLSession
+from database.config import mysql_session_factory
 from database.enum import EnvironmentType
 
 load_dotenv()
@@ -22,9 +22,8 @@ else:
 REDIS_PORT = int(getenv("REDIS_PORT", 6379))
 
 
-@asynccontextmanager
 async def get_mysql_session() -> AsyncGenerator[AsyncSession, None]:
-    db = MySQLSession()
+    db = mysql_session_factory()
     try:
         yield db
     finally:

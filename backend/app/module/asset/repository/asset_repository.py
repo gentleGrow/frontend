@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import selectinload
 
 from app.module.asset.enum import AssetType
 from app.module.asset.model import Asset
@@ -47,10 +47,11 @@ class AssetRepository:
         return True
 
     @staticmethod
-    async def get_stock_assets_by_user_id(db: AsyncSession, user_id: str) -> list[Asset]:
+    async def get_asset_stock(db: AsyncSession, user_id: int) -> list[Asset]:
         result = await db.execute(
             select(Asset)
-            .options(joinedload(Asset.user))
-            .filter(Asset.user_id == user_id, Asset.type == AssetType.STOCK)
+            .options(selectinload(Asset.stock))  # Eager load stocks
+            .filter(Asset.user_id == user_id, Asset.asset_type == AssetType.STOCK)
         )
         return result.scalars().all()
+

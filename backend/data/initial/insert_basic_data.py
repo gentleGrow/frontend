@@ -53,13 +53,13 @@ async def create_initial_users(session: AsyncSession):
             session.add(dummy_user)
 
         await session.commit()
-        logging.info("[insert_basic_data] 성공적으로 admin과 더미 유저를 생성 했습니다.")
+        logging.info("[create_initial_users] 성공적으로 admin과 더미 유저를 생성 했습니다.")
     except SQLAlchemyError as e:
         await session.rollback()
-        logging.error(f"[insert_basic_data] User Creation SQLAlchemyError: {e}")
+        logging.error(f"[create_initial_users] SQLAlchemyError: {e}")
     except Exception as e:
         await session.rollback()
-        logging.error(f"[insert_basic_data] User Creation Unexpected error: {e}")
+        logging.error(f"[create_initial_users] Unexpected error: {e}")
 
 
 async def create_dummy_assets(session: AsyncSession):
@@ -86,13 +86,13 @@ async def create_dummy_assets(session: AsyncSession):
 
         session.add_all(assets)
         await session.commit()
-        logging.info("[insert_basic_data] 더미 유저에 assets을 성공적으로 생성 했습니다.")
+        logging.info("[create_dummy_assets] 더미 유저에 assets을 성공적으로 생성 했습니다.")
     except SQLAlchemyError as e:
         await session.rollback()
-        logging.error(f"[insert_basic_data] Asset Creation SQLAlchemyError: {e}")
+        logging.error(f"[create_dummy_assets] SQLAlchemyError: {e}")
     except Exception as e:
         await session.rollback()
-        logging.error(f"[insert_basic_data] Asset Creation Unexpected error: {e}")
+        logging.error(f"[create_dummy_assets] Unexpected error: {e}")
 
 
 async def main():
