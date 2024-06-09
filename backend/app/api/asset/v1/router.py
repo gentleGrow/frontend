@@ -35,29 +35,33 @@ async def get_dummy_assets(db: AsyncSession = Depends(get_mysql_session)) -> Sto
         logging.info(
             f"[분석]Asset ID: {asset.id}, Quantity: {asset.quantity}, Investment Bank: {asset.investment_bank}, User ID: {asset.user_id}"
         )
-        for stock in asset.stocks:
+        for stock in asset.stock:
             asset_stock = await db.execute(
                 select(AssetStock).filter(AssetStock.asset_id == asset.id, AssetStock.stock_code == stock.code)
             )
             asset_stock = asset_stock.scalar_one_or_none()
-            if asset_stock is not None:
-                logging.info(
-                    f"[분석]Stock Code: {stock.code}, Stock Name: {stock.name}, Market Index: {stock.market_index}, Purchase Price: {asset_stock.purchase_price}"
-                )
-                stock_asset = StockAsset(
-                    stock_name=stock.name,
-                    quantity=asset.quantity,
-                    buy_date=asset.purchase_date,
-                    profit=0,
-                    highest_price=0,
-                    lowest_price=0,
-                    stock_volume=0,
-                    investment_bank=asset.investment_bank,
-                    dividend=stock.dividend,
-                    purchase_price=asset_stock.purchase_price,
-                    purchase_amount=asset_stock.purchase_price * asset.quantity,
-                )
-                stock_assets.append(stock_asset)
+
+            logging.info(
+                f"[분석]Stock Code: {stock.code}, Stock Name: {stock.name}, Market Index: {stock.market_index}, Purchase Price: {asset_stock.purchase_price}"
+            )
+            # [수정] 현재 매입가와 배당금 데이터 수집이 미완료 되어서, 데이터 수집 완료 후 수정하겠습니다.
+            purchase_price = asset_stock.purchase_price if asset_stock.purchase_price is not None else 1000.0
+            temp_dividend = 1000.0
+
+            stock_asset = StockAsset(
+                stock_name=stock.name,
+                quantity=asset.quantity,
+                buy_date=asset.purchase_date,
+                profit=0,
+                highest_price=0,
+                lowest_price=0,
+                stock_volume=0,
+                investment_bank=asset.investment_bank,
+                dividend=temp_dividend,
+                purchase_price=purchase_price,
+                purchase_amount=purchase_price * asset.quantity,
+            )
+            stock_assets.append(stock_asset)
 
     return StockAssetResponse(
         stock_assets=stock_assets,

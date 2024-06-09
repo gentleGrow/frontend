@@ -27,21 +27,21 @@ class AssetRepository:
         return True
 
     @staticmethod
-    async def update_assets(db: AsyncSession, asset_transactions: list[Asset]) -> bool:
-        transaction_ids: list[Asset.id] = [asset_transaction.id for asset_transaction in asset_transactions]
+    async def update_assets(db: AsyncSession, assets: list[Asset]) -> bool:
+        transaction_ids: list[Asset.id] = [asset.id for asset in assets]
 
-        existing_transactions = await db.execute(select(Asset).filter(Asset.id.in_(transaction_ids)))
-        existing_transactions = existing_transactions.scalars().all()
+        existing_asset_instance = await db.execute(select(Asset).filter(Asset.id.in_(transaction_ids)))
+        existing_assets = existing_asset_instance.scalars().all()
 
-        transaction_map = {transaction.id: transaction for transaction in existing_transactions}
+        existing_asset_map = {existing_asset.id: existing_asset for existing_asset in existing_assets}
 
-        for asset_transaction in asset_transactions:
-            transaction = transaction_map.get(asset_transaction.id)
+        for asset in assets:
+            transaction = existing_asset_map.get(asset.id)
             if transaction is None:
                 continue
-            transaction.quantity = asset_transaction.quantity
-            transaction.investment_bank = asset_transaction.investment_bank
-            transaction.user_id = asset_transaction.user_id
+            transaction.quantity = asset.quantity
+            transaction.investment_bank = asset.investment_bank
+            transaction.user_id = asset.user_id
 
         await db.commit()
         return True
@@ -50,7 +50,12 @@ class AssetRepository:
     async def get_asset_stock(db: AsyncSession, user_id: int) -> list[Asset]:
         result = await db.execute(
             select(Asset)
-            .options(selectinload(Asset.stock))  # Eager load stocks
+            .options(selectinload(Asset.stock))
             .filter(Asset.user_id == user_id, Asset.asset_type == AssetType.STOCK)
         )
         return result.scalars().all()
+
+    @staticmethod
+    async def save_asset_stock(db: AsyncSession, assets: list[Asset]) -> None:
+        db.add_all(assets)
+        await db.commit()

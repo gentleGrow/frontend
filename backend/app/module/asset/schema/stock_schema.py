@@ -1,10 +1,12 @@
+from datetime import date
+
 from pydantic import BaseModel, Field
 
 
 class StockAsset(BaseModel):
     stock_name: str = Field(..., description="종목명", examples="BGF리테일")
     quantity: int = Field(..., description="수량")
-    buy_date: int = Field(..., description="구매일자")
+    buy_date: date = Field(..., description="구매일자")
     profit: float = Field(..., description="수익률")
     highest_price: float = Field(..., description="주식 하루 중 고가")
     lowest_price: float = Field(..., description="주식 하루 중 저가")

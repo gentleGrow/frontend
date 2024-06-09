@@ -43,11 +43,11 @@ async def google_login(request: TokenRequest, db: AsyncSession = Depends(get_mys
     if user is None:
         user = await UserRepository.create(db, social_id, ProviderEnum.GOOGLE)
 
-    access_token = await google_builder.get_access_token(user)
+    access_token = await google_builder.get_access_token(user)  # type: ignore
 
-    refresh_token = await google_builder.get_refresh_token(user)
+    refresh_token = await google_builder.get_refresh_token(user)  # type: ignore
 
-    user_string_id = str(user.id)
+    user_string_id = str(user.id)  # type: ignore
     await redis_user_repository.save(user_string_id, refresh_token, REDIS_EXPIRE_TIME_SECOND)
 
     return TokenResponse(access_token=access_token, refresh_token=refresh_token)

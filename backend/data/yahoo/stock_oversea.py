@@ -33,7 +33,6 @@ async def process_stock_data(session, stock_list: StockList, start_period: int, 
     for stock_info in stock_list.stocks:
         for interval in TimeInterval:
             stock_model = TIME_INTERVAL_MODEL_REPO_MAP[interval]
-            stock_repository = StockRepository(session)
 
             url = (
                 f"https://query1.finance.yahoo.com/v7/finance/download/{stock_info.code}"
@@ -67,7 +66,7 @@ async def process_stock_data(session, stock_list: StockList, start_period: int, 
                 logger.info(f"{stock_row=}")
 
                 try:
-                    await stock_repository.save(stock_row)  # type: ignore
+                    await StockRepository.save(session, stock_row)  # type: ignore
                 except IntegrityError as e:
                     logger.error(f"[process_stock_data] IntegrityError: {e} - Skipping stock code {stock_info.code}")
                     await session.rollback()
