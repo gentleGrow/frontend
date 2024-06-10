@@ -6,6 +6,19 @@ from app.module.asset.enum import AccountType, AssetType, CurrencyType, Investme
 from database.config import MySQLBase
 
 
+class Dividend(TimestampMixin, MySQLBase):
+    __tablename__ = "dividend"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    dividend = Column(Float, nullable=False, info={"description": "배당금"})
+    payment_date = Column(Date, nullable=True, info={"description": "배당일"})
+    dividend_yield = Column(Float, nullable=True, info={"description": "배당률"})
+
+    stock_code = Column(String(255), ForeignKey("stock.code"), nullable=False)
+
+    stock = relationship("Stock", back_populates="dividend")
+
+
 class AssetStock(MySQLBase):
     __tablename__ = "asset_stock"
 
@@ -41,6 +54,7 @@ class Stock(TimestampMixin, MySQLBase):
     daily_price = relationship("StockDaily", back_populates="stock")
     weekly_price = relationship("StockWeekly", back_populates="stock")
     monthly_price = relationship("StockMonthly", back_populates="stock")
+    dividend = relationship("Dividend", back_populates="stock")
 
 
 class StockDaily(MySQLBase):

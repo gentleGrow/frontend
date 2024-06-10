@@ -11,3 +11,9 @@ class StockRepository:
         query = select(Stock).where(Stock.code.in_([stock_code.code for stock_code in stock_codes.codes]))
         stock_instance = await db.execute(query)
         return stock_instance.scalars().all()
+
+    @staticmethod
+    async def get_by_code(db: AsyncSession, stock_code: str) -> Stock:
+        query = select(Stock).where(Stock.code == stock_code)
+        stock_instance = await db.execute(query)
+        return stock_instance.scalar_one_or_none()
