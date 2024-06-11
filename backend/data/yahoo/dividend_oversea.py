@@ -1,50 +1,57 @@
 import asyncio
 import logging
 import os
+from datetime import date
 
-import yfinance as yf
+import yfinance
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.module.asset.model import Stock  # noqa: F401 > relationship 설정시 필요합니다.
 from app.module.asset.repository.dividend_repository import DividendRepository
-from app.module.asset.repository.stock_repository import StockRepository
 from app.module.asset.schema.stock_schema import StockList
-from data.common.service import get_oversea_stock_code_list
+from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
+from data.common.service import get_usa_stock_code_list
 from database.dependency import get_mysql_session
 
-log_dir = "./logs"
-os.makedirs(log_dir, exist_ok=True)
-
 logging.basicConfig(
-    filename="./logs/dividend_oversea.log",
+    filename="backend/logs/dividend_oversea.log",
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 
+os.makedirs("./logs", exist_ok=True)
+
 
 async def insert_dividend_data(session: AsyncSession, stock_list: StockList):
     for stock in stock_list.stocks:
-        stock_info = yf.Ticker(stock.code)
+        stock_info = yfinance.Ticker(stock.code)
         dividends = stock_info.dividends
 
-        if not dividends.empty:
-            most_recent_date = dividends.index[-1]
+        logging.info(f"{stock.code=}{dividends.empty=}")
+
+        if dividends.empty:
+            await DividendRepository.save_dividend(
+                session=session,
+                dividend=0,
+                payment_date=date.today(),
+                dividend_yield=0.0,
+                stock_code=stock.code,
+            )
+        else:
             most_recent_dividend = dividends[-1]
 
-            stock_obj = await StockRepository.get_by_code(session, stock.code)
-
-            if stock_obj:
-                await DividendRepository.save_dividend(
-                    session=session,
-                    dividend_amount=most_recent_dividend,
-                    payment_date=most_recent_date.date(),
-                    dividend_yield=0.0,
-                    stock_code=stock_obj.code,
-                )
+            await DividendRepository.save_dividend(
+                session=session,
+                dividend=most_recent_dividend,
+                payment_date=date.today(),
+                dividend_yield=0.0,
+                stock_code=stock.code,
+            )
 
 
 async def main():
     logging.info("dividend_overseas를 시작합니다.")
-    stock_list: StockList = get_oversea_stock_code_list()
+    stock_list: StockList = get_usa_stock_code_list()
 
     async for session in get_mysql_session():
         await insert_dividend_data(session, stock_list)

@@ -113,6 +113,12 @@ def get_oversea_stock_code_list() -> StockList:
     return StockList(stocks=nas_stock_code_list.stocks + nys_stock_code_list.stocks + japan_stock_code_list.stocks)
 
 
+def get_usa_stock_code_list() -> StockList:
+    nas_stock_code_list = read_stock_codes_from_excel(get_path(NAS_STOCK_FILEPATH))
+    nys_stock_code_list = read_stock_codes_from_excel(get_path(NYS_STOCK_FILEPATH))
+    return StockList(stocks=nas_stock_code_list.stocks + nys_stock_code_list.stocks)
+
+
 def get_all_stock_code_list() -> StockList:
     korea_stock_code_list = read_stock_codes_from_excel(get_path(KOREA_STOCK_FILEPATH))
     etf_stock_code_list = read_stock_codes_from_excel(get_path(ETC_STOCK_FILEPATH))
