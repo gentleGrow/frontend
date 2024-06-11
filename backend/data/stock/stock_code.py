@@ -11,11 +11,11 @@ from data.common.repository import StockRepository
 from data.common.service import get_all_stock_code_list
 from database.dependency import get_mysql_session
 
+os.makedirs("./logs", exist_ok=True)
+
 logging.basicConfig(
     filename="./logs/stock_code.log", level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
-
-os.makedirs("./logs", exist_ok=True)
 
 
 async def main():

@@ -15,7 +15,7 @@ from database.dependency import get_mysql_session
 
 logging.basicConfig(
     filename="backend/logs/dividend_oversea.log",
-    level=logging.INFO,
+    level=logging.DEBUG,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 
@@ -50,13 +50,13 @@ async def insert_dividend_data(session: AsyncSession, stock_list: StockList):
 
 
 async def main():
-    logging.info("dividend_overseas를 시작합니다.")
+    logging.info("dividend_usa를 시작합니다.")
     stock_list: StockList = get_usa_stock_code_list()
 
     async for session in get_mysql_session():
         await insert_dividend_data(session, stock_list)
 
-    logging.info("dividend_overseas를 마칩니다.")
+    logging.info("dividend_usa를 마칩니다.")
 
 
 if __name__ == "__main__":

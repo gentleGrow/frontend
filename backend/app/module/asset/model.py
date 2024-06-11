@@ -23,7 +23,7 @@ class AssetStock(MySQLBase):
     __tablename__ = "asset_stock"
 
     asset_id = Column(Integer, ForeignKey("asset.id"), primary_key=True)
-    stock_code = Column(String(255), ForeignKey("stock.code"), primary_key=True)
+    stock_id = Column(Integer, ForeignKey("stock.id"), primary_key=True)
     purchase_price = Column(Float, nullable=True, info={"description": "매입가"})
 
 
@@ -45,7 +45,8 @@ class Asset(TimestampMixin, MySQLBase):
 class Stock(TimestampMixin, MySQLBase):
     __tablename__ = "stock"
 
-    code = Column(String(255), primary_key=True, nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    code = Column(String(255), nullable=False)
     name = Column(String(255), nullable=False)
     market_index = Column(String(255), nullable=False)
     dividend = Column(Float, nullable=True, info={"description": "배당금"})
@@ -55,6 +56,8 @@ class Stock(TimestampMixin, MySQLBase):
     weekly_price = relationship("StockWeekly", back_populates="stock")
     monthly_price = relationship("StockMonthly", back_populates="stock")
     dividend = relationship("Dividend", back_populates="stock")
+
+    __table_args__ = (UniqueConstraint("code", name="uq_stock_code"),)
 
 
 class StockDaily(MySQLBase):
@@ -120,7 +123,8 @@ class Bond(TimestampMixin, MySQLBase):
 class VirtualAsset(TimestampMixin, MySQLBase):
     __tablename__ = "virtual_asset"
 
-    code = Column(String(255), primary_key=True, nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    code = Column(String(255), nullable=False)
     name = Column(String(255), nullable=False)
     exchange = Column(Enum(VirtualExchangeType), nullable=True, info={"description": "거래소"})
 
@@ -128,6 +132,7 @@ class VirtualAsset(TimestampMixin, MySQLBase):
 class Currency(TimestampMixin, MySQLBase):
     __tablename__ = "currency"
 
+    id = Column(Integer, primary_key=True, autoincrement=True)
     type = Column(Enum(CurrencyType), primary_key=True, nullable=False)
 
     __table_args__ = (UniqueConstraint("type", name="uq_currency_type"),)

@@ -94,10 +94,9 @@ async def main():
     async_session = sessionmaker(async_engine, expire_on_commit=False, class_=AsyncSession)
 
     async with async_session() as session:
-        async with session.begin():
-            created = await create_initial_users(session)
-            if created:
-                await create_dummy_assets(session)
+        created = await create_initial_users(session)
+        if created:
+            await create_dummy_assets(session)
 
     await async_engine.dispose()
 
