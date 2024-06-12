@@ -60,8 +60,10 @@ async def create_initial_users(session: AsyncSession):
 
 
 async def create_dummy_assets(session: AsyncSession):
-    stock_codes = ["005930", "AAPL", "7203", "446720"]  # 삼성전자, 애플, 토요타, etf sol 다우존스
-    purchase_dates = [date(2021, 1, 1), date(2022, 2, 2), date(2023, 3, 3), date(2024, 4, 4)]
+    # stock_codes = ["005930", "AAPL", "7203", "446720"]  # 삼성전자, 애플, 토요타, etf sol 다우존스
+    # purchase_dates = [date(2021, 1, 1), date(2022, 2, 2), date(2023, 3, 3), date(2024, 4, 4)]
+    stock_codes = ["AAPL", "TSLA", "MSFT"]  # 애플, 테슬라, 마이크로소프트
+    purchase_dates = [date(2021, 1, 4), date(2022, 2, 11), date(2023, 3, 15)]
 
     stock_code_list = StockCodeList(codes=[StockCode(code=code) for code in stock_codes])
 

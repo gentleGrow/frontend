@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 
 
 class StockAsset(BaseModel):
+    stock_code: str = Field(..., description="종목 코드", examples="AAPL")
     stock_name: str = Field(..., description="종목명", examples="BGF리테일")
     quantity: int = Field(..., description="수량")
     buy_date: date = Field(..., description="구매일자")

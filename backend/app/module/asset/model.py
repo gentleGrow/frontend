@@ -1,4 +1,15 @@
-from sqlalchemy import Column, Date, Enum, Float, ForeignKey, Integer, PrimaryKeyConstraint, String, UniqueConstraint
+from sqlalchemy import (
+    BigInteger,
+    Column,
+    Date,
+    Enum,
+    Float,
+    ForeignKey,
+    Integer,
+    PrimaryKeyConstraint,
+    String,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import relationship
 
 from app.common.mixin.timestamp import TimestampMixin
@@ -18,6 +29,8 @@ class Dividend(TimestampMixin, MySQLBase):
 
     stock = relationship("Stock", back_populates="dividend")
 
+    __table_args__ = (UniqueConstraint("stock_code", name="uq_stock_code"),)
+
 
 class AssetStock(MySQLBase):
     __tablename__ = "asset_stock"
@@ -25,6 +38,9 @@ class AssetStock(MySQLBase):
     asset_id = Column(Integer, ForeignKey("asset.id"), primary_key=True)
     stock_id = Column(Integer, ForeignKey("stock.id"), primary_key=True)
     purchase_price = Column(Float, nullable=True, info={"description": "매입가"})
+
+    asset = relationship("Asset", back_populates="asset_stock", overlaps="stock,asset_stock")
+    stock = relationship("Stock", back_populates="asset_stock", overlaps="asset,asset_stock")
 
 
 class Asset(TimestampMixin, MySQLBase):
@@ -39,7 +55,8 @@ class Asset(TimestampMixin, MySQLBase):
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
 
     user = relationship("User", back_populates="asset")
-    stock = relationship("Stock", secondary="asset_stock", back_populates="asset")
+    stock = relationship("Stock", secondary="asset_stock", back_populates="asset", overlaps="asset_stock")
+    asset_stock = relationship("AssetStock", back_populates="asset", overlaps="stock,asset")
 
 
 class Stock(TimestampMixin, MySQLBase):
@@ -57,6 +74,8 @@ class Stock(TimestampMixin, MySQLBase):
     monthly_price = relationship("StockMonthly", back_populates="stock")
     dividend = relationship("Dividend", back_populates="stock")
 
+    asset_stock = relationship("AssetStock", back_populates="stock", overlaps="asset,stock")
+
     __table_args__ = (UniqueConstraint("code", name="uq_stock_code"),)
 
 
@@ -70,7 +89,7 @@ class StockDaily(MySQLBase):
     lowest_price = Column(Float, nullable=False, info={"description": "Lowest price of the stock"})
     close_price = Column(Float, nullable=False, info={"description": "Closing price of the stock"})
     adj_close_price = Column(Float, nullable=False, info={"description": "Adjusted closing price of the stock"})
-    trade_volume = Column(Integer, nullable=False, info={"description": "Volume of stock traded"})
+    trade_volume = Column(BigInteger, nullable=False, info={"description": "Volume of stock traded"})
     stock = relationship("Stock", back_populates="daily_price")
 
     __table_args__ = (PrimaryKeyConstraint("code", "date", name="pk_stock_daily"),)
@@ -86,7 +105,7 @@ class StockWeekly(MySQLBase):
     lowest_price = Column(Float, nullable=False, info={"description": "Lowest price of the stock"})
     close_price = Column(Float, nullable=False, info={"description": "Closing price of the stock"})
     adj_close_price = Column(Float, nullable=False, info={"description": "Adjusted closing price of the stock"})
-    trade_volume = Column(Integer, nullable=False, info={"description": "Volume of stock traded"})
+    trade_volume = Column(BigInteger, nullable=False, info={"description": "Volume of stock traded"})
 
     stock = relationship("Stock", back_populates="weekly_price")
 
@@ -103,7 +122,7 @@ class StockMonthly(MySQLBase):
     lowest_price = Column(Float, nullable=False, info={"description": "Lowest price of the stock"})
     close_price = Column(Float, nullable=False, info={"description": "Closing price of the stock"})
     adj_close_price = Column(Float, nullable=False, info={"description": "Adjusted closing price of the stock"})
-    trade_volume = Column(Integer, nullable=False, info={"description": "Volume of stock traded"})
+    trade_volume = Column(BigInteger, nullable=False, info={"description": "Volume of stock traded"})
 
     stock = relationship("Stock", back_populates="monthly_price")
 

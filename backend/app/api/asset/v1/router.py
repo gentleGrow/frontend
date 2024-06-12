@@ -2,13 +2,16 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
 
 from app.common.auth.security import verify_jwt_token
 from app.common.schema import JsonResponse
 from app.common.util.logging import logging
-from app.module.asset.model import AssetStock
+from app.module.asset.model import AssetStock, Stock, StockDaily
 from app.module.asset.repository.asset_repository import AssetRepository
+from app.module.asset.repository.asset_stock_repository import AssetStockRepository
+from app.module.asset.repository.dividend_repository import DividendRepository
+from app.module.asset.repository.stock_daily_repository import StockDailyRepository
+from app.module.asset.repository.stock_repository import StockRepository
 from app.module.asset.schema.asset_schema import AssetTransaction, AssetTransactionRequest
 from app.module.asset.schema.stock_schema import StockAsset, StockAssetResponse
 from app.module.auth.constant import DUMMY_USER_ID
@@ -18,8 +21,8 @@ asset_router = APIRouter(prefix="/v1")
 
 
 @asset_router.get("/dummy/asset", summary="임시 자산 정보를 반환합니다.", response_model=StockAssetResponse)
-async def get_dummy_assets(db: AsyncSession = Depends(get_mysql_session)) -> StockAssetResponse:
-    dummy_assets = await AssetRepository.get_asset_stock(db, DUMMY_USER_ID)
+async def get_dummy_assets(session: AsyncSession = Depends(get_mysql_session)) -> StockAssetResponse:
+    dummy_assets = await AssetRepository.get_asset_stock(session, DUMMY_USER_ID)
 
     stock_assets = []
     total_asset_amount = 0
@@ -35,33 +38,45 @@ async def get_dummy_assets(db: AsyncSession = Depends(get_mysql_session)) -> Sto
         logging.info(
             f"[분석]Asset ID: {asset.id}, Quantity: {asset.quantity}, Investment Bank: {asset.investment_bank}, User ID: {asset.user_id}"
         )
-        for stock in asset.stock:
-            asset_stock = await db.execute(
-                select(AssetStock).filter(AssetStock.asset_id == asset.id, AssetStock.stock_code == stock.code)
-            )
-            asset_stock = asset_stock.scalar_one_or_none()
 
-            logging.info(
-                f"[분석]Stock Code: {stock.code}, Stock Name: {stock.name}, Market Index: {stock.market_index}, Purchase Price: {asset_stock.purchase_price}"
-            )
-            # [수정] 현재 매입가와 배당금 데이터 수집이 미완료 되어서, 데이터 수집 완료 후 수정하겠습니다.
-            purchase_price = asset_stock.purchase_price if asset_stock.purchase_price is not None else 1000.0
-            temp_dividend = 1000.0
+        asset_stock: AssetStock = await AssetStockRepository.get_asset_stock(session, asset.id)
 
-            stock_asset = StockAsset(
-                stock_name=stock.name,
-                quantity=asset.quantity,
-                buy_date=asset.purchase_date,
-                profit=0,
-                highest_price=0,
-                lowest_price=0,
-                stock_volume=0,
-                investment_bank=asset.investment_bank,
-                dividend=temp_dividend,
-                purchase_price=purchase_price,
-                purchase_amount=purchase_price * asset.quantity,
-            )
-            stock_assets.append(stock_asset)
+        stock: Stock = await StockRepository.get_stock(session, asset_stock.stock_id)
+
+        logging.info(
+            f"[분석]Stock Code: {stock.code}, Stock Name: {stock.name}, Market Index: {stock.market_index}, Purchase Price: {asset_stock.purchase_price}"
+        )
+
+        stock_daily: StockDaily = await StockDailyRepository.get_stock_daily(session, stock.code, asset.purchase_date)
+        purchase_price = (
+            asset_stock.purchase_price if asset_stock.purchase_price is not None else stock_daily.adj_close_price
+        )
+        dividend = await DividendRepository.get_dividend(session, stock.code)
+
+        current_stock_daily: StockDaily = await StockDailyRepository.get_most_recent_stock_daily(session, stock.code)
+
+        profit = (stock_daily.adj_close_price / current_stock_daily.adj_close_price - 1) * 100
+
+        stock_asset = StockAsset(
+            stock_code=stock.code,
+            stock_name=stock.name,
+            quantity=asset.quantity,
+            buy_date=asset.purchase_date,
+            profit=profit,
+            highest_price=stock_daily.highest_price,
+            lowest_price=stock_daily.lowest_price,
+            stock_volume=stock_daily.trade_volume,
+            investment_bank=asset.investment_bank,
+            dividend=dividend.dividend,
+            purchase_price=purchase_price,
+            purchase_amount=purchase_price * asset.quantity,
+        )
+
+        total_asset_amount += current_stock_daily.adj_close_price * asset.quantity
+        total_invest_amount += stock_daily.adj_close_price * asset.quantity
+        total_dividend_amount += dividend.dividend * 1350  # 환율 데이터 수집 후 수정하겠습니다.
+
+        stock_assets.append(stock_asset)
 
     return StockAssetResponse(
         stock_assets=stock_assets,
