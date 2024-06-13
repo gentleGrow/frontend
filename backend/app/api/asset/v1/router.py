@@ -5,7 +5,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.common.auth.security import verify_jwt_token
 from app.common.schema import JsonResponse
-from app.common.util.logging import logging
 from app.module.asset.model import AssetStock, Stock, StockDaily
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.asset_stock_repository import AssetStockRepository
@@ -16,12 +15,17 @@ from app.module.asset.schema.asset_schema import AssetTransaction, AssetTransact
 from app.module.asset.schema.stock_schema import StockAsset, StockAssetResponse
 from app.module.auth.constant import DUMMY_USER_ID
 from database.dependency import get_mysql_session
+from database.singleton import redis_stock_repository
 
 asset_router = APIRouter(prefix="/v1")
 
 
 @asset_router.get("/dummy/asset", summary="임시 자산 정보를 반환합니다.", response_model=StockAssetResponse)
 async def get_dummy_assets(session: AsyncSession = Depends(get_mysql_session)) -> StockAssetResponse:
+    cached_response = await redis_stock_repository.get_dummy_asset()
+    if cached_response:
+        return cached_response
+
     dummy_assets = await AssetRepository.get_asset_stock(session, DUMMY_USER_ID)
 
     stock_assets = []
@@ -35,17 +39,9 @@ async def get_dummy_assets(session: AsyncSession = Depends(get_mysql_session)) -
     total_dividend_rate = 0
 
     for asset in dummy_assets:
-        logging.info(
-            f"[분석]Asset ID: {asset.id}, Quantity: {asset.quantity}, Investment Bank: {asset.investment_bank}, User ID: {asset.user_id}"
-        )
-
         asset_stock: AssetStock = await AssetStockRepository.get_asset_stock(session, asset.id)
 
         stock: Stock = await StockRepository.get_stock(session, asset_stock.stock_id)
-
-        logging.info(
-            f"[분석]Stock Code: {stock.code}, Stock Name: {stock.name}, Market Index: {stock.market_index}, Purchase Price: {asset_stock.purchase_price}"
-        )
 
         stock_daily: StockDaily = await StockDailyRepository.get_stock_daily(session, stock.code, asset.purchase_date)
         purchase_price = (
@@ -78,7 +74,7 @@ async def get_dummy_assets(session: AsyncSession = Depends(get_mysql_session)) -
 
         stock_assets.append(stock_asset)
 
-    return StockAssetResponse(
+    result = StockAssetResponse(
         stock_assets=stock_assets,
         total_asset_amount=total_asset_amount,
         total_asset_growth_rate=total_asset_growth_rate,
@@ -89,6 +85,10 @@ async def get_dummy_assets(session: AsyncSession = Depends(get_mysql_session)) -
         total_dividend_amount=total_dividend_amount,
         total_dividend_rate=total_dividend_rate,
     )
+
+    await redis_stock_repository.save_dummy_asset(result)
+
+    return result
 
 
 @asset_router.get("/asset", summary="사용자의 자산 정보를 반환합니다.", response_model=list[AssetTransaction])
