@@ -8,11 +8,9 @@ import styles from './InnerHeader.module.scss';
 
 import logo from '@/assets/logo.svg';
 import classNames from 'classnames';
-import { useDispatch, useSelector } from 'react-redux';
 
 const InnerHeader = () => {
   const router = useRouter();
-  const dispatch = useDispatch();
   //dispatching actions
   const [search, setSearch] = useState('');
 
@@ -25,7 +23,7 @@ const InnerHeader = () => {
       {/* <!-- 로고 --> */}
       <h1 className={styles.brand}>
         <Link href="/">
-          <Image src={logo} alt="logo" width={211} height={48} priority />
+          <Image src={logo} alt="logo" width={70} height={34} priority />
         </Link>
       </h1>
       {/* <!-- GNB --> */}
