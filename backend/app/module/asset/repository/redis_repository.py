@@ -21,9 +21,9 @@ class RedisStockRepository(AbstractCRUDRepository):
         return await self.redis.get(stock_code)
 
     async def get_dummy_asset(self) -> StockAssetResponse | None:
-        data = await self.redis.get(DUMMY_ASSET_KEY)
-        if data:
-            return StockAssetResponse.model_validate_json(data)
+        dummay_asset = await self.redis.get(DUMMY_ASSET_KEY)
+        if dummay_asset:
+            return StockAssetResponse.model_validate_json(dummay_asset)
         return None
 
     async def save_dummy_asset(self, response: StockAssetResponse, expiry: int = DUMMY_ASSET_EXPIRE_SECOND) -> None:
