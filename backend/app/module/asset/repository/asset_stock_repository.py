@@ -7,6 +7,10 @@ from app.module.asset.model import AssetStock
 class AssetStockRepository:
     @staticmethod
     async def get_asset_stock(session: AsyncSession, asset_id: int) -> AssetStock:
-        stmt = select(AssetStock).where(AssetStock.asset_id == asset_id)
-        result = await session.execute(stmt)
+        result = await session.execute(select(AssetStock).where(AssetStock.asset_id == asset_id))
         return result.scalar_one_or_none()
+
+    @staticmethod
+    async def get_asset_stocks(session: AsyncSession, asset_ids: list[int]) -> list[AssetStock]:
+        result = await session.execute(select(AssetStock).where(AssetStock.asset_id.in_(asset_ids)))
+        return result.scalars().all()

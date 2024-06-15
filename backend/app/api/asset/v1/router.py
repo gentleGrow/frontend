@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.common.auth.security import verify_jwt_token
 from app.common.schema import JsonResponse
-from app.module.asset.model import AssetStock, Stock, StockDaily
+from app.module.asset.model import Asset, AssetStock, Dividend, Stock, StockDaily
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.asset_stock_repository import AssetStockRepository
 from app.module.asset.repository.dividend_repository import DividendRepository
@@ -14,6 +14,7 @@ from app.module.asset.repository.stock_repository import StockRepository
 from app.module.asset.schema.asset_schema import AssetTransaction, AssetTransactionRequest
 from app.module.asset.schema.stock_schema import StockAsset, StockAssetResponse
 from app.module.auth.constant import DUMMY_USER_ID
+from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session
 from database.singleton import redis_stock_repository
 
@@ -26,32 +27,52 @@ async def get_dummy_assets(session: AsyncSession = Depends(get_mysql_session)) -
     if dummy_asset_cache:
         return dummy_asset_cache
 
-    dummy_assets = await AssetRepository.get_asset_stock(session, DUMMY_USER_ID)
+    dummy_assets: list[Asset] = await AssetRepository.get_asset_stock(session, DUMMY_USER_ID)
+
+    asset_ids = [asset.id for asset in dummy_assets]
+    asset_stocks: list[AssetStock] = await AssetStockRepository.get_asset_stocks(session, asset_ids)
+
+    stock_ids = [asset_stock.stock_id for asset_stock in asset_stocks]
+    stocks: list[Stock] = await StockRepository.get_stocks(session, stock_ids)
+
+    stock_codes = [stock.code for stock in stocks]
+    stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies(session, stock_codes)
+    dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
+    current_stock_dailies: list[StockDaily] = await StockDailyRepository.get_most_recent_stock_dailies(
+        session, stock_codes
+    )
+
+    stock_map = {stock.id: stock for stock in stocks}
+    stock_daily_map = {daily.code: daily for daily in stock_dailies}
+    dividend_map = {dividend.stock_code: dividend for dividend in dividends}
+    current_stock_daily_map = {daily.code: daily for daily in current_stock_dailies}
 
     stock_assets = []
     total_asset_amount = 0
-    total_asset_growth_rate = 0
     total_invest_amount = 0
-    total_invest_growth_rate = 0
     total_profit_amount = 0
-    total_profit_rate = 0
     total_dividend_amount = 0
-    total_dividend_rate = 0
 
     for asset in dummy_assets:
-        asset_stock: AssetStock = await AssetStockRepository.get_asset_stock(session, asset.id)
+        asset_stock = next((a for a in asset_stocks if a.asset_id == asset.id))
+        if asset_stock is None:
+            continue
 
-        stock: Stock = await StockRepository.get_stock(session, asset_stock.stock_id)
+        stock = stock_map.get(asset_stock.stock_id)
+        if stock is None:
+            continue
 
-        stock_daily: StockDaily = await StockDailyRepository.get_stock_daily(session, stock.code, asset.purchase_date)
+        stock_daily = stock_daily_map.get(stock.code)
+        dividend = dividend_map.get(stock.code)
+        current_stock_daily = current_stock_daily_map.get(stock.code)
+
+        if stock_daily is None or current_stock_daily is None or dividend is None:
+            continue
+
         purchase_price = (
             asset_stock.purchase_price if asset_stock.purchase_price is not None else stock_daily.adj_close_price
         )
-        dividend = await DividendRepository.get_dividend(session, stock.code)
-
-        current_stock_daily: StockDaily = await StockDailyRepository.get_most_recent_stock_daily(session, stock.code)
-
-        profit = (stock_daily.adj_close_price / current_stock_daily.adj_close_price - 1) * 100
+        profit = (current_stock_daily.adj_close_price / stock_daily.adj_close_price - 1) * 100
 
         stock_asset = StockAsset(
             stock_code=stock.code,
@@ -77,13 +98,13 @@ async def get_dummy_assets(session: AsyncSession = Depends(get_mysql_session)) -
     result = StockAssetResponse(
         stock_assets=stock_assets,
         total_asset_amount=total_asset_amount,
-        total_asset_growth_rate=total_asset_growth_rate,
+        total_asset_growth_rate=0,  # %는 데이터 수집이 안정화 된 후 진행 하겠습니다.
         total_invest_amount=total_invest_amount,
-        total_invest_growth_rate=total_invest_growth_rate,
+        total_invest_growth_rate=0,  # %는 데이터 수집이 안정화 된 후 진행 하겠습니다.
         total_profit_amount=total_profit_amount,
-        total_profit_rate=total_profit_rate,
+        total_profit_rate=0,  # %는 데이터 수집이 안정화 된 후 진행 하겠습니다.
         total_dividend_amount=total_dividend_amount,
-        total_dividend_rate=total_dividend_rate,
+        total_dividend_rate=0,  # %는 데이터 수집이 안정화 된 후 진행 하겠습니다.
     )
 
     await redis_stock_repository.save_dummy_asset(result)

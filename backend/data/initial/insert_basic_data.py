@@ -67,7 +67,9 @@ async def create_dummy_assets(session: AsyncSession):
 
     stock_code_list = StockCodeList(codes=[StockCode(code=code) for code in stock_codes])
 
-    stock_list: list[Stock] = await StockRepository.get_stocks_by_codes(session, stock_code_list)
+    stock_list: list[Stock] = await StockRepository.get_by_codes(
+        session, [stock_code.code for stock_code in stock_code_list.codes]
+    )
 
     assets: list[Asset] = [
         Asset(
