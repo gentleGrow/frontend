@@ -27,14 +27,35 @@ logging.basicConfig(
 )
 
 
+def format_stock_code(code, country):
+    if country == "USA":
+        return code
+    elif country == "Korea":
+        return f"{code}.KS"  # or .KQ depending on the stock market
+    elif country == "Japan":
+        return f"{code}.T"
+    elif country == "France":
+        return f"{code}.PA"
+    elif country == "Germany":
+        return f"{code}.DE"
+    elif country == "Hong Kong":
+        return f"{code}.HK"
+    elif country == "China":
+        return f"{code}.SS"  # Shanghai or .SZ for Shenzhen
+    else:
+        return code
+
+
 async def process_stock_data(session: AsyncSession, stock_list: StockList, start_period: int, end_period: int):
     logging.info("파싱을 시작합니다.")
     for stock_info in stock_list.stocks:
         for interval in TimeInterval:
             stock_model = TIME_INTERVAL_MODEL_REPO_MAP[interval]
 
+            stock_code = format_stock_code(stock_info["code"], stock_info["country"])
+
             url = (
-                f"https://query1.finance.yahoo.com/v7/finance/download/{stock_info.code}"
+                f"https://query1.finance.yahoo.com/v7/finance/download/{stock_code}"
                 f"?period1={start_period}&period2={end_period}&interval={interval.value}"
                 f"&events=history&includeAdjustedClose=true"
             )
@@ -70,7 +91,7 @@ async def process_stock_data(session: AsyncSession, stock_list: StockList, start
                     logging.error(f"[process_stock_data] IntegrityError: {e} - Skipping stock code {stock_info.code}")
                     await session.rollback()
                     continue
-    logging.info("Finished processing stock data")
+    logging.info("주식 데이터 수집을 완료 합니다.")
 
 
 async def main():
