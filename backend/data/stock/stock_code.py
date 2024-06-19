@@ -28,7 +28,13 @@ async def main():
 
             try:
                 await StockRepository.save(
-                    session, Stock(code=stock_info.code, name=stock_info.name, market_index=stock_info.market_index)
+                    session,
+                    Stock(
+                        code=stock_info.code,
+                        name=stock_info.name,
+                        market_index=stock_info.market_index,
+                        country=stock_info.country,
+                    ),
                 )
             except IntegrityError as e:
                 logging.error(f"[stock_code] IntegrityError: {e} - Skipping stock code {stock_info.code}")

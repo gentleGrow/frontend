@@ -15,7 +15,7 @@ from data.common.constant import (
     TIMEOUT_SECOND,
 )
 from data.common.enum import TradeType
-from data.common.service import get_realtime_stock_code_list
+from data.common.service import get_all_stock_code_list
 from data.korea_investment.source.auth import KOREA_URL_WEBSOCKET, get_approval_key
 from data.korea_investment.source.config import KOREA_INVESTMENT_KEYS
 from data.korea_investment.source.schema import StockTransaction
@@ -81,7 +81,7 @@ async def connect_and_subscribe(
 
 
 async def main():
-    stock_code_list: RealtimeStockList = get_realtime_stock_code_list()
+    stock_code_list: RealtimeStockList = get_all_stock_code_list()
     tasks = []
 
     stock_code_generators = [

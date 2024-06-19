@@ -10,7 +10,7 @@ from app.module.asset.model import Stock  # noqa: F401 > relationship 설정시 
 from app.module.asset.repository.dividend_repository import DividendRepository
 from app.module.asset.schema.stock_schema import StockList
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
-from data.common.service import get_usa_stock_code_list
+from data.common.service import get_all_stock_code_list
 from database.dependency import get_mysql_session
 
 logging.basicConfig(
@@ -51,7 +51,7 @@ async def insert_dividend_data(session: AsyncSession, stock_list: StockList):
 
 async def main():
     logging.info("dividend_usa를 시작합니다.")
-    stock_list: StockList = get_usa_stock_code_list()
+    stock_list: StockList = get_all_stock_code_list()
 
     async for session in get_mysql_session():
         await insert_dividend_data(session, stock_list)

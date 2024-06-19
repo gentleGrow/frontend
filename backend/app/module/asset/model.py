@@ -66,7 +66,7 @@ class Stock(TimestampMixin, MySQLBase):
     code = Column(String(255), nullable=False)
     name = Column(String(255), nullable=False)
     market_index = Column(String(255), nullable=False)
-    dividend = Column(Float, nullable=True, info={"description": "배당금"})
+    country = Column(String(255), nullable=False)
 
     asset = relationship("Asset", secondary="asset_stock", back_populates="stock")
     daily_price = relationship("StockDaily", back_populates="stock")

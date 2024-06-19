@@ -5,15 +5,26 @@ import pandas as pd
 from botocore.exceptions import ClientError, NoCredentialsError
 from dotenv import find_dotenv, load_dotenv
 
-from app.module.asset.schema.stock_schema import RealtimeStockInfo, RealtimeStockList, StockInfo, StockList
+from app.module.asset.schema.stock_schema import StockInfo, StockList
 from data.common.config import (
+    AUSTRALIA_STOCK_FILEPATH,
+    BRAZIL_STOCK_FILEPATH,
+    CANADA_STOCK_FILEPATH,
+    CHINA_STOCK_FILEPATH,
     ENVIRONMENT,
-    ETC_STOCK_FILEPATH,
+    FRANCE_STOCK_FILEPATH,
+    GERMANY_STOCK_FILEPATH,
+    HONGKONG_STOCK_FILEPATH,
+    INDIA_STOCK_FILEPATH,
+    ITALY_STOCK_FILEPATH,
     JAPAN_STOCK_FILEPATH,
     KOREA_STOCK_FILEPATH,
-    NAS_STOCK_FILEPATH,
-    NYS_STOCK_FILEPATH,
+    NETHERLAND_STOCK_FILEPATH,
     S3_BUCKET_STOCK_FILES,
+    SPAIN_STOCK_FILEPATH,
+    SWITZERLAND_STOCK_FILEPATH,
+    UK_STOCK_FILEPATH,
+    USA_STOCK_FILEPATH,
     logging,
 )
 from database.enum import EnvironmentType
@@ -48,26 +59,9 @@ def download_file_from_s3(bucket, key, local_path) -> None:
         raise
 
 
-def read_realtime_stock_codes_from_excel(filepath: str) -> RealtimeStockList:
-    try:
-        df = pd.read_excel(filepath, usecols=[0, 1], header=None, names=["code", "name"])
-    except FileNotFoundError as e:
-        logging.error(f"File not found: {e}")
-        raise
-    except ValueError as e:
-        logging.error(f"Value error: {e}")
-        raise
-    except Exception as e:
-        logging.error(f"Unexpected error: {e}")
-        raise
-    else:
-        stock_infos = [RealtimeStockInfo(code=str(row["code"]), name=str(row["name"])) for _, row in df.iterrows()]
-        return RealtimeStockList(stocks=stock_infos)
-
-
 def read_stock_codes_from_excel(filepath: str) -> StockList:
     try:
-        df = pd.read_excel(filepath, usecols=[0, 1, 2], header=None, names=["code", "name", "market_index"])
+        df = pd.read_excel(filepath, usecols=["Symbol", "Company Name", "Country", "Code"], header=0)
     except FileNotFoundError as e:
         logging.error(f"File not found: {e}")
         raise
@@ -79,58 +73,52 @@ def read_stock_codes_from_excel(filepath: str) -> StockList:
         raise
     else:
         stock_infos = [
-            StockInfo(code=str(row["code"]), name=str(row["name"]), market_index=str(row["market_index"]))
+            StockInfo(
+                code=str(row["Symbol"]),
+                name=str(row["Company Name"]),
+                country=str(row["Country"]),
+                market_index=str(row["Code"]),
+            )
             for _, row in df.iterrows()
         ]
         return StockList(stocks=stock_infos)
 
 
-def get_realtime_stock_code_list() -> RealtimeStockList:
-    korea_stock_code_list = read_realtime_stock_codes_from_excel(get_path(KOREA_STOCK_FILEPATH))
-    etf_stock_code_list = read_realtime_stock_codes_from_excel(get_path(ETC_STOCK_FILEPATH))
-    nas_stock_code_list = read_realtime_stock_codes_from_excel(get_path(NAS_STOCK_FILEPATH))
-    nys_stock_code_list = read_realtime_stock_codes_from_excel(get_path(NYS_STOCK_FILEPATH))
-    japan_stock_code_list = read_realtime_stock_codes_from_excel(get_path(JAPAN_STOCK_FILEPATH))
-    return RealtimeStockList(
-        stocks=korea_stock_code_list.stocks
-        + etf_stock_code_list.stocks
-        + nas_stock_code_list.stocks
-        + nys_stock_code_list.stocks
-        + japan_stock_code_list.stocks
-    )
-
-
-def get_korea_stock_code_list() -> StockList:
-    korea_stock_code_list = read_stock_codes_from_excel(get_path(KOREA_STOCK_FILEPATH))
-    etf_stock_code_list = read_stock_codes_from_excel(get_path(ETC_STOCK_FILEPATH))
-    return StockList(stocks=korea_stock_code_list.stocks + etf_stock_code_list.stocks)
-
-
-def get_oversea_stock_code_list() -> StockList:
-    nas_stock_code_list = read_stock_codes_from_excel(get_path(NAS_STOCK_FILEPATH))
-    nys_stock_code_list = read_stock_codes_from_excel(get_path(NYS_STOCK_FILEPATH))
-    japan_stock_code_list = read_stock_codes_from_excel(get_path(JAPAN_STOCK_FILEPATH))
-    return StockList(stocks=nas_stock_code_list.stocks + nys_stock_code_list.stocks + japan_stock_code_list.stocks)
-
-
-def get_usa_stock_code_list() -> StockList:
-    nas_stock_code_list = read_stock_codes_from_excel(get_path(NAS_STOCK_FILEPATH))
-    nys_stock_code_list = read_stock_codes_from_excel(get_path(NYS_STOCK_FILEPATH))
-    return StockList(stocks=nas_stock_code_list.stocks + nys_stock_code_list.stocks)
-
-
 def get_all_stock_code_list() -> StockList:
     korea_stock_code_list = read_stock_codes_from_excel(get_path(KOREA_STOCK_FILEPATH))
-    etf_stock_code_list = read_stock_codes_from_excel(get_path(ETC_STOCK_FILEPATH))
-    nas_stock_code_list = read_stock_codes_from_excel(get_path(NAS_STOCK_FILEPATH))
-    nys_stock_code_list = read_stock_codes_from_excel(get_path(NYS_STOCK_FILEPATH))
+    usa_stock_code_list = read_stock_codes_from_excel(get_path(USA_STOCK_FILEPATH))
     japan_stock_code_list = read_stock_codes_from_excel(get_path(JAPAN_STOCK_FILEPATH))
+    australia_stock_code_list = read_stock_codes_from_excel(get_path(AUSTRALIA_STOCK_FILEPATH))
+    brazil_stock_code_list = read_stock_codes_from_excel(get_path(BRAZIL_STOCK_FILEPATH))
+    canada_stock_code_list = read_stock_codes_from_excel(get_path(CANADA_STOCK_FILEPATH))
+    china_stock_code_list = read_stock_codes_from_excel(get_path(CHINA_STOCK_FILEPATH))
+    france_stock_code_list = read_stock_codes_from_excel(get_path(FRANCE_STOCK_FILEPATH))
+    germany_stock_code_list = read_stock_codes_from_excel(get_path(GERMANY_STOCK_FILEPATH))
+    hongkong_stock_code_list = read_stock_codes_from_excel(get_path(HONGKONG_STOCK_FILEPATH))
+    india_stock_code_list = read_stock_codes_from_excel(get_path(INDIA_STOCK_FILEPATH))
+    italy_stock_code_list = read_stock_codes_from_excel(get_path(ITALY_STOCK_FILEPATH))
+    netherland_stock_code_list = read_stock_codes_from_excel(get_path(NETHERLAND_STOCK_FILEPATH))
+    spain_stock_code_list = read_stock_codes_from_excel(get_path(SPAIN_STOCK_FILEPATH))
+    switzerland_stock_code_list = read_stock_codes_from_excel(get_path(SWITZERLAND_STOCK_FILEPATH))
+    uk_stock_code_list = read_stock_codes_from_excel(get_path(UK_STOCK_FILEPATH))
+
     return StockList(
         stocks=korea_stock_code_list.stocks
-        + etf_stock_code_list.stocks
-        + nas_stock_code_list.stocks
-        + nys_stock_code_list.stocks
+        + usa_stock_code_list.stocks
         + japan_stock_code_list.stocks
+        + australia_stock_code_list.stocks
+        + brazil_stock_code_list.stocks
+        + canada_stock_code_list.stocks
+        + china_stock_code_list.stocks
+        + france_stock_code_list.stocks
+        + germany_stock_code_list.stocks
+        + hongkong_stock_code_list.stocks
+        + india_stock_code_list.stocks
+        + italy_stock_code_list.stocks
+        + netherland_stock_code_list.stocks
+        + spain_stock_code_list.stocks
+        + switzerland_stock_code_list.stocks
+        + uk_stock_code_list.stocks
     )
 
 
