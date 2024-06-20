@@ -22,7 +22,7 @@ log_dir = "./logs"
 os.makedirs(log_dir, exist_ok=True)
 
 logging.basicConfig(
-    filename="./logs/stock_oversea.log",
+    filename="./logs/stock_historical.log",
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
@@ -60,10 +60,9 @@ async def process_stock_data(session: AsyncSession, stock_list: StockList, start
             except Exception:
                 continue
 
-            stock_rows: list[Stock | StockDaily | StockWeekly | StockMonthly] = []
-
             for _, row in df.iterrows():
                 try:
+
                     stock_dataframe = StockDataFrame(
                         date=row["Date"],
                         open=row["Open"],
@@ -87,15 +86,12 @@ async def process_stock_data(session: AsyncSession, stock_list: StockList, start
                     trade_volume=stock_dataframe.volume,
                 )
 
-                logging.info(f"{stock_code=}, {stock_info.country=}")
-                stock_rows.append(stock_row)  # type: ignore
-
-            try:
-                await StockRepository.bulk_save(session, stock_rows)
-            except IntegrityError as e:
-                logging.error(f"[process_stock_data] IntegrityError: {e} - Skipping stock code {stock_info.code}")
-                await session.rollback()
-                continue
+                try:
+                    await StockRepository.save(session, stock_row)  # type: ignore
+                except IntegrityError as e:
+                    logging.error(f"[process_stock_data] IntegrityError: {e} - Skipping stock code {stock_info.code}")
+                    await session.rollback()
+                    continue
 
     logging.info("주식 데이터 수집을 완료 합니다.")
 
