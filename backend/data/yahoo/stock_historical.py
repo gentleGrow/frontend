@@ -7,10 +7,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.module.asset.model import Stock, StockDaily, StockMonthly, StockWeekly  # noqa: F401 > relationship 설정시 필요합니다.
+from app.module.asset.repository.stock_repository import StockRepository
 from app.module.asset.schema.stock_schema import StockList
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from data.common.enum import CountryMarketCode
-from data.common.repository import StockRepository
 from data.common.service import get_all_stock_code_list
 from data.yahoo.source.constant import STOCK_HISTORY_TIMERANGE_YEAR, TIME_INTERVAL_MODEL_REPO_MAP
 from data.yahoo.source.enum import TimeInterval
@@ -62,7 +62,6 @@ async def process_stock_data(session: AsyncSession, stock_list: StockList, start
 
             for _, row in df.iterrows():
                 try:
-
                     stock_dataframe = StockDataFrame(
                         date=row["Date"],
                         open=row["Open"],

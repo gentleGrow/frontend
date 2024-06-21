@@ -24,39 +24,47 @@ os.makedirs("./logs", exist_ok=True)
 
 async def insert_dividend_data(session: AsyncSession, stock_list: StockList):
     for stock in stock_list.stocks:
-        stock_info = yfinance.Ticker(stock.code)
+        try:
+            stock_info = yfinance.Ticker(stock.code)
+        except Exception:
+            continue
         dividends = stock_info.dividends
 
         logging.info(f"{stock.code=}{dividends.empty=}")
 
         if dividends.empty:
-            await DividendRepository.save_dividend(
-                session=session,
-                dividend=0,
-                payment_date=date.today(),
-                dividend_yield=0.0,
-                stock_code=stock.code,
-            )
+            try:
+                await DividendRepository.save(
+                    session=session,
+                    dividend=0,
+                    payment_date=date.today(),
+                    dividend_yield=0.0,
+                    stock_code=stock.code,
+                )
+            except Exception:
+                continue
         else:
             most_recent_dividend = dividends[-1]
-
-            await DividendRepository.save_dividend(
-                session=session,
-                dividend=most_recent_dividend,
-                payment_date=date.today(),
-                dividend_yield=0.0,
-                stock_code=stock.code,
-            )
+            try:
+                await DividendRepository.save(
+                    session=session,
+                    dividend=most_recent_dividend,
+                    payment_date=date.today(),
+                    dividend_yield=0.0,
+                    stock_code=stock.code,
+                )
+            except Exception:
+                continue
 
 
 async def main():
-    logging.info("dividend_usa를 시작합니다.")
+    logging.info("dividend 수집을 시작합니다.")
     stock_list: StockList = get_all_stock_code_list()
 
     async for session in get_mysql_session():
         await insert_dividend_data(session, stock_list)
 
-    logging.info("dividend_usa를 마칩니다.")
+    logging.info("dividend 수집을 마칩니다.")
 
 
 if __name__ == "__main__":

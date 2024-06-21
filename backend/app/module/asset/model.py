@@ -6,6 +6,18 @@ from app.module.asset.enum import AccountType, AssetType, CurrencyType, Investme
 from database.config import MySQLBase
 
 
+class ExchangeRate(TimestampMixin, MySQLBase):
+    __tablename__ = "exchange_rate"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    source_currency = Column(Enum(CurrencyType), nullable=False)
+    target_currency = Column(Enum(CurrencyType), nullable=False)
+    rate = Column(Float, nullable=False)
+    date = Column(Date, nullable=False)
+
+    __table_args__ = (UniqueConstraint("source_currency", "target_currency", "date", name="uq_exchange_rate"),)
+
+
 class Dividend(TimestampMixin, MySQLBase):
     __tablename__ = "dividend"
 
