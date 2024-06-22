@@ -1,8 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.orm import joinedload
 
 from app.module.asset.enum import AssetType
-from app.module.asset.model import Asset
+from app.module.asset.model import Asset, AssetStock
 
 
 class AssetRepository:
@@ -12,18 +13,9 @@ class AssetRepository:
         return result.scalars().all()
 
     @staticmethod
-    async def save_assets(session: AsyncSession, asset_transactions: list[Asset]) -> bool:
-        transactions: list[Asset] = [
-            Asset(
-                quantity=asset_transaction.quantity,
-                investment_bank=asset_transaction.investment_bank,
-                user_id=asset_transaction.user_id,
-            )
-            for asset_transaction in asset_transactions
-        ]
-        session.add_all(transactions)
+    async def save_assets(session: AsyncSession, assets: list[Asset]) -> None:
+        session.add_all(assets)
         await session.commit()
-        return True
 
     @staticmethod
     async def update_assets(session: AsyncSession, assets: list[Asset]) -> bool:
@@ -46,13 +38,15 @@ class AssetRepository:
         return True
 
     @staticmethod
-    async def get_asset_stock(session: AsyncSession, user_id: int) -> list[Asset]:
-        result = await session.execute(
-            select(Asset).filter(Asset.user_id == user_id, Asset.asset_type == AssetType.STOCK)
-        )
+    async def get_by_asset_type(session: AsyncSession, user_id: int, asset_type: AssetType) -> list[Asset]:
+        result = await session.execute(select(Asset).filter(Asset.user_id == user_id, Asset.asset_type == asset_type))
         return result.scalars().all()
 
     @staticmethod
-    async def save_asset_stock(session: AsyncSession, assets: list[Asset]) -> None:
-        session.add_all(assets)
-        await session.commit()
+    async def get_by_asset_type_eager(session: AsyncSession, user_id: int, asset_type: AssetType) -> list[Asset]:
+        result = await session.execute(
+            select(Asset)
+            .filter(Asset.user_id == user_id, Asset.asset_type == asset_type)
+            .options(joinedload(Asset.asset_stock).joinedload(AssetStock.stock))
+        )
+        return result.unique().scalars().all()

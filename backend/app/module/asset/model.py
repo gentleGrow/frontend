@@ -69,7 +69,7 @@ class Stock(TimestampMixin, MySQLBase):
     market_index = Column(String(255), nullable=False)
     country = Column(String(255), nullable=False)
 
-    asset = relationship("Asset", secondary="asset_stock", back_populates="stock")
+    asset = relationship("Asset", secondary="asset_stock", back_populates="stock", overlaps="asset_stock")
     dividend = relationship("Dividend", back_populates="stock")
 
     asset_stock = relationship("AssetStock", back_populates="stock", overlaps="asset,stock")

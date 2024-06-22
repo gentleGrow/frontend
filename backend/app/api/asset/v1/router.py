@@ -5,12 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.common.auth.security import verify_jwt_token
 from app.common.schema import JsonResponse
+from app.module.asset.enum import AssetType
 from app.module.asset.model import Asset, AssetStock, Dividend, Stock, StockDaily
 from app.module.asset.repository.asset_repository import AssetRepository
-from app.module.asset.repository.asset_stock_repository import AssetStockRepository
 from app.module.asset.repository.dividend_repository import DividendRepository
 from app.module.asset.repository.stock_daily_repository import StockDailyRepository
-from app.module.asset.repository.stock_repository import StockRepository
 from app.module.asset.schema.asset_schema import AssetTransaction, AssetTransactionRequest
 from app.module.asset.schema.stock_schema import StockAsset, StockAssetResponse
 from app.module.auth.constant import DUMMY_USER_ID
@@ -27,25 +26,28 @@ async def get_dummy_assets(session: AsyncSession = Depends(get_mysql_session)) -
     if dummy_asset_cache:
         return dummy_asset_cache
 
-    dummy_assets: list[Asset] = await AssetRepository.get_asset_stock(session, DUMMY_USER_ID)
+    dummy_assets: list[Asset] = await AssetRepository.get_by_asset_type_eager(session, DUMMY_USER_ID, AssetType.STOCK)
 
-    asset_ids = [asset.id for asset in dummy_assets]
-    asset_stocks: list[AssetStock] = await AssetStockRepository.get_asset_stocks(session, asset_ids)
+    asset_stocks: list[AssetStock] = []
+    stocks: list[Stock] = []
+    stock_codes = []
 
-    stock_ids = [asset_stock.stock_id for asset_stock in asset_stocks]
-    stocks: list[Stock] = await StockRepository.get_stocks(session, stock_ids)
+    for asset in dummy_assets:
+        for asset_stock in asset.asset_stock:
+            asset_stocks.append(asset_stock)
+            stocks.append(asset_stock.stock)
+            stock_codes.append(asset_stock.stock.code)
 
-    stock_codes = [stock.code for stock in stocks]
     stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies(session, stock_codes)
     dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
-    current_stock_dailies: list[StockDaily] = await StockDailyRepository.get_most_recent_stock_dailies(
-        session, stock_codes
-    )
 
     stock_map = {stock.id: stock for stock in stocks}
     stock_daily_map = {daily.code: daily for daily in stock_dailies}
     dividend_map = {dividend.stock_code: dividend for dividend in dividends}
-    current_stock_daily_map = {daily.code: daily for daily in current_stock_dailies}
+    current_stock_daily_map: dict[str, StockDaily] = {}
+    for daily in stock_dailies:
+        if daily.code not in current_stock_daily_map or daily.date > current_stock_daily_map[daily.code].date:
+            current_stock_daily_map[daily.code] = daily
 
     stock_assets = []
     total_asset_amount = 0
@@ -108,7 +110,6 @@ async def get_dummy_assets(session: AsyncSession = Depends(get_mysql_session)) -
     )
 
     await redis_stock_repository.save_dummy_asset(result)
-
     return result
 
 
