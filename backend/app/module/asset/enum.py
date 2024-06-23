@@ -36,6 +36,15 @@ class VirtualExchangeType(StrEnum):
 
 
 class CurrencyType(StrEnum):
-    KRW = "won"
-    USD = "dollar"
-    JPY = "yen"
+    KOREA = "KRW"
+    USA = "USD"
+    JAPAN = "JPY"
+    AUSTRALIA = "AUD"
+    BRAZIL = "BRL"
+    CANADA = "CAD"
+    CHINA = "CNY"
+    EUROPE = "EUR"
+    HONG_KONG = "HKD"
+    INDIA = "INR"
+    SWITZERLAND = "CHF"
+    UNITED_KINGDOM = "GBP"

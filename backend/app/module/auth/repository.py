@@ -1,5 +1,3 @@
-from uuid import uuid4
-
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -22,7 +20,7 @@ class UserRepository:
         return user and UserSchema.model_validate(user)
 
     @staticmethod
-    async def get_by_id(db: AsyncSession, user_id: str) -> UserSchema | None:
+    async def get_by_id(db: AsyncSession, user_id: int) -> UserSchema | None:
         select_instance = select(UserModel).where(UserModel.id == user_id)
         result = await db.execute(select_instance)
         user = result.scalars().first()
@@ -35,27 +33,18 @@ class UserRepository:
         provider: ProviderEnum,
         role: UserRoleEnum = UserRoleEnum.USER,
         nickname: str = None,
-    ) -> UserSchema:
+        user_id: int = None,
+    ) -> None:
         new_user = UserModel(
-            id=uuid4(),
+            id=user_id,
             social_id=social_id,
             provider=provider.value,
             role=role,
             nickname=nickname,
         )
 
-        db.add(
-            UserModel(
-                id=str(uuid4()),
-                social_id=social_id,
-                provider=provider.value,
-                role=role,
-                nickname=nickname,
-            )
-        )
+        db.add(new_user)
         await db.commit()
-        await db.refresh(new_user)
-        return UserSchema.model_validate(new_user)
 
 
 class RedisJWTTokenRepository(AbstractCRUDRepository):

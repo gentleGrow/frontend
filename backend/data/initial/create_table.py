@@ -8,6 +8,7 @@ from app.module.asset.model import (  # noqa > relationship purpose
     Asset,
     Bond,
     Currency,
+    Dividend,
     Stock,
     StockDaily,
     StockMonthly,

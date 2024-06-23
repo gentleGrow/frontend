@@ -1,18 +1,36 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from app.module.asset.model import Stock
-from app.module.asset.schema.stock_schema import StockCodeList, StockInfo, StockList
+from app.module.asset.model import Stock, StockDaily, StockMonthly, StockWeekly
 
 
 class StockRepository:
     @staticmethod
-    async def get_stocks_by_codes(db: AsyncSession, stock_codes: StockCodeList) -> StockList:
-        query = select(Stock).where(Stock.code.in_([stock_code.code for stock_code in stock_codes.codes]))
-        stock_instance = await db.execute(query)
-        stocks = stock_instance.scalars().all()
+    async def get_stock(session: AsyncSession, stock_id: int) -> Stock:
+        stock_instance = await session.execute(select(Stock).where(Stock.id == stock_id))
+        return stock_instance.scalar_one_or_none()
 
-        stock_info_list = [
-            StockInfo(code=stock.code, name=stock.name, market_index=stock.market_index) for stock in stocks
-        ]
-        return StockList(stocks=stock_info_list)
+    @staticmethod
+    async def get_stocks(session: AsyncSession, stock_ids: list[int]) -> list[Stock]:
+        result = await session.execute(select(Stock).where(Stock.id.in_(stock_ids)))
+        return result.scalars().all()
+
+    @staticmethod
+    async def get_by_code(session: AsyncSession, stock_code: str) -> Stock:
+        result = await session.execute(select(Stock).where(Stock.code == stock_code))
+        return result.scalar_one_or_none()
+
+    @staticmethod
+    async def get_by_codes(session: AsyncSession, stock_codes: list[str]) -> list[Stock]:
+        result = await session.execute(select(Stock).where(Stock.code.in_(stock_codes)))
+        return result.scalars().all()
+
+    @staticmethod
+    async def save(session: AsyncSession, stock: Stock | StockDaily | StockWeekly | StockMonthly) -> None:
+        session.add(stock)
+        await session.commit()
+
+    @staticmethod
+    async def bulk_save(session: AsyncSession, stocks: list[Stock | StockDaily | StockWeekly | StockMonthly]) -> None:
+        session.add_all(stocks)
+        await session.commit()

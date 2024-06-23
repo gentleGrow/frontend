@@ -1,4 +1,3 @@
-from contextlib import asynccontextmanager
 from os import getenv
 from typing import AsyncGenerator
 
@@ -28,17 +27,6 @@ async def get_mysql_session() -> AsyncGenerator[AsyncSession, None]:
         yield db
     finally:
         await db.close()
-
-
-@asynccontextmanager
-async def transactional_session() -> AsyncGenerator[AsyncSession, None]:  # type: ignore
-    async with get_mysql_session() as session:  # type: ignore
-        try:
-            yield session
-            await session.commit()
-        except Exception:
-            await session.rollback()
-            raise
 
 
 def get_redis_pool() -> aioredis.Redis:

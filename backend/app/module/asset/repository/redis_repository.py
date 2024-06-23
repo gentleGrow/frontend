@@ -1,7 +1,8 @@
 from redis.asyncio import Redis
 
 from app.common.repository.base_repository import AbstractCRUDRepository
-from app.module.asset.schema.stock_schema import StockList, StockPriceList
+from app.module.asset.constant import DUMMY_ASSET_EXPIRE_SECOND, DUMMY_ASSET_KEY
+from app.module.asset.schema.stock_schema import StockAssetResponse, StockList, StockPriceList
 
 
 class RedisStockRepository(AbstractCRUDRepository):
@@ -18,3 +19,12 @@ class RedisStockRepository(AbstractCRUDRepository):
 
     async def get(self, stock_code: str) -> int:
         return await self.redis.get(stock_code)
+
+    async def get_dummy_asset(self) -> StockAssetResponse | None:
+        dummay_asset = await self.redis.get(DUMMY_ASSET_KEY)
+        if dummay_asset:
+            return StockAssetResponse.model_validate_json(dummay_asset)
+        return None
+
+    async def save_dummy_asset(self, response: StockAssetResponse, expiry: int = DUMMY_ASSET_EXPIRE_SECOND) -> None:
+        await self.redis.set(DUMMY_ASSET_KEY, response.model_dump_json(), ex=expiry)

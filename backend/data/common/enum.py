@@ -22,3 +22,23 @@ class MarketType(StrEnum):
     @classmethod
     def valid_inputs(cls):
         return {item.value for item in cls}
+
+
+class CountryMarketCode(StrEnum):
+    USA = ""
+    KOREA_KOSPI = "KS"
+    KOREA_KOSDAQ = "KQ"
+    JAPAN = "T"
+    UK = "L"
+    GERMANY = "DE"
+    FRANCE = "PA"
+    CHINA = "SS"
+    HONGKONG = "HK"
+    CANADA = "TO"
+    AUSTRALIA = "AX"
+    INDIA = "BO"
+    BRAZIL = "SA"
+    ITALY = "MI"
+    SPAIN = "MC"
+    SWITZERLAND = "SW"
+    NETHERLAND = "AS"
