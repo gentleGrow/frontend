@@ -6,6 +6,5 @@ from app.module.asset.model import ExchangeRate
 class ExchangeRateRepository:
     @staticmethod
     async def save(session: AsyncSession, exchange_rate: ExchangeRate) -> None:
-
         session.add(exchange_rate)
-        session.commit()
+        await session.commit()

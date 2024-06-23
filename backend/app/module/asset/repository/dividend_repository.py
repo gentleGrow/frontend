@@ -16,10 +16,6 @@ class DividendRepository:
         return result.scalars().all()
 
     @staticmethod
-    async def save(
-        session: AsyncSession, dividend: float, payment_date: str, dividend_yield: float, stock_code: str
-    ) -> None:
-        await session.add(
-            Dividend(dividend=dividend, payment_date=payment_date, dividend_yield=dividend_yield, stock_code=stock_code)
-        )
+    async def save(session: AsyncSession, dividend: Dividend) -> None:
+        session.add(dividend)
         await session.commit()

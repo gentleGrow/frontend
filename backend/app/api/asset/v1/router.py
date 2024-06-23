@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.common.auth.security import verify_jwt_token
 from app.common.schema import JsonResponse
 from app.module.asset.enum import AssetType
-from app.module.asset.model import Asset, AssetStock, Dividend, Stock, StockDaily
+from app.module.asset.model import Asset, Dividend, StockDaily
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.dividend_repository import DividendRepository
 from app.module.asset.repository.stock_daily_repository import StockDailyRepository
@@ -28,20 +28,13 @@ async def get_dummy_assets(session: AsyncSession = Depends(get_mysql_session)) -
 
     dummy_assets: list[Asset] = await AssetRepository.get_by_asset_type_eager(session, DUMMY_USER_ID, AssetType.STOCK)
 
-    asset_stocks: list[AssetStock] = []
-    stocks: list[Stock] = []
     stock_codes = []
-
     for asset in dummy_assets:
-        for asset_stock in asset.asset_stock:
-            asset_stocks.append(asset_stock)
-            stocks.append(asset_stock.stock)
-            stock_codes.append(asset_stock.stock.code)
+        stock_codes.append(asset.asset_stock.stock.code)
 
     stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies(session, stock_codes)
     dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
 
-    stock_map = {stock.id: stock for stock in stocks}
     stock_daily_map = {daily.code: daily for daily in stock_dailies}
     dividend_map = {dividend.stock_code: dividend for dividend in dividends}
     current_stock_daily_map: dict[str, StockDaily] = {}
@@ -56,44 +49,36 @@ async def get_dummy_assets(session: AsyncSession = Depends(get_mysql_session)) -
     total_dividend_amount = 0
 
     for asset in dummy_assets:
-        asset_stock = next((a for a in asset_stocks if a.asset_id == asset.id))
-        if asset_stock is None:
-            continue
+        stock_daily = stock_daily_map.get(asset.asset_stock.stock.code)
+        dividend = dividend_map.get(asset.asset_stock.stock.code)
+        current_stock_daily = current_stock_daily_map.get(asset.asset_stock.stock.code)
 
-        stock = stock_map.get(asset_stock.stock_id)
-        if stock is None:
-            continue
-
-        stock_daily = stock_daily_map.get(stock.code)
-        dividend = dividend_map.get(stock.code)
-        current_stock_daily = current_stock_daily_map.get(stock.code)
-
-        if stock_daily is None or current_stock_daily is None or dividend is None:
-            continue
-
+        # 매입가 미입력시, 추후 구매일자 기준으로 설정하겠습니다.
         purchase_price = (
-            asset_stock.purchase_price if asset_stock.purchase_price is not None else stock_daily.adj_close_price
+            asset.asset_stock.purchase_price
+            if asset.asset_stock.purchase_price is not None
+            else stock_daily.adj_close_price  # type: ignore
         )
-        profit = (current_stock_daily.adj_close_price / stock_daily.adj_close_price - 1) * 100
+        profit = (current_stock_daily.adj_close_price / stock_daily.adj_close_price - 1) * 100  # type: ignore
 
         stock_asset = StockAsset(
-            stock_code=stock.code,
-            stock_name=stock.name,
+            stock_code=asset.asset_stock.stock.code,
+            stock_name=asset.asset_stock.stock.name,
             quantity=asset.quantity,
             buy_date=asset.purchase_date,
             profit=profit,
-            highest_price=stock_daily.highest_price,
-            lowest_price=stock_daily.lowest_price,
-            stock_volume=stock_daily.trade_volume,
+            highest_price=stock_daily.highest_price,  # type: ignore
+            lowest_price=stock_daily.lowest_price,  # type: ignore
+            stock_volume=stock_daily.trade_volume,  # type: ignore
             investment_bank=asset.investment_bank,
-            dividend=dividend.dividend,
+            dividend=dividend.dividend,  # type: ignore
             purchase_price=purchase_price,
             purchase_amount=purchase_price * asset.quantity,
         )
 
-        total_asset_amount += current_stock_daily.adj_close_price * asset.quantity
-        total_invest_amount += stock_daily.adj_close_price * asset.quantity
-        total_dividend_amount += dividend.dividend * 1350  # 환율 데이터 수집 후 수정하겠습니다.
+        total_asset_amount += current_stock_daily.adj_close_price * asset.quantity  # type: ignore
+        total_invest_amount += stock_daily.adj_close_price * asset.quantity  # type: ignore
+        total_dividend_amount += dividend.dividend * 1350  # type: ignore # 환율 데이터 수집 후 수정하겠습니다.
 
         stock_assets.append(stock_asset)
 

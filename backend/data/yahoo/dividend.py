@@ -1,16 +1,17 @@
 import asyncio
 import logging
 import os
-from datetime import date
 
 import yfinance
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.module.asset.model import Stock  # noqa: F401 > relationship 설정시 필요합니다.
+from app.module.asset.model import Dividend
 from app.module.asset.repository.dividend_repository import DividendRepository
 from app.module.asset.schema.stock_schema import StockList
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from data.common.service import get_all_stock_code_list
+from data.yahoo.source.service import format_stock_code
 from database.dependency import get_mysql_session
 
 logging.basicConfig(
@@ -25,36 +26,24 @@ os.makedirs("./logs", exist_ok=True)
 async def insert_dividend_data(session: AsyncSession, stock_list: StockList):
     for stock in stock_list.stocks:
         try:
-            stock_info = yfinance.Ticker(stock.code)
+            stock_code = format_stock_code(stock.code, stock.country, stock.market_index)
+            stock_info = yfinance.Ticker(stock_code)
         except Exception:
             continue
+
         dividends = stock_info.dividends
 
-        logging.info(f"{stock.code=}{dividends.empty=}")
-
         if dividends.empty:
-            try:
-                await DividendRepository.save(
-                    session=session,
-                    dividend=0,
-                    payment_date=date.today(),
-                    dividend_yield=0.0,
-                    stock_code=stock.code,
-                )
-            except Exception:
-                continue
+            newest_dividend = 0
         else:
-            most_recent_dividend = dividends[-1]
-            try:
-                await DividendRepository.save(
-                    session=session,
-                    dividend=most_recent_dividend,
-                    payment_date=date.today(),
-                    dividend_yield=0.0,
-                    stock_code=stock.code,
-                )
-            except Exception:
-                continue
+            newest_dividend = dividends[-1]
+
+        dividend = Dividend(dividend=newest_dividend, stock_code=stock.code)
+
+        try:
+            await DividendRepository.save(session=session, dividend=dividend)
+        except Exception:
+            continue
 
 
 async def main():

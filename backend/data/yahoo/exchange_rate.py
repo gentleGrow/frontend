@@ -30,15 +30,15 @@ logging.basicConfig(
 
 
 async def fetch_exchange_rate(source_currency: str, target_currency: str) -> float | None:
-    pair = f"{source_currency}{target_currency}=X"
+    url = f"{source_currency}{target_currency}=X"
     try:
-        ticker = yfinance.Ticker(pair)
+        ticker = yfinance.Ticker(url)
     except Exception:
         return None
     else:
-        hist = ticker.history(period="1d")
-        if not hist.empty:
-            rate = hist["Close"][0]
+        exchange_rate_history = ticker.history(period="1d")
+        if not exchange_rate_history.empty:
+            rate = exchange_rate_history["Close"][0]
             return rate
     return None
 
@@ -47,9 +47,6 @@ async def main():
     async for session in get_mysql_session():
         logging.info("exchange_rate를 시작합니다.")
         for source_currency, target_currency in currency_pairs:
-            logging.info(f"{source_currency=}")
-            logging.info(f"{target_currency=}")
-
             rate = await fetch_exchange_rate(source_currency, target_currency)
 
             if rate is None:

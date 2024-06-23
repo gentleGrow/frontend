@@ -23,8 +23,6 @@ class Dividend(TimestampMixin, MySQLBase):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     dividend = Column(Float, nullable=False, info={"description": "배당금"})
-    payment_date = Column(Date, nullable=True, info={"description": "배당일"})
-    dividend_yield = Column(Float, nullable=True, info={"description": "배당률"})
 
     stock_code = Column(String(255), ForeignKey("stock.code"), nullable=False)
 
