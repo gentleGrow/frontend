@@ -38,8 +38,8 @@ class AssetStock(MySQLBase):
     stock_id = Column(BigInteger, ForeignKey("stock.id"), primary_key=True)
     purchase_price = Column(Float, nullable=True, info={"description": "매입가"})
 
-    asset = relationship("Asset", back_populates="asset_stock", overlaps="stock,asset_stock")
-    stock = relationship("Stock", back_populates="asset_stock", overlaps="asset,asset_stock")
+    asset = relationship("Asset", back_populates="asset_stock", overlaps="stock,asset")
+    stock = relationship("Stock", back_populates="asset_stock", overlaps="asset,stock")
 
 
 class Asset(TimestampMixin, MySQLBase):
@@ -55,7 +55,7 @@ class Asset(TimestampMixin, MySQLBase):
 
     user = relationship("User", back_populates="asset")
     stock = relationship("Stock", secondary="asset_stock", back_populates="asset", overlaps="asset_stock")
-    asset_stock = relationship("AssetStock", back_populates="asset", overlaps="stock,asset")
+    asset_stock = relationship("AssetStock", back_populates="asset", overlaps="stock")
 
 
 class Stock(TimestampMixin, MySQLBase):
@@ -68,9 +68,8 @@ class Stock(TimestampMixin, MySQLBase):
     country = Column(String(255), nullable=False)
 
     asset = relationship("Asset", secondary="asset_stock", back_populates="stock", overlaps="asset_stock")
+    asset_stock = relationship("AssetStock", back_populates="stock", overlaps="asset")
     dividend = relationship("Dividend", back_populates="stock")
-
-    asset_stock = relationship("AssetStock", back_populates="stock", overlaps="asset,stock")
 
     __table_args__ = (UniqueConstraint("code", name="uq_stock_code"),)
 

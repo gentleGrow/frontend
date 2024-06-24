@@ -22,9 +22,9 @@ asset_router = APIRouter(prefix="/v1")
 
 @asset_router.get("/dummy/asset", summary="임시 자산 정보를 반환합니다.", response_model=StockAssetResponse)
 async def get_dummy_assets(session: AsyncSession = Depends(get_mysql_session)) -> StockAssetResponse:
-    dummy_asset_cache = await redis_stock_repository.get_dummy_asset()
-    if dummy_asset_cache:
-        return dummy_asset_cache
+    # dummy_asset_cache = await redis_stock_repository.get_dummy_asset()
+    # if dummy_asset_cache:
+    #     return dummy_asset_cache
 
     dummy_assets: list[Asset] = await AssetRepository.get_by_asset_type_eager(session, DUMMY_USER_ID, AssetType.STOCK)
 

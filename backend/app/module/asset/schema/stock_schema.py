@@ -30,14 +30,6 @@ class StockAssetResponse(BaseModel):
     total_dividend_rate: float
 
 
-class StockCode(BaseModel):
-    code: str = Field(..., description="종목 코드", examples="095570")
-
-
-class StockCodeList(BaseModel):
-    codes: list[StockCode]
-
-
 class StockInfo(BaseModel):
     code: str = Field(..., description="종목 코드", examples="095570")
     name: str = Field(..., description="종목명", examples="BGF리테일")
