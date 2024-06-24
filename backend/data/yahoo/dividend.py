@@ -50,7 +50,7 @@ async def main():
     logging.info("dividend 수집을 시작합니다.")
     stock_list: StockList = get_all_stock_code_list()
 
-    async for session in get_mysql_session():
+    async with get_mysql_session() as session:
         await insert_dividend_data(session, stock_list)
 
     logging.info("dividend 수집을 마칩니다.")

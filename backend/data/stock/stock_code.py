@@ -19,7 +19,7 @@ logging.basicConfig(
 
 
 async def main():
-    async for session in get_mysql_session():
+    async with get_mysql_session() as session:
         stock_list: StockList = get_all_stock_code_list()
         for stock_info in stock_list.stocks:
             stock_info: StockInfo

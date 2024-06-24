@@ -28,6 +28,8 @@ async def get_dummy_assets(session: AsyncSession = Depends(get_mysql_session)) -
 
     dummy_assets: list[Asset] = await AssetRepository.get_by_asset_type_eager(session, DUMMY_USER_ID, AssetType.STOCK)
 
+    print(f"{dummy_assets=}")
+
     stock_codes = []
     for asset in dummy_assets:
         stock_codes.append(asset.asset_stock.stock.code)

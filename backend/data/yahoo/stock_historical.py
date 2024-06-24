@@ -86,7 +86,7 @@ async def main():
     start_period, end_period = get_period_bounds(STOCK_HISTORY_TIMERANGE_YEAR)
     stock_list: StockList = get_all_stock_code_list()
 
-    async for session in get_mysql_session():
+    async with get_mysql_session() as session:
         await process_stock_data(session, stock_list, start_period, end_period)
     logging.info("stock_overseas를 마칩니다.")
 

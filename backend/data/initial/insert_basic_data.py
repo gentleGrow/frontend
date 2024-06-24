@@ -88,7 +88,7 @@ async def create_dummy_assets(session: AsyncSession):
 
 
 async def main():
-    async for session in get_mysql_session():
+    async with get_mysql_session() as session:
         created = await create_initial_users(session)
         if created:
             await create_dummy_assets(session)

@@ -44,7 +44,7 @@ async def fetch_exchange_rate(source_currency: str, target_currency: str) -> flo
 
 
 async def main():
-    async for session in get_mysql_session():
+    async with get_mysql_session() as session:
         logging.info("exchange_rate를 시작합니다.")
         for source_currency, target_currency in currency_pairs:
             rate = await fetch_exchange_rate(source_currency, target_currency)
