@@ -21,6 +21,14 @@ else:
 REDIS_PORT = int(getenv("REDIS_PORT", 6379))
 
 
+async def get_mysql_session_router() -> AsyncGenerator[AsyncSession, None]:
+    db = mysql_session_factory()
+    try:
+        yield db
+    finally:
+        await db.close()
+
+
 @asynccontextmanager
 async def get_mysql_session() -> AsyncGenerator[AsyncSession, None]:
     db = mysql_session_factory()

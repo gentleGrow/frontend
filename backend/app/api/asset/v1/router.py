@@ -5,23 +5,25 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.common.auth.security import verify_jwt_token
 from app.common.schema import JsonResponse
-from app.module.asset.enum import AssetType
-from app.module.asset.model import Asset, Dividend, StockDaily
+from app.module.asset.enum import AssetType, CurrencyType
+from app.module.asset.model import Asset, Dividend, ExchangeRate, StockDaily
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.dividend_repository import DividendRepository
+from app.module.asset.repository.exchange_rate_repository import ExchangeRateRepository
 from app.module.asset.repository.stock_daily_repository import StockDailyRepository
 from app.module.asset.schema.asset_schema import AssetTransaction, AssetTransactionRequest
 from app.module.asset.schema.stock_schema import StockAsset, StockAssetResponse
+from app.module.asset.service import get_currency_code
 from app.module.auth.constant import DUMMY_USER_ID
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
-from database.dependency import get_mysql_session
+from database.dependency import get_mysql_session_router
 from database.singleton import redis_stock_repository
 
 asset_router = APIRouter(prefix="/v1")
 
 
 @asset_router.get("/dummy/asset", summary="임시 자산 정보를 반환합니다.", response_model=StockAssetResponse)
-async def get_dummy_assets(session: AsyncSession = Depends(get_mysql_session)) -> StockAssetResponse:
+async def get_dummy_assets(session: AsyncSession = Depends(get_mysql_session_router)) -> StockAssetResponse:
     # dummy_asset_cache = await redis_stock_repository.get_dummy_asset()
     # if dummy_asset_cache:
     #     return dummy_asset_cache
@@ -80,7 +82,21 @@ async def get_dummy_assets(session: AsyncSession = Depends(get_mysql_session)) -
 
         total_asset_amount += current_stock_daily.adj_close_price * asset.quantity  # type: ignore
         total_invest_amount += stock_daily.adj_close_price * asset.quantity  # type: ignore
-        total_dividend_amount += dividend.dividend * 1350  # type: ignore # 환율 데이터 수집 후 수정하겠습니다.
+
+        source_country_name = asset.asset_stock.stock.country
+        source_country: CurrencyType|None = get_currency_code(source_country_name)
+            
+        
+        target_country: CurrencyType = CurrencyType.KOREA
+        if source_country == target_country:
+            current_exchange_rate = 1
+        else:
+            exchange_rate: ExchangeRate = await ExchangeRateRepository.get_by_source_target(
+                session, source_country, target_country
+            )
+            current_exchange_rate = exchange_rate.rate
+
+        total_dividend_amount += dividend.dividend * current_exchange_rate  # type: ignore # 환율 데이터 수집 후 수정하겠습니다.
 
         stock_assets.append(stock_asset)
 
@@ -102,7 +118,7 @@ async def get_dummy_assets(session: AsyncSession = Depends(get_mysql_session)) -
 
 @asset_router.get("/asset", summary="사용자의 자산 정보를 반환합니다.", response_model=list[AssetTransaction])
 async def get_assets(
-    token: dict = Depends(verify_jwt_token), db: AsyncSession = Depends(get_mysql_session)
+    token: dict = Depends(verify_jwt_token), db: AsyncSession = Depends(get_mysql_session_router)
 ) -> list[AssetTransaction]:
     user_id = token.get("sub")
     if user_id is None:
@@ -120,7 +136,7 @@ async def get_assets(
 async def save_assets(
     transaction_data: AssetTransactionRequest,
     token: dict = Depends(verify_jwt_token),
-    db: AsyncSession = Depends(get_mysql_session),
+    db: AsyncSession = Depends(get_mysql_session_router),
 ) -> JsonResponse:
     try:
         await AssetRepository.save_assets(db, transaction_data.transactions)
@@ -134,7 +150,7 @@ async def save_assets(
 async def update_assets(
     transaction_data: AssetTransactionRequest,
     token: dict = Depends(verify_jwt_token),
-    db: AsyncSession = Depends(get_mysql_session),
+    db: AsyncSession = Depends(get_mysql_session_router),
 ) -> JsonResponse:
     try:
         await AssetRepository.update_assets(db, transaction_data.transactions)
