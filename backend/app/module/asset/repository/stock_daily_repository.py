@@ -25,10 +25,3 @@ class StockDailyRepository:
             select(StockDaily).where(StockDaily.code == stock_code).order_by(StockDaily.date.desc()).limit(1)
         )
         return result.scalar_one_or_none()
-
-    @staticmethod
-    async def get_most_recent_stock_dailies(session: AsyncSession, stock_codes: list[str]) -> list[StockDaily]:
-        result = await session.execute(
-            select(StockDaily).where(StockDaily.code.in_(stock_codes)).order_by(StockDaily.date.desc())
-        )
-        return result.scalars().all()
