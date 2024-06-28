@@ -39,8 +39,9 @@ async def get_dummy_assets(
     stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies(session, stock_codes)
     dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
 
-    stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
+    print(f"length of stock_dailes : {len(stock_dailies)}")
 
+    stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
     dividend_map = {dividend.stock_code: dividend for dividend in dividends}
 
     current_stock_daily_map: dict[str, StockDaily] = {}
@@ -59,6 +60,10 @@ async def get_dummy_assets(
     for asset in dummy_assets:
         stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.purchase_date))
         current_stock_daily = current_stock_daily_map.get(asset.asset_stock.stock.code)
+
+        print(f"{asset.purchase_date=}, {asset.asset_stock.stock.code=}")
+        print(f"{stock_daily=}, {current_stock_daily=}")
+
         dividend_instance = dividend_map.get(asset.asset_stock.stock.code)
         if dividend_instance is None:
             dividend = 0

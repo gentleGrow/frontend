@@ -59,9 +59,10 @@ async def create_initial_users(session: AsyncSession):
 
 async def create_dummy_assets(session: AsyncSession):
     stock_codes = ["005930", "AAPL", "7203", "446720"]  # 삼성전자, 애플, 토요타, etf sol 다우존스
-    purchase_dates = [date(2021, 1, 1), date(2022, 2, 2), date(2023, 3, 3), date(2024, 4, 4)]
+    purchase_dates = [date(2015, 7, 22), date(2012, 11, 14), date(2020, 6, 8), date(2024, 5, 28)]
 
     stock_list: list[Stock] = await StockRepository.get_by_codes(session, stock_codes)
+    stock_dict = {stock.code: stock for stock in stock_list}
 
     assets: list[Asset] = [
         Asset(
@@ -75,8 +76,9 @@ async def create_dummy_assets(session: AsyncSession):
         for purchase_date in purchase_dates
     ]
 
-    for stock, asset in zip(stock_list, assets):
-        asset.stock.append(stock)
+    for stock_code, asset in zip(stock_codes, assets):
+        matching_stock = stock_dict.get(stock_code)
+        asset.stock.append(matching_stock)
 
     success = await AssetRepository.save_assets(session, assets)
     if success:
