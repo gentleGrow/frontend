@@ -43,7 +43,7 @@ class AssetRepository:
         return result.scalars().all()
 
     @staticmethod
-    async def get_by_asset_type_eager(session: AsyncSession, user_id: int, asset_type: AssetType) -> list[Asset]:
+    async def get_eager(session: AsyncSession, user_id: int, asset_type: AssetType) -> list[Asset]:
         result = await session.execute(
             select(Asset)
             .filter(Asset.user_id == user_id, Asset.asset_type == asset_type)

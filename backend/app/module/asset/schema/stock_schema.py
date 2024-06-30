@@ -23,11 +23,9 @@ class StockAsset(BaseModel):
 class StockAssetResponse(BaseModel):
     stock_assets: list[StockAsset]
     total_asset_amount: float
-    total_asset_growth_rate: float
     total_invest_amount: float
     total_invest_growth_rate: float
     total_profit_amount: float
-    total_profit_rate: float
     total_dividend_amount: float
 
 

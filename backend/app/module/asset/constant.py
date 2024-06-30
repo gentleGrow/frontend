@@ -2,7 +2,8 @@ from app.module.asset.enum import CurrencyType
 
 REDIS_STOCK_EXPIRE_SECOND = 60 * 60 * 24
 DUMMY_ASSET_EXPIRE_SECOND = 60 * 60
-DUMMY_ASSET_KEY = "dummy_asset"
+DUMMY_ASSET_KOREA_KEY = "dummy_asset_korea"
+DUMMY_ASSET_OTHER_KEY = "dummy_asset_other"
 
 COUNTRY_TO_CURRENCY = {
     "KOREA": CurrencyType.KOREA,
