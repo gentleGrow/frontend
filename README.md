@@ -24,10 +24,6 @@ http://www.gaemischool.com:8000/docs
 ## ERD
 ![ERD](./backend/etc/erd/erd.png)
 
-## REDIS INSIGHT
-설명 : 실시간 주가 및 유저 세션 정보를 담고 있습니다.  
-http://www.gaemischool.com:5540
-
 <a name="design"></a>
 ## DESIGN
 ![DESIGN](./backend/etc/readme/design.png)
