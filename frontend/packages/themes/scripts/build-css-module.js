@@ -41,7 +41,7 @@ const generateThemeCssVariables = () => {
 
 const generateThemeCss = () => {
   const variables = generateThemeCssVariables();
-  fs.writeFileSync("dist/theme.css", [...variables].join("\n"));
+  fs.writeFileSync("dist/themes.css", [...variables].join("\n"));
 };
 
 generateThemeCss();
