@@ -1,4 +1,5 @@
 import './globals.css';
+import '@gaemi-school/themes/themes.css';
 import Header from '@/layouts/header/Header';
 
 export const metadata = {
