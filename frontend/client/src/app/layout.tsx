@@ -1,6 +1,7 @@
 import './globals.css';
 import '@gaemi-school/themes/themes.css';
 import Header from '@/layouts/header/Header';
+import { useEffect } from 'react';
 
 export const metadata = {
   title: 'Next.js',
@@ -8,6 +9,31 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (isDarkMode) {
+      document.body.classList.add('theme-dark');
+    }
+
+    const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const changeTheme = (e: MediaQueryListEvent) => {
+      if (e.matches) {
+        document.body.classList.add('theme-dark');
+      } else {
+        document.body.classList.remove('theme-dark');
+      }
+    };
+
+    mediaQueryList.addEventListener('change', changeTheme);
+
+    // Cleanup listener on unmount
+    return () => {
+      mediaQueryList.removeEventListener('change', changeTheme);
+    };
+  }, []);
+
   return (
     <html lang="en">
       <body>
