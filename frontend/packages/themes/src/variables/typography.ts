@@ -5,17 +5,23 @@ export const fontSize = {
   36: "2.25rem",
   24: "1.5rem",
   20: "1.25rem",
+  18: "1.125rem",
   16: "1rem",
   14: "0.875rem",
   12: "0.75rem",
+  11: "0.6875rem",
 };
 
 export const fontWeight = {
-  700: "700",
-  600: "600",
-  500: "500",
-  400: "400",
-  300: "300",
+  900: "900", //Black
+  800: "800", //Extra Bold
+  700: "700", //Bold [bold]
+  600: "600", //Semi Bold [semibold]
+  500: "500", //Medium
+  400: "400", //Normal (기본값) [regular]
+  300: "300", //Light
+  200: "200", //Extra Light
+  100: "100", //Thin
 };
 
 export const lineHeight = {
