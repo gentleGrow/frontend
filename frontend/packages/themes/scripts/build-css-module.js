@@ -34,7 +34,7 @@ const generateThemeCssVariables = () => {
         }
 
         if (colorKey === "dark") {
-          const selector = ":root .dark-theme";
+          const selector = ":root .theme-dark";
 
           const cssVariables = Object.entries(colorValue)
             .map(([mainKey, mainValue]) =>
