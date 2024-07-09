@@ -72,7 +72,7 @@ async def process_stock_data(session: AsyncSession, stock_list: StockList, start
                 )
 
                 try:
-                    await StockRepository.save(session, stock_row)  # type: ignore
+                    await StockRepository.save(session, stock_row)  # type: ignore[model 객체 type 인식 안됨]
                 except IntegrityError as e:
                     logging.error(f"[process_stock_data] IntegrityError: {e} - Skipping stock code {stock_info.code}")
                     await session.rollback()

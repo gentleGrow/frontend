@@ -1,6 +1,6 @@
 from app.module.asset.enum import CurrencyType
 from app.module.asset.model import Asset, Dividend, ExchangeRate, StockDaily
-from app.module.asset.schema.stock_schema import StockAsset, StockAssetResponse
+from app.module.asset.schema.stock_schema import StockAsset
 
 
 def get_exchange_rate(exchange_rates: list[ExchangeRate], source: CurrencyType, target: CurrencyType) -> float:
@@ -43,14 +43,14 @@ def check_not_found_stock(
     return result
 
 
-def format_asset_response(
+def get_asset_response_data(
     dummy_assets: list[Asset],
     stock_daily_map: dict[tuple[str, str], StockDaily],
     current_stock_daily_map: dict[str, StockDaily],
     dividend_map: dict[str, Dividend],
     exchange_rates: list[ExchangeRate],
     base_currency: bool,
-) -> StockAssetResponse:
+) -> tuple[list[StockAsset], float, float, float, float]:
     stock_assets = []
     total_asset_amount = 0
     total_invest_amount = 0
@@ -71,7 +71,10 @@ def format_asset_response(
             if asset.asset_stock.purchase_price is not None
             else stock_daily.adj_close_price
         )
-        profit = (current_stock_daily.adj_close_price / stock_daily.adj_close_price - 1) * 100
+
+        profit = (
+            (current_stock_daily.adj_close_price - stock_daily.adj_close_price) / stock_daily.adj_close_price
+        ) * 100
 
         source_country = asset.asset_stock.stock.country.upper()
 
@@ -120,12 +123,4 @@ def format_asset_response(
 
     total_invest_growth_rate = ((total_asset_amount - total_invest_amount) / total_invest_amount) * 100
 
-    result = StockAssetResponse(
-        stock_assets=stock_assets,
-        total_asset_amount=total_asset_amount,
-        total_invest_amount=total_invest_amount,
-        total_invest_growth_rate=total_invest_growth_rate,
-        total_profit_amount=total_asset_amount - total_invest_amount,
-        total_dividend_amount=total_dividend_amount,
-    )
-    return result
+    return stock_assets, total_asset_amount, total_invest_amount, total_invest_growth_rate, total_dividend_amount

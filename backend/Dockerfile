@@ -48,8 +48,8 @@ RUN curl -sSL https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
-RUN chmod +x ./etc/scripts/setup_stocks.sh ./etc/scripts/stock_jobs.sh ./etc/scripts/main.sh ./etc/scripts/initial.sh
+RUN chmod +x ./etc/script/initial.sh ./etc/script/setup_stock.sh ./etc/script/stock_cronjob.sh
 
 EXPOSE 8000
 
-CMD ["sh", "./etc/scripts/initial.sh"]
+CMD ["sh", "./etc/script/initial.sh"]

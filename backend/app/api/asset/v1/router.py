@@ -15,7 +15,7 @@ from app.module.asset.repository.exchange_rate_repository import ExchangeRateRep
 from app.module.asset.repository.stock_daily_repository import StockDailyRepository
 from app.module.asset.schema.asset_schema import AssetTransaction, AssetTransactionRequest
 from app.module.asset.schema.stock_schema import StockAssetResponse
-from app.module.asset.service import check_not_found_stock, format_asset_response, get_stock_mapping_info
+from app.module.asset.service import check_not_found_stock, get_asset_response_data, get_stock_mapping_info
 from app.module.auth.constant import DUMMY_USER_ID
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session_router
@@ -37,7 +37,7 @@ async def get_dummy_assets(
     else:
         dummy_asset_cache_key = DUMMY_ASSET_OTHER_KEY
 
-    dummy_asset_cache: StockAssetResponse = await redis_stock_repository.get(dummy_asset_cache_key)
+    dummy_asset_cache: StockAssetResponse | None = await redis_stock_repository.get(dummy_asset_cache_key)
     if dummy_asset_cache:
         return StockAssetResponse.model_validate_json(dummy_asset_cache)
 
@@ -55,11 +55,21 @@ async def get_dummy_assets(
             status_code=status.HTTP_400_BAD_REQUEST, detail={"not_found_stock_codes": not_found_stock_codes}
         )
 
-    result: StockAssetResponse = format_asset_response(
+    (
+        stock_assets,
+        total_asset_amount,
+        total_invest_amount,
+        total_invest_growth_rate,
+        total_dividend_amount,
+    ) = get_asset_response_data(
         dummy_assets, stock_daily_map, current_stock_daily_map, dividend_map, exchange_rates, base_currency
     )
 
-    redis_stock_repository.save(dummy_asset_cache_key, result.model_dump_json(), DUMMY_ASSET_EXPIRE_SECOND)
+    result: StockAssetResponse = StockAssetResponse.parse(
+        stock_assets, total_asset_amount, total_invest_amount, total_invest_growth_rate, total_dividend_amount
+    )
+
+    await redis_stock_repository.save(dummy_asset_cache_key, result.model_dump_json(), DUMMY_ASSET_EXPIRE_SECOND)
 
     return result
 

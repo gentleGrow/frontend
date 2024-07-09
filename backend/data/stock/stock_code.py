@@ -40,6 +40,7 @@ async def main():
                 logging.error(f"[stock_code] IntegrityError: {e} - Skipping stock code {stock_info.code}")
                 await session.rollback()
                 continue
+        logging.info("[stock_code] 주식 코드를 성공적으로 저장 하였습니다.")
 
 
 if __name__ == "__main__":
