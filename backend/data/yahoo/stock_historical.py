@@ -12,7 +12,7 @@ from app.module.asset.schema.stock_schema import StockList
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from data.common.service import get_all_stock_code_list
 from data.yahoo.source.constant import STOCK_HISTORY_TIMERANGE_YEAR, TIME_INTERVAL_MODEL_REPO_MAP
-from data.yahoo.source.enum import TimeInterval
+from data.yahoo.source.enum import Country, MarketIndex, TimeInterval
 from data.yahoo.source.schema import StockDataFrame
 from data.yahoo.source.service import format_stock_code, get_period_bounds
 from database.dependency import get_mysql_session
@@ -33,7 +33,11 @@ async def process_stock_data(session: AsyncSession, stock_list: StockList, start
         for interval in TimeInterval:
             stock_model = TIME_INTERVAL_MODEL_REPO_MAP[interval]
 
-            stock_code = format_stock_code(stock_info.code, stock_info.country, stock_info.market_index)
+            stock_code = format_stock_code(
+                stock_info.code,
+                Country[stock_info.country.upper().replace(" ", "_")],
+                MarketIndex[stock_info.market_index.upper()],
+            )
 
             url = (
                 f"https://query1.finance.yahoo.com/v7/finance/download/{stock_code}"
