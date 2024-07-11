@@ -2,9 +2,9 @@ from app.module.asset.enum import CurrencyType
 from app.module.asset.schema.stock_schema import StockAssetResponse
 from app.module.asset.service import (
     check_not_found_stock,
-    get_asset_response_data,
     get_exchange_rate,
     get_stock_mapping_info,
+    get_total_asset_data,
 )
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 
@@ -44,9 +44,7 @@ def test_format_asset_response(stock_dailies, dividends, exchange_rates, dummy_a
         total_invest_amount,
         total_invest_growth_rate,
         total_dividend_amount,
-    ) = get_asset_response_data(
-        dummy_assets, stock_daily_map, current_stock_daily_map, dividend_map, exchange_rates, True
-    )
+    ) = get_total_asset_data(dummy_assets, stock_daily_map, current_stock_daily_map, dividend_map, exchange_rates, True)
 
     response: StockAssetResponse = StockAssetResponse.parse(
         stock_assets, total_asset_amount, total_invest_amount, total_invest_growth_rate, total_dividend_amount

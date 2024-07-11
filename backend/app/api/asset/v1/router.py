@@ -15,7 +15,7 @@ from app.module.asset.repository.exchange_rate_repository import ExchangeRateRep
 from app.module.asset.repository.stock_daily_repository import StockDailyRepository
 from app.module.asset.schema.asset_schema import AssetTransaction, AssetTransactionRequest
 from app.module.asset.schema.stock_schema import StockAssetResponse
-from app.module.asset.service import check_not_found_stock, get_asset_response_data, get_stock_mapping_info
+from app.module.asset.service import check_not_found_stock, get_stock_mapping_info, get_total_asset_data
 from app.module.auth.constant import DUMMY_USER_ID
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session_router
@@ -61,7 +61,7 @@ async def get_dummy_assets(
         total_invest_amount,
         total_invest_growth_rate,
         total_dividend_amount,
-    ) = get_asset_response_data(
+    ) = get_total_asset_data(
         dummy_assets, stock_daily_map, current_stock_daily_map, dividend_map, exchange_rates, base_currency
     )
 

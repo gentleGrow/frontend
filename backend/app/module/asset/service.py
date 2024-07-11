@@ -43,7 +43,7 @@ def check_not_found_stock(
     return result
 
 
-def get_asset_response_data(
+def get_total_asset_data(
     dummy_assets: list[Asset],
     stock_daily_map: dict[tuple[str, str], StockDaily],
     current_stock_daily_map: dict[str, StockDaily],

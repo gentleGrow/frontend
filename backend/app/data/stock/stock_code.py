@@ -4,11 +4,11 @@ import os
 
 from sqlalchemy.exc import IntegrityError
 
+from app.data.common.service import get_all_stock_code_list
 from app.module.asset.model import Stock  # noqa: F401 > relationship 설정시 필요합니다.
 from app.module.asset.repository.stock_repository import StockRepository
 from app.module.asset.schema.stock_schema import StockInfo, StockList
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
-from data.common.service import get_all_stock_code_list
 from database.dependency import get_mysql_session
 
 os.makedirs("./logs", exist_ok=True)

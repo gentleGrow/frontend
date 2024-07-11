@@ -1,8 +1,8 @@
 import datetime
 
 from app.common.util.time import end_timestamp, start_timestamp
-from data.common.enum import CountryMarketCode
-from data.yahoo.source.enum import Country, MarketIndex
+from app.data.common.enum import CountryMarketCode
+from app.data.yahoo.source.enum import Country, MarketIndex
 
 
 def get_period_bounds(stock_history_timerange: int) -> tuple[int, int]:
