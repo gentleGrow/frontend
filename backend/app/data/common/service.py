@@ -5,8 +5,7 @@ import pandas as pd
 from botocore.exceptions import ClientError, NoCredentialsError
 from dotenv import find_dotenv, load_dotenv
 
-from app.module.asset.schema.stock_schema import StockInfo, StockList
-from data.common.config import (
+from app.data.common.config import (
     AUSTRALIA_STOCK_FILEPATH,
     BRAZIL_STOCK_FILEPATH,
     CANADA_STOCK_FILEPATH,
@@ -27,6 +26,7 @@ from data.common.config import (
     USA_STOCK_FILEPATH,
     logging,
 )
+from app.module.asset.schema.stock_schema import StockInfo, StockList
 from database.enum import EnvironmentType
 
 load_dotenv(find_dotenv())
@@ -82,6 +82,11 @@ def read_stock_codes_from_excel(filepath: str) -> StockList:
             for _, row in df.iterrows()
         ]
         return StockList(stocks=stock_infos)
+
+
+def get_korea_stock_code_list() -> StockList:
+    korea_stock_code_list = read_stock_codes_from_excel(get_path(KOREA_STOCK_FILEPATH))
+    return StockList(stocks=korea_stock_code_list.stocks)
 
 
 def get_all_stock_code_list() -> StockList:

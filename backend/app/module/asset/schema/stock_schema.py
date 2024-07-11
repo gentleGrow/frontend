@@ -28,6 +28,24 @@ class StockAssetResponse(BaseModel):
     total_profit_amount: float
     total_dividend_amount: float
 
+    @classmethod
+    def parse(
+        cls,
+        stock_assets: list[StockAsset],
+        total_asset_amount: float,
+        total_invest_amount: float,
+        total_invest_growth_rate: float,
+        total_dividend_amount: float,
+    ) -> "StockAssetResponse":
+        return cls(
+            stock_assets=stock_assets,
+            total_asset_amount=total_asset_amount,
+            total_invest_amount=total_invest_amount,
+            total_invest_growth_rate=total_invest_growth_rate,
+            total_profit_amount=total_asset_amount - total_invest_amount,
+            total_dividend_amount=total_dividend_amount,
+        )
+
 
 class StockInfo(BaseModel):
     code: str = Field(..., description="종목 코드", examples="095570")

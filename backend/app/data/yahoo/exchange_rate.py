@@ -5,6 +5,7 @@ from datetime import datetime
 
 import yfinance
 
+from app.data.yahoo.source.constant import currency_pairs
 from app.module.asset.model import (  # noqa: F401 > relationship 설정시 필요합니다.
     Asset,
     AssetStock,
@@ -16,7 +17,6 @@ from app.module.asset.model import (  # noqa: F401 > relationship 설정시 필�
 )
 from app.module.asset.repository.exchange_rate_repository import ExchangeRateRepository
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
-from data.yahoo.source.constant import currency_pairs
 from database.dependency import get_mysql_session
 
 log_dir = "./logs"

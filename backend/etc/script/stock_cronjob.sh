@@ -2,8 +2,7 @@
 
 crontab -l > mycron
 
-echo "0 6 * * * python ./data/yahoo/stock_oversea.py" >> mycron
-echo "0 * * * * python ./data/naver/stock_hourly.py" >> mycron
+echo "0 6 * * * python ./data/yahoo/stock_historical.py" >> mycron
 
 crontab mycron
 rm mycron

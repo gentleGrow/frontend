@@ -2,9 +2,9 @@ from app.module.asset.enum import CurrencyType
 from app.module.asset.schema.stock_schema import StockAssetResponse
 from app.module.asset.service import (
     check_not_found_stock,
-    format_asset_response,
     get_exchange_rate,
     get_stock_mapping_info,
+    get_total_asset_data,
 )
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 
@@ -30,7 +30,7 @@ def test_get_stock_mapping_info(stock_dailies, dividends):
 
 
 def test_check_not_found_stock(stock_dailies, dividends, dummy_assets):
-    stock_daily_map, dividend_map, current_stock_daily_map = get_stock_mapping_info(stock_dailies, dividends)
+    stock_daily_map, _, current_stock_daily_map = get_stock_mapping_info(stock_dailies, dividends)
     not_found_stock_codes = check_not_found_stock(stock_daily_map, current_stock_daily_map, dummy_assets)
 
     assert len(not_found_stock_codes) == 0
@@ -38,8 +38,16 @@ def test_check_not_found_stock(stock_dailies, dividends, dummy_assets):
 
 def test_format_asset_response(stock_dailies, dividends, exchange_rates, dummy_assets):
     stock_daily_map, dividend_map, current_stock_daily_map = get_stock_mapping_info(stock_dailies, dividends)
-    response = format_asset_response(
-        dummy_assets, stock_daily_map, current_stock_daily_map, dividend_map, exchange_rates, True
+    (
+        stock_assets,
+        total_asset_amount,
+        total_invest_amount,
+        total_invest_growth_rate,
+        total_dividend_amount,
+    ) = get_total_asset_data(dummy_assets, stock_daily_map, current_stock_daily_map, dividend_map, exchange_rates, True)
+
+    response: StockAssetResponse = StockAssetResponse.parse(
+        stock_assets, total_asset_amount, total_invest_amount, total_invest_growth_rate, total_dividend_amount
     )
 
     assert isinstance(response, StockAssetResponse)

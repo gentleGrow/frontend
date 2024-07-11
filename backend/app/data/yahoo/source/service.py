@@ -1,7 +1,8 @@
 import datetime
 
 from app.common.util.time import end_timestamp, start_timestamp
-from data.common.enum import CountryMarketCode
+from app.data.common.enum import CountryMarketCode
+from app.data.yahoo.source.enum import Country, MarketIndex
 
 
 def get_period_bounds(stock_history_timerange: int) -> tuple[int, int]:
@@ -13,14 +14,13 @@ def get_period_bounds(stock_history_timerange: int) -> tuple[int, int]:
     return start_timestamp(start_year, current_month), end_timestamp(current_year, current_month)
 
 
-def format_stock_code(code: str, country: str, market_index: str) -> str:
-    country = country.upper()
-    if country == "USA":
+def format_stock_code(code: str, country: Country, market_index: MarketIndex) -> str:
+    if country == Country.USA:
         return code
-    elif country == "KOREA":
-        if market_index.upper() == "KOSPI":
+    elif country == Country.KOREA:
+        if market_index == MarketIndex.KOSPI:
             return f"{code}.{CountryMarketCode.KOREA_KOSPI}"
         else:
             return f"{code}.{CountryMarketCode.KOREA_KOSDAQ}"
     else:
-        return f"{code}.{getattr(CountryMarketCode, country)}"
+        return f"{code}.{market_index.value}"
