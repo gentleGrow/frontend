@@ -75,6 +75,19 @@ class Stock(TimestampMixin, MySQLBase):
     __table_args__ = (UniqueConstraint("code", name="uq_stock_code"),)
 
 
+class StockRealtime(TimestampMixin, MySQLBase):
+    __tablename__ = "stock_realtime"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    code = Column(String(255), nullable=False)
+    name = Column(String(255), nullable=False)
+    price = Column(Float, nullable=False)
+    country = Column(String(255), nullable=False)
+    market_index = Column(String(255), nullable=False)
+
+    __table_args__ = (UniqueConstraint("code", name="uq_code"),)
+
+
 class StockDaily(MySQLBase):
     __tablename__ = "stock_daily"
 

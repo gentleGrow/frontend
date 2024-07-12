@@ -56,20 +56,3 @@ class StockInfo(BaseModel):
 
 class StockPrice(BaseModel):
     price: int = Field(..., description="주가 현재가", examples="14930")
-
-
-class StockList(BaseModel):
-    stocks: list[StockInfo]
-
-
-class StockPriceList(BaseModel):
-    prices: list[StockPrice]
-
-
-class RealtimeStockInfo(BaseModel):
-    code: str = Field(..., description="종목 코드", examples="095570")
-    name: str = Field(..., description="종목명", examples="BGF리테일")
-
-
-class RealtimeStockList(BaseModel):
-    stocks: list[RealtimeStockInfo]

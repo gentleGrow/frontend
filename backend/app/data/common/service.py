@@ -26,7 +26,7 @@ from app.data.common.config import (
     USA_STOCK_FILEPATH,
     logging,
 )
-from app.module.asset.schema.stock_schema import StockInfo, StockList
+from app.module.asset.schema.stock_schema import StockInfo
 from database.enum import EnvironmentType
 
 load_dotenv(find_dotenv())
@@ -59,7 +59,7 @@ def download_file_from_s3(bucket, key, local_path) -> None:
         raise
 
 
-def read_stock_codes_from_excel(filepath: str) -> StockList:
+def read_stock_codes_from_excel(filepath: str) -> list[StockInfo]:
     try:
         df = pd.read_excel(filepath, usecols=["Symbol", "Company Name", "Country", "Code"], header=0)
     except FileNotFoundError as e:
@@ -81,15 +81,15 @@ def read_stock_codes_from_excel(filepath: str) -> StockList:
             )
             for _, row in df.iterrows()
         ]
-        return StockList(stocks=stock_infos)
+        return stock_infos
 
 
-def get_korea_stock_code_list() -> StockList:
+def get_korea_stock_code_list() -> list[StockInfo]:
     korea_stock_code_list = read_stock_codes_from_excel(get_path(KOREA_STOCK_FILEPATH))
-    return StockList(stocks=korea_stock_code_list.stocks)
+    return korea_stock_code_list
 
 
-def get_all_stock_code_list() -> StockList:
+def get_all_stock_code_list() -> list[StockInfo]:
     korea_stock_code_list = read_stock_codes_from_excel(get_path(KOREA_STOCK_FILEPATH))
     usa_stock_code_list = read_stock_codes_from_excel(get_path(USA_STOCK_FILEPATH))
     japan_stock_code_list = read_stock_codes_from_excel(get_path(JAPAN_STOCK_FILEPATH))
@@ -107,23 +107,23 @@ def get_all_stock_code_list() -> StockList:
     switzerland_stock_code_list = read_stock_codes_from_excel(get_path(SWITZERLAND_STOCK_FILEPATH))
     uk_stock_code_list = read_stock_codes_from_excel(get_path(UK_STOCK_FILEPATH))
 
-    return StockList(
-        stocks=korea_stock_code_list.stocks
-        + usa_stock_code_list.stocks
-        + japan_stock_code_list.stocks
-        + australia_stock_code_list.stocks
-        + brazil_stock_code_list.stocks
-        + canada_stock_code_list.stocks
-        + china_stock_code_list.stocks
-        + france_stock_code_list.stocks
-        + germany_stock_code_list.stocks
-        + hongkong_stock_code_list.stocks
-        + india_stock_code_list.stocks
-        + italy_stock_code_list.stocks
-        + netherland_stock_code_list.stocks
-        + spain_stock_code_list.stocks
-        + switzerland_stock_code_list.stocks
-        + uk_stock_code_list.stocks
+    return (
+        korea_stock_code_list
+        + usa_stock_code_list
+        + japan_stock_code_list
+        + australia_stock_code_list
+        + brazil_stock_code_list
+        + canada_stock_code_list
+        + china_stock_code_list
+        + france_stock_code_list
+        + germany_stock_code_list
+        + hongkong_stock_code_list
+        + india_stock_code_list
+        + italy_stock_code_list
+        + netherland_stock_code_list
+        + spain_stock_code_list
+        + switzerland_stock_code_list
+        + uk_stock_code_list
     )
 
 
