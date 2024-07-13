@@ -1,5 +1,4 @@
-from app.data.yahoo.source.enum import TimeInterval
-from app.module.asset.enum import CurrencyType
+from app.module.asset.enum import CurrencyType, TimeInterval
 from app.module.asset.model import StockDaily, StockMonthly, StockWeekly
 
 STOCK_TIME_INTERVAL = "1d"

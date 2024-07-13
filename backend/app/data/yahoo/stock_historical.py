@@ -1,6 +1,4 @@
 import asyncio
-import logging
-import os
 
 import pandas as pd
 from sqlalchemy.exc import IntegrityError
@@ -8,28 +6,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.data.common.service import get_all_stock_code_list
 from app.data.yahoo.source.constant import STOCK_HISTORY_TIMERANGE_YEAR, TIME_INTERVAL_MODEL_REPO_MAP
-from app.data.yahoo.source.enum import Country, MarketIndex, TimeInterval
 from app.data.yahoo.source.schema import StockDataFrame
 from app.data.yahoo.source.service import format_stock_code, get_period_bounds
+from app.module.asset.enum import Country, MarketIndex, TimeInterval
 from app.module.asset.model import Stock, StockDaily, StockMonthly, StockWeekly  # noqa: F401 > relationship 설정시 필요합니다.
 from app.module.asset.repository.stock_repository import StockRepository
-from app.module.asset.schema.stock_schema import StockList
+from app.module.asset.schema.stock_schema import StockInfo
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session
 
-log_dir = "./logs"
-os.makedirs(log_dir, exist_ok=True)
 
-logging.basicConfig(
-    filename="./logs/stock_historical.log",
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
-
-
-async def process_stock_data(session: AsyncSession, stock_list: StockList, start_period: int, end_period: int):
-    logging.info("파싱을 시작합니다.")
-    for stock_info in stock_list.stocks:
+async def process_stock_data(session: AsyncSession, stock_list: list[StockInfo], start_period: int, end_period: int):
+    for stock_info in stock_list:
         for interval in TimeInterval:
             stock_model = TIME_INTERVAL_MODEL_REPO_MAP[interval]
 
@@ -77,22 +65,17 @@ async def process_stock_data(session: AsyncSession, stock_list: StockList, start
 
                 try:
                     await StockRepository.save(session, stock_row)  # type: ignore[model 객체 type 인식 안됨]
-                except IntegrityError as e:
-                    logging.error(f"[process_stock_data] IntegrityError: {e} - Skipping stock code {stock_info.code}")
+                except IntegrityError:
                     await session.rollback()
                     continue
 
-    logging.info("주식 데이터 수집을 완료 합니다.")
-
 
 async def main():
-    logging.info("stock_overseas를 시작합니다.")
     start_period, end_period = get_period_bounds(STOCK_HISTORY_TIMERANGE_YEAR)
-    stock_list: StockList = get_all_stock_code_list()
+    stock_list: list[StockInfo] = get_all_stock_code_list()
 
     async with get_mysql_session() as session:
         await process_stock_data(session, stock_list, start_period, end_period)
-    logging.info("stock_overseas를 마칩니다.")
 
 
 if __name__ == "__main__":
