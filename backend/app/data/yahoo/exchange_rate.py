@@ -1,6 +1,4 @@
 import asyncio
-import logging
-import os
 from datetime import datetime
 
 import yfinance
@@ -19,15 +17,6 @@ from app.module.asset.repository.exchange_rate_repository import ExchangeRateRep
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session
 
-log_dir = "./logs"
-os.makedirs(log_dir, exist_ok=True)
-
-logging.basicConfig(
-    filename="./logs/exchange_rate.log",
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
-
 
 async def fetch_exchange_rate(source_currency: str, target_currency: str) -> float | None:
     url = f"{source_currency}{target_currency}=X"
@@ -45,7 +34,6 @@ async def fetch_exchange_rate(source_currency: str, target_currency: str) -> flo
 
 async def main():
     async with get_mysql_session() as session:
-        logging.info("exchange_rate를 시작합니다.")
         for source_currency, target_currency in currency_pairs:
             rate = await fetch_exchange_rate(source_currency, target_currency)
 
@@ -58,8 +46,6 @@ async def main():
             )
 
             await ExchangeRateRepository.save(session, exchange_rate)
-
-        logging.info("exchange_rate를 마칩니다.")
 
 
 if __name__ == "__main__":
