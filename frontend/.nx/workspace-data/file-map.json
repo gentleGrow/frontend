@@ -3,7 +3,19 @@
   "nxVersion": "19.4.3",
   "deps": {
     "nx": "^19.4.3",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "@typescript-eslint/eslint-plugin": "^6.5.0",
+    "@typescript-eslint/parser": "^6.5.0",
+    "eslint": "^8.48.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-json-format": "^2.0.1",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "eslint-plugin-storybook": "^0.6.13",
+    "prettier": "^3.0.3"
   },
   "pathMappings": {},
   "nxJsonPlugins": [],
@@ -15,96 +27,44 @@
   "fileMap": {
     "nonProjectFiles": [
       {
-        "file": ".yarn/install-state.gz",
-        "hash": "17888648602374388469"
+        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/colors/static/light.d.ts",
+        "hash": "223882023866563433"
       },
       {
         "file": ".nx/workspace-data/file-map.json",
-        "hash": "10778387093820970594"
-      },
-      {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/box.d.ts",
-        "hash": "10037402298551747366"
-      },
-      {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/classes/index.d.ts",
-        "hash": "14874153686921477232"
-      },
-      {
-        "file": ".yarnrc.yml",
-        "hash": "9628362127946110903"
+        "hash": "10252661018557826073"
       },
       {
         "file": ".nx/cache/10340020381197515372/source",
         "hash": "8929996376350789101"
       },
       {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/colors/static/light.d.ts",
-        "hash": "223882023866563433"
+        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/index.cjs",
+        "hash": "15762506910864991745"
       },
       {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/classes/typography.d.ts",
-        "hash": "14161147579719370162"
-      },
-      {
-        "file": "package.json",
-        "hash": "14269140960959610979"
-      },
-      {
-        "file": ".yarn/releases/yarn-4.3.1.cjs",
-        "hash": "1397390985206817274"
+        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/index.d.ts",
+        "hash": "9051583822173154840"
       },
       {
         "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/colors/index.d.ts",
         "hash": "16255353438659880457"
       },
       {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/index.js",
-        "hash": "4063613326775935581"
-      },
-      {
-        "file": "tsconfig.base.json",
-        "hash": "11786379465881472560"
-      },
-      {
-        "file": ".nx/cache/terminalOutputs/10340020381197515372",
-        "hash": "14211761016407624740"
-      },
-      {
         "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/typography.d.ts",
         "hash": "7524314757998941055"
-      },
-      {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/colors/static/dark.d.ts",
-        "hash": "223882023866563433"
-      },
-      {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/index.d.ts",
-        "hash": "17288868138055620940"
-      },
-      {
-        "file": ".nx/cache/10340020381197515372/terminalOutput",
-        "hash": "14211761016407624740"
-      },
-      {
-        "file": "nx.json",
-        "hash": "9865621768173029241"
-      },
-      {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/index.cjs.map",
-        "hash": "7113088085318991034"
-      },
-      {
-        "file": ".nx/cache/run.json",
-        "hash": "11125296464029449158"
       },
       {
         "file": ".nx/workspace-data/task-history.csv",
         "hash": "2064019218719982845"
       },
       {
-        "file": "yarn.lock",
-        "hash": "10878584985497872031"
+        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/index.cjs.map",
+        "hash": "7113088085318991034"
+      },
+      {
+        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/classes/index.d.ts",
+        "hash": "14874153686921477232"
       },
       {
         "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/colors/scale.d.ts",
@@ -115,43 +75,225 @@
         "hash": "8598115603168773142"
       },
       {
-        "file": ".nx/cache/10340020381197515372/code",
-        "hash": "1838281907459330133"
+        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/index.js",
+        "hash": "4063613326775935581"
       },
       {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/index.js.map",
-        "hash": "11820950734960238334"
+        "file": "yarn.lock",
+        "hash": "10878584985497872031"
       },
       {
-        "file": ".nx/workspace-data/project-graph.json",
-        "hash": "15497555047757698181"
+        "file": "tsconfig.base.json",
+        "hash": "11786379465881472560"
       },
       {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/colors/static/index.d.ts",
-        "hash": "18024143103640227694"
+        "file": ".nx/cache/run.json",
+        "hash": "11125296464029449158"
+      },
+      {
+        "file": ".nx/cache/10340020381197515372/terminalOutput",
+        "hash": "14211761016407624740"
+      },
+      {
+        "file": ".yarn/install-state.gz",
+        "hash": "17888648602374388469"
       },
       {
         "file": ".pnp.cjs",
         "hash": "17052035553062054031"
       },
       {
-        "file": ".nx/cache/10340020381197515372.commit",
-        "hash": "4664556114322093609"
+        "file": ".nx/workspace-data/project-graph.json",
+        "hash": "15497555047757698181"
       },
       {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/index.d.ts",
-        "hash": "9051583822173154840"
+        "file": ".yarn/releases/yarn-4.3.1.cjs",
+        "hash": "1397390985206817274"
+      },
+      {
+        "file": ".yarnrc.yml",
+        "hash": "9628362127946110903"
+      },
+      {
+        "file": "package.json",
+        "hash": "12678031468561331051"
+      },
+      {
+        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/index.js.map",
+        "hash": "11820950734960238334"
+      },
+      {
+        "file": "nx.json",
+        "hash": "9865621768173029241"
+      },
+      {
+        "file": ".nx/cache/10340020381197515372/code",
+        "hash": "1838281907459330133"
+      },
+      {
+        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/colors/static/dark.d.ts",
+        "hash": "223882023866563433"
+      },
+      {
+        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/classes/typography.d.ts",
+        "hash": "14161147579719370162"
+      },
+      {
+        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/box.d.ts",
+        "hash": "10037402298551747366"
       },
       {
         "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/themes.css",
         "hash": "8468202976121354839"
       },
       {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/index.cjs",
-        "hash": "15762506910864991745"
+        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/index.d.ts",
+        "hash": "17288868138055620940"
+      },
+      {
+        "file": ".nx/cache/terminalOutputs/10340020381197515372",
+        "hash": "14211761016407624740"
+      },
+      {
+        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/colors/static/index.d.ts",
+        "hash": "18024143103640227694"
+      },
+      {
+        "file": ".nx/cache/10340020381197515372.commit",
+        "hash": "4664556114322093609"
       }
     ],
     "projectFileMap": {
+      "@gaemi-school/themes": [
+        {
+          "file": "packages/themes/build.js",
+          "hash": "13969911643019734737"
+        },
+        {
+          "file": "packages/themes/dist/classes/index.d.ts",
+          "hash": "14874153686921477232"
+        },
+        {
+          "file": "packages/themes/dist/classes/typography.d.ts",
+          "hash": "14161147579719370162"
+        },
+        {
+          "file": "packages/themes/dist/index.cjs",
+          "hash": "15762506910864991745"
+        },
+        {
+          "file": "packages/themes/dist/index.cjs.map",
+          "hash": "7113088085318991034"
+        },
+        {
+          "file": "packages/themes/dist/index.d.ts",
+          "hash": "9051583822173154840"
+        },
+        {
+          "file": "packages/themes/dist/index.js",
+          "hash": "4063613326775935581"
+        },
+        {
+          "file": "packages/themes/dist/index.js.map",
+          "hash": "11820950734960238334"
+        },
+        {
+          "file": "packages/themes/dist/themes.css",
+          "hash": "8468202976121354839"
+        },
+        {
+          "file": "packages/themes/dist/variables/box.d.ts",
+          "hash": "10037402298551747366"
+        },
+        {
+          "file": "packages/themes/dist/variables/colors/index.d.ts",
+          "hash": "16255353438659880457"
+        },
+        {
+          "file": "packages/themes/dist/variables/colors/scale.d.ts",
+          "hash": "1854033623318382931"
+        },
+        {
+          "file": "packages/themes/dist/variables/colors/static/dark.d.ts",
+          "hash": "223882023866563433"
+        },
+        {
+          "file": "packages/themes/dist/variables/colors/static/index.d.ts",
+          "hash": "18024143103640227694"
+        },
+        {
+          "file": "packages/themes/dist/variables/colors/static/light.d.ts",
+          "hash": "223882023866563433"
+        },
+        {
+          "file": "packages/themes/dist/variables/index.d.ts",
+          "hash": "17288868138055620940"
+        },
+        {
+          "file": "packages/themes/dist/variables/typography.d.ts",
+          "hash": "7524314757998941055"
+        },
+        {
+          "file": "packages/themes/package.json",
+          "hash": "8342367232082263211",
+          "deps": [
+            "npm:esbuild@0.21.5",
+            "npm:typescript@5.5.3"
+          ]
+        },
+        {
+          "file": "packages/themes/scripts/build-css-module.js",
+          "hash": "4790649945335636756"
+        },
+        {
+          "file": "packages/themes/src/classes/index.ts",
+          "hash": "14874153686921477232"
+        },
+        {
+          "file": "packages/themes/src/classes/typography.ts",
+          "hash": "11496456837351320532"
+        },
+        {
+          "file": "packages/themes/src/index.ts",
+          "hash": "9051583822173154840"
+        },
+        {
+          "file": "packages/themes/src/variables/box.ts",
+          "hash": "4938030702822930797"
+        },
+        {
+          "file": "packages/themes/src/variables/colors/index.ts",
+          "hash": "16255353438659880457"
+        },
+        {
+          "file": "packages/themes/src/variables/colors/scale.ts",
+          "hash": "7445700656991686552"
+        },
+        {
+          "file": "packages/themes/src/variables/colors/static/dark.ts",
+          "hash": "11422575103079553977"
+        },
+        {
+          "file": "packages/themes/src/variables/colors/static/index.ts",
+          "hash": "18024143103640227694"
+        },
+        {
+          "file": "packages/themes/src/variables/colors/static/light.ts",
+          "hash": "18307867305152061533"
+        },
+        {
+          "file": "packages/themes/src/variables/index.ts",
+          "hash": "17288868138055620940"
+        },
+        {
+          "file": "packages/themes/src/variables/typography.ts",
+          "hash": "14837484105732763952"
+        },
+        {
+          "file": "packages/themes/tsconfig.json",
+          "hash": "10248009443664204963"
+        }
+      ],
       "client": [
         {
           "file": "client/.eslintrc.json",
@@ -325,136 +467,6 @@
         {
           "file": "client/tsconfig.json",
           "hash": "3227086777823603764"
-        }
-      ],
-      "@gaemi-school/themes": [
-        {
-          "file": "packages/themes/build.js",
-          "hash": "13969911643019734737"
-        },
-        {
-          "file": "packages/themes/package.json",
-          "hash": "8342367232082263211",
-          "deps": [
-            "npm:esbuild@0.21.5",
-            "npm:typescript@5.5.3"
-          ]
-        },
-        {
-          "file": "packages/themes/scripts/build-css-module.js",
-          "hash": "4790649945335636756"
-        },
-        {
-          "file": "packages/themes/src/classes/index.ts",
-          "hash": "14874153686921477232"
-        },
-        {
-          "file": "packages/themes/src/classes/typography.ts",
-          "hash": "11496456837351320532"
-        },
-        {
-          "file": "packages/themes/src/index.ts",
-          "hash": "9051583822173154840"
-        },
-        {
-          "file": "packages/themes/src/variables/box.ts",
-          "hash": "4938030702822930797"
-        },
-        {
-          "file": "packages/themes/src/variables/colors/index.ts",
-          "hash": "16255353438659880457"
-        },
-        {
-          "file": "packages/themes/src/variables/colors/scale.ts",
-          "hash": "7445700656991686552"
-        },
-        {
-          "file": "packages/themes/src/variables/colors/static/dark.ts",
-          "hash": "11422575103079553977"
-        },
-        {
-          "file": "packages/themes/src/variables/colors/static/index.ts",
-          "hash": "18024143103640227694"
-        },
-        {
-          "file": "packages/themes/src/variables/colors/static/light.ts",
-          "hash": "18307867305152061533"
-        },
-        {
-          "file": "packages/themes/src/variables/index.ts",
-          "hash": "17288868138055620940"
-        },
-        {
-          "file": "packages/themes/src/variables/typography.ts",
-          "hash": "14837484105732763952"
-        },
-        {
-          "file": "packages/themes/tsconfig.json",
-          "hash": "10248009443664204963"
-        },
-        {
-          "file": "packages/themes/dist/index.cjs",
-          "hash": "15762506910864991745"
-        },
-        {
-          "file": "packages/themes/dist/index.js",
-          "hash": "4063613326775935581"
-        },
-        {
-          "file": "packages/themes/dist/index.cjs.map",
-          "hash": "7113088085318991034"
-        },
-        {
-          "file": "packages/themes/dist/index.js.map",
-          "hash": "11820950734960238334"
-        },
-        {
-          "file": "packages/themes/dist/variables/colors/static/light.d.ts",
-          "hash": "223882023866563433"
-        },
-        {
-          "file": "packages/themes/dist/variables/colors/static/index.d.ts",
-          "hash": "18024143103640227694"
-        },
-        {
-          "file": "packages/themes/dist/variables/colors/index.d.ts",
-          "hash": "16255353438659880457"
-        },
-        {
-          "file": "packages/themes/dist/index.d.ts",
-          "hash": "9051583822173154840"
-        },
-        {
-          "file": "packages/themes/dist/classes/index.d.ts",
-          "hash": "14874153686921477232"
-        },
-        {
-          "file": "packages/themes/dist/variables/colors/static/dark.d.ts",
-          "hash": "223882023866563433"
-        },
-        {
-          "file": "packages/themes/dist/classes/typography.d.ts",
-          "hash": "14161147579719370162"
-        },
-        {
-          "file": "packages/themes/dist/variables/colors/scale.d.ts",
-          "hash": "1854033623318382931"
-        },
-        {
-          "file": "packages/themes/dist/variables/typography.d.ts",
-          "hash": "7524314757998941055"
-        },
-        {
-          "file": "packages/themes/dist/variables/index.d.ts",
-          "hash": "17288868138055620940"
-        },
-        {
-          "file": "packages/themes/dist/variables/box.d.ts",
-          "hash": "10037402298551747366"
-        },
-        {
-          "file": "packages/themes/dist/themes.css",
-          "hash": "8468202976121354839"
         }
       ]
     }
