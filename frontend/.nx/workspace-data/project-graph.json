@@ -5118,9 +5118,9 @@
         "hash": "10c0/a578e9055d015e932e1d42c5329d80d44d7dcaca5990c1d32aed62ea3d7ba49424f18c60cc654e96d1865e509f929359a9e571330ea2f5a7be7c1dd79e25ead3"
       }
     },
-    "npm:typescript@5.5.3": {
+    "npm:typescript": {
       "type": "npm",
-      "name": "npm:typescript@5.5.3",
+      "name": "npm:typescript",
       "data": {
         "version": "5.5.3",
         "packageName": "typescript",
@@ -5395,11 +5395,6 @@
         "source": "@gaemi-school/themes",
         "target": "npm:esbuild@0.21.5",
         "type": "static"
-      },
-      {
-        "source": "@gaemi-school/themes",
-        "target": "npm:typescript@5.5.3",
-        "type": "static"
       }
     ],
     "client": [
@@ -5446,11 +5441,6 @@
       {
         "source": "client",
         "target": "npm:sass@1.77.8",
-        "type": "static"
-      },
-      {
-        "source": "client",
-        "target": "npm:typescript@5.5.3",
         "type": "static"
       },
       {
