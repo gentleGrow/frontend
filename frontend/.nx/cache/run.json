@@ -1,0 +1,32 @@
+{
+  "run": {
+    "command": "nx build client",
+    "startTime": "2024-07-15T07:09:06.521Z",
+    "endTime": "2024-07-15T07:09:46.298Z",
+    "inner": false
+  },
+  "tasks": [
+    {
+      "taskId": "@gaemi-school/themes:build",
+      "target": "build",
+      "projectName": "@gaemi-school/themes",
+      "hash": "4833607812822645537",
+      "startTime": "2024-07-15T07:09:06.529Z",
+      "endTime": "2024-07-15T07:09:06.564Z",
+      "params": "",
+      "cacheStatus": "local-cache-hit",
+      "status": 0
+    },
+    {
+      "taskId": "client:build",
+      "target": "build",
+      "projectName": "client",
+      "hash": "15221826728842168821",
+      "startTime": "2024-07-15T07:09:06.571Z",
+      "endTime": "2024-07-15T07:09:46.297Z",
+      "params": "",
+      "cacheStatus": "cache-miss",
+      "status": 0
+    }
+  ]
+}
