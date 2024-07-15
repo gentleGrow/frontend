@@ -2,8 +2,6 @@
   "version": "6.0",
   "nxVersion": "19.4.3",
   "deps": {
-    "nx": "^19.4.3",
-    "typescript": "^5.5.3",
     "@typescript-eslint/eslint-plugin": "^6.5.0",
     "@typescript-eslint/parser": "^6.5.0",
     "eslint": "^8.48.0",
@@ -15,7 +13,9 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "eslint-plugin-storybook": "^0.6.13",
-    "prettier": "^3.0.3"
+    "nx": "^19.4.3",
+    "prettier": "^3.0.3",
+    "typescript": "^5.5.3"
   },
   "pathMappings": {},
   "nxJsonPlugins": [],
@@ -27,218 +27,230 @@
   "fileMap": {
     "nonProjectFiles": [
       {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/colors/static/light.d.ts",
-        "hash": "223882023866563433"
+        "file": ".yarn/sdks/eslint/package.json",
+        "hash": "9302568071849794418"
       },
       {
-        "file": ".nx/workspace-data/file-map.json",
-        "hash": "10252661018557826073"
-      },
-      {
-        "file": ".nx/cache/10340020381197515372/source",
-        "hash": "8929996376350789101"
-      },
-      {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/index.cjs",
-        "hash": "15762506910864991745"
-      },
-      {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/index.d.ts",
-        "hash": "9051583822173154840"
-      },
-      {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/colors/index.d.ts",
-        "hash": "16255353438659880457"
-      },
-      {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/typography.d.ts",
-        "hash": "7524314757998941055"
-      },
-      {
-        "file": ".nx/workspace-data/task-history.csv",
-        "hash": "2064019218719982845"
-      },
-      {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/index.cjs.map",
+        "file": ".nx/cache/12581827806385193295/outputs/packages/themes/dist/index.cjs.map",
         "hash": "7113088085318991034"
       },
       {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/classes/index.d.ts",
-        "hash": "14874153686921477232"
+        "file": ".nx/cache/12581827806385193295/outputs/packages/themes/dist/classes/typography.d.ts",
+        "hash": "14161147579719370162"
       },
       {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/colors/scale.d.ts",
-        "hash": "1854033623318382931"
+        "file": ".nx/cache/12581827806385193295/outputs/packages/themes/dist/variables/colors/static/dark.d.ts",
+        "hash": "223882023866563433"
       },
       {
-        "file": ".pnp.loader.mjs",
-        "hash": "8598115603168773142"
+        "file": ".nx/cache/636218247948126845/terminalOutput",
+        "hash": "11765824241637476099"
       },
       {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/index.js",
-        "hash": "4063613326775935581"
+        "file": ".nx/workspace-data/parsed-lock-file.json",
+        "hash": "2297650268022944236"
       },
       {
-        "file": "yarn.lock",
-        "hash": "10878584985497872031"
+        "file": ".nx/cache/12581827806385193295/outputs/packages/themes/dist/index.d.ts",
+        "hash": "9051583822173154840"
       },
       {
-        "file": "tsconfig.base.json",
-        "hash": "11786379465881472560"
+        "file": "tsconfig.eslint.json",
+        "hash": "10262891919429934091"
       },
       {
-        "file": ".nx/cache/run.json",
-        "hash": "11125296464029449158"
+        "file": ".nx/cache/636218247948126845/source",
+        "hash": "8929996376350789101"
       },
       {
-        "file": ".nx/cache/10340020381197515372/terminalOutput",
-        "hash": "14211761016407624740"
+        "file": ".nx/cache/12581827806385193295/outputs/packages/themes/dist/variables/colors/static/light.d.ts",
+        "hash": "223882023866563433"
       },
       {
-        "file": ".yarn/install-state.gz",
-        "hash": "17888648602374388469"
+        "file": ".nx/workspace-data/task-history.csv",
+        "hash": "14781171780673748604"
       },
       {
-        "file": ".pnp.cjs",
-        "hash": "17052035553062054031"
+        "file": ".eslintrc.js",
+        "hash": "7307395377797753530"
       },
       {
-        "file": ".nx/workspace-data/project-graph.json",
-        "hash": "15497555047757698181"
-      },
-      {
-        "file": ".yarn/releases/yarn-4.3.1.cjs",
-        "hash": "1397390985206817274"
-      },
-      {
-        "file": ".yarnrc.yml",
-        "hash": "9628362127946110903"
-      },
-      {
-        "file": "package.json",
-        "hash": "12678031468561331051"
-      },
-      {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/index.js.map",
-        "hash": "11820950734960238334"
+        "file": ".yarn/sdks/integrations.yml",
+        "hash": "5703335058684100671"
       },
       {
         "file": "nx.json",
         "hash": "9865621768173029241"
       },
       {
-        "file": ".nx/cache/10340020381197515372/code",
-        "hash": "1838281907459330133"
+        "file": ".yarn/sdks/typescript/package.json",
+        "hash": "17296832241727632314"
       },
       {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/colors/static/dark.d.ts",
-        "hash": "223882023866563433"
+        "file": ".nx/cache/12581827806385193295/outputs/packages/themes/dist/index.cjs",
+        "hash": "15762506910864991745"
       },
       {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/classes/typography.d.ts",
-        "hash": "14161147579719370162"
+        "file": ".pnp.loader.mjs",
+        "hash": "8598115603168773142"
       },
       {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/box.d.ts",
-        "hash": "10037402298551747366"
+        "file": ".yarn/install-state.gz",
+        "hash": "18436986001550807882"
       },
       {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/themes.css",
+        "file": "yarn.lock",
+        "hash": "1261511940490954251"
+      },
+      {
+        "file": ".nx/cache/12581827806385193295/outputs/packages/themes/dist/classes/index.d.ts",
+        "hash": "14874153686921477232"
+      },
+      {
+        "file": "tsconfig.base.json",
+        "hash": "11786379465881472560"
+      },
+      {
+        "file": ".yarn/sdks/prettier/package.json",
+        "hash": "15426012732732659717"
+      },
+      {
+        "file": ".nx/cache/12581827806385193295/outputs/packages/themes/dist/themes.css",
         "hash": "8468202976121354839"
       },
       {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/index.d.ts",
+        "file": ".pnp.cjs",
+        "hash": "17662313310494492325"
+      },
+      {
+        "file": ".nx/cache/12581827806385193295/outputs/packages/themes/dist/variables/box.d.ts",
+        "hash": "10037402298551747366"
+      },
+      {
+        "file": "package.json",
+        "hash": "15609560812950078481"
+      },
+      {
+        "file": ".yarn/sdks/typescript/bin/tsserver",
+        "hash": "6152172598867696651"
+      },
+      {
+        "file": ".nx/cache/12581827806385193295/outputs/packages/themes/dist/variables/colors/index.d.ts",
+        "hash": "16255353438659880457"
+      },
+      {
+        "file": ".yarn/releases/yarn-4.3.1.cjs",
+        "hash": "1397390985206817274"
+      },
+      {
+        "file": ".yarn/sdks/prettier/index.cjs",
+        "hash": "6264149573355037471"
+      },
+      {
+        "file": ".nx/cache/12581827806385193295.commit",
+        "hash": "4664556114322093609"
+      },
+      {
+        "file": ".nx/cache/12581827806385193295/outputs/packages/themes/dist/variables/index.d.ts",
         "hash": "17288868138055620940"
       },
       {
-        "file": ".nx/cache/terminalOutputs/10340020381197515372",
-        "hash": "14211761016407624740"
+        "file": ".nx/workspace-data/file-map.json",
+        "hash": "8511196656947509533"
       },
       {
-        "file": ".nx/cache/10340020381197515372/outputs/packages/themes/dist/variables/colors/static/index.d.ts",
-        "hash": "18024143103640227694"
+        "file": ".nx/cache/12581827806385193295/terminalOutput",
+        "hash": "13349842960728979315"
       },
       {
-        "file": ".nx/cache/10340020381197515372.commit",
+        "file": ".nx/cache/terminalOutputs/12581827806385193295",
+        "hash": "13349842960728979315"
+      },
+      {
+        "file": ".nx/cache/636218247948126845.commit",
         "hash": "4664556114322093609"
+      },
+      {
+        "file": ".prettierrc",
+        "hash": "2052412003981761678"
+      },
+      {
+        "file": ".yarnrc.yml",
+        "hash": "9628362127946110903"
+      },
+      {
+        "file": ".nx/cache/terminalOutputs/636218247948126845",
+        "hash": "11765824241637476099"
+      },
+      {
+        "file": ".yarn/sdks/prettier/bin/prettier.cjs",
+        "hash": "2245035438662986540"
+      },
+      {
+        "file": ".nx/cache/run.json",
+        "hash": "9502772421655363535"
+      },
+      {
+        "file": ".yarn/sdks/eslint/bin/eslint.js",
+        "hash": "5536091967665342893"
+      },
+      {
+        "file": ".yarn/sdks/typescript/bin/tsc",
+        "hash": "3928130886875515345"
+      },
+      {
+        "file": ".nx/cache/12581827806385193295/source",
+        "hash": "8929996376350789101"
+      },
+      {
+        "file": ".nx/cache/12581827806385193295/code",
+        "hash": "1838281907459330133"
+      },
+      {
+        "file": ".nx/cache/12581827806385193295/outputs/packages/themes/dist/variables/typography.d.ts",
+        "hash": "7524314757998941055"
+      },
+      {
+        "file": ".nx/cache/12581827806385193295/outputs/packages/themes/dist/index.js",
+        "hash": "4063613326775935581"
+      },
+      {
+        "file": ".nx/workspace-data/project-graph.json",
+        "hash": "6801416927440295478"
+      },
+      {
+        "file": ".nx/cache/12581827806385193295/outputs/packages/themes/dist/variables/colors/scale.d.ts",
+        "hash": "1854033623318382931"
+      },
+      {
+        "file": ".nx/cache/636218247948126845/code",
+        "hash": "1838281907459330133"
+      },
+      {
+        "file": ".nx/workspace-data/lockfile.hash",
+        "hash": "990611649860426803"
+      },
+      {
+        "file": ".nx/cache/12581827806385193295/outputs/packages/themes/dist/index.js.map",
+        "hash": "11820950734960238334"
+      },
+      {
+        "file": ".nx/cache/12581827806385193295/outputs/packages/themes/dist/variables/colors/static/index.d.ts",
+        "hash": "18024143103640227694"
       }
     ],
     "projectFileMap": {
       "@gaemi-school/themes": [
         {
           "file": "packages/themes/build.js",
-          "hash": "13969911643019734737"
-        },
-        {
-          "file": "packages/themes/dist/classes/index.d.ts",
-          "hash": "14874153686921477232"
-        },
-        {
-          "file": "packages/themes/dist/classes/typography.d.ts",
-          "hash": "14161147579719370162"
-        },
-        {
-          "file": "packages/themes/dist/index.cjs",
-          "hash": "15762506910864991745"
-        },
-        {
-          "file": "packages/themes/dist/index.cjs.map",
-          "hash": "7113088085318991034"
-        },
-        {
-          "file": "packages/themes/dist/index.d.ts",
-          "hash": "9051583822173154840"
-        },
-        {
-          "file": "packages/themes/dist/index.js",
-          "hash": "4063613326775935581"
-        },
-        {
-          "file": "packages/themes/dist/index.js.map",
-          "hash": "11820950734960238334"
-        },
-        {
-          "file": "packages/themes/dist/themes.css",
-          "hash": "8468202976121354839"
-        },
-        {
-          "file": "packages/themes/dist/variables/box.d.ts",
-          "hash": "10037402298551747366"
-        },
-        {
-          "file": "packages/themes/dist/variables/colors/index.d.ts",
-          "hash": "16255353438659880457"
-        },
-        {
-          "file": "packages/themes/dist/variables/colors/scale.d.ts",
-          "hash": "1854033623318382931"
-        },
-        {
-          "file": "packages/themes/dist/variables/colors/static/dark.d.ts",
-          "hash": "223882023866563433"
-        },
-        {
-          "file": "packages/themes/dist/variables/colors/static/index.d.ts",
-          "hash": "18024143103640227694"
-        },
-        {
-          "file": "packages/themes/dist/variables/colors/static/light.d.ts",
-          "hash": "223882023866563433"
-        },
-        {
-          "file": "packages/themes/dist/variables/index.d.ts",
-          "hash": "17288868138055620940"
-        },
-        {
-          "file": "packages/themes/dist/variables/typography.d.ts",
-          "hash": "7524314757998941055"
+          "hash": "3840570061062555473"
         },
         {
           "file": "packages/themes/package.json",
-          "hash": "8342367232082263211",
+          "hash": "3357648175693532146",
           "deps": [
-            "npm:esbuild@0.21.5",
-            "npm:typescript@5.5.3"
+            "@gaemi-school/esbuild-config",
+            "npm:typescript"
           ]
         },
         {
@@ -292,6 +304,87 @@
         {
           "file": "packages/themes/tsconfig.json",
           "hash": "10248009443664204963"
+        },
+        {
+          "file": "packages/themes/dist/index.cjs",
+          "hash": "15762506910864991745"
+        },
+        {
+          "file": "packages/themes/dist/index.js",
+          "hash": "4063613326775935581"
+        },
+        {
+          "file": "packages/themes/dist/index.cjs.map",
+          "hash": "7113088085318991034"
+        },
+        {
+          "file": "packages/themes/dist/index.js.map",
+          "hash": "11820950734960238334"
+        },
+        {
+          "file": "packages/themes/dist/variables/colors/static/dark.d.ts",
+          "hash": "223882023866563433"
+        },
+        {
+          "file": "packages/themes/dist/variables/index.d.ts",
+          "hash": "17288868138055620940"
+        },
+        {
+          "file": "packages/themes/dist/variables/box.d.ts",
+          "hash": "10037402298551747366"
+        },
+        {
+          "file": "packages/themes/dist/variables/typography.d.ts",
+          "hash": "7524314757998941055"
+        },
+        {
+          "file": "packages/themes/dist/variables/colors/index.d.ts",
+          "hash": "16255353438659880457"
+        },
+        {
+          "file": "packages/themes/dist/variables/colors/static/light.d.ts",
+          "hash": "223882023866563433"
+        },
+        {
+          "file": "packages/themes/dist/index.d.ts",
+          "hash": "9051583822173154840"
+        },
+        {
+          "file": "packages/themes/dist/variables/colors/static/index.d.ts",
+          "hash": "18024143103640227694"
+        },
+        {
+          "file": "packages/themes/dist/classes/index.d.ts",
+          "hash": "14874153686921477232"
+        },
+        {
+          "file": "packages/themes/dist/variables/colors/scale.d.ts",
+          "hash": "1854033623318382931"
+        },
+        {
+          "file": "packages/themes/dist/classes/typography.d.ts",
+          "hash": "14161147579719370162"
+        },
+        {
+          "file": "packages/themes/dist/themes.css",
+          "hash": "8468202976121354839"
+        }
+      ],
+      "@gaemi-school/esbuild-config": [
+        {
+          "file": "packages/esbuild-config/README.md",
+          "hash": "6886952344311067916"
+        },
+        {
+          "file": "packages/esbuild-config/index.js",
+          "hash": "13440916959540668547"
+        },
+        {
+          "file": "packages/esbuild-config/package.json",
+          "hash": "8681011760941037262",
+          "deps": [
+            "npm:esbuild@0.23.0"
+          ]
         }
       ],
       "client": [

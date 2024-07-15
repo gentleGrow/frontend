@@ -1,18 +1,29 @@
 {
   "run": {
     "command": "nx build @gaemi-school/themes",
-    "startTime": "2024-07-15T07:26:17.527Z",
-    "endTime": "2024-07-15T07:26:24.716Z",
+    "startTime": "2024-07-15T08:23:36.102Z",
+    "endTime": "2024-07-15T08:23:44.552Z",
     "inner": false
   },
   "tasks": [
     {
+      "taskId": "@gaemi-school/esbuild-config:build",
+      "target": "build",
+      "projectName": "@gaemi-school/esbuild-config",
+      "hash": "636218247948126845",
+      "startTime": "2024-07-15T08:23:36.112Z",
+      "endTime": "2024-07-15T08:23:37.262Z",
+      "params": "",
+      "cacheStatus": "cache-miss",
+      "status": 0
+    },
+    {
       "taskId": "@gaemi-school/themes:build",
       "target": "build",
       "projectName": "@gaemi-school/themes",
-      "hash": "10340020381197515372",
-      "startTime": "2024-07-15T07:26:17.536Z",
-      "endTime": "2024-07-15T07:26:24.715Z",
+      "hash": "12581827806385193295",
+      "startTime": "2024-07-15T08:23:37.264Z",
+      "endTime": "2024-07-15T08:23:44.552Z",
       "params": "",
       "cacheStatus": "cache-miss",
       "status": 0
