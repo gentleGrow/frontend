@@ -5735,6 +5735,21 @@
       "type": "static"
     },
     {
+      "source": "npm:@types/react-dom@18.3.0",
+      "target": "npm:@types/react@18.3.3",
+      "type": "static"
+    },
+    {
+      "source": "npm:@types/react@18.3.3",
+      "target": "npm:@types/prop-types@15.7.12",
+      "type": "static"
+    },
+    {
+      "source": "npm:@types/react@18.3.3",
+      "target": "npm:csstype@3.1.3",
+      "type": "static"
+    },
+    {
       "source": "npm:@types/react@18.3.3",
       "target": "npm:@types/prop-types@15.7.12",
       "type": "static"
@@ -12585,6 +12600,16 @@
       "type": "static"
     },
     {
+      "source": "npm:react-dom@18.3.1",
+      "target": "npm:loose-envify@1.4.0",
+      "type": "static"
+    },
+    {
+      "source": "npm:react-dom@18.3.1",
+      "target": "npm:scheduler@0.23.2",
+      "type": "static"
+    },
+    {
       "source": "npm:react-redux@9.1.2",
       "target": "npm:@types/use-sync-external-store@0.0.3",
       "type": "static"
@@ -12592,6 +12617,11 @@
     {
       "source": "npm:react-redux@9.1.2",
       "target": "npm:use-sync-external-store@1.2.2",
+      "type": "static"
+    },
+    {
+      "source": "npm:react@18.3.1",
+      "target": "npm:loose-envify@1.4.0",
       "type": "static"
     },
     {

@@ -1,5 +1,86 @@
 {
   "nodes": {
+    "@gaemi-school/react-components-layout": {
+      "name": "@gaemi-school/react-components-layout",
+      "type": "lib",
+      "data": {
+        "root": "packages/react/components/layout",
+        "targets": {
+          "build": {
+            "executor": "nx:run-script",
+            "metadata": {
+              "scriptContent": "yarn clean && yarn build:js && yarn build:type",
+              "runCommand": "yarn build"
+            },
+            "dependsOn": [
+              "^build"
+            ],
+            "options": {
+              "script": "build"
+            },
+            "configurations": {}
+          },
+          "build:js": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "build:js"
+            },
+            "metadata": {
+              "scriptContent": "node build.js",
+              "runCommand": "yarn build:js"
+            },
+            "configurations": {}
+          },
+          "build:type": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "build:type"
+            },
+            "metadata": {
+              "scriptContent": "yarn tsc --emitDeclarationOnly",
+              "runCommand": "yarn build:type"
+            },
+            "configurations": {}
+          },
+          "clean": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "clean"
+            },
+            "metadata": {
+              "scriptContent": "rm -rf dist",
+              "runCommand": "yarn clean"
+            },
+            "configurations": {}
+          },
+          "nx-release-publish": {
+            "dependsOn": [
+              "^nx-release-publish"
+            ],
+            "executor": "@nx/js:release-publish",
+            "options": {},
+            "configurations": {}
+          }
+        },
+        "sourceRoot": "packages/react/components/layout",
+        "name": "@gaemi-school/react-components-layout",
+        "projectType": "library",
+        "tags": [
+          "npm:public"
+        ],
+        "metadata": {
+          "targetGroups": {
+            "NPM Scripts": [
+              "build",
+              "build:js",
+              "build:type",
+              "clean"
+            ]
+          }
+        },
+        "implicitDependencies": []
+      }
+    },
     "@gaemi-school/esbuild-config": {
       "name": "@gaemi-school/esbuild-config",
       "type": "lib",
@@ -5687,6 +5768,43 @@
     }
   },
   "dependencies": {
+    "@gaemi-school/react-components-layout": [
+      {
+        "source": "@gaemi-school/react-components-layout",
+        "target": "@gaemi-school/themes",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-layout",
+        "target": "npm:react@18.3.1",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-layout",
+        "target": "@gaemi-school/esbuild-config",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-layout",
+        "target": "npm:@types/react@18.3.3",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-layout",
+        "target": "npm:@types/react-dom@18.3.0",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-layout",
+        "target": "npm:react-dom@18.3.1",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-layout",
+        "target": "npm:typescript",
+        "type": "static"
+      }
+    ],
     "@gaemi-school/esbuild-config": [
       {
         "source": "@gaemi-school/esbuild-config",
@@ -5734,12 +5852,27 @@
       },
       {
         "source": "client",
+        "target": "npm:eslint",
+        "type": "static"
+      },
+      {
+        "source": "client",
         "target": "npm:eslint-config-next@14.1.0",
         "type": "static"
       },
       {
         "source": "client",
+        "target": "npm:eslint-config-prettier",
+        "type": "static"
+      },
+      {
+        "source": "client",
         "target": "npm:sass@1.77.8",
+        "type": "static"
+      },
+      {
+        "source": "client",
+        "target": "npm:typescript",
         "type": "static"
       },
       {
@@ -5780,6 +5913,11 @@
       {
         "source": "client",
         "target": "npm:next-auth@4.24.7",
+        "type": "static"
+      },
+      {
+        "source": "client",
+        "target": "npm:prettier",
         "type": "static"
       },
       {

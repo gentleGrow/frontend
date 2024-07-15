@@ -23,6 +23,10 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:packages/esbuild-config"\
     },\
     {\
+      "name": "@gaemi-school/react-components-layout",\
+      "reference": "workspace:packages/react/components/layout"\
+    },\
+    {\
       "name": "@gaemi-school/themes",\
       "reference": "workspace:packages/themes"\
     }\
@@ -31,6 +35,7 @@ const RAW_RUNTIME_STATE =
   "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)",\
   "fallbackExclusionList": [\
     ["@gaemi-school/esbuild-config", ["workspace:packages/esbuild-config"]],\
+    ["@gaemi-school/react-components-layout", ["workspace:packages/react/components/layout"]],\
     ["@gaemi-school/themes", ["workspace:packages/themes"]],\
     ["client", ["workspace:client"]],\
     ["frontend", ["workspace:."]]\
@@ -360,6 +365,22 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@gaemi-school/esbuild-config", "workspace:packages/esbuild-config"],\
           ["esbuild", "npm:0.23.0"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@gaemi-school/react-components-layout", [\
+      ["workspace:packages/react/components/layout", {\
+        "packageLocation": "./packages/react/components/layout/",\
+        "packageDependencies": [\
+          ["@gaemi-school/react-components-layout", "workspace:packages/react/components/layout"],\
+          ["@gaemi-school/esbuild-config", "workspace:packages/esbuild-config"],\
+          ["@gaemi-school/themes", "workspace:packages/themes"],\
+          ["@types/react", "npm:18.3.3"],\
+          ["@types/react-dom", "npm:18.3.0"],\
+          ["react", "npm:18.3.1"],\
+          ["react-dom", "virtual:656141524fab26d76b9a0de37412b0bd8d68b112a7ae5bb3607d411763274ecb93d754bd2292ee7cee1844b867cae11a6a7be00b96f1e87fd47684b593faaa6e#npm:18.3.1"],\
+          ["typescript", "patch:typescript@npm%3A5.5.3#optional!builtin<compat/typescript>::version=5.5.3&hash=379a07"]\
         ],\
         "linkType": "SOFT"\
       }]\

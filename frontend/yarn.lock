@@ -239,6 +239,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@gaemi-school/react-components-layout@workspace:packages/react/components/layout":
+  version: 0.0.0-use.local
+  resolution: "@gaemi-school/react-components-layout@workspace:packages/react/components/layout"
+  dependencies:
+    "@gaemi-school/esbuild-config": "workspace:^"
+    "@gaemi-school/themes": "workspace:^"
+    "@types/react": "npm:^18.3.3"
+    "@types/react-dom": "npm:^18.3.0"
+    react: "npm:^18.3.1"
+    react-dom: "npm:^18.3.1"
+    typescript: "npm:^5.5.3"
+  peerDependencies:
+    "@gaemi-school/themes": "workspace:^"
+    react: "*"
+  languageName: unknown
+  linkType: soft
+
 "@gaemi-school/themes@workspace:^, @gaemi-school/themes@workspace:packages/themes":
   version: 0.0.0-use.local
   resolution: "@gaemi-school/themes@workspace:packages/themes"
@@ -652,7 +669,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18":
+"@types/react-dom@npm:^18, @types/react-dom@npm:^18.3.0":
   version: 18.3.0
   resolution: "@types/react-dom@npm:18.3.0"
   dependencies:
@@ -661,7 +678,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:^18":
+"@types/react@npm:*, @types/react@npm:^18, @types/react@npm:^18.3.3":
   version: 18.3.3
   resolution: "@types/react@npm:18.3.3"
   dependencies:
@@ -4880,7 +4897,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^18":
+"react-dom@npm:^18, react-dom@npm:^18.3.1":
   version: 18.3.1
   resolution: "react-dom@npm:18.3.1"
   dependencies:
@@ -4925,7 +4942,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18":
+"react@npm:^18, react@npm:^18.3.1":
   version: 18.3.1
   resolution: "react@npm:18.3.1"
   dependencies:
