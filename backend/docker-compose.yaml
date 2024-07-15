@@ -8,22 +8,5 @@ services:
       - "8000:8000"
     env_file:
       - ./.env
-    environment:
-      REDIS_HOST: "${REDIS_HOST}"
-      REDIS_PORT: "${REDIS_PORT}"
-    depends_on:
-      - redisinsight
     volumes:
       - .:/backend
-
-  redisinsight:
-    image: redis/redisinsight:latest
-    ports:
-      - "5540:5540"
-    volumes:
-      - redisinsight-data:/data
-    environment:
-      VERBOSE_LOGGING: "true"
-
-volumes:
-  redisinsight-data:

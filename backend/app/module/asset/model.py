@@ -31,15 +31,16 @@ class Dividend(TimestampMixin, MySQLBase):
     __table_args__ = (UniqueConstraint("stock_code", name="uq_stock_code"),)
 
 
-class AssetStock(MySQLBase):
+class AssetStock(TimestampMixin, MySQLBase):
     __tablename__ = "asset_stock"
 
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
     asset_id = Column(BigInteger, ForeignKey("asset.id"), primary_key=True)
     stock_id = Column(BigInteger, ForeignKey("stock.id"), primary_key=True)
     purchase_price = Column(Float, nullable=True, info={"description": "매입가"})
 
-    asset = relationship("Asset", back_populates="asset_stock", overlaps="stock,asset_stock")
-    stock = relationship("Stock", back_populates="asset_stock", overlaps="asset,asset_stock")
+    asset = relationship("Asset", back_populates="asset_stock", uselist=False, overlaps="stock,asset")
+    stock = relationship("Stock", back_populates="asset_stock", overlaps="asset,stock")
 
 
 class Asset(TimestampMixin, MySQLBase):
@@ -55,7 +56,7 @@ class Asset(TimestampMixin, MySQLBase):
 
     user = relationship("User", back_populates="asset")
     stock = relationship("Stock", secondary="asset_stock", back_populates="asset", overlaps="asset_stock")
-    asset_stock = relationship("AssetStock", back_populates="asset", overlaps="stock,asset")
+    asset_stock = relationship("AssetStock", back_populates="asset", uselist=False, overlaps="stock")
 
 
 class Stock(TimestampMixin, MySQLBase):
@@ -68,11 +69,23 @@ class Stock(TimestampMixin, MySQLBase):
     country = Column(String(255), nullable=False)
 
     asset = relationship("Asset", secondary="asset_stock", back_populates="stock", overlaps="asset_stock")
+    asset_stock = relationship("AssetStock", back_populates="stock", overlaps="asset")
     dividend = relationship("Dividend", back_populates="stock")
 
-    asset_stock = relationship("AssetStock", back_populates="stock", overlaps="asset,stock")
-
     __table_args__ = (UniqueConstraint("code", name="uq_stock_code"),)
+
+
+class StockRealtime(TimestampMixin, MySQLBase):
+    __tablename__ = "stock_realtime"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    code = Column(String(255), nullable=False)
+    name = Column(String(255), nullable=False)
+    price = Column(Float, nullable=False)
+    country = Column(String(255), nullable=False)
+    market_index = Column(String(255), nullable=False)
+
+    __table_args__ = (UniqueConstraint("code", name="uq_code"),)
 
 
 class StockDaily(MySQLBase):

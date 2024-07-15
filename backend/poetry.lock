@@ -146,6 +146,24 @@ files = [
 frozenlist = ">=1.1.0"
 
 [[package]]
+name = "aiosqlite"
+version = "0.20.0"
+description = "asyncio bridge to the standard sqlite3 module"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "aiosqlite-0.20.0-py3-none-any.whl", hash = "sha256:36a1deaca0cac40ebe32aac9977a6e2bbc7f5189f23f4a54d5908986729e5bd6"},
+    {file = "aiosqlite-0.20.0.tar.gz", hash = "sha256:6d35c8c256637f4672f843c31021464090805bf925385ac39473fb16eaaca3d7"},
+]
+
+[package.dependencies]
+typing_extensions = ">=4.0"
+
+[package.extras]
+dev = ["attribution (==1.7.0)", "black (==24.2.0)", "coverage[toml] (==7.4.1)", "flake8 (==7.0.0)", "flake8-bugbear (==24.2.6)", "flit (==3.9.0)", "mypy (==1.8.0)", "ufmt (==2.3.0)", "usort (==1.0.8.post1)"]
+docs = ["sphinx (==7.2.6)", "sphinx-mdinclude (==0.5.3)"]
+
+[[package]]
 name = "alembic"
 version = "1.13.1"
 description = "A database migration tool for SQLAlchemy."
@@ -3304,6 +3322,43 @@ poetry = ">=1.8.0,<2.0.0"
 poetry-core = ">=1.7.0,<2.0.0"
 
 [[package]]
+name = "polygon"
+version = "1.2.0"
+description = "A Complete Python Wrapper for Polygon.io APIs."
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "polygon-1.2.0-py2.py3-none-any.whl", hash = "sha256:79a69c2b055d41c46690ceb0a2110ac12c9e54288180e00f7092b7089018f7e8"},
+]
+
+[package.dependencies]
+httpx = "*"
+requests = "*"
+websocket-client = "*"
+websockets = "*"
+
+[package.extras]
+all = ["orjson", "uvloop"]
+orjson = ["orjson"]
+uvloop = ["uvloop"]
+
+[[package]]
+name = "polygon-api-client"
+version = "1.14.1"
+description = "Official Polygon.io REST and Websocket client."
+optional = false
+python-versions = "<4.0,>=3.8"
+files = [
+    {file = "polygon_api_client-1.14.1-py3-none-any.whl", hash = "sha256:dd770d397ab9e1387aa8071597770dbab7f55da4ea5c53d91b3a894658e16c5e"},
+    {file = "polygon_api_client-1.14.1.tar.gz", hash = "sha256:8669649f2278a240dec576ee92076fbec7ae9d9f08b03b6db0524f80cd65401b"},
+]
+
+[package.dependencies]
+certifi = ">=2022.5.18,<2025.0.0"
+urllib3 = ">=1.26.9,<3.0.0"
+websockets = ">=10.3,<13.0"
+
+[[package]]
 name = "pre-commit"
 version = "3.6.2"
 description = "A framework for managing and maintaining multi-language pre-commit hooks."
@@ -5510,4 +5565,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "a98369045a188bf161a836d4e0aa545fbf6ef2e12b7cb5741bc0cfb84323ef67"
+content-hash = "1c237fd5a3997fc5fc697d0a6e92e1d6431db32b04447d412bc003f46b952a17"

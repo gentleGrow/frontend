@@ -1,8 +1,0 @@
-from os import getenv
-
-KOREA_INVESTMENT_KEYS = [
-    (getenv("KOREA_INVESTMENT_KEY1"), getenv("KOREA_INVESTMENT_SECRET1")),
-    (getenv("KOREA_INVESTMENT_KEY2"), getenv("KOREA_INVESTMENT_SECRET2")),
-    (getenv("KOREA_INVESTMENT_KEY3"), getenv("KOREA_INVESTMENT_SECRET3")),
-    (getenv("KOREA_INVESTMENT_KEY4"), getenv("KOREA_INVESTMENT_SECRET4")),
-]

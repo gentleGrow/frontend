@@ -20,7 +20,7 @@ class UserRepository:
         return user and UserSchema.model_validate(user)
 
     @staticmethod
-    async def get_by_id(db: AsyncSession, user_id: int) -> UserSchema | None:
+    async def get(db: AsyncSession, user_id: int) -> UserSchema | None:
         select_instance = select(UserModel).where(UserModel.id == user_id)
         result = await db.execute(select_instance)
         user = result.scalars().first()
