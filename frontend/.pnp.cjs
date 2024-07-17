@@ -3256,6 +3256,7 @@ const RAW_RUNTIME_STATE =
           ["@yarnpkg/sdks", "npm:3.1.3"],\
           ["prop-types", "npm:15.8.1"],\
           ["storybook", "npm:8.2.4"],\
+          ["storybook-addon-root-attributes", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:2.1.3"],\
           ["vite", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:5.3.4"]\
         ],\
         "linkType": "SOFT"\
@@ -13816,6 +13817,32 @@ const RAW_RUNTIME_STATE =
           ["tempy", "npm:3.1.0"],\
           ["tiny-invariant", "npm:1.3.3"],\
           ["ts-dedent", "npm:2.2.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["storybook-addon-root-attributes", [\
+      ["npm:2.1.3", {\
+        "packageLocation": "../../.yarn/berry/cache/storybook-addon-root-attributes-npm-2.1.3-3f8dfbf52c-10c0.zip/node_modules/storybook-addon-root-attributes/",\
+        "packageDependencies": [\
+          ["storybook-addon-root-attributes", "npm:2.1.3"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:2.1.3", {\
+        "packageLocation": "./.yarn/__virtual__/storybook-addon-root-attributes-virtual-54c6e56ade/3/.yarn/berry/cache/storybook-addon-root-attributes-npm-2.1.3-3f8dfbf52c-10c0.zip/node_modules/storybook-addon-root-attributes/",\
+        "packageDependencies": [\
+          ["storybook-addon-root-attributes", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:2.1.3"],\
+          ["@types/react", null],\
+          ["@types/react-dom", null],\
+          ["react", null],\
+          ["react-dom", null]\
+        ],\
+        "packagePeers": [\
+          "@types/react-dom",\
+          "@types/react",\
+          "react-dom",\
+          "react"\
         ],\
         "linkType": "HARD"\
       }]\

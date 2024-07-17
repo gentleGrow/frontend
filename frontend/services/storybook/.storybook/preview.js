@@ -10,6 +10,23 @@ const preview = {
       },
     },
   },
+  rootAttributesTooltip: true,
+  rootAttributes: [
+    {
+      root: "body",
+      attribute: "class",
+      defaultState: {
+        name: "light",
+        value: 'theme-light',
+      },
+      states: [
+        {
+          name: "dark",
+          value: 'theme-dark',
+        }
+      ]
+    },
+  ],
 };
 
 export default preview;

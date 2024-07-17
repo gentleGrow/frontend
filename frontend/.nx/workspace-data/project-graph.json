@@ -9476,6 +9476,15 @@
         "hash": "10c0/c4158d6188aac510d9e92925b58709207bd94699e9c31186a040c80932a687f84a51356b5895e6dc72710aad83addb9411c22171832c9ae0e6e11b7d61b0dfb9"
       }
     },
+    "npm:storybook-addon-root-attributes@2.1.3": {
+      "type": "npm",
+      "name": "npm:storybook-addon-root-attributes@2.1.3",
+      "data": {
+        "version": "2.1.3",
+        "packageName": "storybook-addon-root-attributes",
+        "hash": "10c0/9e68a60a8e12c0cb6bc182f44ebf9e3b9d0e1e8449a509cc568b04ef2000bf281378bfa58b68aa23f3cd000db9e9b02f2d9ea9fe3b4dc7e103f9329a00f7bea3"
+      }
+    },
     "npm:storybook@8.2.4": {
       "type": "npm",
       "name": "npm:storybook@8.2.4",
@@ -10638,6 +10647,11 @@
       },
       {
         "source": "@gaemi-school/storybook",
+        "target": "@gaemi-school/react-components-layout",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/storybook",
         "target": "@gaemi-school/themes",
         "type": "static"
       },
@@ -10694,6 +10708,11 @@
       {
         "source": "@gaemi-school/storybook",
         "target": "npm:storybook@8.2.4",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/storybook",
+        "target": "npm:storybook-addon-root-attributes@2.1.3",
         "type": "static"
       },
       {
