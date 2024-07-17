@@ -9,6 +9,6 @@ from app.data.polygon.source.service import handle_msg
 load_dotenv(find_dotenv())
 POLYGON_API_KEY = os.getenv("POLYGON_API_KEY")
 
-ploygon_websocket_client = WebSocketClient(api_key="POLYGON_API_KEY")
-ploygon_websocket_client.subscribe(ALL_STOCK)
-ploygon_websocket_client.run(handle_msg)
+polygon_websocket_client = WebSocketClient(api_key=POLYGON_API_KEY)
+polygon_websocket_client.subscribe(ALL_STOCK)
+polygon_websocket_client.run(handle_msg)

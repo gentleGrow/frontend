@@ -35,7 +35,7 @@ async def create_initial_users(session: AsyncSession):
 
     if check_admin_user is None:
         await UserRepository.create(
-            db=session,
+            session=session,
             user_id=ADMIN_USER_ID,
             social_id="admin_social_id",
             provider=ProviderEnum.GOOGLE,
@@ -45,7 +45,7 @@ async def create_initial_users(session: AsyncSession):
 
     if check_dummy_user is None:
         await UserRepository.create(
-            db=session,
+            session=session,
             user_id=DUMMY_USER_ID,
             social_id="dummy_social_id",
             provider=ProviderEnum.GOOGLE,

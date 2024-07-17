@@ -10,31 +10,31 @@ from app.module.auth.schema import User as UserSchema
 
 class UserRepository:
     @staticmethod
-    async def get_by_social_id(db: AsyncSession, social_id: str, provider: ProviderEnum) -> UserSchema | None:
+    async def get_by_social_id(session: AsyncSession, social_id: str, provider: ProviderEnum) -> UserSchema | None:
         select_instance = select(UserModel).where(
             UserModel.social_id == social_id, UserModel.provider == provider.value
         )
 
-        result = await db.execute(select_instance)
+        result = await session.execute(select_instance)
         user = result.scalars().first()
         return user and UserSchema.model_validate(user)
 
     @staticmethod
-    async def get(db: AsyncSession, user_id: int) -> UserSchema | None:
+    async def get(session: AsyncSession, user_id: int) -> UserSchema | None:
         select_instance = select(UserModel).where(UserModel.id == user_id)
-        result = await db.execute(select_instance)
+        result = await session.execute(select_instance)
         user = result.scalars().first()
         return user and UserSchema.model_validate(user)
 
     @staticmethod
     async def create(
-        db: AsyncSession,
+        session: AsyncSession,
         social_id: str,
         provider: ProviderEnum,
         role: UserRoleEnum = UserRoleEnum.USER,
         nickname: str = None,
         user_id: int = None,
-    ) -> None:
+    ) -> UserModel:
         new_user = UserModel(
             id=user_id,
             social_id=social_id,
@@ -43,8 +43,9 @@ class UserRepository:
             nickname=nickname,
         )
 
-        db.add(new_user)
-        await db.commit()
+        session.add(new_user)
+        await session.commit()
+        return new_user
 
 
 class RedisJWTTokenRepository(AbstractCRUDRepository):
