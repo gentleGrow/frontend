@@ -3,46 +3,26 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.common.repository.base_repository import AbstractCRUDRepository
-from app.module.auth.enum import ProviderEnum, UserRoleEnum
-from app.module.auth.model import User as UserModel
-from app.module.auth.schema import User as UserSchema
+from app.module.auth.enum import ProviderEnum
+from app.module.auth.model import User
 
 
 class UserRepository:
     @staticmethod
-    async def get_by_social_id(session: AsyncSession, social_id: str, provider: ProviderEnum) -> UserSchema | None:
-        select_instance = select(UserModel).where(
-            UserModel.social_id == social_id, UserModel.provider == provider.value
-        )
+    async def get_by_social_id(session: AsyncSession, social_id: str, provider: ProviderEnum) -> User | None:
+        select_instance = select(User).where(User.social_id == social_id, User.provider == provider.value)
 
         result = await session.execute(select_instance)
-        user = result.scalars().first()
-        return user and UserSchema.model_validate(user)
+        return result.scalars().first()
 
     @staticmethod
-    async def get(session: AsyncSession, user_id: int) -> UserSchema | None:
-        select_instance = select(UserModel).where(UserModel.id == user_id)
+    async def get(session: AsyncSession, user_id: int) -> User | None:
+        select_instance = select(User).where(User.id == user_id)
         result = await session.execute(select_instance)
-        user = result.scalars().first()
-        return user and UserSchema.model_validate(user)
+        return result.scalars().first()
 
     @staticmethod
-    async def create(
-        session: AsyncSession,
-        social_id: str,
-        provider: ProviderEnum,
-        role: UserRoleEnum = UserRoleEnum.USER,
-        nickname: str = None,
-        user_id: int = None,
-    ) -> UserModel:
-        new_user = UserModel(
-            id=user_id,
-            social_id=social_id,
-            provider=provider.value,
-            role=role,
-            nickname=nickname,
-        )
-
+    async def create(session: AsyncSession, new_user: User) -> User:
         session.add(new_user)
         await session.commit()
         return new_user

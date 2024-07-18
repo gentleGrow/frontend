@@ -11,6 +11,7 @@ from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.stock_repository import StockRepository
 from app.module.auth.constant import ADMIN_USER_ID, DUMMY_USER_ID
 from app.module.auth.enum import ProviderEnum, UserRoleEnum
+from app.module.auth.model import User
 from app.module.auth.repository import UserRepository
 from database.dependency import get_mysql_session
 
@@ -34,23 +35,24 @@ async def create_initial_users(session: AsyncSession):
         return False
 
     if check_admin_user is None:
-        await UserRepository.create(
-            session=session,
-            user_id=ADMIN_USER_ID,
+        admin_user = User(
+            id=ADMIN_USER_ID,
             social_id="admin_social_id",
             provider=ProviderEnum.GOOGLE,
             role=UserRoleEnum.ADMIN,
             nickname="admin_user",
         )
+        await UserRepository.create(session, admin_user)
 
     if check_dummy_user is None:
-        await UserRepository.create(
-            session=session,
-            user_id=DUMMY_USER_ID,
+        dummy_user = User(
+            id=DUMMY_USER_ID,
             social_id="dummy_social_id",
             provider=ProviderEnum.GOOGLE,
             nickname="dummy_user",
         )
+
+        await UserRepository.create(session, dummy_user)
 
     logging.info("[create_initial_users] 성공적으로 admin과 더미 유저를 생성 했습니다.")
 

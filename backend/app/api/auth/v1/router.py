@@ -5,12 +5,13 @@ from app.common.auth.constant import REDIS_JWT_REFRESH_EXPIRE_TIME_SECOND
 from app.common.auth.jwt import JWTBuilder
 from app.module.auth.enum import ProviderEnum
 from app.module.auth.handler import Google
+from app.module.auth.model import User
 from app.module.auth.repository import UserRepository
 from app.module.auth.schema import NewAccessTokenResponse, TokenRefreshRequest, TokenRequest, TokenResponse
-from database.dependency import get_mysql_session
+from database.dependency import get_router_sql_session
 from database.singleton import redis_user_repository
 
-auth_router = APIRouter()
+auth_router = APIRouter(prefix="/v1")
 
 
 @auth_router.post(
@@ -19,7 +20,7 @@ auth_router = APIRouter()
     description="client 구글 토큰이 넘어오는 지 확인후, 해당 토큰으로 유저확인을 합니다. 신규 유저인 경우 DB에 저장한후, jwt를 반환합니다.",
     response_model=TokenResponse,
 )
-async def google_login(request: TokenRequest, session: AsyncSession = Depends(get_mysql_session)) -> TokenResponse:
+async def google_login(request: TokenRequest, session: AsyncSession = Depends(get_router_sql_session)) -> TokenResponse:
     id_token = request.id_token
     if not id_token:
         raise HTTPException(
@@ -38,7 +39,11 @@ async def google_login(request: TokenRequest, session: AsyncSession = Depends(ge
 
     user = await UserRepository.get_by_social_id(session, social_id, ProviderEnum.GOOGLE)
     if user is None:
-        user = await UserRepository.create(session, social_id, ProviderEnum.GOOGLE)
+        user = User(
+            social_id=social_id,
+            provider=ProviderEnum.GOOGLE.value,
+        )
+        user = await UserRepository.create(session, user)
 
     access_token = await Google.get_access_token(user)
     refresh_token = await Google.get_refresh_token(user)
