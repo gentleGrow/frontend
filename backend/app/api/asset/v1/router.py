@@ -5,7 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.common.auth.security import verify_jwt_token
-from app.common.schema import JsonResponse
+from app.common.schema.json_schema import JsonResponse
 from app.module.asset.constant import DUMMY_ASSET_EXPIRE_SECOND, DUMMY_ASSET_KOREA_KEY, DUMMY_ASSET_OTHER_KEY
 from app.module.asset.enum import AssetType
 from app.module.asset.model import Asset, Dividend, ExchangeRate, StockDaily
@@ -19,7 +19,7 @@ from app.module.asset.service import check_not_found_stock, get_stock_mapping_in
 from app.module.auth.constant import DUMMY_USER_ID
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session_router
-from database.singleton import redis_stock_repository
+from database.redis import redis_repository
 
 asset_router = APIRouter(prefix="/v1")
 
@@ -37,7 +37,7 @@ async def get_dummy_assets(
     else:
         dummy_asset_cache_key = DUMMY_ASSET_OTHER_KEY
 
-    dummy_asset_cache: StockAssetResponse | None = await redis_stock_repository.get(dummy_asset_cache_key)
+    dummy_asset_cache: StockAssetResponse | None = await redis_repository.get(dummy_asset_cache_key)
     if dummy_asset_cache:
         return StockAssetResponse.model_validate_json(dummy_asset_cache)
 
@@ -69,7 +69,7 @@ async def get_dummy_assets(
         stock_assets, total_asset_amount, total_invest_amount, total_invest_growth_rate, total_dividend_amount
     )
 
-    await redis_stock_repository.save(dummy_asset_cache_key, result.model_dump_json(), DUMMY_ASSET_EXPIRE_SECOND)
+    await redis_repository.save(dummy_asset_cache_key, result.model_dump_json(), DUMMY_ASSET_EXPIRE_SECOND)
 
     return result
 

@@ -9,7 +9,7 @@ from app.module.auth.model import User
 from app.module.auth.repository import UserRepository
 from app.module.auth.schema import NewAccessTokenResponse, TokenRefreshRequest, TokenRequest, TokenResponse
 from database.dependency import get_router_sql_session
-from database.singleton import redis_user_repository
+from database.redis import redis_repository
 
 auth_router = APIRouter(prefix="/v1")
 
@@ -49,7 +49,7 @@ async def google_login(request: TokenRequest, session: AsyncSession = Depends(ge
     refresh_token = await Google.get_refresh_token(user)
 
     user_string_id = str(user.id)
-    await redis_user_repository.save(user_string_id, refresh_token, REDIS_JWT_REFRESH_EXPIRE_TIME_SECOND)
+    await redis_repository.save(user_string_id, refresh_token, REDIS_JWT_REFRESH_EXPIRE_TIME_SECOND)
 
     return TokenResponse(access_token=access_token, refresh_token=refresh_token)
 
@@ -68,7 +68,7 @@ async def refresh_access_token(request: TokenRefreshRequest) -> NewAccessTokenRe
     if user_id is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="refresh token안에 유저 정보가 들어있지 않습니다.")
 
-    stored_refresh_token = await redis_user_repository.get(user_id)
+    stored_refresh_token = await redis_repository.get(user_id)
 
     if stored_refresh_token is None:
         raise HTTPException(

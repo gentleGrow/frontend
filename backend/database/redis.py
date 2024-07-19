@@ -1,9 +1,9 @@
 from redis.asyncio import Redis
 
-from app.common.repository.base_repository import AbstractCRUDRepository
+from database.dependency import get_redis_pool
 
 
-class RedisStockRepository(AbstractCRUDRepository):
+class RedisStockRepository:
     def __init__(self, redis_client: Redis):
         self.redis = redis_client
 
@@ -12,3 +12,7 @@ class RedisStockRepository(AbstractCRUDRepository):
 
     async def save(self, key: str, data: int | dict | str | list | tuple, expire_time: int) -> None:
         await self.redis.set(key, data, ex=expire_time)
+
+
+redis_client = get_redis_pool()
+redis_repository = RedisStockRepository(redis_client)
