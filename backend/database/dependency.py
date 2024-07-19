@@ -29,6 +29,15 @@ async def get_mysql_session_router() -> AsyncGenerator[AsyncSession, None]:
         await db.close()
 
 
+async def get_router_sql_session() -> AsyncGenerator[AsyncSession, None]:
+    db = mysql_session_factory()
+    try:
+        yield db
+    finally:
+        await db.close()
+        await mysql_engine.dispose()
+
+
 @asynccontextmanager
 async def get_mysql_session() -> AsyncGenerator[AsyncSession, None]:
     db = mysql_session_factory()
