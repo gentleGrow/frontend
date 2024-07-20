@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.common.auth.constant import REDIS_JWT_REFRESH_EXPIRE_TIME_SECOND
-from app.common.auth.jwt import JWTBuilder
+from app.module.auth.constant import REDIS_JWT_REFRESH_EXPIRE_TIME_SECOND
 from app.module.auth.enum import ProviderEnum
-from app.module.auth.handler import Google
+from app.module.auth.jwt import JWTBuilder
 from app.module.auth.model import User
 from app.module.auth.repository import UserRepository
-from app.module.auth.schema import NewAccessTokenResponse, TokenRefreshRequest, TokenRequest, TokenResponse
+from app.module.auth.schema import AccessTokenResponse, TokenRefreshRequest, TokenRequest, TokenResponse
+from app.module.auth.service import Google
 from database.dependency import get_router_sql_session
 from database.redis import redis_repository
 
@@ -30,8 +30,8 @@ async def google_login(request: TokenRequest, session: AsyncSession = Depends(ge
 
     try:
         id_info = await Google.verify_token(id_token)
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     social_id = id_info.get("sub")
     if social_id is None:
@@ -45,8 +45,8 @@ async def google_login(request: TokenRequest, session: AsyncSession = Depends(ge
         )
         user = await UserRepository.create(session, user)
 
-    access_token = await Google.get_access_token(user)
-    refresh_token = await Google.get_refresh_token(user)
+    access_token = JWTBuilder.generate_access_token(user.id)
+    refresh_token = JWTBuilder.generate_refresh_token(user.id)
 
     user_string_id = str(user.id)
     await redis_repository.save(user_string_id, refresh_token, REDIS_JWT_REFRESH_EXPIRE_TIME_SECOND)
@@ -58,9 +58,9 @@ async def google_login(request: TokenRequest, session: AsyncSession = Depends(ge
     "/refresh",
     summary="새로운 JWT 액세스 토큰을 발급합니다.",
     description="클라이언트로부터 유저 ID를 받아, Redis에서 해당 유저의 리프레시 토큰을 검색 후, 새로운 액세스 토큰을 발급하여 반환합니다.",
-    response_model=NewAccessTokenResponse,
+    response_model=AccessTokenResponse,
 )
-async def refresh_access_token(request: TokenRefreshRequest) -> NewAccessTokenResponse:
+async def refresh_access_token(request: TokenRefreshRequest) -> AccessTokenResponse:
     refresh_token = request.refresh_token
     decoded = JWTBuilder.decode_token(refresh_token)
     user_id = decoded.get("sub")
@@ -84,4 +84,4 @@ async def refresh_access_token(request: TokenRefreshRequest) -> NewAccessTokenRe
 
     access_token = JWTBuilder.generate_access_token(user_id)
 
-    return NewAccessTokenResponse(access_token=access_token)
+    return AccessTokenResponse(access_token=access_token)

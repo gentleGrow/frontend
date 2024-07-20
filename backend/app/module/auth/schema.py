@@ -31,5 +31,5 @@ class TokenResponse(BaseModel):
     refresh_token: str
 
 
-class NewAccessTokenResponse(BaseModel):
+class AccessTokenResponse(BaseModel):
     access_token: str
