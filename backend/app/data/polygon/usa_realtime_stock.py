@@ -1,14 +1,20 @@
 import os
 
+import websocket
 from dotenv import find_dotenv, load_dotenv
-from polygon import WebSocketClient
 
-from app.data.polygon.source.constant import ALL_STOCK
-from app.data.polygon.source.service import handle_msg
+from app.data.polygon.source.service import on_close, on_error, on_message, on_open
 
 load_dotenv(find_dotenv())
-POLYGON_API_KEY = os.getenv("POLYGON_API_KEY")
 
-polygon_websocket_client = WebSocketClient(api_key=POLYGON_API_KEY)
-polygon_websocket_client.subscribe(ALL_STOCK)
-polygon_websocket_client.run(handle_msg)
+POLYGON_WS_URL = os.getenv("POLYGON_WS_URL")
+
+
+def main():
+    ws = websocket.WebSocketApp(POLYGON_WS_URL, on_message=on_message, on_error=on_error, on_close=on_close)
+    ws.on_open = on_open
+    ws.run_forever()
+
+
+if __name__ == "__main__":
+    main()
