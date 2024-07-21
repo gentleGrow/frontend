@@ -22,6 +22,10 @@ class TokenRequest(BaseModel):
     id_token: str
 
 
+class NaverTokenRequest(BaseModel):
+    access_token: str
+
+
 class TokenRefreshRequest(BaseModel):
     refresh_token: str
 

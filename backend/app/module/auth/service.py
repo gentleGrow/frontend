@@ -9,8 +9,20 @@ from google.oauth2 import id_token
 load_dotenv()
 
 GOOGLE_CLIENT_ID = getenv("GOOGLE_CLIENT_ID", None)
-
 KAKAO_TOKEN_INFO_URL = getenv("KAKAO_TOKEN_INFO_URL", None)
+NAVER_USER_INFO_URL = getenv("NAVER_USER_INFO_URL", None)
+
+
+class Naver:
+    @staticmethod
+    async def verify_token(token: str) -> dict:
+        headers = {"Authorization": f"Bearer {token}"}
+        async with httpx.AsyncClient() as client:
+            response = await client.get(NAVER_USER_INFO_URL, headers=headers)
+
+            if response.status_code is not status.HTTP_200_OK:
+                raise ValueError(f"Token verification failed: {response.status_code} {response.text}")
+            return response.json()
 
 
 class Kakao:
