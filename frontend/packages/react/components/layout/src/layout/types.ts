@@ -1,3 +1,3 @@
-import { AsElementProps } from "../core/types";
+import { AsElementProps, StyleProps } from "../core/types";
 
-export type BoxProps = AsElementProps;
+export type BoxProps = AsElementProps & StyleProps;

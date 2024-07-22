@@ -3132,6 +3132,15 @@
         "hash": "10c0/9a5053763fc1964b68c8384afcba7abcb7d776755763fcc96fbc70f1317618368b8127088871611b7beae480f20bd05cc486a90ed3a48332a2c02293357ba819"
       }
     },
+    "npm:@vanilla-extract/sprinkles@1.6.2": {
+      "type": "npm",
+      "name": "npm:@vanilla-extract/sprinkles@1.6.2",
+      "data": {
+        "version": "1.6.2",
+        "packageName": "@vanilla-extract/sprinkles",
+        "hash": "10c0/c9b648f7641e443492f45299d06d8cef1a50bc3615ff95b0bf60d5ac2249a774e58a559c537d7c3c7f9fe8a2e154bb198daee94fe64d37f7ec4057e3ff20f195"
+      }
+    },
     "npm:@vitest/expect@1.6.0": {
       "type": "npm",
       "name": "npm:@vitest/expect@1.6.0",
@@ -4039,6 +4048,15 @@
         "version": "1.0.4",
         "packageName": "clone",
         "hash": "10c0/2176952b3649293473999a95d7bebfc9dc96410f6cbd3d2595cf12fd401f63a4bf41a7adbfd3ab2ff09ed60cb9870c58c6acdd18b87767366fabfc163700f13b"
+      }
+    },
+    "npm:clsx@2.1.1": {
+      "type": "npm",
+      "name": "npm:clsx@2.1.1",
+      "data": {
+        "version": "2.1.1",
+        "packageName": "clsx",
+        "hash": "10c0/c4c8eb865f8c82baab07e71bfa8897c73454881c4f99d6bc81585aecd7c441746c1399d08363dc096c550cceaf97bd4ce1e8854e1771e9998d9f94c4fe075839"
       }
     },
     "npm:color-convert@1.9.3": {

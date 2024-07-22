@@ -1,23 +1,17 @@
 {
   "extends": "nx/presets/npm.json",
-  "affected": {
-    "defaultBase": "main"
-  },
   "workspaceLayout": {
     "appsDir": "client",
     "libsDir": "packages"
   },
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "nx/tasks-runners/default",
-      "options": {
-        "cacheableOperations": ["build", "dev"]
-      }
-    }
-  },
   "targetDefaults": {
     "build": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "cache": true
+    },
+    "dev": {
+      "cache": true
     }
-  }
+  },
+  "defaultBase": "main"
 }

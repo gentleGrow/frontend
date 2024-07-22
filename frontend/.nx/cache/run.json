@@ -1,8 +1,8 @@
 {
   "run": {
     "command": "nx run-many --target=dev --projects=@gaemi-school/react-components-*",
-    "startTime": "2024-07-22T11:28:58.162Z",
-    "endTime": "2024-07-22T11:29:14.654Z",
+    "startTime": "2024-07-22T12:39:20.970Z",
+    "endTime": "2024-07-22T12:39:30.296Z",
     "inner": false
   },
   "tasks": [
@@ -10,12 +10,12 @@
       "taskId": "@gaemi-school/react-components-layout:dev",
       "target": "dev",
       "projectName": "@gaemi-school/react-components-layout",
-      "hash": "17339455805160764255",
-      "startTime": "2024-07-22T11:28:58.177Z",
-      "endTime": "2024-07-22T11:29:14.651Z",
+      "hash": "57225820043191366",
+      "startTime": "2024-07-22T12:39:20.979Z",
+      "endTime": "2024-07-22T12:39:30.295Z",
       "params": "",
       "cacheStatus": "cache-miss",
-      "status": 0
+      "status": 1
     }
   ]
 }
