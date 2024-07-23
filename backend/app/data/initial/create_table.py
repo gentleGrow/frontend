@@ -12,7 +12,6 @@ from app.module.asset.model import (  # noqa > relationship purpose
     Stock,
     StockDaily,
     StockMonthly,
-    StockRealtime,
     StockWeekly,
     VirtualAsset,
 )
