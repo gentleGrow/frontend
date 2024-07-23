@@ -1,21 +1,21 @@
 {
   "run": {
-    "command": "nx run-many --target=dev --projects=@gaemi-school/react-components-*",
-    "startTime": "2024-07-23T10:24:48.944Z",
-    "endTime": "2024-07-23T10:24:59.306Z",
+    "command": "nx storybook @gaemi-school/storybook",
+    "startTime": "2024-07-23T10:47:48.549Z",
+    "endTime": "2024-07-23T11:03:54.216Z",
     "inner": false
   },
   "tasks": [
     {
-      "taskId": "@gaemi-school/react-components-layout:dev",
-      "target": "dev",
-      "projectName": "@gaemi-school/react-components-layout",
-      "hash": "18270480040369815674",
-      "startTime": "2024-07-23T10:24:48.952Z",
-      "endTime": "2024-07-23T10:24:59.304Z",
+      "taskId": "@gaemi-school/storybook:storybook",
+      "target": "storybook",
+      "projectName": "@gaemi-school/storybook",
+      "hash": "5139142910591199415",
+      "startTime": "2024-07-23T10:47:48.560Z",
+      "endTime": "2024-07-23T11:03:54.213Z",
       "params": "",
       "cacheStatus": "cache-miss",
-      "status": 0
+      "status": 1
     }
   ]
 }

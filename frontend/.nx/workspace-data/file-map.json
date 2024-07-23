@@ -27,68 +27,12 @@
   "fileMap": {
     "nonProjectFiles": [
       {
-        "file": ".pnp.cjs",
-        "hash": "3506969231651939139"
-      },
-      {
-        "file": "yarn.lock",
-        "hash": "18139046126745242129"
+        "file": ".yarn/sdks/typescript/bin/tsc",
+        "hash": "3928130886875515345"
       },
       {
         "file": ".yarn/install-state.gz",
         "hash": "3861805287545080399"
-      },
-      {
-        "file": ".gitignore",
-        "hash": "17284711007348252231"
-      },
-      {
-        "file": "nx.json",
-        "hash": "12561475342632093272"
-      },
-      {
-        "file": "package.json",
-        "hash": "7734822928331816539"
-      },
-      {
-        "file": ".yarn/sdks/typescript/package.json",
-        "hash": "17296832241727632314"
-      },
-      {
-        "file": ".yarn/sdks/eslint/bin/eslint.js",
-        "hash": "5536091967665342893"
-      },
-      {
-        "file": ".prettierrc",
-        "hash": "2052412003981761678"
-      },
-      {
-        "file": ".eslintrc.js",
-        "hash": "7307395377797753530"
-      },
-      {
-        "file": "tsconfig.base.json",
-        "hash": "11786379465881472560"
-      },
-      {
-        "file": ".yarn/releases/yarn-4.3.1.cjs",
-        "hash": "1397390985206817274"
-      },
-      {
-        "file": ".yarn/sdks/integrations.yml",
-        "hash": "5703335058684100671"
-      },
-      {
-        "file": ".yarn/sdks/typescript/bin/tsserver",
-        "hash": "6152172598867696651"
-      },
-      {
-        "file": ".yarn/sdks/eslint/package.json",
-        "hash": "9302568071849794418"
-      },
-      {
-        "file": ".yarn/sdks/typescript/bin/tsc",
-        "hash": "3928130886875515345"
       },
       {
         "file": ".yarnrc.yml",
@@ -99,20 +43,76 @@
         "hash": "2245035438662986540"
       },
       {
+        "file": ".yarn/releases/yarn-4.3.1.cjs",
+        "hash": "1397390985206817274"
+      },
+      {
+        "file": ".yarn/sdks/eslint/package.json",
+        "hash": "9302568071849794418"
+      },
+      {
         "file": ".yarn/sdks/prettier/package.json",
         "hash": "15426012732732659717"
+      },
+      {
+        "file": ".pnp.cjs",
+        "hash": "3506969231651939139"
+      },
+      {
+        "file": "package.json",
+        "hash": "7734822928331816539"
+      },
+      {
+        "file": "yarn.lock",
+        "hash": "18139046126745242129"
+      },
+      {
+        "file": ".eslintrc.js",
+        "hash": "7307395377797753530"
+      },
+      {
+        "file": "nx.json",
+        "hash": "12561475342632093272"
+      },
+      {
+        "file": ".pnp.loader.mjs",
+        "hash": "8598115603168773142"
+      },
+      {
+        "file": ".yarn/sdks/typescript/bin/tsserver",
+        "hash": "6152172598867696651"
       },
       {
         "file": ".yarn/sdks/prettier/index.cjs",
         "hash": "6264149573355037471"
       },
       {
+        "file": "tsconfig.base.json",
+        "hash": "11786379465881472560"
+      },
+      {
+        "file": ".gitignore",
+        "hash": "17284711007348252231"
+      },
+      {
+        "file": ".prettierrc",
+        "hash": "2052412003981761678"
+      },
+      {
+        "file": ".yarn/sdks/integrations.yml",
+        "hash": "5703335058684100671"
+      },
+      {
+        "file": ".yarn/sdks/eslint/bin/eslint.js",
+        "hash": "5536091967665342893"
+      },
+      {
         "file": "tsconfig.eslint.json",
         "hash": "10262891919429934091"
       },
       {
-        "file": ".pnp.loader.mjs",
-        "hash": "8598115603168773142"
+        "file": ".yarn/sdks/typescript/package.json",
+        "hash": "17296832241727632314"
       }
     ],
     "projectFileMap": {
@@ -162,6 +162,10 @@
         {
           "file": "services/storybook/stories/ReactComponents/Layout/Heading.stories.tsx",
           "hash": "8230184471639520381"
+        },
+        {
+          "file": "services/storybook/stories/ReactComponents/Layout/Divider.stories.tsx",
+          "hash": "17059862308201927957"
         }
       ],
       "@gaemi-school/themes": [
@@ -263,7 +267,7 @@
         },
         {
           "file": "packages/react/components/layout/src/index.ts",
-          "hash": "11746428862349259602"
+          "hash": "15777347173274935377"
         },
         {
           "file": "packages/react/components/layout/src/layout/Box.tsx",
@@ -271,11 +275,11 @@
         },
         {
           "file": "packages/react/components/layout/src/layout/index.ts",
-          "hash": "1680930858496408036"
+          "hash": "15802888220466936987"
         },
         {
           "file": "packages/react/components/layout/src/layout/types.ts",
-          "hash": "4500749868159174874"
+          "hash": "8079995822540972150"
         },
         {
           "file": "packages/react/components/layout/src/typography/Heading.tsx",
@@ -307,15 +311,15 @@
         },
         {
           "file": "packages/react/components/layout/dist/index.js",
-          "hash": "1794057484419170854"
+          "hash": "1745684805714116314"
         },
         {
           "file": "packages/react/components/layout/dist/index.js.map",
-          "hash": "12262830081226267156"
+          "hash": "12066035655920945695"
         },
         {
           "file": "packages/react/components/layout/dist/index.cjs.map",
-          "hash": "13235312545161606528"
+          "hash": "944205694230896442"
         },
         {
           "file": "packages/react/components/layout/dist/index.css.map",
@@ -323,7 +327,7 @@
         },
         {
           "file": "packages/react/components/layout/dist/index.cjs",
-          "hash": "9220674940747817335"
+          "hash": "12035704649643428594"
         },
         {
           "file": "packages/react/components/layout/dist/index.css",
@@ -339,7 +343,7 @@
         },
         {
           "file": "packages/react/components/layout/dist/layout/types.d.ts",
-          "hash": "585308746748062129"
+          "hash": "5982277687609945821"
         },
         {
           "file": "packages/react/components/layout/dist/core/style.css.d.ts",
@@ -355,7 +359,7 @@
         },
         {
           "file": "packages/react/components/layout/dist/layout/index.d.ts",
-          "hash": "8071384592448368944"
+          "hash": "8560170595730434543"
         },
         {
           "file": "packages/react/components/layout/dist/utils/properties.d.ts",
@@ -371,11 +375,19 @@
         },
         {
           "file": "packages/react/components/layout/dist/index.d.ts",
-          "hash": "13795973804837618841"
+          "hash": "15535225027720156072"
         },
         {
           "file": "packages/react/components/layout/dist/typography/Heading.d.ts",
           "hash": "1148167467364385420"
+        },
+        {
+          "file": "packages/react/components/layout/src/layout/Divider.tsx",
+          "hash": "17948243690080680372"
+        },
+        {
+          "file": "packages/react/components/layout/dist/layout/Divider.d.ts",
+          "hash": "9015478719368561678"
         }
       ],
       "client": [
