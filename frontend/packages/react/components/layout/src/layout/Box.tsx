@@ -15,7 +15,7 @@ const Box = (props: BoxProps, ref: React.Ref<HTMLElement>) => {
       ref,
       className: clsx([
         StyleSprinkles(extractSprinkleProps(props, Array.from(StyleSprinkles.properties))),
-        props.className,
+        props.className,     
       ]),
       style: {
         color: vars.colors.$scale?.[color]?.[70] ?? color,

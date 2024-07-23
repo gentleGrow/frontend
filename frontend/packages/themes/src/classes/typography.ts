@@ -1,65 +1,97 @@
 import { typography } from "../variables";
 
 export const heading = {
-  "1": {
+  "4xl": {
+    fontSize: typography.fontSize[60],
+    fontWeight: typography.fontWeight[700],
+    lineHeight: typography.lineHeight[100],
+  },
+  "3xl": {
+    fontSize: typography.fontSize[48],
+    fontWeight: typography.fontWeight[700],
+    lineHeight: typography.lineHeight[100],
+  },
+  "2xl": {
+    fontSize: typography.fontSize[36],
+    fontWeight: typography.fontWeight[700],
+    lineHeight: typography.lineHeight[120],
+  },
+  xl: {
+    fontSize: typography.fontSize[30],
+    fontWeight: typography.fontWeight[700],
+    lineHeight: typography.lineHeight[133],
+  },
+  lg: {
     fontSize: typography.fontSize[24],
     fontWeight: typography.fontWeight[700],
-    lineHeight: typography.lineHeight[110],
+    lineHeight: typography.lineHeight[133],
   },
-  "2": {
+  md: {
     fontSize: typography.fontSize[20],
     fontWeight: typography.fontWeight[700],
-    lineHeight: typography.lineHeight[110],
+    lineHeight: typography.lineHeight[120],
   },
-  "3": {
+  sm: {
+    fontSize: typography.fontSize[16],
+    fontWeight: typography.fontWeight[700],
+    lineHeight: typography.lineHeight[120],
+  },
+  xs: {
+    fontSize: typography.fontSize[14],
+    fontWeight: typography.fontWeight[700],
+    lineHeight: typography.lineHeight[120],
+  },
+};
+
+export const text = {
+  "6xl": {
+    fontSize: typography.fontSize[60],
+    fontWeight: typography.fontWeight[400],
+    lineHeight: typography.lineHeight[150],
+  },
+  "5xl": {
+    fontSize: typography.fontSize[48],
+    fontWeight: typography.fontWeight[400],
+    lineHeight: typography.lineHeight[150],
+  },
+  "4xl": {
+    fontSize: typography.fontSize[36],
+    fontWeight: typography.fontWeight[400],
+    lineHeight: typography.lineHeight[150],
+  },
+  "3xl": {
+    fontSize: typography.fontSize[30],
+    fontWeight: typography.fontWeight[400],
+    lineHeight: typography.lineHeight[150],
+  },
+  "2xl": {
+    fontSize: typography.fontSize[24],
+    fontWeight: typography.fontWeight[400],
+    lineHeight: typography.lineHeight[150],
+  },
+  xl: {
+    fontSize: typography.fontSize[20],
+    fontWeight: typography.fontWeight[400],
+    lineHeight: typography.lineHeight[150],
+  },
+  lg: {
     fontSize: typography.fontSize[18],
     fontWeight: typography.fontWeight[400],
-    lineHeight: typography.lineHeight[110],
+    lineHeight: typography.lineHeight[150],
   },
-  "4": {
-    fontSize: typography.fontSize[16],
-    fontWeight: typography.fontWeight[700],
-    lineHeight: typography.lineHeight[110],
-  },
-};
-
-export const body = {
-  "1": {
+  md: {
     fontSize: typography.fontSize[16],
     fontWeight: typography.fontWeight[400],
-    lineHeight: typography.lineHeight[110],
+    lineHeight: typography.lineHeight[150],
   },
-  "2": {
+  sm: {
     fontSize: typography.fontSize[14],
     fontWeight: typography.fontWeight[400],
-    lineHeight: typography.lineHeight[110],
+    lineHeight: typography.lineHeight[150],
   },
-  "3": {
-    fontSize: typography.fontSize[14],
-    fontWeight: typography.fontWeight[600],
-    lineHeight: typography.lineHeight[110],
-  },
-  "4": {
-    fontSize: typography.fontSize[12],
-    fontWeight: typography.fontWeight[700],
-    lineHeight: typography.lineHeight[110],
-  },
-  "5": {
+  xs: {
     fontSize: typography.fontSize[12],
     fontWeight: typography.fontWeight[400],
-    lineHeight: typography.lineHeight[110],
-  },
-};
-
-export const detail = {
-  "1": {
-    fontSize: typography.fontSize[12],
-    fontWeight: typography.fontWeight[400],
-    lineHeight: typography.lineHeight[110],
-  },
-  "2": {
-    fontSize: typography.fontSize[11],
-    fontWeight: typography.fontWeight[600],
-    lineHeight: typography.lineHeight[110],
+    lineHeight: typography.lineHeight[150],
   },
 };

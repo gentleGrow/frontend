@@ -1,8 +1,10 @@
 export const fontSize = {
   72: "4.5rem",
   64: "4rem",
+  60: "3.75rem",
   48: "3rem",
   36: "2.25rem",
+  30: "1.875rem",
   24: "1.5rem",
   20: "1.25rem",
   18: "1.125rem",

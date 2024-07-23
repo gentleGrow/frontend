@@ -3132,6 +3132,15 @@
         "hash": "10c0/9a5053763fc1964b68c8384afcba7abcb7d776755763fcc96fbc70f1317618368b8127088871611b7beae480f20bd05cc486a90ed3a48332a2c02293357ba819"
       }
     },
+    "npm:@vanilla-extract/recipes@0.5.3": {
+      "type": "npm",
+      "name": "npm:@vanilla-extract/recipes@0.5.3",
+      "data": {
+        "version": "0.5.3",
+        "packageName": "@vanilla-extract/recipes",
+        "hash": "10c0/1a8a155c53031efeafd67e0e429bb766049a61ca1dda8dfc6144f09882ccf7058557d6a89c2454cd2726452fedd5110a55a4d89a5f1e2846d815eca095494aea"
+      }
+    },
     "npm:@vanilla-extract/sprinkles@1.6.2": {
       "type": "npm",
       "name": "npm:@vanilla-extract/sprinkles@1.6.2",

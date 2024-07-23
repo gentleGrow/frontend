@@ -1,5 +1,2 @@
 project,target,configuration,hash,code,status,start,end
-@gaemi-school/react-components-layout,dev,,16013725399877503161,1,failure,1721651263827,1721651272491
-@gaemi-school/react-components-layout,dev,,9577080391764956807,1,failure,1721651526197,1721651534863
-@gaemi-school/react-components-layout,dev,,9577080391764956807,1,failure,1721651874144,1721651883390
-@gaemi-school/react-components-layout,dev,,57225820043191366,1,failure,1721651960979,1721651970296
+@gaemi-school/react-components-layout,dev,,18270480040369815674,0,success,1721730288952,1721730299305
