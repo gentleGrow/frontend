@@ -1,6 +1,4 @@
 import asyncio
-import logging
-import os
 
 from sqlalchemy.exc import IntegrityError
 
@@ -11,20 +9,13 @@ from app.module.asset.schema.stock_schema import StockInfo
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session
 
-os.makedirs("./logs", exist_ok=True)
-
-logging.basicConfig(
-    filename="./logs/stock_code.log", level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
-
 
 async def main():
+    print("[분석] main 함수를 시작 합니다.")
     async with get_mysql_session() as session:
         stock_list: list[StockInfo] = get_all_stock_code_list()
         for stock_info in stock_list:
             stock_info: StockInfo
-
-            logging.info(f"[stock_code] {stock_info=}")
 
             try:
                 await StockRepository.save(
@@ -36,11 +27,13 @@ async def main():
                         country=stock_info.country,
                     ),
                 )
-            except IntegrityError as e:
-                logging.error(f"[stock_code] IntegrityError: {e} - Skipping stock code {stock_info.code}")
+            except IntegrityError:
                 await session.rollback()
                 continue
-        logging.info("[stock_code] 주식 코드를 성공적으로 저장 하였습니다.")
+
+
+def lambda_handler(event, context):
+    asyncio.run(main())
 
 
 if __name__ == "__main__":

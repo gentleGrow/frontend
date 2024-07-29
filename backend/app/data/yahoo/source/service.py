@@ -2,6 +2,17 @@ import datetime
 
 from app.common.util.time import end_timestamp, start_timestamp
 from app.module.asset.enum import Country, CountryMarketCode, MarketIndex
+from app.module.asset.model import (  # noqa: F401 > relationship 설정시 필요합니다.
+    Asset,
+    AssetStock,
+    Dividend,
+    ExchangeRate,
+    Stock,
+    StockDaily,
+    StockMonthly,
+    StockWeekly,
+)
+from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 
 
 def get_period_bounds(stock_history_timerange: int) -> tuple[int, int]:

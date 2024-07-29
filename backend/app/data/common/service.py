@@ -2,7 +2,6 @@ import os
 
 import boto3
 import pandas as pd
-from botocore.exceptions import ClientError, NoCredentialsError
 from dotenv import find_dotenv, load_dotenv
 
 from app.data.common.config import (
@@ -24,7 +23,6 @@ from app.data.common.config import (
     SWITZERLAND_STOCK_FILEPATH,
     UK_STOCK_FILEPATH,
     USA_STOCK_FILEPATH,
-    logging,
 )
 from app.module.asset.schema.stock_schema import StockInfo
 from database.enum import EnvironmentType
@@ -34,54 +32,41 @@ load_dotenv(find_dotenv())
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 
-s3_client = boto3.client(
-    "s3",
-    aws_access_key_id=AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-)
+s3_client = boto3.client("s3")
 
 
-def download_file_from_s3(bucket, key, local_path) -> None:
+def download_file_from_s3(bucket: str, key: str, local_path: str) -> str:
     try:
         s3_client.download_file(bucket, key, local_path)
-        logging.info(f"{local_path}경로에 ${key}를 저장하였습니다.")
-    except FileNotFoundError as e:
-        logging.error(f"Local path not found: {e}")
-        raise
-    except NoCredentialsError as e:
-        logging.error(f"AWS credentials not found: {e}")
-        raise
-    except ClientError as e:
-        logging.error(f"Client error: {e}")
-        raise
+        return local_path
     except Exception as e:
-        logging.error(f"Unexpected error: {e}")
+        print(f"Unexpected error: {e}")
         raise
 
 
 def read_stock_codes_from_excel(filepath: str) -> list[StockInfo]:
     try:
         df = pd.read_excel(filepath, usecols=["Symbol", "Company Name", "Country", "Code"], header=0)
-    except FileNotFoundError as e:
-        logging.error(f"File not found: {e}")
-        raise
-    except ValueError as e:
-        logging.error(f"Value error: {e}")
-        raise
+        df.columns = ["Symbol", "Company_Name", "Country", "Code"]
     except Exception as e:
-        logging.error(f"Unexpected error: {e}")
+        print(f"Unexpected error: {e}")
         raise
-    else:
-        stock_infos = [
-            StockInfo(
-                code=str(row["Symbol"]),
-                name=str(row["Company Name"]),
-                country=str(row["Country"]),
-                market_index=str(row["Code"]),
+
+    stock_infos = []
+    for row in df.itertuples(index=False):
+        try:
+            stock_info = StockInfo(
+                code=str(row.Symbol),
+                name=str(row.Company_Name),
+                country=str(row.Country),
+                market_index=str(row.Code),
             )
-            for _, row in df.iterrows()
-        ]
-        return stock_infos
+
+            stock_infos.append(stock_info)
+        except AttributeError as e:
+            print(f"AttributeError: {e}, row: {row}")
+
+    return stock_infos
 
 
 def get_korea_stock_code_list() -> list[StockInfo]:
@@ -106,7 +91,6 @@ def get_all_stock_code_list() -> list[StockInfo]:
     spain_stock_code_list = read_stock_codes_from_excel(get_path(SPAIN_STOCK_FILEPATH))
     switzerland_stock_code_list = read_stock_codes_from_excel(get_path(SWITZERLAND_STOCK_FILEPATH))
     uk_stock_code_list = read_stock_codes_from_excel(get_path(UK_STOCK_FILEPATH))
-
     return (
         korea_stock_code_list
         + usa_stock_code_list
@@ -136,5 +120,6 @@ def get_path(filepath) -> str:
 
 def download_and_get_path(s3_key) -> str:
     local_path = f"/tmp/{os.path.basename(s3_key)}"
+
     download_file_from_s3(S3_BUCKET_STOCK_FILES, s3_key, local_path)
     return local_path

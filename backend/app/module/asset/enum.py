@@ -97,6 +97,7 @@ class MarketIndex(StrEnum):
     IBEX = "IBEX"
     SMI = "SMI"
     AEX = "AEX"
+    TSE = "TSE"
     SX5E = "SX5E"
     KOSPI = "KOSPI"
     KOSDAQ = "KOSDAQ"
