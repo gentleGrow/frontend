@@ -121,5 +121,5 @@ def get_path(filepath) -> str:
 def download_and_get_path(s3_key) -> str:
     local_path = f"/tmp/{os.path.basename(s3_key)}"
 
-    download_file_from_s3(S3_BUCKET_STOCK_FILES, s3_key, local_path)
+    download_file_from_s3(S3_BUCKET_STOCK_FILES, s3_key, local_path)  # type: ignore
     return local_path

@@ -15,5 +15,9 @@ async def main():
     # 네이버 실시간 주식 데이터 수집은 추후 수정하겠습니다.
 
 
+def lambda_handler(event, context):
+    asyncio.run(main())
+
+
 if __name__ == "__main__":
     asyncio.run(main())

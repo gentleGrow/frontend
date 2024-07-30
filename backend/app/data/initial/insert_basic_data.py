@@ -1,6 +1,4 @@
 import asyncio
-import logging
-import os
 from datetime import date
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,17 +12,6 @@ from app.module.auth.enum import ProviderEnum, UserRoleEnum
 from app.module.auth.model import User
 from app.module.auth.repository import UserRepository
 from database.dependency import get_mysql_session
-
-os.makedirs("./logs", exist_ok=True)
-
-with open("./logs/insert_basic_data.log", "w"):
-    pass
-
-logging.basicConfig(
-    filename="./logs/insert_basic_data.log", level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
-)
-
-logging.info("[insert_basic_data] 초기 데이터 추가를 시작 합니다.")
 
 
 async def create_initial_users(session: AsyncSession):
@@ -54,7 +41,7 @@ async def create_initial_users(session: AsyncSession):
 
         await UserRepository.create(session, dummy_user)
 
-    logging.info("[create_initial_users] 성공적으로 admin과 더미 유저를 생성 했습니다.")
+    print("[create_initial_users] 성공적으로 admin과 더미 유저를 생성 했습니다.")
 
     return True
 
@@ -84,9 +71,9 @@ async def create_dummy_assets(session: AsyncSession):
 
     success = await AssetRepository.save_assets(session, assets)
     if success:
-        logging.info("[create_dummy_assets] 더미 유저에 assets을 성공적으로 생성 했습니다.")
+        print("[create_dummy_assets] 더미 유저에 assets을 성공적으로 생성 했습니다.")
     else:
-        logging.info("[create_dummy_assets] 더미 유저에 assets을 생성하는데 실패 하였습니다.")
+        print("[create_dummy_assets] 더미 유저에 assets을 생성하는데 실패 하였습니다.")
 
 
 async def main():
@@ -94,6 +81,10 @@ async def main():
         created = await create_initial_users(session)
         if created:
             await create_dummy_assets(session)
+
+
+def lambda_handler(event, context):
+    asyncio.run(main())
 
 
 if __name__ == "__main__":

@@ -11,7 +11,6 @@ from database.dependency import get_mysql_session
 
 
 async def main():
-    print("[분석] main 함수를 시작 합니다.")
     async with get_mysql_session() as session:
         stock_list: list[StockInfo] = get_all_stock_code_list()
         for stock_info in stock_list:
