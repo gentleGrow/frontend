@@ -18,7 +18,7 @@ from database.config import MYSQL_URL, MySQLBase
 print("[create_tables] 테이블 생성을 시도 합니다.")
 
 
-def lambda_handler(event, context):
+def main():
     if MYSQL_URL is not None:
         sync_mysql_url = MYSQL_URL.replace("mysql+aiomysql", "mysql+mysqlconnector")
 
@@ -32,3 +32,11 @@ def lambda_handler(event, context):
             print(f"[create_tables] Unexpected error: {e}")
     else:
         print(f"[create_tables] MYSQL_URL가 정의 되어 있지 않습니다., {MYSQL_URL=}")
+
+
+def lambda_handler(event, context):
+    main()
+
+
+if __name__ == "__main__":
+    main()
