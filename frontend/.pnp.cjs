@@ -3219,7 +3219,8 @@ const RAW_RUNTIME_STATE =
         ],\
         "packagePeers": [\
           "@gaemi-school/themes",\
-          "@types/gaemi-school__themes"\
+          "@types/gaemi-school__themes",\
+          "react"\
         ],\
         "linkType": "SOFT"\
       }],\
@@ -3261,6 +3262,8 @@ const RAW_RUNTIME_STATE =
           ["@storybook/test", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:8.2.4"],\
           ["@yarnpkg/sdks", "npm:3.1.3"],\
           ["prop-types", "npm:15.8.1"],\
+          ["react", "npm:18.3.1"],\
+          ["react-dom", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:18.3.1"],\
           ["storybook", "npm:8.2.4"],\
           ["storybook-addon-root-attributes", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:2.1.3"],\
           ["vite", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:5.3.4"]\
@@ -4174,7 +4177,7 @@ const RAW_RUNTIME_STATE =
           ["@storybook/global", "npm:5.0.0"],\
           ["@types/react", null],\
           ["@types/storybook", null],\
-          ["react", null],\
+          ["react", "npm:18.3.1"],\
           ["storybook", "npm:8.2.4"],\
           ["ts-dedent", "npm:2.2.0"]\
         ],\
@@ -4328,9 +4331,9 @@ const RAW_RUNTIME_STATE =
           ["markdown-to-jsx", "virtual:7c380a14fa1bd0671c760dcc13dac604dd5f256ab61692511c38493df3ed90c06ad11797632e2e92d1a7015e6cefbbc5e54949bea263d622aa4c9af0764ca6c0#npm:7.4.7"],\
           ["memoizerific", "npm:1.11.3"],\
           ["polished", "npm:4.3.1"],\
-          ["react", null],\
+          ["react", "npm:18.3.1"],\
           ["react-colorful", "virtual:7c380a14fa1bd0671c760dcc13dac604dd5f256ab61692511c38493df3ed90c06ad11797632e2e92d1a7015e6cefbbc5e54949bea263d622aa4c9af0764ca6c0#npm:5.6.1"],\
-          ["react-dom", null],\
+          ["react-dom", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:18.3.1"],\
           ["storybook", "npm:8.2.4"],\
           ["telejson", "npm:7.2.0"],\
           ["ts-dedent", "npm:2.2.0"],\
@@ -4574,8 +4577,8 @@ const RAW_RUNTIME_STATE =
           ["@storybook/icons", "virtual:7c380a14fa1bd0671c760dcc13dac604dd5f256ab61692511c38493df3ed90c06ad11797632e2e92d1a7015e6cefbbc5e54949bea263d622aa4c9af0764ca6c0#npm:1.2.9"],\
           ["@types/react", null],\
           ["@types/react-dom", null],\
-          ["react", null],\
-          ["react-dom", null]\
+          ["react", "npm:18.3.1"],\
+          ["react-dom", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:18.3.1"]\
         ],\
         "packagePeers": [\
           "@types/react-dom",\
@@ -4687,8 +4690,8 @@ const RAW_RUNTIME_STATE =
           ["html-tags", "npm:3.3.1"],\
           ["lodash", "npm:4.17.21"],\
           ["prop-types", "npm:15.8.1"],\
-          ["react", null],\
-          ["react-dom", null],\
+          ["react", "npm:18.3.1"],\
+          ["react-dom", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:18.3.1"],\
           ["react-element-to-jsx-string", "virtual:59fa043667e962efc63c39a4ee0ea5315afeee7a4fd7b7084aff7c88992f92be6cdbb436c444c5af7c2ad83f07686e341fef735fdbaae00a206734fe9c2c17ec#npm:15.0.0"],\
           ["semver", "npm:7.6.2"],\
           ["storybook", "npm:8.2.4"],\
@@ -4725,8 +4728,8 @@ const RAW_RUNTIME_STATE =
           ["@types/react", null],\
           ["@types/react-dom", null],\
           ["@types/storybook", null],\
-          ["react", null],\
-          ["react-dom", null],\
+          ["react", "npm:18.3.1"],\
+          ["react-dom", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:18.3.1"],\
           ["storybook", "npm:8.2.4"]\
         ],\
         "packagePeers": [\
@@ -4783,9 +4786,9 @@ const RAW_RUNTIME_STATE =
           ["@types/vite", null],\
           ["find-up", "npm:5.0.0"],\
           ["magic-string", "npm:0.30.10"],\
-          ["react", null],\
+          ["react", "npm:18.3.1"],\
           ["react-docgen", "npm:7.0.3"],\
-          ["react-dom", null],\
+          ["react-dom", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:18.3.1"],\
           ["resolve", "patch:resolve@npm%3A1.22.8#optional!builtin<compat/resolve>::version=1.22.8&hash=c3c19d"],\
           ["storybook", "npm:8.2.4"],\
           ["tsconfig-paths", "npm:4.2.0"],\
@@ -11202,7 +11205,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["markdown-to-jsx", "virtual:7c380a14fa1bd0671c760dcc13dac604dd5f256ab61692511c38493df3ed90c06ad11797632e2e92d1a7015e6cefbbc5e54949bea263d622aa4c9af0764ca6c0#npm:7.4.7"],\
           ["@types/react", null],\
-          ["react", null]\
+          ["react", "npm:18.3.1"]\
         ],\
         "packagePeers": [\
           "@types/react",\
@@ -12848,8 +12851,8 @@ const RAW_RUNTIME_STATE =
           ["react-colorful", "virtual:7c380a14fa1bd0671c760dcc13dac604dd5f256ab61692511c38493df3ed90c06ad11797632e2e92d1a7015e6cefbbc5e54949bea263d622aa4c9af0764ca6c0#npm:5.6.1"],\
           ["@types/react", null],\
           ["@types/react-dom", null],\
-          ["react", null],\
-          ["react-dom", null]\
+          ["react", "npm:18.3.1"],\
+          ["react-dom", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:18.3.1"]\
         ],\
         "packagePeers": [\
           "@types/react-dom",\
@@ -12946,6 +12949,21 @@ const RAW_RUNTIME_STATE =
           "react"\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:18.3.1", {\
+        "packageLocation": "./.yarn/__virtual__/react-dom-virtual-f1deae817d/3/.yarn/berry/cache/react-dom-npm-18.3.1-a805663f38-10c0.zip/node_modules/react-dom/",\
+        "packageDependencies": [\
+          ["react-dom", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:18.3.1"],\
+          ["@types/react", null],\
+          ["loose-envify", "npm:1.4.0"],\
+          ["react", "npm:18.3.1"],\
+          ["scheduler", "npm:0.23.2"]\
+        ],\
+        "packagePeers": [\
+          "@types/react",\
+          "react"\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["react-element-to-jsx-string", [\
@@ -12964,8 +12982,8 @@ const RAW_RUNTIME_STATE =
           ["@types/react", null],\
           ["@types/react-dom", null],\
           ["is-plain-object", "npm:5.0.0"],\
-          ["react", null],\
-          ["react-dom", null],\
+          ["react", "npm:18.3.1"],\
+          ["react-dom", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:18.3.1"],\
           ["react-is", "npm:18.1.0"]\
         ],\
         "packagePeers": [\
@@ -13894,8 +13912,8 @@ const RAW_RUNTIME_STATE =
           ["storybook-addon-root-attributes", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:2.1.3"],\
           ["@types/react", null],\
           ["@types/react-dom", null],\
-          ["react", null],\
-          ["react-dom", null]\
+          ["react", "npm:18.3.1"],\
+          ["react-dom", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:18.3.1"]\
         ],\
         "packagePeers": [\
           "@types/react-dom",\

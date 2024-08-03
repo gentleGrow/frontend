@@ -9,7 +9,7 @@
           "build": {
             "executor": "nx:run-script",
             "metadata": {
-              "scriptContent": "yarn clean && yarn build:js && yarn build:type",
+              "scriptContent": "yarn clean && yarn build:js && yarn build:type && yarn build:css",
               "runCommand": "yarn build"
             },
             "dependsOn": [
@@ -10751,6 +10751,16 @@
       {
         "source": "@gaemi-school/storybook",
         "target": "npm:prop-types@15.8.1",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/storybook",
+        "target": "npm:react@18.3.1",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/storybook",
+        "target": "npm:react-dom@18.3.1",
         "type": "static"
       },
       {
