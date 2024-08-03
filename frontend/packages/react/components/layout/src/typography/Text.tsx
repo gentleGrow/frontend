@@ -24,8 +24,8 @@ const Text = (props: TextProps, ref: React.Ref<HTMLElement>) => {
         props.className,
       ]),
       style: {
-        color: vars.colors.$scale?.[color]?.[70] ?? color,
-        background: vars.colors.$scale?.[background]?.[10] ?? background,
+        color: color && vars.colors.$scale?.[color]?.[70],
+        background: background && vars.colors.$scale?.[background]?.[10],
         ...props.style,
       },
     },
