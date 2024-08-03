@@ -1,5 +1,100 @@
 {
   "nodes": {
+    "@gaemi-school/react-components-button": {
+      "name": "@gaemi-school/react-components-button",
+      "type": "lib",
+      "data": {
+        "root": "packages/react/components/button",
+        "targets": {
+          "build": {
+            "executor": "nx:run-script",
+            "metadata": {
+              "scriptContent": "yarn clean && yarn build:js && yarn build:type && yarn build:css",
+              "runCommand": "yarn build"
+            },
+            "dependsOn": [
+              "^build"
+            ],
+            "cache": true,
+            "options": {
+              "script": "build"
+            },
+            "configurations": {}
+          },
+          "dev": {
+            "executor": "nx:run-script",
+            "metadata": {
+              "scriptContent": "yarn build:js && yarn build:type",
+              "runCommand": "yarn dev"
+            },
+            "cache": true,
+            "options": {
+              "script": "dev"
+            },
+            "configurations": {}
+          },
+          "build:js": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "build:js"
+            },
+            "metadata": {
+              "scriptContent": "node build.js",
+              "runCommand": "yarn build:js"
+            },
+            "configurations": {}
+          },
+          "build:type": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "build:type"
+            },
+            "metadata": {
+              "scriptContent": "yarn tsc --emitDeclarationOnly",
+              "runCommand": "yarn build:type"
+            },
+            "configurations": {}
+          },
+          "clean": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "clean"
+            },
+            "metadata": {
+              "scriptContent": "rm -rf dist",
+              "runCommand": "yarn clean"
+            },
+            "configurations": {}
+          },
+          "nx-release-publish": {
+            "dependsOn": [
+              "^nx-release-publish"
+            ],
+            "executor": "@nx/js:release-publish",
+            "options": {},
+            "configurations": {}
+          }
+        },
+        "sourceRoot": "packages/react/components/button",
+        "name": "@gaemi-school/react-components-button",
+        "projectType": "library",
+        "tags": [
+          "npm:public"
+        ],
+        "metadata": {
+          "targetGroups": {
+            "NPM Scripts": [
+              "build",
+              "build:js",
+              "build:type",
+              "clean",
+              "dev"
+            ]
+          }
+        },
+        "implicitDependencies": []
+      }
+    },
     "@gaemi-school/react-components-layout": {
       "name": "@gaemi-school/react-components-layout",
       "type": "lib",
@@ -3470,6 +3565,15 @@
         "hash": "10c0/57c53e961bc0a273fa792c65c1b6cc6ce45d8f0d3c8b239df6ece4fbf2c58d09764ed70773bf25582e3cc6789ccce2b920c33d177ef276f63c6604c85dbc5c01"
       }
     },
+    "npm:@vanilla-extract/dynamic@2.1.1": {
+      "type": "npm",
+      "name": "npm:@vanilla-extract/dynamic@2.1.1",
+      "data": {
+        "version": "2.1.1",
+        "packageName": "@vanilla-extract/dynamic",
+        "hash": "10c0/0c353b6326e73054a5ca1cfbb02e865cd8853e88976d7f53794e91ccf3fdfcab18211ad93750927b05c8d57e3816c1e56b55a8e24ad7f616b5e627339a3d36b6"
+      }
+    },
     "npm:@vanilla-extract/esbuild-plugin@2.3.8": {
       "type": "npm",
       "name": "npm:@vanilla-extract/esbuild-plugin@2.3.8",
@@ -3965,6 +4069,15 @@
         "hash": "10c0/d73e2ddf20c4eb9337e1b3df1a0f6159481050a5de457c55b14ea2e5cb6d90bb69e004c9af54737a5ee0917fcf2c9e25de67777bbe58261847846066ba75bc9d"
       }
     },
+    "npm:autoprefixer@10.4.20": {
+      "type": "npm",
+      "name": "npm:autoprefixer@10.4.20",
+      "data": {
+        "version": "10.4.20",
+        "packageName": "autoprefixer",
+        "hash": "10c0/e1f00978a26e7c5b54ab12036d8c13833fad7222828fc90914771b1263f51b28c7ddb5803049de4e77696cbd02bb25cfc3634e80533025bb26c26aacdf938940"
+      }
+    },
     "npm:available-typed-arrays@1.0.7": {
       "type": "npm",
       "name": "npm:available-typed-arrays@1.0.7",
@@ -4127,6 +4240,15 @@
         "hash": "10c0/0217d23c69ed61cdd2530c7019bf7c822cd74c51f8baab18dd62457fed3129f52499f8d3a6f809ae1fb7bb3050aa70caa9a529cc36c7478427966dbf429723a5"
       }
     },
+    "npm:browserslist@4.23.3": {
+      "type": "npm",
+      "name": "npm:browserslist@4.23.3",
+      "data": {
+        "version": "4.23.3",
+        "packageName": "browserslist",
+        "hash": "10c0/3063bfdf812815346447f4796c8f04601bf5d62003374305fd323c2a463e42776475bcc5309264e39bcf9a8605851e53560695991a623be988138b3ff8c66642"
+      }
+    },
     "npm:buffer-from@1.1.2": {
       "type": "npm",
       "name": "npm:buffer-from@1.1.2",
@@ -4233,6 +4355,15 @@
         "version": "1.0.30001642",
         "packageName": "caniuse-lite",
         "hash": "10c0/7366878ecdd482392a741c66fd2b39816b70573d66f64b1f8e5916835faf7a15f116368290170f4d7c4e823ec78eea9b6c0f63bee763a511cc7990afa429d63b"
+      }
+    },
+    "npm:caniuse-lite@1.0.30001647": {
+      "type": "npm",
+      "name": "npm:caniuse-lite@1.0.30001647",
+      "data": {
+        "version": "1.0.30001647",
+        "packageName": "caniuse-lite",
+        "hash": "10c0/54c07aabbe3915a67bac8015e8421aee59f2756f996fc70fc2a4743fec66e8684e620b45fb706e7e3d0fdd0b2f8dbab0309df90609ead5b45a9cd4318c8716c7"
       }
     },
     "npm:chai@4.4.1": {
@@ -5036,6 +5167,15 @@
         "hash": "10c0/e37719d8f13da78eb2bc68184cdf73d167ecf413abc28afef2b0a5c55866293752fda980d83a5f42b5780781bde418b24c12e1c38f2662d25ed1c2f71880bc24"
       }
     },
+    "npm:electron-to-chromium@1.5.4": {
+      "type": "npm",
+      "name": "npm:electron-to-chromium@1.5.4",
+      "data": {
+        "version": "1.5.4",
+        "packageName": "electron-to-chromium",
+        "hash": "10c0/139abf1b7281c2f3288819fb9b114f09d541ac38c9f0373f194ce2d483d82d118b8751f1b2a59b04ed0d8f414071b58508a40050fc0f23b5aa7e38d11d0cf30c"
+      }
+    },
     "npm:emoji-regex@8.0.0": {
       "type": "npm",
       "name": "npm:emoji-regex@8.0.0",
@@ -5826,6 +5966,15 @@
         "version": "0.2.0",
         "packageName": "forwarded",
         "hash": "10c0/9b67c3fac86acdbc9ae47ba1ddd5f2f81526fa4c8226863ede5600a3f7c7416ef451f6f1e240a3cc32d0fd79fcfe6beb08fd0da454f360032bde70bf80afbb33"
+      }
+    },
+    "npm:fraction.js@4.3.7": {
+      "type": "npm",
+      "name": "npm:fraction.js@4.3.7",
+      "data": {
+        "version": "4.3.7",
+        "packageName": "fraction.js",
+        "hash": "10c0/df291391beea9ab4c263487ffd9d17fed162dbb736982dee1379b2a8cc94e4e24e46ed508c6d278aded9080ba51872f1bc5f3a5fd8d7c74e5f105b508ac28711"
       }
     },
     "npm:fresh@0.5.2": {
@@ -7871,6 +8020,15 @@
         "hash": "10c0/199fc93773ae70ec9969bc6d5ac5b2bbd6eb986ed1907d751f411fef3ede0e4bfdb45ceb43711f8078bea237b6036db8b1bf208f6ff2b70c7d615afd157f3ab9"
       }
     },
+    "npm:node-releases@2.0.18": {
+      "type": "npm",
+      "name": "npm:node-releases@2.0.18",
+      "data": {
+        "version": "2.0.18",
+        "packageName": "node-releases",
+        "hash": "10c0/786ac9db9d7226339e1dc84bbb42007cb054a346bd9257e6aa154d294f01bc6a6cddb1348fa099f079be6580acbb470e3c048effd5f719325abd0179e566fd27"
+      }
+    },
     "npm:nopt@7.2.1": {
       "type": "npm",
       "name": "npm:nopt@7.2.1",
@@ -7887,6 +8045,15 @@
         "version": "3.0.0",
         "packageName": "normalize-path",
         "hash": "10c0/e008c8142bcc335b5e38cf0d63cfd39d6cf2d97480af9abdbe9a439221fd4d749763bab492a8ee708ce7a194bb00c9da6d0a115018672310850489137b3da046"
+      }
+    },
+    "npm:normalize-range@0.1.2": {
+      "type": "npm",
+      "name": "npm:normalize-range@0.1.2",
+      "data": {
+        "version": "0.1.2",
+        "packageName": "normalize-range",
+        "hash": "10c0/bf39b73a63e0a42ad1a48c2bd1bda5a07ede64a7e2567307a407674e595bcff0fa0d57e8e5f1e7fa5e91000797c7615e13613227aaaa4d6d6e87f5bd5cc95de6"
       }
     },
     "npm:normalize-url@6.1.0": {
@@ -8508,6 +8675,15 @@
         "version": "8.4.39",
         "packageName": "postcss",
         "hash": "10c0/16f5ac3c4e32ee76d1582b3c0dcf1a1fdb91334a45ad755eeb881ccc50318fb8d64047de4f1601ac96e30061df203f0f2e2edbdc0bfc49b9c57bc9fb9bedaea3"
+      }
+    },
+    "npm:postcss@8.4.40": {
+      "type": "npm",
+      "name": "npm:postcss@8.4.40",
+      "data": {
+        "version": "8.4.40",
+        "packageName": "postcss",
+        "hash": "10c0/65ed67573e5443beaeb582282ff27a6be7c7fe3b4d9fa15761157616f2b97510cb1c335023c26220b005909f007337026d6e3ff092f25010b484ad484e80ea7f"
       }
     },
     "npm:preact-render-to-string@5.2.6": {
@@ -10618,6 +10794,83 @@
     }
   },
   "dependencies": {
+    "@gaemi-school/react-components-button": [
+      {
+        "source": "@gaemi-school/react-components-button",
+        "target": "@gaemi-school/themes",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-button",
+        "target": "npm:react@18.3.1",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-button",
+        "target": "@gaemi-school/esbuild-config",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-button",
+        "target": "npm:@types/react@18.3.3",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-button",
+        "target": "npm:@types/react-dom@18.3.0",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-button",
+        "target": "npm:@vanilla-extract/css@1.15.3",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-button",
+        "target": "npm:@vanilla-extract/dynamic@2.1.1",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-button",
+        "target": "npm:@vanilla-extract/esbuild-plugin@2.3.8",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-button",
+        "target": "npm:@vanilla-extract/recipes@0.5.3",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-button",
+        "target": "npm:@vanilla-extract/sprinkles@1.6.2",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-button",
+        "target": "npm:autoprefixer@10.4.20",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-button",
+        "target": "npm:postcss@8.4.40",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-button",
+        "target": "npm:react-dom@18.3.1",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-button",
+        "target": "npm:typescript",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-button",
+        "target": "npm:clsx@2.1.1",
+        "type": "static"
+      }
+    ],
     "@gaemi-school/react-components-layout": [
       {
         "source": "@gaemi-school/react-components-layout",
@@ -10691,6 +10944,11 @@
       {
         "source": "@gaemi-school/storybook",
         "target": "npm:@chromatic-com/storybook@1.6.1",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/storybook",
+        "target": "@gaemi-school/react-components-button",
         "type": "static"
       },
       {
@@ -14822,6 +15080,13 @@
         "type": "static"
       }
     ],
+    "npm:@vanilla-extract/dynamic@2.1.1": [
+      {
+        "source": "npm:@vanilla-extract/dynamic@2.1.1",
+        "target": "npm:@vanilla-extract/private@1.0.5",
+        "type": "static"
+      }
+    ],
     "npm:@vanilla-extract/esbuild-plugin@2.3.8": [
       {
         "source": "npm:@vanilla-extract/esbuild-plugin@2.3.8",
@@ -15582,6 +15847,38 @@
         "type": "static"
       }
     ],
+    "npm:autoprefixer@10.4.20": [
+      {
+        "source": "npm:autoprefixer@10.4.20",
+        "target": "npm:browserslist@4.23.3",
+        "type": "static"
+      },
+      {
+        "source": "npm:autoprefixer@10.4.20",
+        "target": "npm:caniuse-lite@1.0.30001647",
+        "type": "static"
+      },
+      {
+        "source": "npm:autoprefixer@10.4.20",
+        "target": "npm:fraction.js@4.3.7",
+        "type": "static"
+      },
+      {
+        "source": "npm:autoprefixer@10.4.20",
+        "target": "npm:normalize-range@0.1.2",
+        "type": "static"
+      },
+      {
+        "source": "npm:autoprefixer@10.4.20",
+        "target": "npm:picocolors@1.0.1",
+        "type": "static"
+      },
+      {
+        "source": "npm:autoprefixer@10.4.20",
+        "target": "npm:postcss-value-parser@4.2.0",
+        "type": "static"
+      }
+    ],
     "npm:available-typed-arrays@1.0.7": [
       {
         "source": "npm:available-typed-arrays@1.0.7",
@@ -15772,6 +16069,28 @@
       },
       {
         "source": "npm:browserslist@4.23.2",
+        "target": "npm:update-browserslist-db@1.1.0",
+        "type": "static"
+      }
+    ],
+    "npm:browserslist@4.23.3": [
+      {
+        "source": "npm:browserslist@4.23.3",
+        "target": "npm:caniuse-lite@1.0.30001647",
+        "type": "static"
+      },
+      {
+        "source": "npm:browserslist@4.23.3",
+        "target": "npm:electron-to-chromium@1.5.4",
+        "type": "static"
+      },
+      {
+        "source": "npm:browserslist@4.23.3",
+        "target": "npm:node-releases@2.0.18",
+        "type": "static"
+      },
+      {
+        "source": "npm:browserslist@4.23.3",
         "target": "npm:update-browserslist-db@1.1.0",
         "type": "static"
       }
@@ -20764,6 +21083,23 @@
       },
       {
         "source": "npm:postcss@8.4.39",
+        "target": "npm:source-map-js@1.2.0",
+        "type": "static"
+      }
+    ],
+    "npm:postcss@8.4.40": [
+      {
+        "source": "npm:postcss@8.4.40",
+        "target": "npm:nanoid@3.3.7",
+        "type": "static"
+      },
+      {
+        "source": "npm:postcss@8.4.40",
+        "target": "npm:picocolors@1.0.1",
+        "type": "static"
+      },
+      {
+        "source": "npm:postcss@8.4.40",
         "target": "npm:source-map-js@1.2.0",
         "type": "static"
       }
