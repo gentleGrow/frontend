@@ -37,8 +37,7 @@ async def insert_dividend_data(session: AsyncSession, stock_list: list[StockInfo
 
         try:
             await DividendRepository.upsert(session=session, dividend=dividend)
-        except Exception as e:
-            print(f"[분석][insert_dividend_data] General error: {e}")
+        except Exception:
             await session.rollback()
 
 

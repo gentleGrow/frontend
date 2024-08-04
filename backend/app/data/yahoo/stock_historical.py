@@ -21,11 +21,15 @@ async def process_stock_data(session: AsyncSession, stock_list: list[StockInfo],
         for interval in TimeInterval:
             stock_model = TIME_INTERVAL_MODEL_REPO_MAP[interval]
 
-            stock_code = format_stock_code(
-                stock_info.code,
-                Country[stock_info.country.upper().replace(" ", "_")],
-                MarketIndex[stock_info.market_index.upper()],
-            )
+            try:
+                stock_code = format_stock_code(
+                    stock_info.code,
+                    Country[stock_info.country.upper().replace(" ", "_")],
+                    MarketIndex[stock_info.market_index.upper()],
+                )
+            except KeyError:
+                print(f"Skipping stock with invalid market index: {stock_info.market_index}")
+                continue
 
             url = (
                 f"https://query1.finance.yahoo.com/v7/finance/download/{stock_code}"

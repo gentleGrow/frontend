@@ -15,8 +15,6 @@ class ExchangeRate(TimestampMixin, MySQLBase):
     rate = Column(Float, nullable=False)
     date = Column(Date, nullable=False)
 
-    __table_args__ = (UniqueConstraint("source_currency", "target_currency", "date", name="uq_exchange_rate"),)
-
 
 class Dividend(TimestampMixin, MySQLBase):
     __tablename__ = "dividend"

@@ -49,3 +49,7 @@ exec pre-commit run --all-files "$@"
 9. docker-compose up -d --build
 10. docker-compose down
 11. docker exec -it containerId /bin/sh
+
+docker rmi -f $(docker images -q)
+docker build -t my-fastapi-app .
+docker run -p 8000:8000 --env-file .env my-fastapi-app
