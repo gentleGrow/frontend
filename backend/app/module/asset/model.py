@@ -13,9 +13,6 @@ class ExchangeRate(TimestampMixin, MySQLBase):
     source_currency = Column(Enum(CurrencyType), nullable=False)
     target_currency = Column(Enum(CurrencyType), nullable=False)
     rate = Column(Float, nullable=False)
-    date = Column(Date, nullable=False)
-
-    __table_args__ = (UniqueConstraint("source_currency", "target_currency", "date", name="uq_exchange_rate"),)
 
 
 class Dividend(TimestampMixin, MySQLBase):
@@ -73,19 +70,6 @@ class Stock(TimestampMixin, MySQLBase):
     dividend = relationship("Dividend", back_populates="stock")
 
     __table_args__ = (UniqueConstraint("code", name="uq_stock_code"),)
-
-
-class StockRealtime(TimestampMixin, MySQLBase):
-    __tablename__ = "stock_realtime"
-
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    code = Column(String(255), nullable=False)
-    name = Column(String(255), nullable=False)
-    price = Column(Float, nullable=False)
-    country = Column(String(255), nullable=False)
-    market_index = Column(String(255), nullable=False)
-
-    __table_args__ = (UniqueConstraint("code", name="uq_code"),)
 
 
 class StockDaily(MySQLBase):

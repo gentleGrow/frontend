@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from fastapi import HTTPException, status
 from jwt import ExpiredSignatureError, InvalidTokenError, decode, encode
 
-from app.common.auth.constant import JWT_ACCESS_TIME_MINUTE, JWT_REFRESH_TIME_MINUTE
+from app.module.auth.constant import JWT_ACCESS_TIME_MINUTE, JWT_REFRESH_TIME_MINUTE
 
 load_dotenv()
 JWT_SECRET_KEY = getenv("JWT_SECRET", None)
@@ -14,17 +14,20 @@ JWT_ALGORITHM = getenv("JWT_ALGORITHM", None)
 
 
 class JWTBuilder:
-    def generate_access_token(self, user_id: str) -> str:
+    @staticmethod
+    def generate_access_token(user_id: int) -> str:
         expire = datetime.now(timezone.utc) + timedelta(minutes=JWT_ACCESS_TIME_MINUTE)
         payload = {"exp": expire, "sub": str(user_id)}
         return encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
 
-    def generate_refresh_token(self, user_id: str) -> str:
+    @staticmethod
+    def generate_refresh_token(user_id: int) -> str:
         expire = datetime.now(timezone.utc) + timedelta(minutes=JWT_REFRESH_TIME_MINUTE)
         payload = {"exp": expire, "sub": str(user_id)}
         return encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
 
-    def decode_token(self, token: str) -> dict[str, Any]:
+    @staticmethod
+    def decode_token(token: str) -> dict[str, Any]:
         try:
             return decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
         except ExpiredSignatureError:
