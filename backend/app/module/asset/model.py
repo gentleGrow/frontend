@@ -13,7 +13,6 @@ class ExchangeRate(TimestampMixin, MySQLBase):
     source_currency = Column(Enum(CurrencyType), nullable=False)
     target_currency = Column(Enum(CurrencyType), nullable=False)
     rate = Column(Float, nullable=False)
-    date = Column(Date, nullable=False)
 
 
 class Dividend(TimestampMixin, MySQLBase):
