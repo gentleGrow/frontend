@@ -1,5 +1,4 @@
 import asyncio
-from typing import Union
 
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
@@ -25,7 +24,7 @@ async def fetch_stock_price(session: ClientSession, code: str) -> int:
         return 0
 
 
-async def get_stock_prices(code_list: list[StockInfo]) -> list[tuple[str, Union[int, Exception]]]:
+async def get_stock_prices(code_list: list[StockInfo]) -> list[tuple[str, int | Exception]]:
     async with ClientSession() as session:
         tasks = [fetch_stock_price(session, stockInfo.code) for stockInfo in code_list]
 

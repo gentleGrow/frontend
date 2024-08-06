@@ -3,14 +3,11 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.module.asset.model import (  # noqa > relationship purpose
     Asset,
-    Bond,
-    Currency,
     Dividend,
     Stock,
     StockDaily,
     StockMonthly,
     StockWeekly,
-    VirtualAsset,
 )
 from app.module.auth.model import User  # noqa > relationship purpose
 from database.config import MYSQL_URL, MySQLBase

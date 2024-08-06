@@ -8,10 +8,9 @@ from app.common.auth.security import verify_jwt_token
 from app.common.schema.json_schema import JsonResponse
 from app.module.asset.constant import DUMMY_ASSET_EXPIRE_SECOND, DUMMY_ASSET_KOREA_KEY, DUMMY_ASSET_OTHER_KEY
 from app.module.asset.enum import AssetType
-from app.module.asset.model import Asset, Dividend, ExchangeRate, StockDaily
+from app.module.asset.model import Asset, Dividend, StockDaily
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.dividend_repository import DividendRepository
-from app.module.asset.repository.exchange_rate_repository import ExchangeRateRepository
 from app.module.asset.repository.stock_daily_repository import StockDailyRepository
 from app.module.asset.schema.asset_schema import AssetTransaction, AssetTransactionRequest
 from app.module.asset.schema.stock_schema import StockAssetResponse
@@ -45,7 +44,6 @@ async def get_dummy_assets(
     stock_codes = [asset.asset_stock.stock.code for asset in dummy_assets]
     stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies(session, stock_codes)
     dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
-    exchange_rates: list[ExchangeRate] = await ExchangeRateRepository.get_exchange_rates(session)
 
     stock_daily_map, dividend_map, current_stock_daily_map = get_stock_mapping_info(stock_dailies, dividends)
 
@@ -61,9 +59,7 @@ async def get_dummy_assets(
         total_invest_amount,
         total_invest_growth_rate,
         total_dividend_amount,
-    ) = get_total_asset_data(
-        dummy_assets, stock_daily_map, current_stock_daily_map, dividend_map, exchange_rates, base_currency
-    )
+    ) = await get_total_asset_data(dummy_assets, stock_daily_map, current_stock_daily_map, dividend_map, base_currency)
 
     result: StockAssetResponse = StockAssetResponse.parse(
         stock_assets, total_asset_amount, total_invest_amount, total_invest_growth_rate, total_dividend_amount

@@ -42,6 +42,8 @@ async def process_stock_data(session: AsyncSession, stock_list: list[StockInfo],
             except Exception:
                 continue
 
+            stock_rows = []
+
             for _, row in df.iterrows():
                 try:
                     stock_dataframe = StockDataFrame(
@@ -67,11 +69,13 @@ async def process_stock_data(session: AsyncSession, stock_list: list[StockInfo],
                     trade_volume=stock_dataframe.volume,
                 )
 
-                try:
-                    await StockRepository.save(session, stock_row)  # type: ignore[model 객체 type 인식 안됨]
-                except IntegrityError:
-                    await session.rollback()
-                    continue
+                stock_rows.append(stock_row)
+
+            try:
+                await StockRepository.bulk_save(session, stock_rows)
+            except IntegrityError:
+                await session.rollback()
+                continue
 
 
 async def main():

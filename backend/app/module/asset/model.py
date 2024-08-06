@@ -2,17 +2,8 @@ from sqlalchemy import BigInteger, Column, Date, Enum, Float, ForeignKey, Intege
 from sqlalchemy.orm import relationship
 
 from app.common.mixin.timestamp import TimestampMixin
-from app.module.asset.enum import AccountType, AssetType, CurrencyType, InvestmentBankType, VirtualExchangeType
+from app.module.asset.enum import AccountType, AssetType, InvestmentBankType
 from database.config import MySQLBase
-
-
-class ExchangeRate(TimestampMixin, MySQLBase):
-    __tablename__ = "exchange_rate"
-
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    source_currency = Column(Enum(CurrencyType), nullable=False)
-    target_currency = Column(Enum(CurrencyType), nullable=False)
-    rate = Column(Float, nullable=False)
 
 
 class Dividend(TimestampMixin, MySQLBase):
@@ -118,31 +109,3 @@ class StockMonthly(MySQLBase):
     trade_volume = Column(BigInteger, nullable=False, info={"description": "Volume of stock traded"})
 
     ___table_args__ = (UniqueConstraint("code", "date", name="uq_code_date"),)
-
-
-class Bond(TimestampMixin, MySQLBase):
-    __tablename__ = "bond"
-
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    name = Column(String(255), nullable=False)
-    issuer = Column(String(255), nullable=False)
-    maturity_date = Column(Date, nullable=False, info={"description": "만기일"})
-    coupon_rate = Column(Float, nullable=False, info={"description": "이자율"})
-
-
-class VirtualAsset(TimestampMixin, MySQLBase):
-    __tablename__ = "virtual_asset"
-
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    code = Column(String(255), nullable=False)
-    name = Column(String(255), nullable=False)
-    exchange = Column(Enum(VirtualExchangeType), nullable=True, info={"description": "거래소"})
-
-
-class Currency(TimestampMixin, MySQLBase):
-    __tablename__ = "currency"
-
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    type = Column(Enum(CurrencyType), primary_key=True, nullable=False)
-
-    __table_args__ = (UniqueConstraint("type", name="uq_currency_type"),)

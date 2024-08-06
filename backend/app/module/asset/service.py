@@ -1,17 +1,19 @@
 from app.module.asset.enum import CurrencyType
-from app.module.asset.model import Asset, Dividend, ExchangeRate, StockDaily
+from app.module.asset.model import Asset, Dividend, StockDaily
 from app.module.asset.schema.stock_schema import StockAsset
+from database.redis import redis_repository
 
 
-def get_exchange_rate(exchange_rates: list[ExchangeRate], source: CurrencyType, target: CurrencyType) -> float:
+async def get_exchange_rate(source: CurrencyType, target: CurrencyType):
     if source == target:
         return 1.0
 
-    for exchange_rate in exchange_rates:
-        if exchange_rate.source_currency == source and exchange_rate.target_currency == target:
-            return exchange_rate.rate
-
-    return 1.0
+    exchange_key = source + "_" + target
+    current_exchange_rate = await redis_repository.get(exchange_key)
+    if current_exchange_rate is None:
+        return 1.0
+    else:
+        return current_exchange_rate
 
 
 def get_stock_mapping_info(
@@ -43,12 +45,11 @@ def check_not_found_stock(
     return result
 
 
-def get_total_asset_data(
+async def get_total_asset_data(
     dummy_assets: list[Asset],
     stock_daily_map: dict[tuple[str, str], StockDaily],
     current_stock_daily_map: dict[str, StockDaily],
     dividend_map: dict[str, Dividend],
-    exchange_rates: list[ExchangeRate],
     base_currency: bool,
 ) -> tuple[list[StockAsset], float, float, float, float]:
     stock_assets = []
@@ -80,7 +81,7 @@ def get_total_asset_data(
 
         source_currency = CurrencyType[source_country]
 
-        won_exchange_rate = get_exchange_rate(exchange_rates, source_currency, CurrencyType.KOREA)
+        won_exchange_rate = await get_exchange_rate(source_currency, CurrencyType.KOREA)
 
         if base_currency:
             current_price = current_stock_daily.adj_close_price * won_exchange_rate

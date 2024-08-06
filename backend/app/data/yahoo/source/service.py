@@ -6,7 +6,6 @@ from app.module.asset.model import (  # noqa: F401 > relationship 설정시 필�
     Asset,
     AssetStock,
     Dividend,
-    ExchangeRate,
     Stock,
     StockDaily,
     StockMonthly,

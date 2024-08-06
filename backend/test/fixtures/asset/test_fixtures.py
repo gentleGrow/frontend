@@ -1,16 +1,7 @@
 import pytest
 
-from app.module.asset.enum import CurrencyType
-from app.module.asset.model import Asset, AssetStock, Dividend, ExchangeRate, Stock, StockDaily
+from app.module.asset.model import Asset, AssetStock, Dividend, Stock, StockDaily
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
-
-
-@pytest.fixture(scope="module")
-def exchange_rates() -> list[ExchangeRate]:
-    return [
-        ExchangeRate(source_currency=CurrencyType.USA, target_currency=CurrencyType.KOREA, rate=1100),
-        ExchangeRate(source_currency=CurrencyType.KOREA, target_currency=CurrencyType.USA, rate=0.0009),
-    ]
 
 
 @pytest.fixture(scope="module")
