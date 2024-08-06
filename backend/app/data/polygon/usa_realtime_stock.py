@@ -26,10 +26,7 @@ def main():
     websocket_thread = threading.Thread(target=start_websocket, args=(loop,))
     websocket_thread.start()
 
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        print("Exiting...")
+    loop.run_forever()
 
 
 if __name__ == "__main__":
