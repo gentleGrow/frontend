@@ -15,7 +15,7 @@
     "build": "yarn clean && yarn build:js && yarn build:type",
     "build:js": "node build.js",
     "build:type": "yarn tsc --emitDeclarationOnly",
-    "clean": "rm -rf dist",
+    "clean": "rimraf dist",
     "dev": "yarn build:js && yarn build:type"
   },
   "devDependencies": {
@@ -36,6 +36,7 @@
     "react": "*"
   },
   "dependencies": {
-    "clsx": "^2.1.1"
+    "clsx": "^2.1.1",
+    "rimraf": "^6.0.1"
   }
 }

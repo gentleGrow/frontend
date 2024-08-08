@@ -6,3 +6,4 @@ project,target,configuration,hash,code,status,start,end
 @gaemi-school/storybook,storybook,,17216966446811930096,1,failure,1722659818361,1722659873219
 @gaemi-school/react-components-button,dev,,14056542126825163320,0,success,1722662147964,1722662158245
 @gaemi-school/react-components-layout,dev,,7455958993233246646,0,success,1722662147964,1722662158872
+@gaemi-school/storybook,storybook,,7243245949760316433,1,failure,1723047051613,1723064612452
