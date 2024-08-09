@@ -11,11 +11,10 @@ from database.dependency import get_mysql_session
 
 
 async def main():
+    print("주식 코드 저장을 시작합니다.")
     async with get_mysql_session() as session:
         stock_list: list[StockInfo] = get_all_stock_code_list()
         for stock_info in stock_list:
-            stock_info: StockInfo
-
             try:
                 await StockRepository.save(
                     session,
@@ -29,10 +28,6 @@ async def main():
             except IntegrityError:
                 await session.rollback()
                 continue
-
-
-def lambda_handler(event, context):
-    asyncio.run(main())
 
 
 if __name__ == "__main__":

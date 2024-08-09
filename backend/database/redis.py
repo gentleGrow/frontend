@@ -10,6 +10,9 @@ class RedisStockRepository:
     async def get(self, key: str) -> int | dict | str | list | tuple | None:
         return await self.redis.get(key)
 
+    async def bulk_get(self, keys: list[str]) -> list[int | dict | str | list | tuple | None]:
+        return await self.redis.mget(keys)
+
     async def save(self, key: str, data: int | dict | str | list | tuple, expire_time: int) -> None:
         await self.redis.set(key, data, ex=expire_time)
 
