@@ -24,17 +24,14 @@ class DividendRepository:
 
     @staticmethod
     async def upsert(session: AsyncSession, dividend: Dividend) -> None:
-        try:
-            dividend_value = float(dividend.dividend)
-            stock_code_value = str(dividend.stock_code)
-        except Exception:
-            print(f"올바른 타입이 아닙니다. {dividend.stock_code=}, {dividend.dividend=}")
-            raise
+        dividend_value = float(dividend.dividend)
+        stock_code_value = str(dividend.stock_code)
 
         query_statement = insert(Dividend).values(
             dividend=dividend_value,
             stock_code=stock_code_value,
         )
+
         on_duplicate_stmt = query_statement.on_duplicate_key_update(
             dividend=query_statement.inserted.dividend, updated_at=func.now()
         )
