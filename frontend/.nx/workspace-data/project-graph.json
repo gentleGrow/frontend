@@ -190,6 +190,101 @@
         "implicitDependencies": []
       }
     },
+    "@gaemi-school/react-hooks-button": {
+      "name": "@gaemi-school/react-hooks-button",
+      "type": "lib",
+      "data": {
+        "root": "packages/react/hooks/button",
+        "targets": {
+          "build": {
+            "executor": "nx:run-script",
+            "metadata": {
+              "scriptContent": "yarn clean && yarn build:js && yarn build:type",
+              "runCommand": "yarn build"
+            },
+            "dependsOn": [
+              "^build"
+            ],
+            "cache": true,
+            "options": {
+              "script": "build"
+            },
+            "configurations": {}
+          },
+          "dev": {
+            "executor": "nx:run-script",
+            "metadata": {
+              "scriptContent": "yarn build:js && yarn build:type",
+              "runCommand": "yarn dev"
+            },
+            "cache": true,
+            "options": {
+              "script": "dev"
+            },
+            "configurations": {}
+          },
+          "build:js": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "build:js"
+            },
+            "metadata": {
+              "scriptContent": "node build.js",
+              "runCommand": "yarn build:js"
+            },
+            "configurations": {}
+          },
+          "build:type": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "build:type"
+            },
+            "metadata": {
+              "scriptContent": "yarn tsc --emitDeclarationOnly",
+              "runCommand": "yarn build:type"
+            },
+            "configurations": {}
+          },
+          "clean": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "clean"
+            },
+            "metadata": {
+              "scriptContent": "rimraf dist",
+              "runCommand": "yarn clean"
+            },
+            "configurations": {}
+          },
+          "nx-release-publish": {
+            "dependsOn": [
+              "^nx-release-publish"
+            ],
+            "executor": "@nx/js:release-publish",
+            "options": {},
+            "configurations": {}
+          }
+        },
+        "sourceRoot": "packages/react/hooks/button",
+        "name": "@gaemi-school/react-hooks-button",
+        "projectType": "library",
+        "tags": [
+          "npm:public"
+        ],
+        "metadata": {
+          "targetGroups": {
+            "NPM Scripts": [
+              "build",
+              "build:js",
+              "build:type",
+              "clean",
+              "dev"
+            ]
+          }
+        },
+        "implicitDependencies": []
+      }
+    },
     "@gaemi-school/esbuild-config": {
       "name": "@gaemi-school/esbuild-config",
       "type": "lib",
@@ -10921,6 +11016,11 @@
       },
       {
         "source": "@gaemi-school/react-components-button",
+        "target": "@gaemi-school/react-hooks-button",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-components-button",
         "target": "npm:clsx@2.1.1",
         "type": "static"
       },
@@ -10994,6 +11094,23 @@
       {
         "source": "@gaemi-school/react-components-layout",
         "target": "npm:rimraf@6.0.1",
+        "type": "static"
+      }
+    ],
+    "@gaemi-school/react-hooks-button": [
+      {
+        "source": "@gaemi-school/react-hooks-button",
+        "target": "@gaemi-school/esbuild-config",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-hooks-button",
+        "target": "@gaemi-school/themes",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-hooks-button",
+        "target": "npm:typescript",
         "type": "static"
       }
     ],

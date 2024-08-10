@@ -1943,6 +1943,7 @@ __metadata:
   resolution: "@gaemi-school/react-components-button@workspace:packages/react/components/button"
   dependencies:
     "@gaemi-school/esbuild-config": "workspace:^"
+    "@gaemi-school/react-hooks-button": "workspace:^"
     "@gaemi-school/themes": "workspace:^"
     "@types/react": "npm:^18.3.3"
     "@types/react-dom": "npm:^18.3.0"
@@ -1983,6 +1984,26 @@ __metadata:
     typescript: "npm:^5.5.3"
   peerDependencies:
     "@gaemi-school/themes": "workspace:^"
+    react: "*"
+  languageName: unknown
+  linkType: soft
+
+"@gaemi-school/react-hooks-button@workspace:^, @gaemi-school/react-hooks-button@workspace:packages/react/hooks/button":
+  version: 0.0.0-use.local
+  resolution: "@gaemi-school/react-hooks-button@workspace:packages/react/hooks/button"
+  dependencies:
+    "@gaemi-school/esbuild-config": "workspace:^"
+    "@gaemi-school/themes": "workspace:^"
+    "@types/react": "npm:^18.3.3"
+    "@types/react-dom": "npm:^18.3.0"
+    autoprefixer: "npm:^10.4.20"
+    clsx: "npm:^2.1.1"
+    postcss: "npm:^8.4.40"
+    react: "npm:^18.3.1"
+    react-dom: "npm:^18.3.1"
+    rimraf: "npm:^6.0.1"
+    typescript: "npm:^5.5.3"
+  peerDependencies:
     react: "*"
   languageName: unknown
   linkType: soft

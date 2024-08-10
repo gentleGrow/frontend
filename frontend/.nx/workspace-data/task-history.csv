@@ -7,3 +7,12 @@ project,target,configuration,hash,code,status,start,end
 @gaemi-school/react-components-button,dev,,14056542126825163320,0,success,1722662147964,1722662158245
 @gaemi-school/react-components-layout,dev,,7455958993233246646,0,success,1722662147964,1722662158872
 @gaemi-school/storybook,storybook,,7243245949760316433,1,failure,1723047051613,1723064612452
+@gaemi-school/esbuild-config,build,,17007431377047904941,0,success,1723263210629,1723263212196
+@gaemi-school/themes,build,,7283864267812568266,0,success,1723263212197,1723263219647
+@gaemi-school/react-components-layout,build,,6620636276165338558,0,success,1723263219650,1723263235455
+@gaemi-school/react-components-button,build,,7038988935609723064,0,success,1723263219650,1723263235932
+client,build,,11883204738321022318,1,failure,1723263219650,1723263242670
+@gaemi-school/react-components-button,dev,,9702007128942154867,0,success,1723263444471,1723263455329
+@gaemi-school/react-components-layout,dev,,5761233313902491724,0,success,1723263444471,1723263455440
+@gaemi-school/react-components-button,dev,,821725631501001792,1,failure,1723266974069,1723266985074
+@gaemi-school/react-components-layout,dev,,3977090820249510275,0,success,1723266974069,1723266986414
