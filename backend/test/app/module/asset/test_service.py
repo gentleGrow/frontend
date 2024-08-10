@@ -4,17 +4,15 @@ from app.module.auth.model import User  # noqa: F401 > relationship 설정시 �
 
 
 def test_get_stock_mapping_info(stock_dailies, dividends):
-    stock_daily_map, dividend_map, current_stock_daily_map = get_stock_mapping_info(stock_dailies, dividends)
+    stock_daily_map, dividend_map = get_stock_mapping_info(stock_dailies, dividends)
 
     assert len(stock_daily_map) == len(stock_dailies)
     assert len(dividend_map) == len(dividends)
-    assert current_stock_daily_map["AAPL"].adj_close_price == 155.0
-    assert current_stock_daily_map["GOOGL"].adj_close_price == 2800.0
 
 
-def test_check_not_found_stock(stock_dailies, dividends, dummy_assets):
-    stock_daily_map, _, current_stock_daily_map = get_stock_mapping_info(stock_dailies, dividends)
-    not_found_stock_codes = check_not_found_stock(stock_daily_map, current_stock_daily_map, dummy_assets)
+def test_check_not_found_stock(stock_dailies, dividends, dummy_assets, current_stock_price_map):
+    stock_daily_map, _ = get_stock_mapping_info(stock_dailies, dividends)
+    not_found_stock_codes = check_not_found_stock(stock_daily_map, current_stock_price_map, dummy_assets)
 
     assert len(not_found_stock_codes) == 0
 

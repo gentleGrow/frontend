@@ -1,3 +1,4 @@
+from sqlalchemy import BigInteger
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload
@@ -19,7 +20,7 @@ class AssetRepository:
 
     @staticmethod
     async def update_assets(session: AsyncSession, assets: list[Asset]) -> bool:
-        transaction_ids: list[Asset.id] = [asset.id for asset in assets]
+        transaction_ids: list[BigInteger] = [asset.id for asset in assets]
 
         existing_asset_instance = await session.execute(select(Asset).filter(Asset.id.in_(transaction_ids)))
         existing_assets = existing_asset_instance.scalars().all()

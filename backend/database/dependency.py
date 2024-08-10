@@ -13,7 +13,6 @@ load_dotenv()
 
 ENVIRONMENT = getenv("ENVIRONMENT", None)
 
-
 if ENVIRONMENT == EnvironmentType.DEV:
     REDIS_HOST = getenv("LOCAL_REDIS_HOST", None)
 else:

@@ -3,7 +3,7 @@ import asyncio
 import yfinance
 
 from app.data.common.constant import STOCK_CACHE_SECOND
-from app.data.yahoo.source.constant import currency_pairs
+from app.module.asset.constant import currency_pairs
 from database.redis import redis_repository
 
 

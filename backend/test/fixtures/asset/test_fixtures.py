@@ -5,6 +5,11 @@ from app.module.auth.model import User  # noqa: F401 > relationship 설정시 �
 
 
 @pytest.fixture(scope="module")
+def current_stock_price_map() -> dict[str, float]:
+    return {"AAPL": 155.0, "GOOGL": 2800.0}
+
+
+@pytest.fixture(scope="module")
 def stock_dailies() -> list[StockDaily]:
     return [
         StockDaily(
