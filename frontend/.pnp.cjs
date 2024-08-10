@@ -3362,6 +3362,7 @@ const RAW_RUNTIME_STATE =
           ["@chromatic-com/storybook", "npm:1.6.1"],\
           ["@gaemi-school/react-components-button", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#workspace:packages/react/components/button"],\
           ["@gaemi-school/react-components-layout", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#workspace:packages/react/components/layout"],\
+          ["@gaemi-school/react-hooks-button", "virtual:e6a641630d651e2380104da6dcaf8a648bf1c5c1ef4431bdfa4b3593abdf4493b1e3a09234dbfde9339a8a925131d51e4ed94c16f7859b6146f4c07d9da5822a#workspace:packages/react/hooks/button"],\
           ["@gaemi-school/themes", "workspace:packages/themes"],\
           ["@storybook/addon-essentials", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:8.2.4"],\
           ["@storybook/addon-interactions", "virtual:735a2850afa98a87fa9ee8461eb9eb7ad8b227b591f87e29325477f2150f1f91a08502c571749ddf1e4a1e646326d0bea11a95c373d47cb61cbf451dea372f91#npm:8.2.4"],\

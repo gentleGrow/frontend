@@ -11100,6 +11100,11 @@
     "@gaemi-school/react-hooks-button": [
       {
         "source": "@gaemi-school/react-hooks-button",
+        "target": "npm:react@18.3.1",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-hooks-button",
         "target": "@gaemi-school/esbuild-config",
         "type": "static"
       },
@@ -11110,7 +11115,42 @@
       },
       {
         "source": "@gaemi-school/react-hooks-button",
+        "target": "npm:@types/react@18.3.3",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-hooks-button",
+        "target": "npm:@types/react-dom@18.3.0",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-hooks-button",
+        "target": "npm:autoprefixer@10.4.20",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-hooks-button",
+        "target": "npm:postcss@8.4.40",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-hooks-button",
+        "target": "npm:react-dom@18.3.1",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-hooks-button",
         "target": "npm:typescript",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-hooks-button",
+        "target": "npm:clsx@2.1.1",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/react-hooks-button",
+        "target": "npm:rimraf@6.0.1",
         "type": "static"
       }
     ],
@@ -11215,6 +11255,11 @@
       {
         "source": "@gaemi-school/storybook",
         "target": "npm:vite@5.3.4",
+        "type": "static"
+      },
+      {
+        "source": "@gaemi-school/storybook",
+        "target": "@gaemi-school/react-hooks-button",
         "type": "static"
       }
     ],

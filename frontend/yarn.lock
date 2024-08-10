@@ -2015,6 +2015,7 @@ __metadata:
     "@chromatic-com/storybook": "npm:^1.6.1"
     "@gaemi-school/react-components-button": "workspace:^"
     "@gaemi-school/react-components-layout": "workspace:^"
+    "@gaemi-school/react-hooks-button": "workspace:^"
     "@gaemi-school/themes": "workspace:^"
     "@storybook/addon-essentials": "npm:^8.2.4"
     "@storybook/addon-interactions": "npm:^8.2.4"
