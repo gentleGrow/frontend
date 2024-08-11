@@ -21,11 +21,15 @@ async def process_stock_data(session: AsyncSession, stock_list: list[StockInfo],
         for interval in TimeInterval:
             stock_model = TIME_INTERVAL_MODEL_REPO_MAP[interval]
 
-            stock_code = format_stock_code(
-                stock_info.code,
-                Country[stock_info.country.upper().replace(" ", "_")],
-                MarketIndex[stock_info.market_index.upper()],
-            )
+            try:
+                stock_code = format_stock_code(
+                    stock_info.code,
+                    Country[stock_info.country.upper().replace(" ", "_")],
+                    MarketIndex[stock_info.market_index.upper()],
+                )
+            except KeyError:
+                print(f"Skipping stock with invalid market index: {stock_info.market_index}")
+                continue
 
             url = (
                 f"https://query1.finance.yahoo.com/v7/finance/download/{stock_code}"
@@ -37,6 +41,8 @@ async def process_stock_data(session: AsyncSession, stock_list: list[StockInfo],
                 df = pd.read_csv(url)
             except Exception:
                 continue
+
+            stock_rows = []
 
             for _, row in df.iterrows():
                 try:
@@ -63,11 +69,13 @@ async def process_stock_data(session: AsyncSession, stock_list: list[StockInfo],
                     trade_volume=stock_dataframe.volume,
                 )
 
-                try:
-                    await StockRepository.save(session, stock_row)  # type: ignore[model 객체 type 인식 안됨]
-                except IntegrityError:
-                    await session.rollback()
-                    continue
+                stock_rows.append(stock_row)
+
+            try:
+                await StockRepository.bulk_save(session, stock_rows)
+            except IntegrityError:
+                await session.rollback()
+                continue
 
 
 async def main():

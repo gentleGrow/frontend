@@ -1,21 +1,10 @@
 import asyncio
-from datetime import datetime
 
 import yfinance
 
-from app.data.yahoo.source.constant import currency_pairs
-from app.module.asset.model import (  # noqa: F401 > relationship 설정시 필요합니다.
-    Asset,
-    AssetStock,
-    ExchangeRate,
-    Stock,
-    StockDaily,
-    StockMonthly,
-    StockWeekly,
-)
-from app.module.asset.repository.exchange_rate_repository import ExchangeRateRepository
-from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
-from database.dependency import get_mysql_session
+from app.data.common.constant import STOCK_CACHE_SECOND
+from app.module.asset.constant import currency_pairs
+from database.redis import redis_repository
 
 
 async def fetch_exchange_rate(source_currency: str, target_currency: str) -> float | None:
@@ -27,25 +16,22 @@ async def fetch_exchange_rate(source_currency: str, target_currency: str) -> flo
     else:
         exchange_rate_history = ticker.history(period="1d")
         if not exchange_rate_history.empty:
-            rate = exchange_rate_history["Close"][0]
+            rate = exchange_rate_history["Close"].iloc[0]
             return rate
     return None
 
 
 async def main():
-    async with get_mysql_session() as session:
+    while True:
         for source_currency, target_currency in currency_pairs:
             rate = await fetch_exchange_rate(source_currency, target_currency)
 
             if rate is None:
                 continue
 
-            current_time = datetime.now().date()
-            exchange_rate = ExchangeRate(
-                source_currency=source_currency, target_currency=target_currency, rate=rate, date=current_time
-            )
+            cache_key = source_currency + "_" + target_currency
 
-            await ExchangeRateRepository.save(session, exchange_rate)
+            await redis_repository.save(cache_key, rate, expire_time=STOCK_CACHE_SECOND)
 
 
 if __name__ == "__main__":

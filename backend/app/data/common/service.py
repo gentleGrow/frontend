@@ -2,7 +2,6 @@ import os
 
 import boto3
 import pandas as pd
-from botocore.exceptions import ClientError, NoCredentialsError
 from dotenv import find_dotenv, load_dotenv
 
 from app.data.common.config import (
@@ -24,7 +23,6 @@ from app.data.common.config import (
     SWITZERLAND_STOCK_FILEPATH,
     UK_STOCK_FILEPATH,
     USA_STOCK_FILEPATH,
-    logging,
 )
 from app.module.asset.schema.stock_schema import StockInfo
 from database.enum import EnvironmentType
@@ -34,54 +32,43 @@ load_dotenv(find_dotenv())
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 
-s3_client = boto3.client(
-    "s3",
-    aws_access_key_id=AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-)
+s3_client = boto3.client("s3")
 
 
-def download_file_from_s3(bucket, key, local_path) -> None:
+def download_file_from_s3(bucket: str, key: str, local_path: str) -> str:
     try:
         s3_client.download_file(bucket, key, local_path)
-        logging.info(f"{local_path}경로에 ${key}를 저장하였습니다.")
-    except FileNotFoundError as e:
-        logging.error(f"Local path not found: {e}")
-        raise
-    except NoCredentialsError as e:
-        logging.error(f"AWS credentials not found: {e}")
-        raise
-    except ClientError as e:
-        logging.error(f"Client error: {e}")
-        raise
+        return local_path
     except Exception as e:
-        logging.error(f"Unexpected error: {e}")
+        print(f"Unexpected error: {e}")
         raise
 
 
 def read_stock_codes_from_excel(filepath: str) -> list[StockInfo]:
     try:
-        df = pd.read_excel(filepath, usecols=["Symbol", "Company Name", "Country", "Code"], header=0)
-    except FileNotFoundError as e:
-        logging.error(f"File not found: {e}")
-        raise
-    except ValueError as e:
-        logging.error(f"Value error: {e}")
-        raise
+        df = pd.read_excel(
+            filepath, usecols=["Symbol", "Company Name", "Country", "Code"], header=0, dtype={"Symbol": str}
+        )
+        df.columns = ["Symbol", "Company_Name", "Country", "Code"]
     except Exception as e:
-        logging.error(f"Unexpected error: {e}")
+        print(f"Unexpected error: {e}")
         raise
-    else:
-        stock_infos = [
-            StockInfo(
-                code=str(row["Symbol"]),
-                name=str(row["Company Name"]),
-                country=str(row["Country"]),
-                market_index=str(row["Code"]),
+
+    stock_infos = []
+    for row in df.itertuples(index=False):
+        try:
+            stock_info = StockInfo(
+                code=str(row.Symbol),
+                name=str(row.Company_Name),
+                country=str(row.Country),
+                market_index=str(row.Code),
             )
-            for _, row in df.iterrows()
-        ]
-        return stock_infos
+
+            stock_infos.append(stock_info)
+        except AttributeError as e:
+            print(f"AttributeError: {e}, row: {row}")
+
+    return stock_infos
 
 
 def get_korea_stock_code_list() -> list[StockInfo]:
@@ -90,7 +77,6 @@ def get_korea_stock_code_list() -> list[StockInfo]:
 
 
 def get_all_stock_code_list() -> list[StockInfo]:
-    korea_stock_code_list = read_stock_codes_from_excel(get_path(KOREA_STOCK_FILEPATH))
     usa_stock_code_list = read_stock_codes_from_excel(get_path(USA_STOCK_FILEPATH))
     japan_stock_code_list = read_stock_codes_from_excel(get_path(JAPAN_STOCK_FILEPATH))
     australia_stock_code_list = read_stock_codes_from_excel(get_path(AUSTRALIA_STOCK_FILEPATH))
@@ -106,10 +92,9 @@ def get_all_stock_code_list() -> list[StockInfo]:
     spain_stock_code_list = read_stock_codes_from_excel(get_path(SPAIN_STOCK_FILEPATH))
     switzerland_stock_code_list = read_stock_codes_from_excel(get_path(SWITZERLAND_STOCK_FILEPATH))
     uk_stock_code_list = read_stock_codes_from_excel(get_path(UK_STOCK_FILEPATH))
-
+    korea_stock_code_list = read_stock_codes_from_excel(get_path(KOREA_STOCK_FILEPATH))
     return (
-        korea_stock_code_list
-        + usa_stock_code_list
+        usa_stock_code_list
         + japan_stock_code_list
         + australia_stock_code_list
         + brazil_stock_code_list
@@ -124,6 +109,7 @@ def get_all_stock_code_list() -> list[StockInfo]:
         + spain_stock_code_list
         + switzerland_stock_code_list
         + uk_stock_code_list
+        + korea_stock_code_list
     )
 
 
@@ -136,5 +122,6 @@ def get_path(filepath) -> str:
 
 def download_and_get_path(s3_key) -> str:
     local_path = f"/tmp/{os.path.basename(s3_key)}"
-    download_file_from_s3(S3_BUCKET_STOCK_FILES, s3_key, local_path)
+
+    download_file_from_s3(S3_BUCKET_STOCK_FILES, s3_key, local_path)  # type: ignore
     return local_path
