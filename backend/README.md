@@ -14,6 +14,8 @@
 5. poetry shell
 6. poetry install
 7. uvicorn main:app --reload --port 8000
+[주의] windows 실행 시, poetry env use C:\Users\GROUP4_KCW\AppData\Local\Programs\Python\Python311\python.exe로 명시적 버전 설정 필요
+
 
 ### pre-commit 세팅
 1. cd /assetmanagement/.git/hooks

@@ -46,7 +46,9 @@ def download_file_from_s3(bucket: str, key: str, local_path: str) -> str:
 
 def read_stock_codes_from_excel(filepath: str) -> list[StockInfo]:
     try:
-        df = pd.read_excel(filepath, usecols=["Symbol", "Company Name", "Country", "Code"], header=0)
+        df = pd.read_excel(
+            filepath, usecols=["Symbol", "Company Name", "Country", "Code"], header=0, dtype={"Symbol": str}
+        )
         df.columns = ["Symbol", "Company_Name", "Country", "Code"]
     except Exception as e:
         print(f"Unexpected error: {e}")
@@ -75,7 +77,6 @@ def get_korea_stock_code_list() -> list[StockInfo]:
 
 
 def get_all_stock_code_list() -> list[StockInfo]:
-    korea_stock_code_list = read_stock_codes_from_excel(get_path(KOREA_STOCK_FILEPATH))
     usa_stock_code_list = read_stock_codes_from_excel(get_path(USA_STOCK_FILEPATH))
     japan_stock_code_list = read_stock_codes_from_excel(get_path(JAPAN_STOCK_FILEPATH))
     australia_stock_code_list = read_stock_codes_from_excel(get_path(AUSTRALIA_STOCK_FILEPATH))
@@ -91,9 +92,9 @@ def get_all_stock_code_list() -> list[StockInfo]:
     spain_stock_code_list = read_stock_codes_from_excel(get_path(SPAIN_STOCK_FILEPATH))
     switzerland_stock_code_list = read_stock_codes_from_excel(get_path(SWITZERLAND_STOCK_FILEPATH))
     uk_stock_code_list = read_stock_codes_from_excel(get_path(UK_STOCK_FILEPATH))
+    korea_stock_code_list = read_stock_codes_from_excel(get_path(KOREA_STOCK_FILEPATH))
     return (
-        korea_stock_code_list
-        + usa_stock_code_list
+        usa_stock_code_list
         + japan_stock_code_list
         + australia_stock_code_list
         + brazil_stock_code_list
@@ -108,6 +109,7 @@ def get_all_stock_code_list() -> list[StockInfo]:
         + spain_stock_code_list
         + switzerland_stock_code_list
         + uk_stock_code_list
+        + korea_stock_code_list
     )
 
 

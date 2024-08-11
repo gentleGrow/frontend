@@ -78,13 +78,15 @@ async def create_dummy_assets(session: AsyncSession):
 
 async def main():
     async with get_mysql_session() as session:
-        created = await create_initial_users(session)
-        if created:
+        try:
+            await create_initial_users(session)
+        except Exception as err:
+            print(f"유저 생성 중 에러가 생겼습니다. {err=}")
+
+        try:
             await create_dummy_assets(session)
-
-
-def lambda_handler(event, context):
-    asyncio.run(main())
+        except Exception as err:
+            print(f"dummy asset 생성 중 에러가 생겼습니다. {err=}")
 
 
 if __name__ == "__main__":

@@ -6,16 +6,21 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.common.auth.security import verify_jwt_token
 from app.common.schema.json_schema import JsonResponse
-from app.module.asset.constant import DUMMY_ASSET_EXPIRE_SECOND, DUMMY_ASSET_KOREA_KEY, DUMMY_ASSET_OTHER_KEY
+from app.module.asset.constant import DUMMY_ASSET_EXPIRE_SECOND, DUMMY_ASSET_FOREIGN_KEY, DUMMY_ASSET_KOREA_KEY
 from app.module.asset.enum import AssetType
-from app.module.asset.model import Asset, Dividend, ExchangeRate, StockDaily
+from app.module.asset.model import Asset, Dividend, StockDaily
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.dividend_repository import DividendRepository
-from app.module.asset.repository.exchange_rate_repository import ExchangeRateRepository
 from app.module.asset.repository.stock_daily_repository import StockDailyRepository
 from app.module.asset.schema.asset_schema import AssetTransaction, AssetTransactionRequest
 from app.module.asset.schema.stock_schema import StockAssetResponse
-from app.module.asset.service import check_not_found_stock, get_stock_mapping_info, get_total_asset_data
+from app.module.asset.service import (
+    check_not_found_stock,
+    get_current_stock_price,
+    get_exchange_rate_map,
+    get_stock_mapping_info,
+    get_total_asset_data,
+)
 from app.module.auth.constant import DUMMY_USER_ID
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session_router
@@ -35,34 +40,40 @@ async def get_dummy_assets(
     if base_currency:
         dummy_asset_cache_key = DUMMY_ASSET_KOREA_KEY
     else:
-        dummy_asset_cache_key = DUMMY_ASSET_OTHER_KEY
+        dummy_asset_cache_key = DUMMY_ASSET_FOREIGN_KEY
 
     dummy_asset_cache: StockAssetResponse | None = await redis_repository.get(dummy_asset_cache_key)
     if dummy_asset_cache:
         return StockAssetResponse.model_validate_json(dummy_asset_cache)
 
+    # [수정] JOIN query를 통해 한번에 eager loading을 한다!, 혹은 pre-fetch related
+    # [수정] N+1 문제가 아닌것에 적용, sqlalchemy에서 N+1 문제 확인
+    # [확인] api 호출 시, 쿼리 사용을 알 수 있는 툴을 사용해서, 항상 확인하는 습관을 가지는걸 권장
     dummy_assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
     stock_codes = [asset.asset_stock.stock.code for asset in dummy_assets]
     stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies(session, stock_codes)
     dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
-    exchange_rates: list[ExchangeRate] = await ExchangeRateRepository.get_exchange_rates(session)
 
-    stock_daily_map, dividend_map, current_stock_daily_map = get_stock_mapping_info(stock_dailies, dividends)
+    exchange_rate_map = await get_exchange_rate_map()
+    stock_daily_map, dividend_map = get_stock_mapping_info(stock_dailies, dividends)
+    current_stock_price_map = await get_current_stock_price(stock_daily_map, stock_codes)
 
-    not_found_stock_codes: list[str] = check_not_found_stock(stock_daily_map, current_stock_daily_map, dummy_assets)
+    # [수정] redis에서 반환된 경우, 타입 체킹을 어떤 식으로 적용할지 확인 후, type ignore를 지우겠습니다.
+    not_found_stock_codes: list[str] = check_not_found_stock(stock_daily_map, current_stock_price_map, dummy_assets)  # type: ignore
     if not_found_stock_codes:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail={"not_found_stock_codes": not_found_stock_codes}
         )
 
+    # [수정] redis에서 반환된 경우, 타입 체킹을 어떤 식으로 적용할지 확인 후, type ignore를 지우겠습니다.
     (
         stock_assets,
         total_asset_amount,
         total_invest_amount,
         total_invest_growth_rate,
         total_dividend_amount,
-    ) = get_total_asset_data(
-        dummy_assets, stock_daily_map, current_stock_daily_map, dividend_map, exchange_rates, base_currency
+    ) = await get_total_asset_data(  # type: ignore
+        dummy_assets, stock_daily_map, current_stock_price_map, dividend_map, base_currency, exchange_rate_map  # type: ignore
     )
 
     result: StockAssetResponse = StockAssetResponse.parse(

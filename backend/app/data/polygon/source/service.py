@@ -7,7 +7,6 @@ from dotenv import find_dotenv, load_dotenv
 
 from app.data.common.constant import STOCK_CACHE_SECOND
 from app.data.polygon.source.constant import ALL_STOCK
-from app.data.polygon.source.schema import RealTimeStock
 from database.redis import redis_repository
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -19,9 +18,7 @@ POLYGON_API_KEY = os.getenv("POLYGON_API_KEY")
 async def handle_message(message):
     realtime_stock = json.loads(message)
     for stock_data in realtime_stock:
-        realtime_stock = RealTimeStock(sym=stock_data["sym"], vw=stock_data["vw"])
-
-        await redis_repository.save(realtime_stock.sym, realtime_stock.vw, expire_time=STOCK_CACHE_SECOND)
+        await redis_repository.save(stock_data["sym"], stock_data["vw"], expire_time=STOCK_CACHE_SECOND)
 
 
 def on_message_sync(ws, message, loop):
