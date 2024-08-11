@@ -46,6 +46,9 @@ async def get_dummy_assets(
     if dummy_asset_cache:
         return StockAssetResponse.model_validate_json(dummy_asset_cache)
 
+    # [수정] JOIN query를 통해 한번에 eager loading을 한다!, 혹은 pre-fetch related
+    # [수정] N+1 문제가 아닌것에 적용, sqlalchemy에서 N+1 문제 확인
+    # [확인] api 호출 시, 쿼리 사용을 알 수 있는 툴을 사용해서, 항상 확인하는 습관을 가지는걸 권장
     dummy_assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
     stock_codes = [asset.asset_stock.stock.code for asset in dummy_assets]
     stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies(session, stock_codes)

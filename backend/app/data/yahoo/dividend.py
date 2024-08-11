@@ -21,7 +21,9 @@ async def insert_dividend_data(session: AsyncSession, stock_list: list[StockInfo
             market_index_enum = MarketIndex[stock.market_index.upper()]
 
             stock_code = format_stock_code(stock.code, country_enum, market_index_enum)
+            print(f"{stock_code=}")
             stock_info = yfinance.Ticker(stock_code)
+
         except Exception as e:
             print(f"[분석][insert_dividend_data] Error during dividend processing: {e}")
             continue
