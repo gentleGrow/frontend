@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 import styles from './InnerHeader.module.scss';
 
-import logo from '@/assets/logo.svg';
+import logo from '@/shared/assets/logo.svg';
 import classNames from 'classnames';
 
 const InnerHeader = () => {

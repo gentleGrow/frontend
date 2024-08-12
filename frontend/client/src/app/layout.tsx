@@ -1,7 +1,7 @@
 'use client';
+import { Header } from '@/widgets';
 import './globals.css';
 import '@gaemi-school/themes/themes.css';
-import Header from '@/layouts/header/Header';
 import { useEffect } from 'react';
 
 // export const metadata = {
