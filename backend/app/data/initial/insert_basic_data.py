@@ -47,6 +47,11 @@ async def create_initial_users(session: AsyncSession):
 
 
 async def create_dummy_assets(session: AsyncSession):
+    assets_exist = await AssetRepository.get_assets(session, DUMMY_USER_ID)
+    if assets_exist:
+        print("이미 dummy assets을 저장하였습니다.")
+        return
+
     stock_codes = ["005930", "AAPL", "7203", "446720"]  # 삼성전자, 애플, 토요타, etf sol 다우존스
     purchase_dates = [date(2015, 7, 22), date(2012, 11, 14), date(2020, 6, 8), date(2024, 5, 28)]
 
@@ -69,11 +74,11 @@ async def create_dummy_assets(session: AsyncSession):
         matching_stock = stock_dict.get(stock_code)
         asset.stock.append(matching_stock)
 
-    success = await AssetRepository.save_assets(session, assets)
-    if success:
+    try:
+        await AssetRepository.save_assets(session, assets)
         print("[create_dummy_assets] 더미 유저에 assets을 성공적으로 생성 했습니다.")
-    else:
-        print("[create_dummy_assets] 더미 유저에 assets을 생성하는데 실패 하였습니다.")
+    except Exception as err:
+        print(f"dummy asset 생성 중 에러가 생겼습니다. {err=}")
 
 
 async def main():

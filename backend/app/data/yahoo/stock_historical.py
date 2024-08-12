@@ -72,9 +72,7 @@ async def process_stock_data(session: AsyncSession, stock_list: list[StockInfo],
                 stock_rows.append(stock_row)
 
             try:
-                print(f"저장을 시도합니다. {len(stock_rows)=}")
                 await StockRepository.bulk_save(session, stock_rows)
-                print("저장하였습니다..")
             except IntegrityError as e:
                 print(f"{e=}")
                 await session.rollback()

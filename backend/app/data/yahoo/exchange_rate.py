@@ -4,7 +4,8 @@ import yfinance
 
 from app.data.common.constant import STOCK_CACHE_SECOND
 from app.module.asset.constant import currency_pairs
-from database.redis import redis_repository
+from database.dependency import get_redis_pool
+from database.redis import RedisExchangeRateRepository
 
 
 async def fetch_exchange_rate(source_currency: str, target_currency: str) -> float | None:
@@ -22,6 +23,7 @@ async def fetch_exchange_rate(source_currency: str, target_currency: str) -> flo
 
 
 async def main():
+    redis_client = get_redis_pool()
     while True:
         for source_currency, target_currency in currency_pairs:
             rate = await fetch_exchange_rate(source_currency, target_currency)
@@ -31,7 +33,9 @@ async def main():
 
             cache_key = source_currency + "_" + target_currency
 
-            await redis_repository.save(cache_key, rate, expire_time=STOCK_CACHE_SECOND)
+            await RedisExchangeRateRepository.save(redis_client, cache_key, rate, expire_time=STOCK_CACHE_SECOND)
+
+        await asyncio.sleep(10)
 
 
 if __name__ == "__main__":

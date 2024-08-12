@@ -1,16 +1,18 @@
+from redis.asyncio import Redis
+
 from app.module.asset.constant import currency_pairs
 from app.module.asset.enum import CurrencyType
 from app.module.asset.model import Asset, Dividend, StockDaily
 from app.module.asset.schema.stock_schema import StockAsset
-from database.redis import redis_repository
+from database.redis import RedisExchangeRateRepository, RedisRealTimeStockRepository
 
 
-async def get_exchange_rate_map() -> dict[str, float]:
+async def get_exchange_rate_map(redis_client: Redis) -> dict[str, float]:
     exchange_rate_map = {}
 
     keys = [f"{source_currency}_{target_currency}" for source_currency, target_currency in currency_pairs]
 
-    exchange_rates = await redis_repository.bulk_get(keys)
+    exchange_rates = await RedisExchangeRateRepository.bulk_get(redis_client, keys)
 
     for i, key in enumerate(keys):
         rate = exchange_rates[i]
@@ -46,11 +48,11 @@ def get_stock_mapping_info(
 
 
 async def get_current_stock_price(
-    stock_daily_map: dict[tuple[str, str], StockDaily], stock_codes: list[str]
+    redis_client: Redis, stock_daily_map: dict[tuple[str, str], StockDaily], stock_codes: list[str]
 ) -> dict[str, float]:
     result = {}
 
-    current_prices = await redis_repository.bulk_get(stock_codes)
+    current_prices = await RedisRealTimeStockRepository.bulk_get(redis_client, stock_codes)
 
     for i, stock_code in enumerate(stock_codes):
         current_price = current_prices[i]

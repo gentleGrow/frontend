@@ -4,10 +4,12 @@ from app.data.common.constant import STOCK_CACHE_SECOND, STOCK_CHUNK_SIZE
 from app.data.common.service import get_korea_stock_code_list
 from app.data.naver.sources.service import get_stock_prices
 from app.module.asset.schema.stock_schema import StockInfo
-from database.redis import redis_repository
+from database.dependency import get_redis_pool
+from database.redis import RedisRealTimeStockRepository
 
 
 async def main():
+    redis_client = get_redis_pool()
     while True:
         stock_code_list: list[StockInfo] = get_korea_stock_code_list()
 
@@ -19,7 +21,7 @@ async def main():
                 if isinstance(price, Exception):
                     print(f"다음의 코드가 에러가 발생했습니다 : {code=}, {price=}")
                 else:
-                    await redis_repository.save(code, price, expire_time=STOCK_CACHE_SECOND)
+                    await RedisRealTimeStockRepository.save(redis_client, code, price, expire_time=STOCK_CACHE_SECOND)
 
 
 if __name__ == "__main__":
