@@ -1,4 +1,4 @@
-import { Box } from "@/app/shared/ui/layout/src";
+import { Box } from "@/shared/ui/layout/src";
 
 export default {
   title: "React Components/Layout/Box",

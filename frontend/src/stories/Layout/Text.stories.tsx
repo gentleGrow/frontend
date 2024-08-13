@@ -1,8 +1,6 @@
-import { Text as _Text } from "@/app/shared/ui/layout/src";
-import { text } from "@/app/shared/ui/themes/classes/typography";
-import { colors } from "@/app/shared/ui/themes/variables/colors/scale";
-
-
+import { Text as _Text } from "@/shared/ui/layout/src";
+import { text } from "@/shared/ui/themes/classes/typography";
+import { colors } from "@/shared/ui/themes/variables/colors/scale";
 
 export default {
   title: "React Components/Layout/Typography/Text",

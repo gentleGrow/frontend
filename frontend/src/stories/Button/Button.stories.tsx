@@ -1,8 +1,8 @@
-import React from 'react';
-import { Button } from '@/app/shared/ui/button/Button';
-import { colors } from '@/app/shared/ui/themes/variables/colors/scale';
-import { useButton } from '@/app/shared/ui/button/hooks/useButton';
-import { Text } from '@/app/shared/ui/layout/src';
+import React from "react";
+import { Button } from "@/shared/ui/button/Button";
+import { colors } from "@/shared/ui/themes/variables/colors/scale";
+import { useButton } from "@/shared/ui/button/hooks/useButton";
+import { Text } from "@/shared/ui/layout/src";
 
 export default {
   title: "React Components/Button",
@@ -40,14 +40,12 @@ export const ButtonStory = {
 
 export const TextButtonStory = {
   render: () => {
-    const {
-      buttonProps,
-    } = useButton({
+    const { buttonProps } = useButton({
       elementType: "div",
       onClick: () => {
         console.log("ttt");
       },
-    }); 
+    });
 
     return (
       <Text
@@ -63,5 +61,5 @@ export const TextButtonStory = {
         텍스트 버튼입니다.
       </Text>
     );
-  }
+  },
 };

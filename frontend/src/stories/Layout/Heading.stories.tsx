@@ -1,7 +1,6 @@
-import { Heading as _Heading } from "@/app/shared/ui/layout/src";
-import { heading } from "@/app/shared/ui/themes/classes/typography";
-import { colors } from "@/app/shared/ui/themes/variables/colors/scale";
-
+import { Heading as _Heading } from "@/shared/ui/layout/src";
+import { heading } from "@/shared/ui/themes/classes/typography";
+import { colors } from "@/shared/ui/themes/variables/colors/scale";
 
 export default {
   title: "React Components/Layout/Typography/Heading",

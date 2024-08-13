@@ -1,11 +1,11 @@
-import { Divider as _Divider, Box } from "@/app/shared/ui/layout/src";
-import { colors } from "@/app/shared/ui/themes/variables/colors/scale";
+import { Divider as _Divider, Box } from "@/shared/ui/layout/src";
+import { colors } from "@/shared/ui/themes/variables/colors/scale";
 
 export default {
   title: "React Components/Layout/Divider",
   component: _Divider,
   decorators: [
-    (Story:any) => (
+    (Story: any) => (
       <Box padding={3} style={{ width: "300px", height: "300px" }}>
         <Story />
       </Box>
