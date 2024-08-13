@@ -1,6 +1,6 @@
 import * as React from "react";
 import { forwardRef, Ref } from "react";
-import { textStyle } from "./style.css";
+import { headingStyle } from "./style.css";
 import { HeadingProps } from "./types";
 import { clsx } from "clsx";
 import { extractSprinkleProps } from "../utils/properties";
@@ -21,14 +21,14 @@ const Heading = (props: HeadingProps, ref: Ref<HTMLElement>) => {
         StyleSprinkles(
           extractSprinkleProps(props, Array.from(StyleSprinkles.properties)),
         ),
-        textStyle({
+        headingStyle({
           fontSize,
         }),
         props.className,
       ]),
       style: {
         color: colorStyle,
-        background:backgroundColor,
+        background: backgroundColor,
         ...props.style,
       },
     },

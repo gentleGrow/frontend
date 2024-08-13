@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Selected from "./Selected";
-import { useState } from "react";
+import { Heading } from "@/shared";
 
 const MENUS = [
   { name: "홈", href: "/" },
@@ -13,9 +13,9 @@ export default function Menus() {
       {MENUS.map((menu) => (
         <div key={menu.name} className="relative">
           <Selected menuHref={menu.href} />
-          <Link href={menu.href} className="">
-            {menu.name}
-          </Link>
+          <Heading as="h4" fontSize="sm">
+            <Link href={menu.href}>{menu.name}</Link>
+          </Heading>
         </div>
       ))}
     </nav>
