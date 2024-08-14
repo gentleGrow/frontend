@@ -25,7 +25,7 @@ export default function Menu({
         const isHovered = hoveredItem.includes(menu.name);
 
         return (
-          <div key={menu.name}>
+          <div key={menu.name} className="flex items-center">
             <MenuItem
               name={menu.name}
               href={menu.href}

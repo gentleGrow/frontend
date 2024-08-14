@@ -11,7 +11,7 @@ export default function SearchBar() {
         placeholder: "종목명을 입력해주세요.",
         value: value,
         onChange: (e) => setValue(e.target.value),
-        classNames: "min-w-[491px]",
+        classNames: "min-w-[491px] h-[36px]",
       }}
     >
       <svg
