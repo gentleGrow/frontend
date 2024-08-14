@@ -1,18 +1,21 @@
 import Link from "next/link";
-import { Heading } from "@/shared";
 import Selected from "./Selected";
-
-export default function MenuItem({ menu }: { menu: Record<string, string> }) {
+import MenuName from "./MenuName";
+export default function MenuItem({
+  name,
+  href,
+  isSelected,
+  isHovered = false,
+}: {
+  name: string;
+  href: string;
+  isSelected: boolean;
+  isHovered?: boolean;
+}) {
   return (
-    <Link href={menu.href} className="relative">
-      <Selected menuHref={menu.href} />
-      <Heading
-        as="h4"
-        fontSize="sm"
-        className="hover:text-gray-60 text-gray-100"
-      >
-        {menu.name}
-      </Heading>
+    <Link href={href} className="relative">
+      <Selected isSelected={isSelected} />
+      <MenuName name={name} isHovered={isHovered} />
     </Link>
   );
 }

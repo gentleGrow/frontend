@@ -1,12 +1,6 @@
-"use client";
 import { green } from "@/shared/ui/themes/variables/colors/static/light";
-import { usePathname } from "next/navigation";
 
-export default function Selected({ menuHref }: { menuHref: string }) {
-  const pathname = usePathname();
-  const isSelected =
-    menuHref === "/" ? pathname === "/" : pathname.includes(menuHref);
-
+export default function Selected({ isSelected }: { isSelected: boolean }) {
   if (!isSelected) return null;
 
   return (
