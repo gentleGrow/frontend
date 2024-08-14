@@ -5,7 +5,7 @@ export default function Selected({ isSelected }: { isSelected: boolean }) {
 
   return (
     <div
-      className="absolute -top-[3px] left-1/2 h-[5px] w-[5px] -translate-x-1/2 rounded-full"
+      className="absolute -top-[5px] left-1/2 h-[5px] w-[5px] -translate-x-1/2 rounded-full"
       style={{ backgroundColor: green[50] }}
     />
   );
