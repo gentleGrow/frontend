@@ -24,6 +24,7 @@ async def fetch_exchange_rate(source_currency: str, target_currency: str) -> flo
 
 async def main():
     redis_client = get_redis_pool()
+
     while True:
         for source_currency, target_currency in currency_pairs:
             rate = await fetch_exchange_rate(source_currency, target_currency)

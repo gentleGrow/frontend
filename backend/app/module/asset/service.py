@@ -60,11 +60,11 @@ async def get_current_stock_price(
         # [수정] redis에서 반환된 경우, 타입 체킹을 어떤 식으로 적용할지 확인 후, type ignore를 지우겠습니다.
         if current_price is None:
             latest_date = max([date for (code, date) in stock_daily_map.keys() if code == stock_code], default=None)  # type: ignore
-            stock_daily = stock_daily_map.get((stock_code, str(latest_date)))  # type: ignore
+            print(f"{latest_date=}")
+            stock_daily = stock_daily_map.get((stock_code, latest_date))  # type: ignore
             current_price = stock_daily.adj_close_price if stock_daily else 0.0  # type: ignore
 
         result[stock_code] = float(current_price)  # type: ignore
-
     return result
 
 

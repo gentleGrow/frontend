@@ -76,7 +76,7 @@ async def get_dummy_assets(
         total_invest_amount,
         total_invest_growth_rate,
         total_dividend_amount,
-    ) = await get_total_asset_data(  # type: ignore
+    ) = get_total_asset_data(  # type: ignore
         dummy_assets, stock_daily_map, current_stock_price_map, dividend_map, base_currency, exchange_rate_map  # type: ignore
     )
 
