@@ -3,7 +3,7 @@ FROM python:3.11-slim
 WORKDIR /app
 
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y gcc g++ make && \
+    apt-get install -y gcc g++ make && \
     apt-get clean
 
 RUN pip install poetry
@@ -15,6 +15,6 @@ RUN poetry config virtualenvs.create false && poetry install --no-interaction --
 
 COPY . /app/
 
-EXPOSE 8000
+COPY ./app/data/yahoo/stock_historical.py /app/task.py
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "task.py"]
