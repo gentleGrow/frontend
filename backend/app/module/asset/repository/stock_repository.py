@@ -2,7 +2,7 @@ from sqlalchemy.dialects.mysql import insert as mysql_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from app.module.asset.model import Stock, StockDaily, StockMonthly, StockWeekly
+from app.module.asset.model import Stock
 
 
 class StockRepository:
@@ -27,12 +27,12 @@ class StockRepository:
         return result.scalars().all()
 
     @staticmethod
-    async def save(session: AsyncSession, stock: Stock | StockDaily | StockWeekly | StockMonthly) -> None:
+    async def save(session: AsyncSession, stock: Stock) -> None:
         session.add(stock)
         await session.commit()
 
     @staticmethod
-    async def bulk_save(session: AsyncSession, stocks: list[Stock | StockDaily | StockWeekly | StockMonthly]) -> None:
+    async def bulk_save(session: AsyncSession, stocks: list[Stock]) -> None:
         session.add_all(stocks)
         await session.commit()
 

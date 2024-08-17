@@ -1,16 +1,18 @@
+from redis.asyncio import Redis
+
 from app.module.asset.constant import currency_pairs
 from app.module.asset.enum import CurrencyType
 from app.module.asset.model import Asset, Dividend, StockDaily
 from app.module.asset.schema.stock_schema import StockAsset
-from database.redis import redis_repository
+from database.redis import RedisExchangeRateRepository, RedisRealTimeStockRepository
 
 
-async def get_exchange_rate_map() -> dict[str, float]:
+async def get_exchange_rate_map(redis_client: Redis) -> dict[str, float]:
     exchange_rate_map = {}
 
     keys = [f"{source_currency}_{target_currency}" for source_currency, target_currency in currency_pairs]
 
-    exchange_rates = await redis_repository.bulk_get(keys)
+    exchange_rates = await RedisExchangeRateRepository.bulk_get(redis_client, keys)
 
     for i, key in enumerate(keys):
         rate = exchange_rates[i]
@@ -46,11 +48,11 @@ def get_stock_mapping_info(
 
 
 async def get_current_stock_price(
-    stock_daily_map: dict[tuple[str, str], StockDaily], stock_codes: list[str]
+    redis_client: Redis, stock_daily_map: dict[tuple[str, str], StockDaily], stock_codes: list[str]
 ) -> dict[str, float]:
     result = {}
 
-    current_prices = await redis_repository.bulk_get(stock_codes)
+    current_prices = await RedisRealTimeStockRepository.bulk_get(redis_client, stock_codes)
 
     for i, stock_code in enumerate(stock_codes):
         current_price = current_prices[i]
@@ -58,11 +60,11 @@ async def get_current_stock_price(
         # [수정] redis에서 반환된 경우, 타입 체킹을 어떤 식으로 적용할지 확인 후, type ignore를 지우겠습니다.
         if current_price is None:
             latest_date = max([date for (code, date) in stock_daily_map.keys() if code == stock_code], default=None)  # type: ignore
-            stock_daily = stock_daily_map.get((stock_code, str(latest_date)))  # type: ignore
+            print(f"{latest_date=}")
+            stock_daily = stock_daily_map.get((stock_code, latest_date))  # type: ignore
             current_price = stock_daily.adj_close_price if stock_daily else 0.0  # type: ignore
 
         result[stock_code] = float(current_price)  # type: ignore
-
     return result
 
 

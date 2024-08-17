@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import JSONResponse
 from pydantic import StrictBool
+from redis.asyncio import Redis
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,8 +24,8 @@ from app.module.asset.service import (
 )
 from app.module.auth.constant import DUMMY_USER_ID
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
-from database.dependency import get_mysql_session_router
-from database.redis import redis_repository
+from database.dependency import get_mysql_session_router, get_redis_pool
+from database.redis import RedisDummyAssetRepository
 
 asset_router = APIRouter(prefix="/v1")
 
@@ -32,6 +33,7 @@ asset_router = APIRouter(prefix="/v1")
 @asset_router.get("/dummy/asset", summary="임시 자산 정보를 반환합니다.", response_model=StockAssetResponse)
 async def get_dummy_assets(
     session: AsyncSession = Depends(get_mysql_session_router),
+    redis_client: Redis = Depends(get_redis_pool),
     base_currency: StrictBool = Query(..., description="원화는 True, 종목통화는 False"),
 ) -> StockAssetResponse:
     if base_currency not in [True, False]:
@@ -42,7 +44,9 @@ async def get_dummy_assets(
     else:
         dummy_asset_cache_key = DUMMY_ASSET_FOREIGN_KEY
 
-    dummy_asset_cache: StockAssetResponse | None = await redis_repository.get(dummy_asset_cache_key)
+    dummy_asset_cache: StockAssetResponse | None = await RedisDummyAssetRepository.get(
+        redis_client, dummy_asset_cache_key
+    )
     if dummy_asset_cache:
         return StockAssetResponse.model_validate_json(dummy_asset_cache)
 
@@ -54,9 +58,9 @@ async def get_dummy_assets(
     stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies(session, stock_codes)
     dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
 
-    exchange_rate_map = await get_exchange_rate_map()
+    exchange_rate_map = await get_exchange_rate_map(redis_client)
     stock_daily_map, dividend_map = get_stock_mapping_info(stock_dailies, dividends)
-    current_stock_price_map = await get_current_stock_price(stock_daily_map, stock_codes)
+    current_stock_price_map = await get_current_stock_price(redis_client, stock_daily_map, stock_codes)
 
     # [수정] redis에서 반환된 경우, 타입 체킹을 어떤 식으로 적용할지 확인 후, type ignore를 지우겠습니다.
     not_found_stock_codes: list[str] = check_not_found_stock(stock_daily_map, current_stock_price_map, dummy_assets)  # type: ignore
@@ -72,7 +76,7 @@ async def get_dummy_assets(
         total_invest_amount,
         total_invest_growth_rate,
         total_dividend_amount,
-    ) = await get_total_asset_data(  # type: ignore
+    ) = get_total_asset_data(  # type: ignore
         dummy_assets, stock_daily_map, current_stock_price_map, dividend_map, base_currency, exchange_rate_map  # type: ignore
     )
 
@@ -80,7 +84,9 @@ async def get_dummy_assets(
         stock_assets, total_asset_amount, total_invest_amount, total_invest_growth_rate, total_dividend_amount
     )
 
-    await redis_repository.save(dummy_asset_cache_key, result.model_dump_json(), DUMMY_ASSET_EXPIRE_SECOND)
+    await RedisDummyAssetRepository.save(
+        redis_client, dummy_asset_cache_key, result.model_dump_json(), DUMMY_ASSET_EXPIRE_SECOND
+    )
 
     return result
 
