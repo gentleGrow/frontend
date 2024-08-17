@@ -1,4 +1,4 @@
-import { getGoogleOAuth2Client } from "@/shared";
+import { getGoogleOAuth2Client, SERVICE_SERVER_URL } from "@/shared";
 import setJWTCookie from "@/shared/utils/setJWTCookie";
 import { NextResponse } from "next/server";
 
@@ -23,14 +23,11 @@ export async function GET(req: Request) {
         { status: 500 },
       );
     }
-    const response = await fetch(
-      "http://www.gaemischool.com:8000/api/auth/v1/google",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id_token: idToken }),
-      },
-    );
+    const response = await fetch(`${SERVICE_SERVER_URL}/api/auth/v1/google`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id_token: idToken }),
+    });
     if (!response.ok) {
       const responseBody = await response.text();
       return NextResponse.json(

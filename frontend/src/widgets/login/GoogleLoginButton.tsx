@@ -2,8 +2,11 @@
 import { LineButton } from "@/shared";
 
 export default function GoogleLoginButton() {
-  const loginGoogle = () => {
-    window.location.href = "/api/auth/google";
+  const loginGoogle = async () => {
+    //window.location.href = "/api/auth/google";
+    const response = await fetch("/api/auth/refresh", {
+      method: "POST",
+    });
   };
   return (
     <LineButton
