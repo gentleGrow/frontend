@@ -1,8 +1,17 @@
+"use client";
 import { LineButton } from "@/shared";
 
 export default function GoogleLoginButton() {
+  const loginGoogle = () => {
+    window.location.href = "/api/auth/google";
+  };
   return (
-    <LineButton title="구글로 계속하기">
+    <LineButton
+      title="구글로 계속하기"
+      props={{
+        onClick: () => loginGoogle(),
+      }}
+    >
       <svg
         width="20"
         height="20"
