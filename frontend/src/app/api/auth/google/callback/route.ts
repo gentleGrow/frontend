@@ -1,4 +1,5 @@
 import { getGoogleOAuth2Client } from "@/shared";
+import setJWTCookie from "@/shared/utils/setJWTCookie";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -31,24 +32,22 @@ export async function GET(req: Request) {
       },
     );
     if (!response.ok) {
-      console.log(response.statusText);
-      console.log(response.status);
       const responseBody = await response.text();
-      console.log(responseBody);
       return NextResponse.json(
         {
-          error: "서비스 서버에서 오류가 발생했습니다.",
+          error: `서비스 서버에서 오류가 발생했습니다.: ${responseBody}`,
         },
         { status: response.status },
       );
     }
+
     const data = await response.json();
-    console.log(data);
-    return NextResponse.json(data);
+    setJWTCookie(data.access_token, data.refresh_token);
+    const redirectUrl = new URL("/", url);
+    return NextResponse.redirect(redirectUrl.toString());
   } catch (error) {
-    console.log(error);
     return NextResponse.json(
-      { error: "토큰 교환에 실패했습니다." },
+      { error: `토큰 교환에 실패했습니다.: ${error}` },
       { status: 500 },
     );
   }
