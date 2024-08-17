@@ -15,15 +15,15 @@ JWT_ALGORITHM = getenv("JWT_ALGORITHM", None)
 
 class JWTBuilder:
     @staticmethod
-    def generate_access_token(user_id: int) -> str:
+    def generate_access_token(user_id: Any, social_id: Any) -> str:
         expire = datetime.now(timezone.utc) + timedelta(minutes=JWT_ACCESS_TIME_MINUTE)
-        payload = {"exp": expire, "sub": str(user_id)}
+        payload = {"exp": expire, "user": str(user_id), "sub": str(social_id)}
         return encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
 
     @staticmethod
-    def generate_refresh_token(user_id: int) -> str:
+    def generate_refresh_token(user_id: Any, social_id: Any) -> str:
         expire = datetime.now(timezone.utc) + timedelta(minutes=JWT_REFRESH_TIME_MINUTE)
-        payload = {"exp": expire, "sub": str(user_id)}
+        payload = {"exp": expire, "user": str(user_id), "sub": str(social_id)}
         return encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
 
     @staticmethod
