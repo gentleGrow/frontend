@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from os import getenv
-from typing import AsyncGenerator
+from typing import AsyncGenerator, AsyncIterator
 
 from dotenv import load_dotenv
 from redis.asyncio import Redis

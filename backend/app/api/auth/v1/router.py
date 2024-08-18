@@ -122,11 +122,6 @@ async def google_login(
     redis_client: Redis = Depends(get_redis_pool),
 ) -> TokenResponse:
     id_token = request.id_token
-    if not id_token:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="구글 id token이 넘어오지 않았습니다.",
-        )
 
     try:
         id_info = await Google.verify_token(id_token)
