@@ -1,10 +1,17 @@
+"use client";
 import { LineButton } from "@/shared";
 
 export default function KakaoLoginButton() {
+  const loginKakao = () => {
+    window.location.href = "api/auth/kakao";
+  };
   return (
     <LineButton
       title="카카오로 계속하기"
-      props={{ className: "bg-[#FEE500] border-[#FEE500]" }}
+      props={{
+        className: "bg-[#FEE500] border-[#FEE500]",
+        onClick: () => loginKakao(),
+      }}
     >
       <svg
         width="20"
