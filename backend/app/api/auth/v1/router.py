@@ -21,7 +21,6 @@ from database.redis import RedisSessionRepository
 auth_router = APIRouter(prefix="/v1")
 
 
-# [수정] access token으로 속성 확인이 필요합니다.
 @auth_router.post(
     "/naver",
     summary="client naver access token을 확인후 jwt 토큰을 반환합니다.",
@@ -34,6 +33,7 @@ async def naver_login(
     redis_client: Redis = Depends(get_redis_pool),
 ) -> TokenResponse:
     access_token = request.access_token
+
     if not access_token:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -45,7 +45,7 @@ async def naver_login(
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
-    social_id = user_info.get("sub")
+    social_id = user_info["response"].get("id")
     if social_id is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="access token에 유저 정보가 없습니다.")
 
