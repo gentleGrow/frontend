@@ -1,5 +1,5 @@
 import React from "react";
-import { Input } from "@/shared/ui/input/Input";
+import { Input, InputGroup, InputLeftAddon } from "@/shared/ui/input";
 import "@/shared/ui/input/style.css";
 
 export default {
@@ -11,5 +11,14 @@ export default {
 };
 
 export const InputStory = {
-  render: () => <Input placeholder="dd" />,
+  render: () => <Input placeholder="gaemi" />,
+};
+
+export const InputGroupStory = {
+  render: () => (
+    <InputGroup size="lg" color="green">
+      <InputLeftAddon>$</InputLeftAddon>
+      <Input placeholder="gaemi" />
+    </InputGroup>
+  ),
 };
