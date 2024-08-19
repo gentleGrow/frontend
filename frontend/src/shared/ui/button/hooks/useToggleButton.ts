@@ -1,4 +1,4 @@
-import { useToggle } from "../../../lib/toggle/useToggle";
+import { useToggle } from "../../../lib/toggle";
 import { OverloadedToggleButtonFunction } from "./types";
 import { useButton } from "./useButton";
 
