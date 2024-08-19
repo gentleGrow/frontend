@@ -1,10 +1,17 @@
+"use client";
 import { LineButton } from "@/shared";
 
 export default function NaverLoginButton() {
+  const loginNaver = () => {
+    window.location.href = "/api/auth/naver";
+  };
   return (
     <LineButton
       title="네이버로 계속하기"
-      props={{ className: "bg-[#03C75A] text-white border-[#03C75A]" }}
+      props={{
+        className: "bg-[#03C75A] text-white border-[#03C75A]",
+        onClick: () => loginNaver(),
+      }}
     >
       <svg
         width="20"
