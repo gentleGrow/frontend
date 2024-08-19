@@ -10,4 +10,4 @@ class TimestampMixin:
         onupdate=func.now(),
         nullable=False,
     )
-    created_at = Column(DateTime, nullable=True)
+    deleted_at = Column(DateTime, nullable=True)

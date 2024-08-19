@@ -21,7 +21,6 @@ from database.redis import RedisSessionRepository
 auth_router = APIRouter(prefix="/v1")
 
 
-# [수정] access token으로 속성 확인이 필요합니다.
 @auth_router.post(
     "/naver",
     summary="client naver access token을 확인후 jwt 토큰을 반환합니다.",
@@ -34,6 +33,7 @@ async def naver_login(
     redis_client: Redis = Depends(get_redis_pool),
 ) -> TokenResponse:
     access_token = request.access_token
+
     if not access_token:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -45,7 +45,7 @@ async def naver_login(
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
-    social_id = user_info.get("sub")
+    social_id = user_info["response"].get("id")
     if social_id is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="access token에 유저 정보가 없습니다.")
 
@@ -57,8 +57,8 @@ async def naver_login(
         )
         user = await UserRepository.create(session, user)
 
-    access_token = JWTBuilder.generate_access_token(user.id)
-    refresh_token = JWTBuilder.generate_refresh_token(user.id)
+    access_token = JWTBuilder.generate_access_token(user.id, social_id)
+    refresh_token = JWTBuilder.generate_refresh_token(user.id, social_id)
 
     user_string_id = str(user.id)
     await RedisSessionRepository.save(redis_client, user_string_id, refresh_token, REDIS_JWT_REFRESH_EXPIRE_TIME_SECOND)
@@ -101,8 +101,8 @@ async def kakao_login(
         )
         user = await UserRepository.create(session, user)
 
-    access_token = JWTBuilder.generate_access_token(user.id)
-    refresh_token = JWTBuilder.generate_refresh_token(user.id)
+    access_token = JWTBuilder.generate_access_token(user.id, social_id)
+    refresh_token = JWTBuilder.generate_refresh_token(user.id, social_id)
 
     user_string_id = str(user.id)
     await RedisSessionRepository.save(redis_client, user_string_id, refresh_token, REDIS_JWT_REFRESH_EXPIRE_TIME_SECOND)
@@ -122,11 +122,6 @@ async def google_login(
     redis_client: Redis = Depends(get_redis_pool),
 ) -> TokenResponse:
     id_token = request.id_token
-    if not id_token:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="구글 id token이 넘어오지 않았습니다.",
-        )
 
     try:
         id_info = await Google.verify_token(id_token)
@@ -145,11 +140,10 @@ async def google_login(
         )
         user = await UserRepository.create(session, user)
 
-    access_token = JWTBuilder.generate_access_token(user.id)
-    refresh_token = JWTBuilder.generate_refresh_token(user.id)
+    access_token = JWTBuilder.generate_access_token(user.id, social_id)
+    refresh_token = JWTBuilder.generate_refresh_token(user.id, social_id)
 
-    user_string_id = str(user.id)
-    await RedisSessionRepository.save(redis_client, user_string_id, refresh_token, REDIS_JWT_REFRESH_EXPIRE_TIME_SECOND)
+    await RedisSessionRepository.save(redis_client, social_id, refresh_token, REDIS_JWT_REFRESH_EXPIRE_TIME_SECOND)
 
     return TokenResponse(access_token=access_token, refresh_token=refresh_token)
 
@@ -165,12 +159,14 @@ async def refresh_access_token(
 ) -> AccessTokenResponse:
     refresh_token = request.refresh_token
     decoded = JWTBuilder.decode_token(refresh_token)
-    user_id = decoded.get("sub")
 
-    if user_id is None:
+    social_id = decoded.get("sub")
+    user_id = decoded.get("user")
+
+    if social_id is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="refresh token안에 유저 정보가 들어있지 않습니다.")
 
-    stored_refresh_token = await RedisSessionRepository.get(redis_client, user_id)
+    stored_refresh_token = await RedisSessionRepository.get(redis_client, social_id)
 
     if stored_refresh_token is None:
         raise HTTPException(
@@ -184,6 +180,6 @@ async def refresh_access_token(
             detail="서버에 저장된 refresh token과 다른 refresh token을 반환하였습니다.",
         )
 
-    access_token = JWTBuilder.generate_access_token(user_id)
+    access_token = JWTBuilder.generate_access_token(user_id, social_id)
 
     return AccessTokenResponse(access_token=access_token)

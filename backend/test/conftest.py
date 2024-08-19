@@ -1,9 +1,10 @@
+from unittest.mock import patch
+
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from database.config import MySQLBase
-from database.dependency import get_redis_pool
 
 TEST_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
 
@@ -27,8 +28,19 @@ async def db_session(init_db):
         await session.rollback()
 
 
-@pytest.fixture(scope="session")
-async def redis_client():
-    client = get_redis_pool()
-    yield client
-    await client.close()
+@pytest.fixture(scope="function")
+def mock_redis_repositories():
+    with patch("database.redis.RedisRealTimeStockRepository.bulk_get", return_value=[]), patch(
+        "database.redis.RedisRealTimeStockRepository.save", return_value=None
+    ), patch("database.redis.RedisExchangeRateRepository.bulk_get", return_value=[]), patch(
+        "database.redis.RedisExchangeRateRepository.save", return_value=None
+    ), patch(
+        "database.redis.RedisDummyAssetRepository.get", return_value=None
+    ), patch(
+        "database.redis.RedisDummyAssetRepository.save", return_value=None
+    ), patch(
+        "database.redis.RedisSessionRepository.get", return_value=None
+    ), patch(
+        "database.redis.RedisSessionRepository.save", return_value=None
+    ):
+        yield
