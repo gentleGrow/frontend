@@ -1,72 +1,84 @@
-import { SERVICE_SERVER_URL, setCookieForJWT } from "@/shared";
+import { RESPONSE_STATUS, SERVICE_SERVER_URL, setCookieForJWT } from "@/shared";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
+  const requestUrl = new URL(req.url);
+  const authenticationCode = requestUrl.searchParams.get("code");
+  const state = requestUrl.searchParams.get("state");
+
+  if (!authenticationCode) {
+    return NextResponse.json(
+      { error: "Naver 계정 인증코드가 없습니다." },
+      { status: RESPONSE_STATUS.BAD_REQUEST },
+    );
+  }
+
+  if (
+    !process.env.NAVER_CLIENT_ID ||
+    !process.env.NAVER_CLIENT_SECRET ||
+    !process.env.NAVER_REDIRECT_URI
+  ) {
+    return NextResponse.json(
+      { error: "환경 변수 설정이 올바르지 않습니다." },
+      { status: RESPONSE_STATUS.INTERNAL_SERVER_ERROR },
+    );
+  }
+
   try {
-    const url = new URL(req.url);
-    const code = url.searchParams.get("code") as string;
-    const state = url.searchParams.get("state");
+    const accessTokenResponse = await fetch(
+      "https://nid.naver.com/oauth2.0/token",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          grant_type: "authorization_code",
+          client_id: process.env.NAVER_CLIENT_ID,
+          client_secret: process.env.NAVER_CLIENT_SECRET,
+          redirect_uri: process.env.NAVER_REDIRECT_URI,
+          code: authenticationCode,
+          state: state || "",
+        }),
+      },
+    );
 
-    if (!code) {
+    if (!accessTokenResponse.ok) {
+      const accessTokenErrorBody = await accessTokenResponse.json();
       return NextResponse.json(
-        { error: "인증코드가 없습니다." },
-        { status: 400 },
+        {
+          error: `Naver로부터 액세스 토큰을 가져오는 작업이 실패했습니다: ${accessTokenErrorBody.error_description || "알 수 없는 오류"}`,
+        },
+        { status: accessTokenResponse.status },
       );
     }
 
-    const response = await fetch("https://nid.naver.com/oauth2.0/token", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        grant_type: "authorization_code",
-        client_id: process.env.NAVER_CLIENT_ID as string,
-        client_secret: process.env.NAVER_CLIENT_SECRET as string,
-        redirect_uri: process.env.NAVER_REDIRECT_URI as string,
-        code: code as string,
-        state: state as string,
-      }),
-    });
-
-    if (!response.ok) {
-      const data = await response.json();
-      console.error(data);
-      return NextResponse.json(
-        { error: "액세스 토큰 발급이 실패했습니다." },
-        { status: response.status },
-      );
-    }
-
-    const data = await response.json();
-    const token = data.access_token;
+    const accessTokenData = await accessTokenResponse.json();
+    const accessToken = accessTokenData.access_token;
 
     const jwtResponse = await fetch(`${SERVICE_SERVER_URL}/api/auth/v1/naver`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        access_token: token,
-      }),
+      body: JSON.stringify({ access_token: accessToken }),
     });
+
     if (!jwtResponse.ok) {
-      const data = await jwtResponse.json();
-      console.error(data);
+      const jwtResponseErrorText = await jwtResponse.text();
       return NextResponse.json(
-        { error: "JWT 토큰 발급이 실패했습니다." },
-        { status: 400 },
+        {
+          error: `서비스 서버에서 오류가 발생했습니다.: ${jwtResponseErrorText || "알 수 없는 오류"}`,
+        },
+        { status: jwtResponse.status },
       );
     }
 
     const jwtData = await jwtResponse.json();
-    const accessToken = jwtData.access_token;
-    const refreshToken = jwtData.refresh_token;
+    setCookieForJWT(jwtData.access_token, jwtData.refresh_token);
 
-    setCookieForJWT(accessToken, refreshToken);
-    const redirectUrl = new URL("/", url);
+    const redirectUrl = new URL("/", requestUrl);
     return NextResponse.redirect(redirectUrl);
   } catch (error) {
-    console.error(error);
     return NextResponse.json(
-      { error: "네이버 인증 처리 중 오류가 발생했습니다." },
-      { status: 500 },
+      { error: "Naver 로그인이 알 수 없는 이유로 실패했습니다." },
+      { status: RESPONSE_STATUS.INTERNAL_SERVER_ERROR },
     );
   }
 }
