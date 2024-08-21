@@ -8,21 +8,21 @@ from database.redis import RedisExchangeRateRepository, RedisRealTimeStockReposi
 
 
 async def get_exchange_rate_map(redis_client: Redis) -> dict[str, float]:
-    exchange_rate_map = {}
+    result = {}
 
     keys = [f"{source_currency}_{target_currency}" for source_currency, target_currency in currency_pairs]
 
-    exchange_rates = await RedisExchangeRateRepository.bulk_get(redis_client, keys)
+    exchange_rates: list[float] = await RedisExchangeRateRepository.bulk_get(redis_client, keys)
 
     for i, key in enumerate(keys):
         rate = exchange_rates[i]
 
-        if rate is not None and isinstance(rate, (int, float, str)):
-            exchange_rate_map[key] = float(rate)
+        if rate is None:
+            result[key] = 0.0
         else:
-            exchange_rate_map[key] = 0.0
+            result[key] = rate
 
-    return exchange_rate_map
+    return result
 
 
 def get_exchange_rate(source: CurrencyType, target: CurrencyType, exchange_rate_map: dict[str, float]) -> float:
@@ -33,18 +33,14 @@ def get_exchange_rate(source: CurrencyType, target: CurrencyType, exchange_rate_
     result = exchange_rate_map.get(exchange_key)
 
     if result is not None:
-        return result
+        return float(result)
     else:
         return 0.0
 
 
-def get_stock_mapping_info(
-    stock_dailies: list[StockDaily], dividends: list[Dividend]
-) -> tuple[dict[tuple[str, str], StockDaily], dict[str, Dividend]]:
+def get_stock_mapping_info(stock_dailies: list[StockDaily]) -> dict[tuple[str, str], StockDaily]:
     stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
-    dividend_map = {dividend.stock_code: dividend for dividend in dividends}
-
-    return stock_daily_map, dividend_map
+    return stock_daily_map
 
 
 async def get_current_stock_price(
@@ -60,7 +56,7 @@ async def get_current_stock_price(
         # [수정] redis에서 반환된 경우, 타입 체킹을 어떤 식으로 적용할지 확인 후, type ignore를 지우겠습니다.
         if current_price is None:
             latest_date = max([date for (code, date) in stock_daily_map.keys() if code == stock_code], default=None)  # type: ignore
-            print(f"{latest_date=}")
+
             stock_daily = stock_daily_map.get((stock_code, latest_date))  # type: ignore
             current_price = stock_daily.adj_close_price if stock_daily else 0.0  # type: ignore
 
@@ -122,6 +118,8 @@ def get_total_asset_data(
 
         # [수정] redis에서 반환된 경우, 타입 체킹을 어떤 식으로 적용할지 확인 후, type ignore를 지우겠습니다.
         if base_currency:
+            print(f"{current_price=}")
+            print(f"{won_exchange_rate=}")
             current_price = current_price * won_exchange_rate
             opening_price = stock_daily.opening_price * won_exchange_rate
             highest_price = stock_daily.highest_price * won_exchange_rate

@@ -71,3 +71,8 @@ def dummy_assets() -> list[Asset]:
             purchase_date="2023-06-28",
         ),
     ]
+
+
+@pytest.fixture(scope="module")
+def current_stock_daily_map(stock_dailies) -> dict[tuple[str, str], StockDaily]:
+    return {(daily.code, daily.date): daily for daily in stock_dailies}

@@ -4,21 +4,24 @@ from app.module.auth.model import User  # noqa: F401 > relationship 설정시 �
 
 
 def test_get_stock_mapping_info(stock_dailies, dividends):
-    stock_daily_map, dividend_map = get_stock_mapping_info(stock_dailies, dividends)
+    stock_daily_map = get_stock_mapping_info(stock_dailies)
+    dividend_map = {dividend.stock_code: dividend for dividend in dividends}
 
     assert len(stock_daily_map) == len(stock_dailies)
     assert len(dividend_map) == len(dividends)
 
 
-def test_check_not_found_stock(stock_dailies, dividends, dummy_assets, current_stock_price_map):
-    stock_daily_map, _ = get_stock_mapping_info(stock_dailies, dividends)
+def test_check_not_found_stock(stock_dailies, dummy_assets, current_stock_price_map):
+    stock_daily_map = get_stock_mapping_info(stock_dailies)
     not_found_stock_codes = check_not_found_stock(stock_daily_map, current_stock_price_map, dummy_assets)
 
     assert len(not_found_stock_codes) == 0
 
 
-async def test_format_asset_response(stock_dailies, dividends, dummy_assets):
-    stock_daily_map, dividend_map, current_stock_daily_map = get_stock_mapping_info(stock_dailies, dividends)
+async def test_format_asset_response(stock_dailies, dividends, dummy_assets, current_stock_daily_map):
+    stock_daily_map = get_stock_mapping_info(stock_dailies)
+    dividend_map = {dividend.stock_code: dividend for dividend in dividends}
+
     (
         stock_assets,
         total_asset_amount,
