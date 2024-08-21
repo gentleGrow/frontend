@@ -19,7 +19,6 @@ from app.module.asset.service import (
     check_not_found_stock,
     get_current_stock_price,
     get_exchange_rate_map,
-    get_stock_mapping_info,
     get_total_asset_data,
 )
 from app.module.auth.constant import DUMMY_USER_ID
@@ -45,38 +44,39 @@ async def get_dummy_assets(
     else:
         dummy_asset_cache_key = DUMMY_ASSET_FOREIGN_KEY
 
-    # dummy_asset_cache: StockAssetResponse | None = await RedisDummyAssetRepository.get(
-    #     redis_client, dummy_asset_cache_key
-    # )
-    # if dummy_asset_cache:
-    #     return StockAssetResponse.model_validate_json(dummy_asset_cache)
+    dummy_asset_cache: StockAssetResponse | None = await RedisDummyAssetRepository.get(
+        redis_client, dummy_asset_cache_key
+    )
+    if dummy_asset_cache:
+        return StockAssetResponse.model_validate_json(dummy_asset_cache)
 
     # [확인] api 호출 시, 쿼리 사용을 알 수 있는 툴을 사용해서, 항상 확인하는 습관을 가지는걸 권장
     dummy_assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
+    stock_code_date_pairs = [(asset.asset_stock.stock.code, asset.purchase_date) for asset in dummy_assets]
     stock_codes = [asset.asset_stock.stock.code for asset in dummy_assets]
-    stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies(session, stock_codes)  # [수정]
+    stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies_by_code_and_date(
+        session, stock_code_date_pairs
+    )
     dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
     dividend_map = {dividend.stock_code: dividend for dividend in dividends}
     exchange_rate_map = await get_exchange_rate_map(redis_client)
-    stock_daily_map = get_stock_mapping_info(stock_dailies)
+    stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
     current_stock_price_map = await get_current_stock_price(redis_client, stock_daily_map, stock_codes)
 
-    # [수정] redis에서 반환된 경우, 타입 체킹을 어떤 식으로 적용할지 확인 후, type ignore를 지우겠습니다.
-    not_found_stock_codes: list[str] = check_not_found_stock(stock_daily_map, current_stock_price_map, dummy_assets)  # type: ignore
+    not_found_stock_codes: list[str] = check_not_found_stock(stock_daily_map, current_stock_price_map, dummy_assets)
     if not_found_stock_codes:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail={"not_found_stock_codes": not_found_stock_codes}
         )
 
-    # [수정] redis에서 반환된 경우, 타입 체킹을 어떤 식으로 적용할지 확인 후, type ignore를 지우겠습니다.
     (
         stock_assets,
         total_asset_amount,
         total_invest_amount,
         total_invest_growth_rate,
         total_dividend_amount,
-    ) = get_total_asset_data(  # type: ignore
-        dummy_assets, stock_daily_map, current_stock_price_map, dividend_map, base_currency, exchange_rate_map  # type: ignore
+    ) = get_total_asset_data(
+        dummy_assets, stock_daily_map, current_stock_price_map, dividend_map, base_currency, exchange_rate_map
     )
 
     result: StockAssetResponse = StockAssetResponse.parse(
@@ -107,7 +107,7 @@ async def get_assets(
     dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
     dividend_map = {dividend.stock_code: dividend for dividend in dividends}
     exchange_rate_map = await get_exchange_rate_map(redis_client)
-    stock_daily_map = get_stock_mapping_info(stock_dailies)
+    stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
     current_stock_price_map = await get_current_stock_price(redis_client, stock_daily_map, stock_codes)
 
     # [수정] redis에서 반환된 경우, 타입 체킹을 어떤 식으로 적용할지 확인 후, type ignore를 지우겠습니다.
