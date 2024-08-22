@@ -1,13 +1,14 @@
-import { SERVICE_SERVER_URL } from "@/shared";
+import { RESPONSE_STATUS, SERVICE_SERVER_URL, setCookieForJWT } from "@/shared";
+import { REFRESH_TOKEN } from "@/shared/constants/cookie";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const refreshToken = req.cookies.get("refrechToken")?.value;
+    const refreshToken = req.cookies.get(REFRESH_TOKEN)?.value;
     if (!refreshToken) {
       return NextResponse.json(
         { error: "리프레시 토큰이 존재하지 않습니다." },
-        { status: NextResponse.status.BAD_REQUEST },
+        { status: RESPONSE_STATUS.BAD_REQUEST },
       );
     }
     const refreshResponse = await fetch(
@@ -31,13 +32,17 @@ export async function POST(req: NextRequest) {
     }
     const refreshData = await refreshResponse.json();
     const newAccessToken = refreshData.access_token;
-    return NextResponse.json(newAccessToken, { status: 200 });
+    setCookieForJWT(newAccessToken, refreshToken);
+    return NextResponse.json(
+      { message: "새로운 액세스 토큰 요청이 성공했습니다." },
+      { status: 200 },
+    );
   } catch (error) {
     return NextResponse.json(
       {
         error: "새로운 액세스 토큰 요청이 알 수 없는 이유로 실패했습니다.",
       },
-      { status: NextResponse.status.BAD_REQUEST },
+      { status: RESPONSE_STATUS.BAD_REQUEST },
     );
   }
 }
