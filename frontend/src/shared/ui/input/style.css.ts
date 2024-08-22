@@ -13,9 +13,11 @@ export const inputStyle = recipe({
     borderRadius: "0",
     appearance: "none",
     // 리셋 스타일
-    color: colorVariant,
+    // color: colorVariant,
+    color: vars.colors.$scale.gray[100],
     borderStyle: "solid",
-    borderWidth: "2px",
+    borderWidth: "1px",
+    borderColor: vars.colors.$scale.gray[20],
     display: "flex",
     alignItems: "center",
     fontWeight: vars.typography.fontWeight[400],
@@ -28,18 +30,28 @@ export const inputStyle = recipe({
 
     // @ts-ignore
     "&::placeholder": {
-      color: vars.colors.$scale.gray[400],
+      color: vars.colors.$scale.gray[50],
+    },
+
+    "&:hover": {
+      borderColor: vars.colors.$scale.gray[40],
+    },
+
+    "&:focus": {
+      borderColor: vars.colors.$scale.green[60],
     },
 
     "&:focus-visible": {
       outline: "none",
-      borderColor: focusBorderColorVariant,
-
+      borderColor: vars.colors.$scale.green[60],
+      // borderColor: focusBorderColorVariant,
       backgroundColor: "transparent",
     },
 
     "&[disabled]": {
-      opacity: 0.4,
+      // opacity: 0.4,
+      borderColor: vars.colors.$scale.green[20],
+      color: vars.colors.$scale.gray[30],
       cursor: "not-allowed",
     },
 
@@ -57,10 +69,11 @@ export const inputStyle = recipe({
         fontSize: vars.typography.fontSize[18],
       },
       md: {
-        borderRadius: vars.box.radii.base,
-        padding: "0 1rem",
-        height: "2.5rem",
-        fontSize: vars.typography.fontSize[16],
+        // borderRadius: vars.box.radii.base,
+        borderRadius: "6px",
+        padding: "0 10px",
+        height: "36px",
+        fontSize: vars.typography.fontSize[14],
       },
       sm: {
         borderRadius: vars.box.radii.base,
@@ -108,8 +121,8 @@ export const inputLeftAddonStyle = recipe({
     zIndex: 1,
 
     borderStyle: "solid",
-    borderWidth: "2px",
-    borderColor: vars.colors.$scale.gray[300],
+    borderWidth: "1px",
+    borderColor: vars.colors.$scale.gray[20],
     borderRightColor: "transparent",
     backgroundColor: vars.colors.$scale.gray[100],
   },
