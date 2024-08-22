@@ -65,7 +65,7 @@ def check_not_found_stock(
 ) -> list[str]:
     result = []
     for asset in dummy_assets:
-        stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.purchase_date))
+        stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.asset_stock.purchase_date))
         current_stock_daily = current_stock_daily_map.get(asset.asset_stock.stock.code)
         if stock_daily is None or current_stock_daily is None:
             result.append(asset.asset_stock.stock.code)
@@ -87,7 +87,7 @@ def get_total_asset_data(
     total_dividend_amount = 0
 
     for asset in assets:
-        stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.purchase_date))
+        stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.asset_stock.purchase_date))
         current_price = current_stock_price_map.get(asset.asset_stock.stock.code)
 
         if not stock_daily or not current_price:
@@ -124,28 +124,28 @@ def get_total_asset_data(
             lowest_price = stock_daily.lowest_price
             purchase_price = purchase_price
 
-        purchase_amount = purchase_price * asset.quantity
+        purchase_amount = purchase_price * asset.asset_stock.quantity
 
         stock_asset = StockAsset(
             stock_code=asset.asset_stock.stock.code,
             stock_name=asset.asset_stock.stock.name,
-            quantity=asset.quantity,
-            buy_date=asset.purchase_date,
+            quantity=asset.asset_stock.quantity,
+            buy_date=asset.asset_stock.purchase_date,
             profit=profit,
             current_price=current_price,
             opening_price=opening_price,
             highest_price=highest_price,
             lowest_price=lowest_price,
             stock_volume=stock_daily.trade_volume,
-            investment_bank=asset.investment_bank,
-            dividend=dividend * asset.quantity,
+            investment_bank=asset.asset_stock.investment_bank,
+            dividend=dividend * asset.asset_stock.quantity,
             purchase_price=purchase_price,
             purchase_amount=purchase_amount,
         )
 
         total_dividend_amount += dividend
-        total_asset_amount += current_price * won_exchange_rate * asset.quantity
-        total_invest_amount += stock_daily.adj_close_price * won_exchange_rate * asset.quantity
+        total_asset_amount += current_price * won_exchange_rate * asset.asset_stock.quantity
+        total_invest_amount += stock_daily.adj_close_price * won_exchange_rate * asset.asset_stock.quantity
 
         stock_assets.append(stock_asset)
 

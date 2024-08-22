@@ -28,7 +28,7 @@ async def test_format_asset_response(stock_dailies, dividends, dummy_assets, cur
         total_invest_amount,
         total_invest_growth_rate,
         total_dividend_amount,
-    ) = await get_total_asset_data(dummy_assets, stock_daily_map, current_stock_daily_map, dividend_map, True)
+    ) = get_total_asset_data(dummy_assets, stock_daily_map, current_stock_daily_map, dividend_map, True)
 
     response: StockAssetResponse = StockAssetResponse.parse(
         stock_assets, total_asset_amount, total_invest_amount, total_invest_growth_rate, total_dividend_amount

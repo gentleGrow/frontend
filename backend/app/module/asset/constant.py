@@ -1,4 +1,6 @@
-from app.module.asset.enum import CurrencyType
+from datetime import date
+
+from app.module.asset.enum import AccountType, CurrencyType, InvestmentBankType
 
 REDIS_STOCK_EXPIRE_SECOND = 60 * 60 * 24
 DUMMY_ASSET_EXPIRE_SECOND = 60 * 60
@@ -19,7 +21,6 @@ COUNTRY_TO_CURRENCY = {
     "SWITZERLAND": CurrencyType.SWITZERLAND,
     "UNITED KINGDOM": CurrencyType.UNITED_KINGDOM,
 }
-
 
 currency_pairs = [
     (CurrencyType.USA, CurrencyType.KOREA),
@@ -45,3 +46,25 @@ currency_pairs = [
     (CurrencyType.SWITZERLAND, CurrencyType.USA),
     (CurrencyType.UNITED_KINGDOM, CurrencyType.USA),
 ]
+
+STOCK_CODES = ["005930", "AAPL", "7203", "446720", "005930"]  # 삼성전자, 애플, 토요타, ETF SOL 다우존스, 삼성전자
+
+PURCHASE_DATES = [date(2015, 7, 22), date(2012, 11, 14), date(2020, 6, 8), date(2024, 5, 28), date(2016, 4, 14)]
+
+INVESTMENT_BANKS = [
+    InvestmentBankType.TOSS.value,
+    InvestmentBankType.KB.value,
+    InvestmentBankType.NH.value,
+    InvestmentBankType.KIWOOM.value,
+    InvestmentBankType.MIRAEASSET.value,
+]
+
+ACCOUNT_TYPES = [
+    AccountType.REGULAR.value,
+    AccountType.REGULAR.value,
+    AccountType.REGULAR.value,
+    AccountType.ISA.value,
+    AccountType.REGULAR.value,
+]
+
+STOCK_QUANTITIES = [6, 3, 2, 4, 5]
