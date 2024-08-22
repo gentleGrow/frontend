@@ -22,7 +22,7 @@ export default {
       control: "select",
     },
     variant: {
-      options: ["solid", "outline", "ghost"],
+      options: ["primary", "outline"],
       control: "select",
     },
   },
@@ -30,12 +30,13 @@ export default {
 
 export const ButtonStory = {
   args: {
-    size: "lg",
-    children: "Button",
-    variant: "outline",
+    // size: "lg",
+    size: "md",
+    children: "적용하기",
+    variant: "primary",
     isDisabled: false,
     isLoading: false,
-    leftIcon: "😀",
+    // leftIcon: "😀",
   },
 };
 
@@ -67,7 +68,10 @@ export const TextButtonStory = {
 
 export const ToggleButtonStory = {
   render: () => {
-    const { buttonProps, isSelected } = useToggleButton({ elementType: 'button' }, false);
+    const { buttonProps, isSelected } = useToggleButton(
+      { elementType: "button" },
+      false,
+    );
 
     return (
       <Button
