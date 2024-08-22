@@ -15,7 +15,8 @@ export const selectStyle = recipe({
     appearance: "auto",
     color: colorVariant,
     borderStyle: "solid",
-    borderWidth: "2px",
+    borderWidth: "1px",
+    borderColor: vars.colors.$scale.gray[20],
     display: "flex",
     alignItems: "center",
     fontWeight: vars.typography.fontWeight[400],
@@ -31,10 +32,15 @@ export const selectStyle = recipe({
       color: vars.colors.$scale.gray[40],
     },
 
+    "&:hover": {
+      outline: "none",
+      borderColor: vars.colors.$scale.gray[20],
+      backgroundColor: vars.colors.$scale.gray[5],
+    },
+
     "&:focus-visible": {
       outline: "none",
-      borderColor: focusBorderColorVariant,
-
+      borderColor: vars.colors.$scale.gray[20],
       backgroundColor: "transparent",
     },
 
@@ -57,10 +63,11 @@ export const selectStyle = recipe({
         fontSize: vars.typography.fontSize[18],
       },
       md: {
-        borderRadius: vars.box.radii.base,
-        padding: "0 1rem",
-        height: "2.5rem",
-        fontSize: vars.typography.fontSize[16],
+        borderRadius: "100px",
+        padding: "4px 8px",
+        height: "28px",
+        width: "100px",
+        fontSize: vars.typography.fontSize[14],
       },
       sm: {
         borderRadius: vars.box.radii.base,
