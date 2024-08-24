@@ -4,7 +4,7 @@ import logging
 import yfinance
 
 from app.data.common.constant import STOCK_CACHE_SECOND
-from app.module.asset.constant import currency_pairs
+from app.module.asset.constant import CURRENCY_PAIRS
 from database.dependency import get_redis_pool
 from database.redis import RedisExchangeRateRepository
 
@@ -29,7 +29,7 @@ async def main():
 
     while True:
         try:
-            for source_currency, target_currency in currency_pairs:
+            for source_currency, target_currency in CURRENCY_PAIRS:
                 rate = await fetch_exchange_rate(source_currency, target_currency)
 
                 if rate is None:

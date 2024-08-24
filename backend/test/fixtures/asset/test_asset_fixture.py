@@ -2,8 +2,42 @@ from datetime import date
 
 import pytest
 
+from app.module.asset.enum import AccountType, InvestmentBankType, PurchaseCurrencyType
 from app.module.asset.model import Asset, AssetStock, Dividend, Stock, StockDaily
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
+
+
+@pytest.fixture(scope="module")
+def exchange_rate():
+    return {"USD_KRW": 1200.0, "KRW_USD": 0.00083}
+
+
+@pytest.fixture(scope="module")
+def mock_source_to_target_exchange_rate():
+    return [
+        1330.0,  # USD to KRW
+        9.5,  # JPY to KRW
+        850.0,  # AUD to KRW
+        255.0,  # BRL to KRW
+        950.0,  # CAD to KRW
+        180.0,  # CNY to KRW
+        1500.0,  # EUR to KRW
+        170.0,  # HKD to KRW
+        16.0,  # INR to KRW
+        1450.0,  # CHF to KRW
+        1600.0,  # GBP to KRW
+        0.00075,  # KRW to USD
+        0.007,  # JPY to USD
+        0.65,  # AUD to USD
+        0.19,  # BRL to USD
+        0.75,  # CAD to USD
+        0.14,  # CNY to USD
+        1.1,  # EUR to USD
+        0.13,  # HKD to USD
+        0.012,  # INR to USD
+        1.1,  # CHF to USD
+        1.3,  # GBP to USD
+    ]
 
 
 @pytest.fixture(scope="module")
@@ -56,24 +90,26 @@ def dummy_assets() -> list[Asset]:
             asset_type="STOCK",
             user_id="test_user",
             asset_stock=AssetStock(
-                stock=Stock(code="AAPL", country="USA", name="Apple Inc."),
-                purchase_price=145.0,
+                account_type=AccountType.ISA.value,
+                investment_bank=InvestmentBankType.TOSS.value,
+                purchase_currency_type=PurchaseCurrencyType.KOREA.value,
                 purchase_date=date(2023, 6, 28),
+                purchase_price=145.0,
                 quantity=10,
-                investment_bank="TOSS",
-                account_type="REGULAR",
+                stock=Stock(code="AAPL", country="USA", name="Apple Inc."),
             ),
         ),
         Asset(
             asset_type="STOCK",
             user_id="test_user",
             asset_stock=AssetStock(
-                stock=Stock(code="GOOGL", country="USA", name="Alphabet Inc."),
-                purchase_price=2750.0,
+                account_type=AccountType.REGULAR.value,
+                investment_bank=InvestmentBankType.MIRAEASSET.value,
+                purchase_currency_type=PurchaseCurrencyType.USA,
                 purchase_date=date(2023, 6, 28),
+                purchase_price=2750.0,
                 quantity=5,
-                investment_bank="TOSS",
-                account_type="REGULAR",
+                stock=Stock(code="GOOGL", country="USA", name="Alphabet Inc."),
             ),
         ),
     ]

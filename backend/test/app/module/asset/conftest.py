@@ -3,5 +3,7 @@ from test.fixtures.asset.test_asset_fixture import (  # noqa: F401 > relationshi
     current_stock_price_map,
     dividends,
     dummy_assets,
+    exchange_rate,
+    mock_source_to_target_exchange_rate,
     stock_dailies,
 )

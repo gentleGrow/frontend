@@ -17,9 +17,10 @@ from app.module.asset.schema.asset_schema import AssetTransaction, AssetTransact
 from app.module.asset.schema.stock_schema import StockAssetResponse
 from app.module.asset.service import (
     check_not_found_stock,
+    get_asset_stock_totals,
     get_current_stock_price,
     get_exchange_rate_map,
-    get_total_asset_data,
+    get_stock_assets,
 )
 from app.module.auth.constant import DUMMY_USER_ID
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
@@ -68,18 +69,16 @@ async def get_dummy_assets(
             status_code=status.HTTP_400_BAD_REQUEST, detail={"not_found_stock_codes": not_found_stock_codes}
         )
 
-    (
-        stock_assets,
-        total_asset_amount,
-        total_invest_amount,
-        total_invest_growth_rate,
-        total_dividend_amount,
-    ) = get_total_asset_data(
+    stock_assets = get_stock_assets(
+        dummy_assets, stock_daily_map, current_stock_price_map, dividend_map, base_currency, exchange_rate_map
+    )
+
+    (total_asset_amount, total_invest_amount, total_dividend_amount,) = get_asset_stock_totals(
         dummy_assets, stock_daily_map, current_stock_price_map, dividend_map, base_currency, exchange_rate_map
     )
 
     result: StockAssetResponse = StockAssetResponse.parse(
-        stock_assets, total_asset_amount, total_invest_amount, total_invest_growth_rate, total_dividend_amount
+        stock_assets, total_asset_amount, total_invest_amount, total_dividend_amount
     )
 
     await RedisDummyAssetRepository.save(
@@ -115,18 +114,16 @@ async def get_assets(
             status_code=status.HTTP_400_BAD_REQUEST, detail={"not_found_stock_codes": not_found_stock_codes}
         )
 
-    (
-        stock_assets,
-        total_asset_amount,
-        total_invest_amount,
-        total_invest_growth_rate,
-        total_dividend_amount,
-    ) = get_total_asset_data(  # type: ignore
+    stock_assets = get_stock_assets(
+        dummy_assets, stock_daily_map, current_stock_price_map, dividend_map, base_currency, exchange_rate_map
+    )
+
+    (total_asset_amount, total_invest_amount, total_dividend_amount,) = get_asset_stock_totals(
         dummy_assets, stock_daily_map, current_stock_price_map, dividend_map, base_currency, exchange_rate_map
     )
 
     result: StockAssetResponse = StockAssetResponse.parse(
-        stock_assets, total_asset_amount, total_invest_amount, total_invest_growth_rate, total_dividend_amount
+        stock_assets, total_asset_amount, total_invest_amount, total_dividend_amount
     )
 
     return result

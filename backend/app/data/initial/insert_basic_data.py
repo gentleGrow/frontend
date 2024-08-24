@@ -2,8 +2,15 @@ import asyncio
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.module.asset.constant import ACCOUNT_TYPES, INVESTMENT_BANKS, PURCHASE_DATES, STOCK_CODES, STOCK_QUANTITIES
-from app.module.asset.enum import AssetType, PurchaseCurrencyType
+from app.module.asset.constant import (
+    ACCOUNT_TYPES,
+    INVESTMENT_BANKS,
+    PURCHASE_DATES,
+    PURCHASECURRENCYTYPES,
+    STOCK_CODES,
+    STOCK_QUANTITIES,
+)
+from app.module.asset.enum import AssetType
 from app.module.asset.model import Asset, AssetStock
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.stock_repository import StockRepository
@@ -70,7 +77,7 @@ async def create_dummy_assets(session: AsyncSession):
         AssetStock(
             purchase_price=None,
             purchase_date=PURCHASE_DATES[i],
-            purchase_currency_type=PurchaseCurrencyType.KOREA.value,
+            purchase_currency_type=PURCHASECURRENCYTYPES[i],
             quantity=STOCK_QUANTITIES[i],
             investment_bank=INVESTMENT_BANKS[i],
             account_type=ACCOUNT_TYPES[i],
