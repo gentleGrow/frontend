@@ -26,10 +26,10 @@ from app.module.auth.schema import AccessToken
 from database.dependency import get_mysql_session_router, get_redis_pool
 from database.redis import RedisDummyAssetRepository
 
-asset_router = APIRouter(prefix="/v1")
+asset_stock_router = APIRouter(prefix="/v1")
 
 
-@asset_router.get("/dummy/assetstock", summary="임시 자산 정보를 반환합니다.", response_model=StockAssetResponse)
+@asset_stock_router.get("/dummy/assetstock", summary="임시 자산 정보를 반환합니다.", response_model=StockAssetResponse)
 async def get_dummy_assets(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
@@ -86,7 +86,7 @@ async def get_dummy_assets(
     return result
 
 
-@asset_router.get("/assetstock", summary="사용자의 자산 정보를 반환합니다.", response_model=StockAssetResponse)
+@asset_stock_router.get("/assetstock", summary="사용자의 자산 정보를 반환합니다.", response_model=StockAssetResponse)
 async def get_assets(
     token: AccessToken = Depends(verify_jwt_token),
     redis_client: Redis = Depends(get_redis_pool),
@@ -140,8 +140,53 @@ async def get_assets(
     return result
 
 
-@asset_router.post("/assetstock", summary="자산관리 정보를 등록합니다.", response_model=JsonResponse)
-async def save_assets(
+@asset_stock_router.post("/assetstock", summary="자산관리 정보를 등록합니다.", response_model=JsonResponse)
+async def create_assets(
+    transaction_data: list[StockAssetRequest],
+    token: dict = Depends(verify_jwt_token),
+    session: AsyncSession = Depends(get_mysql_session_router),
+) -> JsonResponse:
+    user_id = token.get("user")
+    if user_id is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
+
+    assets_to_create = []
+
+    stock_codes = [asset_data.stock_code for asset_data in transaction_data]
+    stocks = await StockRepository.get_by_codes(session, stock_codes)
+    stocks_map = {stock.code: stock for stock in stocks}
+
+    for asset_data in transaction_data:
+        if asset_data.id is not None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="주식 자산 데이터 안에 id 값이 없어야 합니다.")
+
+        stock = stocks_map.get(asset_data.stock_code)
+        if stock is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail=f"종목 코드 {asset_data.stock_code}에 해당하는 주식을 찾을 수 없습니다."
+            )
+
+        new_asset = Asset(
+            asset_type=AssetType.STOCK,
+            user_id=user_id,
+            asset_stock=AssetStock(
+                account_type=asset_data.account_type,
+                investment_bank=asset_data.investment_bank,
+                purchase_currency_type=asset_data.purchase_currency_type,
+                purchase_date=asset_data.buy_date,
+                purchase_price=asset_data.purchase_price,
+                quantity=asset_data.quantity,
+                stock_id=stock.id,
+            ),
+        )
+        assets_to_create.append(new_asset)
+
+    await AssetRepository.save_assets(session, assets_to_create)
+    return JsonResponse(status_code=status.HTTP_200_OK, content={"detail": "주식 자산 테이블을 성공적으로 등록하였습니다."})
+
+
+@asset_stock_router.put("/assetstock", summary="자산관리 정보를 수정합니다.", response_model=JsonResponse)
+async def update_assets(
     transaction_data: list[StockAssetRequest],
     token: dict = Depends(verify_jwt_token),
     session: AsyncSession = Depends(get_mysql_session_router),
@@ -151,7 +196,8 @@ async def save_assets(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
 
     asset_ids = [asset_data.id for asset_data in transaction_data if asset_data.id]
-    assets_to_upsert = []
+
+    assets_to_update = []
 
     existing_assets = await AssetRepository.get_assets_by_ids(session, asset_ids)
     existing_assets_map = {asset.id: asset for asset in existing_assets}
@@ -162,43 +208,37 @@ async def save_assets(
 
     for asset_data in transaction_data:
         stock = stocks_map.get(asset_data.stock_code)
-
         if stock is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail=f"종목 코드 {asset_data.stock_code}에 해당하는 주식을 찾을 수 없습니다."
             )
 
-        if asset_data.id is None:
-            new_asset = Asset(
-                asset_type=AssetType.STOCK,
-                user_id=user_id,
-                asset_stock=AssetStock(
-                    account_type=asset_data.account_type,
-                    investment_bank=asset_data.investment_bank,
-                    purchase_currency_type=asset_data.purchase_currency_type,
-                    purchase_date=asset_data.buy_date,
-                    purchase_price=asset_data.purchase_price,
-                    quantity=asset_data.quantity,
-                    stock_id=stock.id,
-                ),
-            )
-            assets_to_upsert.append(new_asset)
-        else:
-            asset = existing_assets_map.get(asset_data.id)
-            if asset is None:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND, detail=f"Asset ID {asset_data.id}를 찾을 수 없습니다."
-                )
+        asset = existing_assets_map.get(asset_data.id)
+        if asset is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Asset ID {asset_data.id}를 찾을 수 없습니다.")
 
-            asset.asset_stock.account_type = asset_data.account_type
-            asset.asset_stock.investment_bank = asset_data.investment_bank
-            asset.asset_stock.purchase_currency_type = asset_data.purchase_currency_type
-            asset.asset_stock.purchase_date = asset_data.buy_date
-            asset.asset_stock.purchase_price = asset_data.purchase_price
-            asset.asset_stock.quantity = asset_data.quantity
-            asset.asset_stock.stock_id = stock.id
+        asset.asset_stock.account_type = asset_data.account_type
+        asset.asset_stock.investment_bank = asset_data.investment_bank
+        asset.asset_stock.purchase_currency_type = asset_data.purchase_currency_type
+        asset.asset_stock.purchase_date = asset_data.buy_date
+        asset.asset_stock.purchase_price = asset_data.purchase_price
+        asset.asset_stock.quantity = asset_data.quantity
+        asset.asset_stock.stock_id = stock.id
 
-            assets_to_upsert.append(asset)
+        assets_to_update.append(asset)
 
-    await AssetRepository.save_assets(session, assets_to_upsert)
-    return JsonResponse(status_code=status.HTTP_200_OK, content={"detail": "주식 자산 테이블을 성공적으로 저장하였습니다."})
+    await AssetRepository.save_assets(session, assets_to_update)
+    return JsonResponse(status_code=status.HTTP_200_OK, content={"detail": "주식 자산 테이블을 성공적으로 수정하였습니다."})
+
+
+@asset_stock_router.delete("/assetstock/{asset_id}", summary="자산을 삭제합니다.", response_model=JsonResponse)
+async def delete_asset(
+    asset_id: int,
+    token: dict = Depends(verify_jwt_token),
+    session: AsyncSession = Depends(get_mysql_session_router),
+) -> JsonResponse:
+    try:
+        await AssetRepository.delete_asset(session, asset_id)
+        return JsonResponse(status_code=status.HTTP_200_OK, content={"detail": "주식 자산이 성공적으로 삭제되었습니다."})
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

@@ -2,9 +2,36 @@ from datetime import date
 
 import pytest
 
-from app.module.asset.enum import AccountType, InvestmentBankType, PurchaseCurrencyType
+from app.module.asset.enum import AccountType, AssetType, InvestmentBankType, PurchaseCurrencyType
 from app.module.asset.model import Asset, AssetStock, Dividend, Stock, StockDaily
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
+
+
+@pytest.fixture(scope="function")
+async def setup_initial_data(db_session):
+    async with db_session as session:
+        stock = Stock(code="AAPL", country="USA", market_index="NASDAQ", name="Apple Inc.")
+        session.add(stock)
+        await session.commit()
+
+
+@pytest.fixture(scope="function")
+async def setup_dummy_asset(db_session):
+    async with db_session as session:
+        asset_stock = AssetStock(
+            account_type=AccountType.ISA.value,
+            investment_bank=InvestmentBankType.MIRAEASSET.value,
+            purchase_currency_type=PurchaseCurrencyType.USA.value,
+            purchase_date=date(2023, 8, 22),
+            purchase_price=2750.0,
+            quantity=10,
+            stock_id=1,
+        )
+
+        asset = Asset(asset_type=AssetType.STOCK.value, user_id=999, asset_stock=asset_stock)
+        session.add(asset)
+        await session.commit()
+        return asset.id
 
 
 @pytest.fixture(scope="module")
@@ -26,7 +53,7 @@ def transaction_data_success():
 def transaction_data_with_invalid_id():
     return [
         {
-            "id": 999,
+            "id": 1234,
             "account_type": "ISA",
             "buy_date": "2023-08-22",
             "investment_bank": "MIRAEASSET",

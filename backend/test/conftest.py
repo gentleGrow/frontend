@@ -53,7 +53,7 @@ def mock_redis_repositories():
 
 
 def override_verify_jwt_token():
-    return {"user": 1}
+    return {"user": 999}
 
 
 @pytest.fixture(scope="module")
