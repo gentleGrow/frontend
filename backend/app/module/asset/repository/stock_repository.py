@@ -1,4 +1,4 @@
-from sqlalchemy.dialects.mysql import insert as mysql_insert
+from sqlalchemy.dialects.mysql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -38,7 +38,7 @@ class StockRepository:
 
     @staticmethod
     async def bulk_upsert(session: AsyncSession, stocks: list[Stock]) -> None:
-        stmt = mysql_insert(Stock).values(
+        stmt = insert(Stock).values(
             [
                 {"code": stock.code, "name": stock.name, "market_index": stock.market_index, "country": stock.country}
                 for stock in stocks
@@ -56,6 +56,5 @@ class StockRepository:
         try:
             await session.execute(upsert_stmt)
             await session.commit()
-        except Exception as e:
-            print(f"주식 코드 저장 시 에러가 발생했습니다. {e=}")
+        except Exception:
             await session.rollback()

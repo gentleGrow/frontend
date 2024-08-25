@@ -121,6 +121,7 @@ def get_stock_assets(
         purchase_amount = purchase_price * asset.asset_stock.quantity
 
         stock_asset = StockAsset(
+            id=asset.id,
             account_type=asset.asset_stock.account_type,
             buy_date=asset.asset_stock.purchase_date,
             current_price=current_price,

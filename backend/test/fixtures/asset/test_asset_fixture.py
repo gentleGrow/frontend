@@ -8,6 +8,52 @@ from app.module.auth.model import User  # noqa: F401 > relationship 설정시 �
 
 
 @pytest.fixture(scope="module")
+def transaction_data_success():
+    return [
+        {
+            "account_type": "ISA",
+            "buy_date": "2023-08-22",
+            "investment_bank": "MIRAEASSET",
+            "purchase_price": 2750.0,
+            "purchase_currency_type": "USD",
+            "quantity": 10,
+            "stock_code": "AAPL",
+        }
+    ]
+
+
+@pytest.fixture(scope="module")
+def transaction_data_with_invalid_id():
+    return [
+        {
+            "id": 999,
+            "account_type": "ISA",
+            "buy_date": "2023-08-22",
+            "investment_bank": "MIRAEASSET",
+            "purchase_price": 2750.0,
+            "purchase_currency_type": "USD",
+            "quantity": 10,
+            "stock_code": "AAPL",
+        }
+    ]
+
+
+@pytest.fixture(scope="module")
+def transaction_data_with_wrong_stock_code():
+    return [
+        {
+            "account_type": "ISA",
+            "buy_date": "2023-08-22",
+            "investment_bank": "MIRAEASSET",
+            "purchase_price": 2750.0,
+            "purchase_currency_type": "USD",
+            "quantity": 10,
+            "stock_code": "UNKNOWN_CODE",
+        }
+    ]
+
+
+@pytest.fixture(scope="module")
 def exchange_rate():
     return {"USD_KRW": 1200.0, "KRW_USD": 0.00083}
 

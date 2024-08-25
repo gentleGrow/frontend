@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -6,6 +7,7 @@ from app.module.asset.enum import AccountType, PurchaseCurrencyType
 
 
 class StockAsset(BaseModel):
+    id: Optional[int] = None
     account_type: AccountType = Field(..., description="계좌 종류")
     buy_date: date = Field(..., description="구매일자")
     current_price: float = Field(..., description="현재가")
@@ -23,6 +25,17 @@ class StockAsset(BaseModel):
     stock_code: str = Field(..., description="종목 코드", examples=["AAPL"])
     stock_name: str = Field(..., description="종목명", examples=["BGF리테일"])
     stock_volume: int = Field(..., description="주식 하루 중 거래량")
+
+
+class StockAssetRequest(BaseModel):
+    id: Optional[int] = None
+    account_type: AccountType = Field(..., description="계좌 종류")
+    buy_date: date = Field(..., description="구매일자")
+    investment_bank: str = Field(..., description="증권사", examples=["토스증권"])
+    purchase_price: float = Field(..., description="매입가")
+    purchase_currency_type: PurchaseCurrencyType = Field(..., description="매입 통화")
+    quantity: int = Field(..., description="수량")
+    stock_code: str = Field(..., description="종목 코드", examples=["AAPL"])
 
 
 class StockAssetResponse(BaseModel):
