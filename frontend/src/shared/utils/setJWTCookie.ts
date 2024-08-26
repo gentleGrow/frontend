@@ -1,15 +1,16 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants/cookie";
 
-const setJWTCookie = (access_token: string, refresh_token: string) => {
+const setJWTCookie = (accessToken: string, refreshToken: string) => {
   const cookieStore = cookies();
-  cookieStore.set("accessToken", access_token, {
+  cookieStore.set(ACCESS_TOKEN, accessToken, {
     sameSite: "none",
     httpOnly: true,
     secure: true,
   });
-  cookieStore.set("refrechToken", refresh_token, {
+  cookieStore.set(REFRESH_TOKEN, refreshToken, {
     sameSite: "none",
     httpOnly: true,
     secure: true,
