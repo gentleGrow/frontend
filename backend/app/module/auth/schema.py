@@ -15,6 +15,12 @@ class User(BaseModel):
     deleted_at: datetime | None
 
 
+class AccessToken(BaseModel):
+    exp: int
+    user: int
+    sub: str
+
+
 class TokenRequest(BaseModel):
     id_token: str
 
