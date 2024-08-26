@@ -1,7 +1,8 @@
+from sqlalchemy.dialects.mysql import insert as mysql_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from app.module.asset.model import Stock, StockDaily, StockMonthly, StockWeekly
+from app.module.asset.model import Stock
 
 
 class StockRepository:
@@ -26,11 +27,35 @@ class StockRepository:
         return result.scalars().all()
 
     @staticmethod
-    async def save(session: AsyncSession, stock: Stock | StockDaily | StockWeekly | StockMonthly) -> None:
+    async def save(session: AsyncSession, stock: Stock) -> None:
         session.add(stock)
         await session.commit()
 
     @staticmethod
-    async def bulk_save(session: AsyncSession, stocks: list[Stock | StockDaily | StockWeekly | StockMonthly]) -> None:
+    async def bulk_save(session: AsyncSession, stocks: list[Stock]) -> None:
         session.add_all(stocks)
         await session.commit()
+
+    @staticmethod
+    async def bulk_upsert(session: AsyncSession, stocks: list[Stock]) -> None:
+        stmt = mysql_insert(Stock).values(
+            [
+                {"code": stock.code, "name": stock.name, "market_index": stock.market_index, "country": stock.country}
+                for stock in stocks
+            ]
+        )
+
+        update_dict = {
+            "name": stmt.inserted.name,
+            "market_index": stmt.inserted.market_index,
+            "country": stmt.inserted.country,
+        }
+
+        upsert_stmt = stmt.on_duplicate_key_update(update_dict)
+
+        try:
+            await session.execute(upsert_stmt)
+            await session.commit()
+        except Exception as e:
+            print(f"주식 코드 저장 시 에러가 발생했습니다. {e=}")
+            await session.rollback()

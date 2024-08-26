@@ -26,6 +26,7 @@ const Heading = (props: HeadingProps, ref: Ref<HTMLElement>) => {
         props.className,
       ]),
       style: {
+        color: colorStyle,
         background: backgroundColor,
         ...props.style,
       },

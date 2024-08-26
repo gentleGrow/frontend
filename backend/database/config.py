@@ -16,6 +16,7 @@ else:
     MYSQL_URL = getenv("MYSQL_URL", None)
 
 mysql_engine = create_async_engine(MYSQL_URL, pool_pre_ping=True)
+
 mysql_session_factory = sessionmaker(bind=mysql_engine, class_=AsyncSession, expire_on_commit=False)
 
 MySQLBase = declarative_base()
