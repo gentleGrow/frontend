@@ -14,12 +14,19 @@ class User(BaseModel):
     created_at: datetime
     deleted_at: datetime | None
 
-    class Config:
-        from_attributes = True
+
+class AccessToken(BaseModel):
+    exp: int
+    user: int
+    sub: str
 
 
 class TokenRequest(BaseModel):
     id_token: str
+
+
+class NaverTokenRequest(BaseModel):
+    access_token: str
 
 
 class TokenRefreshRequest(BaseModel):
@@ -31,5 +38,5 @@ class TokenResponse(BaseModel):
     refresh_token: str
 
 
-class NewAccessTokenResponse(BaseModel):
+class AccessTokenResponse(BaseModel):
     access_token: str

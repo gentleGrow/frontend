@@ -1,41 +1,71 @@
+from redis.asyncio import Redis
+
+from app.module.asset.constant import CURRENCY_PAIRS
 from app.module.asset.enum import CurrencyType
-from app.module.asset.model import Asset, Dividend, ExchangeRate, StockDaily
+from app.module.asset.model import Asset, Dividend, StockDaily
 from app.module.asset.schema.stock_schema import StockAsset
+from database.redis import RedisExchangeRateRepository, RedisRealTimeStockRepository
 
 
-def get_exchange_rate(exchange_rates: list[ExchangeRate], source: CurrencyType, target: CurrencyType) -> float:
+async def get_exchange_rate_map(redis_client: Redis) -> dict[str, float]:
+    result = {}
+
+    keys = [f"{source_currency}_{target_currency}" for source_currency, target_currency in CURRENCY_PAIRS]
+
+    exchange_rates: list[float] = await RedisExchangeRateRepository.bulk_get(redis_client, keys)
+
+    for i, key in enumerate(keys):
+        rate = exchange_rates[i]
+
+        if rate is None:
+            result[key] = 0.0
+        else:
+            result[key] = rate
+
+    return result
+
+
+def get_exchange_rate(source: CurrencyType, target: CurrencyType, exchange_rate_map: dict[str, float]) -> float:
     if source == target:
         return 1.0
 
-    for exchange_rate in exchange_rates:
-        if exchange_rate.source_currency == source and exchange_rate.target_currency == target:
-            return exchange_rate.rate
+    exchange_key = source + "_" + target
+    result = exchange_rate_map.get(exchange_key)
 
-    return 1.0
+    if result is not None:
+        return float(result)
+    else:
+        return 0.0
 
 
-def get_stock_mapping_info(
-    stock_dailies: list[StockDaily], dividends: list[Dividend]
-) -> tuple[dict[tuple[str, str], StockDaily], dict[str, Dividend], dict[str, StockDaily]]:
-    stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
-    dividend_map = {dividend.stock_code: dividend for dividend in dividends}
+async def get_current_stock_price(
+    redis_client: Redis, stock_daily_map: dict[tuple[str, str], StockDaily], stock_codes: list[str]
+) -> dict[str, float]:
+    result = {}
 
-    current_stock_daily_map: dict[str, StockDaily] = {}
-    for daily in stock_dailies:
-        if daily.code not in current_stock_daily_map or daily.date > current_stock_daily_map[daily.code].date:
-            current_stock_daily_map[daily.code] = daily
+    current_prices = await RedisRealTimeStockRepository.bulk_get(redis_client, stock_codes)
 
-    return stock_daily_map, dividend_map, current_stock_daily_map
+    for i, stock_code in enumerate(stock_codes):
+        current_price = current_prices[i]
+
+        if current_price is None:
+            latest_date = max([date for (code, date) in stock_daily_map.keys() if code == stock_code], default=None)
+
+            stock_daily = stock_daily_map.get((stock_code, latest_date))
+            current_price = stock_daily.adj_close_price if stock_daily else 0.0
+
+        result[stock_code] = float(current_price)
+    return result
 
 
 def check_not_found_stock(
     stock_daily_map: dict[tuple[str, str], StockDaily],
-    current_stock_daily_map: dict[str, StockDaily],
+    current_stock_daily_map: dict[str, float],
     dummy_assets: list[Asset],
 ) -> list[str]:
     result = []
     for asset in dummy_assets:
-        stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.purchase_date))
+        stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.asset_stock.purchase_date))
         current_stock_daily = current_stock_daily_map.get(asset.asset_stock.stock.code)
         if stock_daily is None or current_stock_daily is None:
             result.append(asset.asset_stock.stock.code)
@@ -43,24 +73,21 @@ def check_not_found_stock(
     return result
 
 
-def get_total_asset_data(
-    dummy_assets: list[Asset],
+def get_stock_assets(
+    assets: list[Asset],
     stock_daily_map: dict[tuple[str, str], StockDaily],
-    current_stock_daily_map: dict[str, StockDaily],
+    current_stock_price_map: dict[str, float],
     dividend_map: dict[str, Dividend],
-    exchange_rates: list[ExchangeRate],
     base_currency: bool,
-) -> tuple[list[StockAsset], float, float, float, float]:
+    exchange_rate_map: dict[str, float],
+) -> list[StockAsset]:
     stock_assets = []
-    total_asset_amount = 0
-    total_invest_amount = 0
-    total_dividend_amount = 0
 
-    for asset in dummy_assets:
-        stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.purchase_date))
-        current_stock_daily = current_stock_daily_map.get(asset.asset_stock.stock.code)
+    for asset in assets:
+        stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.asset_stock.purchase_date))
+        current_price = current_stock_price_map.get(asset.asset_stock.stock.code)
 
-        if not stock_daily or not current_stock_daily:
+        if not stock_daily or not current_price:
             continue
 
         dividend_instance = dividend_map.get(asset.asset_stock.stock.code)
@@ -72,55 +99,92 @@ def get_total_asset_data(
             else stock_daily.adj_close_price
         )
 
-        profit = (
-            (current_stock_daily.adj_close_price - stock_daily.adj_close_price) / stock_daily.adj_close_price
-        ) * 100
-
+        profit_rate = ((current_price - purchase_price) / purchase_price) * 100
         source_country = asset.asset_stock.stock.country.upper()
-
         source_currency = CurrencyType[source_country]
-
-        won_exchange_rate = get_exchange_rate(exchange_rates, source_currency, CurrencyType.KOREA)
+        won_exchange_rate = get_exchange_rate(source_currency, CurrencyType.KOREA, exchange_rate_map)
 
         if base_currency:
-            current_price = current_stock_daily.adj_close_price * won_exchange_rate
+            current_price = current_price * won_exchange_rate
             opening_price = stock_daily.opening_price * won_exchange_rate
             highest_price = stock_daily.highest_price * won_exchange_rate
             lowest_price = stock_daily.lowest_price * won_exchange_rate
             purchase_price *= won_exchange_rate
-            dividend *= won_exchange_rate  # type: ignore
+            dividend *= won_exchange_rate
         else:
-            current_price = current_stock_daily.adj_close_price
+            current_price = current_price
             opening_price = stock_daily.opening_price
             highest_price = stock_daily.highest_price
             lowest_price = stock_daily.lowest_price
             purchase_price = purchase_price
 
-        purchase_amount = purchase_price * asset.quantity
+        purchase_amount = purchase_price * asset.asset_stock.quantity
 
         stock_asset = StockAsset(
+            id=asset.id,
+            account_type=asset.asset_stock.account_type,
+            buy_date=asset.asset_stock.purchase_date,
+            current_price=current_price,
+            dividend=dividend * asset.asset_stock.quantity,
+            highest_price=highest_price,
+            investment_bank=asset.asset_stock.investment_bank,
+            lowest_price=lowest_price,
+            opening_price=opening_price,
+            profit_rate=profit_rate,
+            profit_amount=current_price - purchase_price,
+            purchase_amount=purchase_amount,
+            purchase_price=purchase_price,
+            purchase_currency_type=asset.asset_stock.purchase_currency_type,
+            quantity=asset.asset_stock.quantity,
             stock_code=asset.asset_stock.stock.code,
             stock_name=asset.asset_stock.stock.name,
-            quantity=asset.quantity,
-            buy_date=asset.purchase_date,
-            profit=profit,
-            current_price=current_price,
-            opening_price=opening_price,
-            highest_price=highest_price,
-            lowest_price=lowest_price,
             stock_volume=stock_daily.trade_volume,
-            investment_bank=asset.investment_bank,
-            dividend=dividend * asset.quantity,
-            purchase_price=purchase_price,
-            purchase_amount=purchase_amount,
         )
-
-        total_dividend_amount += dividend
-        total_asset_amount += current_stock_daily.adj_close_price * won_exchange_rate * asset.quantity
-        total_invest_amount += stock_daily.adj_close_price * won_exchange_rate * asset.quantity
 
         stock_assets.append(stock_asset)
 
-    total_invest_growth_rate = ((total_asset_amount - total_invest_amount) / total_invest_amount) * 100
+    return stock_assets
 
-    return stock_assets, total_asset_amount, total_invest_amount, total_invest_growth_rate, total_dividend_amount
+
+def get_asset_stock_totals(
+    assets: list[Asset],
+    stock_daily_map: dict[tuple[str, str], StockDaily],
+    current_stock_price_map: dict[str, float],
+    dividend_map: dict[str, Dividend],
+    base_currency: bool,
+    exchange_rate_map: dict[str, float],
+) -> tuple[float, float, float]:
+    total_asset_amount = 0
+    total_invest_amount = 0
+    total_dividend_amount = 0
+
+    for asset in assets:
+        stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.asset_stock.purchase_date))
+        current_price = current_stock_price_map.get(asset.asset_stock.stock.code)
+
+        if not stock_daily or not current_price:
+            continue
+
+        dividend_instance = dividend_map.get(asset.asset_stock.stock.code)
+        dividend = dividend_instance.dividend if dividend_instance else 0
+
+        purchase_price = (
+            asset.asset_stock.purchase_price
+            if asset.asset_stock.purchase_price is not None
+            else stock_daily.adj_close_price
+        )
+
+        source_country = asset.asset_stock.stock.country.upper()
+        source_currency = CurrencyType[source_country]
+        won_exchange_rate = get_exchange_rate(source_currency, CurrencyType.KOREA, exchange_rate_map)
+
+        if base_currency:
+            current_price = current_price * won_exchange_rate
+            purchase_price *= won_exchange_rate
+            dividend *= won_exchange_rate
+
+        total_dividend_amount += dividend
+        total_asset_amount += current_price * asset.asset_stock.quantity
+        total_invest_amount += stock_daily.adj_close_price * asset.asset_stock.quantity
+
+    return total_asset_amount, total_invest_amount, total_dividend_amount

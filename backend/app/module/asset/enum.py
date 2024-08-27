@@ -1,6 +1,11 @@
 from enum import StrEnum
 
 
+class PurchaseCurrencyType(StrEnum):
+    KOREA = "KRW"
+    USA = "USD"
+
+
 class InvestmentBankType(StrEnum):
     TOSS = "토스증권"
     MIRAEASSET = "미래에셋증권"
@@ -63,7 +68,7 @@ class Country(StrEnum):
     GERMANY = "GERMANY"
     FRANCE = "FRANCE"
     CHINA = "CHINA"
-    HONG_KONG = "HONG_KONG"
+    HONGKONG = "HONGKONG"
     CANADA = "CANADA"
     AUSTRALIA = "AUSTRALIA"
     INDIA = "INDIA"
@@ -73,12 +78,14 @@ class Country(StrEnum):
     ITALY = "ITALY"
     SPAIN = "SPAIN"
     SWITZERLAND = "SWITZERLAND"
-    NETHERLANDS = "NETHERLANDS"
+    NETHERLAND = "NETHERLAND"
     EUROZONE = "EUROZONE"
     KOREA = "KOREA"
 
 
 class MarketIndex(StrEnum):
+    NYSE = "NYSE"
+    NASDAQ = "NASDAQ"
     DJIA = "DJIA"
     IXIC = "IXIC"
     N225 = "N225"
@@ -97,6 +104,7 @@ class MarketIndex(StrEnum):
     IBEX = "IBEX"
     SMI = "SMI"
     AEX = "AEX"
+    TSE = "TSE"
     SX5E = "SX5E"
     KOSPI = "KOSPI"
     KOSDAQ = "KOSDAQ"

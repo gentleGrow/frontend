@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Header } from "@/widgets";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,9 +15,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const test = async () => {
+    fetch("http://localhost/api/auth/refresh");
+  };
+
+  test();
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <div className="relative min-h-svh w-svw">
+          <Header />
+          {children}
+        </div>
+      </body>
     </html>
   );
 }
