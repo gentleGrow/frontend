@@ -43,6 +43,8 @@ const config: Config = {
         "body-md": ["16px", { lineHeight: "150%" }],
         "body-sm": ["14px", { lineHeight: "150%" }],
         "body-xs": ["12px", { lineHeight: "150%" }],
+        "heading-1": ["24px", { lineHeight: "24px", fontWeight: 700 }],
+        "heading-2": ["20px", { lineHeight: "24px", fontWeight: 700 }],
       },
     },
   },

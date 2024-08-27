@@ -1,3 +1,9 @@
+import { DailyInvestmentTip } from "@/widgets";
+
 export default function Home() {
-  return <></>
+  return (
+    <>
+      <DailyInvestmentTip />
+    </>
+  );
 }
