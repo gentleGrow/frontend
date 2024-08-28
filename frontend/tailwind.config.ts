@@ -3,6 +3,9 @@ import type { Config } from "tailwindcss";
 const config: Config = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
+    screens: {
+      mobile: { max: "365px" },
+    },
     extend: {
       colors: {
         gray: {
