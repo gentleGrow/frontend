@@ -1,8 +1,8 @@
 export default function DailyInvestmentTip() {
   return (
-    <div className="mobile:space-x-0 mobile:space-y-[20px] mobile:px-[20px] mobile:flex-col mobile:items-start flex w-fit items-center space-x-[20px] rounded-md border border-gray-20 p-[16px] max-[365px]:flex-col">
-      <h3 className="block min-w-max text-heading-2">오늘의 투자 tip</h3>
-      <div className="flex max-w-[614px] grow items-center space-x-[8px] border border-green-20 bg-green-10/30 px-[16px] py-[13px]">
+    <div className="flex items-center space-x-[20px] rounded-md border border-gray-20 p-[16px] mobile:flex-col mobile:items-start mobile:space-x-0 mobile:space-y-[20px] mobile:px-[20px]">
+      <h3 className="block shrink-0 text-heading-2">오늘의 투자 tip</h3>
+      <div className="flex grow items-center space-x-[8px] border border-green-20 bg-green-10/30 px-[16px] py-[13px]">
         <svg
           width="18"
           height="18"
