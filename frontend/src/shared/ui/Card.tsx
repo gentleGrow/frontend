@@ -10,7 +10,7 @@ interface CardProps {
 export default function Card({ children, title, width, height }: CardProps) {
   return (
     <div
-      className="flex flex-col rounded-lg border p-4 shadow-md"
+      className="flex flex-col rounded-lg border p-4"
       style={{ width: width, height: height }}
     >
       {title && <h2 className="mb-2 text-lg font-bold">{title}</h2>}
