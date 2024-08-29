@@ -1,11 +1,17 @@
 // pages/asset/overview/page.tsx
-import React from "react";
+import Summary from "@/widgets/card/Summary";
 
 const Overview = () => {
+  const SUMMARYDATA = [
+    { title: "오늘의 review", type: "review" },
+    { title: "나의 총 자산", type: "amount", amount: 12345600 },
+    { title: "나의 투자 금액", type: "amount", amount: 976294 },
+    { title: "수익금", type: "amount", amount: 1778123 },
+  ];
+
   return (
-    <div>
-      <h2>요약</h2>
-      {/* 여기에 Overview 페이지의 콘텐츠 추가 */}
+    <div className="pt-[20px]">
+      <Summary summaryData={SUMMARYDATA} />
     </div>
   );
 };
