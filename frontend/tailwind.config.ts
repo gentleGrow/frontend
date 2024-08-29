@@ -6,6 +6,10 @@ const config: Config = {
     screens: {
       mobile: { max: "365px" },
     },
+    colors: {
+      alert: "#F84A4A",
+      decrease: "#0A6CFF",
+    },
     extend: {
       colors: {
         gray: {
@@ -48,6 +52,8 @@ const config: Config = {
         "body-xs": ["12px", { lineHeight: "150%" }],
         "heading-1": ["24px", { lineHeight: "24px", fontWeight: 700 }],
         "heading-2": ["20px", { lineHeight: "24px", fontWeight: 700 }],
+        "heading-4": ["16px", { lineHeight: "19.2px", fontWeight: 700 }],
+        "body-4": ["12px", { lineHeight: "18px", fontWeight: 600 }],
       },
     },
   },
