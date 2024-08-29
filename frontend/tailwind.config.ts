@@ -4,7 +4,8 @@ const config: Config = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     screens: {
-      mobile: { max: "365px" },
+      mobile: { max: "366px" },
+      "except-mobile": { min: "365px" },
     },
     colors: {
       alert: "#F84A4A",

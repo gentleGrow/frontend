@@ -9752,6 +9752,7 @@ __metadata:
     react-dom: "npm:^18"
     sass: "npm:^1.77.8"
     storybook: "npm:^8.2.9"
+    swiper: "npm:^11.1.11"
     tailwindcss: "npm:^3.4.10"
     typescript: "npm:5.5.4"
     zustand: "npm:^4.5.4"
@@ -12648,6 +12649,13 @@ __metadata:
   version: 1.0.0
   resolution: "supports-preserve-symlinks-flag@npm:1.0.0"
   checksum: 10c0/6c4032340701a9950865f7ae8ef38578d8d7053f5e10518076e6554a9381fa91bd9c6850193695c141f32b21f979c985db07265a758867bac95de05f7d8aeb39
+  languageName: node
+  linkType: hard
+
+"swiper@npm:^11.1.11":
+  version: 11.1.11
+  resolution: "swiper@npm:11.1.11"
+  checksum: 10c0/109e05d8d04de7453da87e49e714f0ecf742999938901eba533a4f2082a5a6b8c5fba036b2e3ccbc3da74a7770d2ff1cd610cff0fccefffb7f6dd3e0238f4935
   languageName: node
   linkType: hard
 

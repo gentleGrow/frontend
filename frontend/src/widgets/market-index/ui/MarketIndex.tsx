@@ -1,6 +1,7 @@
 "use client";
 
 import MarketIndexItem from "./MarketIndexItem";
+import SwiperBox from "./SwiperBox";
 import VerticalTicker from "./VerticalTicker";
 const items = [
   { stockMarket: "코스피", stockIndex: 192.8, rate: 10 },
@@ -10,7 +11,7 @@ const items = [
 ];
 
 export default function MarketIndex() {
-  const marketIndexItems = items.map((item) => (
+  const marketIndexItems = items.map((item, i) => (
     <>
       <MarketIndexItem
         stockMarket={item.stockMarket}
@@ -28,21 +29,18 @@ export default function MarketIndex() {
   );
 
   return (
-    <div className="relative overflow-hidden rounded-lg border border-gray-20 py-[24px] mobile:overflow-scroll">
-      <div className="flex justify-around mobile:hidden">
-        <VerticalTicker items={leftSideMarketIndexItems} />
+    <div className="relative overflow-hidden rounded-lg border border-gray-20 py-[24px]">
+      <div className="flex mobile:hidden">
+        <div className="flex basis-1/2 justify-center">
+          <VerticalTicker items={leftSideMarketIndexItems} />
+        </div>
         <div className="absolute left-1/2 top-1/2 z-10 h-[32px] w-[1px] -translate-x-1/2 -translate-y-1/2 bg-gray-20" />
-        <VerticalTicker items={rightSideMarketIndexItems} />
+        <div className="flex basis-1/2 justify-center">
+          <VerticalTicker items={rightSideMarketIndexItems} />
+        </div>
       </div>
       <div className="hidden px-[16px] mobile:flex">
-        {marketIndexItems.map((marketIndexItem, i) => (
-          <div className="relative flex shrink-0">
-            {marketIndexItem}
-            {i !== marketIndexItems.length - 1 && (
-              <div className="mx-[16px] h-[32px] w-[1px] bg-gray-20" />
-            )}
-          </div>
-        ))}
+        {<SwiperBox items={marketIndexItems} />}
       </div>
     </div>
   );
