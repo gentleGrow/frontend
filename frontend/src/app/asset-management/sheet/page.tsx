@@ -10,7 +10,7 @@ const Sheet = () => {
   ];
 
   return (
-    <div className="pt-[20px]">
+    <div>
       <Summary summaryData={SUMMARYDATA} />
     </div>
   );
