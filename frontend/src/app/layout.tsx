@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={inter.className}>
-        <div className="relative min-h-svh w-svw">
+        <div className="text-body-1 relative min-h-svh w-svw">
           <Header />
           {children}
         </div>
