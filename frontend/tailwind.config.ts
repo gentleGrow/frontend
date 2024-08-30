@@ -3,16 +3,16 @@ import type { Config } from "tailwindcss";
 const config: Config = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
-    screens: {
-      mobile: { max: "366px" },
-      "except-mobile": { min: "365px" },
-    },
-    colors: {
-      alert: "#F84A4A",
-      decrease: "#0A6CFF",
-    },
     extend: {
+      screens: {
+        mobile: { max: "366px" },
+        "except-mobile": { min: "365px" },
+        "min-545": { min: "545px" },
+        "max-546": { max: "546px" },
+      },
       colors: {
+        alert: "#F84A4A",
+        decrease: "#0A6CFF",
         gray: {
           0: "#FFFFFF",
           5: "#F7F8FA",
