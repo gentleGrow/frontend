@@ -29,7 +29,7 @@ export default function MarketIndex() {
   );
 
   return (
-    <div className="relative overflow-hidden rounded-lg border border-gray-20 py-[24px]">
+    <div className="relative overflow-hidden rounded-lg border border-gray-20 py-[24px] mobile:rounded-none mobile:border-none">
       <div className="flex mobile:hidden">
         <div className="flex basis-1/2 justify-center">
           <VerticalTicker items={leftSideMarketIndexItems} />

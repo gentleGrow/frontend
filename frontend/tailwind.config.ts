@@ -5,8 +5,8 @@ const config: Config = {
   theme: {
     extend: {
       screens: {
-        mobile: { max: "366px" },
-        "except-mobile": { min: "365px" },
+        mobile: { max: "375px" },
+        "except-mobile": { min: "376px" },
         "min-545": { min: "545px" },
         "max-546": { max: "546px" },
       },
