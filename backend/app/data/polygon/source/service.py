@@ -7,8 +7,8 @@ from dotenv import find_dotenv, load_dotenv
 
 from app.data.common.constant import STOCK_CACHE_SECOND
 from app.data.polygon.source.constant import ALL_STOCK
+from app.module.asset.redis_repository import RedisRealTimeStockRepository
 from database.dependency import get_redis_pool
-from database.redis import RedisRealTimeStockRepository
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 

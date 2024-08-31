@@ -24,7 +24,7 @@ from app.data.common.config import (
     UK_STOCK_FILEPATH,
     USA_STOCK_FILEPATH,
 )
-from app.module.asset.schema.stock_schema import StockInfo
+from app.module.asset.schema import StockInfo
 from database.enum import EnvironmentType
 
 load_dotenv(find_dotenv())

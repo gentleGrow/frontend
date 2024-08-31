@@ -3,8 +3,8 @@ from redis.asyncio import Redis
 from app.module.asset.constant import CURRENCY_PAIRS
 from app.module.asset.enum import CurrencyType
 from app.module.asset.model import Asset, Dividend, StockDaily
-from app.module.asset.schema.stock_schema import StockAsset
-from database.redis import RedisExchangeRateRepository, RedisRealTimeStockRepository
+from app.module.asset.redis_repository import RedisExchangeRateRepository, RedisRealTimeStockRepository
+from app.module.asset.schema import StockAsset
 
 
 async def get_exchange_rate_map(redis_client: Redis) -> dict[str, float]:

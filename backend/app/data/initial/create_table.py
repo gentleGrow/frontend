@@ -10,6 +10,7 @@ from app.module.asset.model import (  # noqa > relationship purpose
     StockWeekly,
 )
 from app.module.auth.model import User  # noqa > relationship purpose
+from app.module.chart.model import InvestTip  # noqa > create table
 from database.config import MYSQL_URL, MySQLBase
 
 print("[create_tables] 테이블 생성을 시도 합니다.")

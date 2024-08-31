@@ -34,18 +34,18 @@ async def db_session(init_db):
 
 @pytest.fixture(scope="function")
 def mock_redis_repositories():
-    with patch("database.redis.RedisRealTimeStockRepository.bulk_get", return_value=[]), patch(
-        "database.redis.RedisRealTimeStockRepository.save", return_value=None
-    ), patch("database.redis.RedisExchangeRateRepository.bulk_get", return_value=[]), patch(
-        "database.redis.RedisExchangeRateRepository.save", return_value=None
+    with patch("app.module.asset.redis_repository.RedisRealTimeStockRepository.bulk_get", return_value=[]), patch(
+        "app.module.asset.redis_repository.RedisRealTimeStockRepository.save", return_value=None
+    ), patch("app.module.asset.redis_repository.RedisExchangeRateRepository.bulk_get", return_value=[]), patch(
+        "app.module.asset.redis_repository.RedisExchangeRateRepository.save", return_value=None
     ), patch(
-        "database.redis.RedisDummyAssetRepository.get", return_value=None
+        "app.module.asset.redis_repository.RedisDummyAssetRepository.get", return_value=None
     ), patch(
-        "database.redis.RedisDummyAssetRepository.save", return_value=None
+        "app.module.asset.redis_repository.RedisDummyAssetRepository.save", return_value=None
     ), patch(
-        "database.redis.RedisSessionRepository.get", return_value=None
+        "app.module.auth.redis_repository.RedisSessionRepository.get", return_value=None
     ), patch(
-        "database.redis.RedisSessionRepository.save", return_value=None
+        "app.module.auth.redis_repository.RedisSessionRepository.save", return_value=None
     ), patch.object(
         StockRepository, "get_by_codes", return_value=[]
     ):

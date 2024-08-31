@@ -1,0 +1,2 @@
+TIP_EXPIRE_SECOND = 60 * 60 * 24
+TIP_TODAY_ID_REDIS_KEY = "today_tip_id"

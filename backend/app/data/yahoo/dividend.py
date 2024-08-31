@@ -9,7 +9,7 @@ from app.module.asset.enum import Country, MarketIndex
 from app.module.asset.model import Stock  # noqa: F401 > relationship 설정시 필요합니다.
 from app.module.asset.model import Dividend
 from app.module.asset.repository.dividend_repository import DividendRepository
-from app.module.asset.schema.stock_schema import StockInfo
+from app.module.asset.schema import StockInfo
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session
 
