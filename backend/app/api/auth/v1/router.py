@@ -129,6 +129,7 @@ async def google_login(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     social_id = id_info.get("sub")
+
     if social_id is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="id token에 유저 정보가 없습니다.")
 

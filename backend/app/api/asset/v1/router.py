@@ -108,7 +108,8 @@ async def get_assets(
     if user_id is None:
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
 
-    assets: list[Asset] = await AssetRepository.get_eager(session, user_id, AssetType.STOCK)
+    assets: list[Asset] = await AssetRepository.get_eager(session, int(user_id), AssetType.STOCK)
+
     if len(assets) == 0:
         return StockAssetResponse(
             stock_assets=[],

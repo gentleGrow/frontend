@@ -39,9 +39,11 @@ class AssetRepository:
 
     @staticmethod
     async def get_eager(session: AsyncSession, user_id: int, asset_type: AssetType) -> list[Asset]:
+        print(f"{user_id=}")
+        print(f"{asset_type=}")
         result = await session.execute(
-            select(Asset)
-            .filter(and_(Asset.user_id == user_id, Asset.asset_type == asset_type, Asset.deleted_at is None))
+            select(Asset).filter(and_(Asset.user_id == user_id, Asset.asset_type == asset_type))
+            # .filter(and_(Asset.user_id == user_id, Asset.asset_type == asset_type, Asset.deleted_at is None))
             .options(joinedload(Asset.asset_stock).joinedload(AssetStock.stock))
         )
         return result.unique().scalars().all()
@@ -49,8 +51,8 @@ class AssetRepository:
     @staticmethod
     async def get_assets_by_ids(session: AsyncSession, asset_ids: list[int]) -> list[Asset]:
         result = await session.execute(
-            select(Asset)
-            .filter(and_(Asset.id.in_(asset_ids), Asset.deleted_at is None))
+            select(Asset).filter(and_(Asset.id.in_(asset_ids)))
+            # .filter(and_(Asset.id.in_(asset_ids), Asset.deleted_at is None))
             .options(joinedload(Asset.asset_stock).joinedload(AssetStock.stock))
         )
         return result.scalars().all()
