@@ -41,9 +41,6 @@ class DividendRepository:
 
     @staticmethod
     async def bulk_upsert(session: AsyncSession, dividends: list[Dividend]) -> None:
-        if not dividends:
-            return
-
         values = [{"dividend": float(div.dividend), "stock_code": str(div.stock_code)} for div in dividends]
 
         query_statement = insert(Dividend).values(values)

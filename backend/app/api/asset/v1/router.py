@@ -50,6 +50,17 @@ async def get_dummy_assets(
         return StockAssetResponse.model_validate_json(dummy_asset_cache)
 
     dummy_assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
+
+    if len(dummy_assets) == 0:
+        return StockAssetResponse(
+            stock_assets=[],
+            total_asset_amount=0.0,
+            total_invest_amount=0.0,
+            total_profit_rate=0.0,
+            total_profit_amount=0.0,
+            total_dividend_amount=0.0,
+        )
+
     stock_code_date_pairs = [(asset.asset_stock.stock.code, asset.asset_stock.purchase_date) for asset in dummy_assets]
     stock_codes = [asset.asset_stock.stock.code for asset in dummy_assets]
     stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies_by_code_and_date(
@@ -97,20 +108,20 @@ async def get_assets(
     if user_id is None:
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
 
-    dummy_assets: list[Asset] = await AssetRepository.get_eager(session, user_id, AssetType.STOCK)
-    if len(dummy_assets) == 0:
-        if not dummy_assets:
-            return StockAssetResponse(
-                stock_assets=[],
-                total_asset_amount=0.0,
-                total_invest_amount=0.0,
-                total_profit_rate=0.0,
-                total_profit_amount=0.0,
-                total_dividend_amount=0.0,
-            )
+    assets: list[Asset] = await AssetRepository.get_eager(session, int(user_id), AssetType.STOCK)
 
-    stock_code_date_pairs = [(asset.asset_stock.stock.code, asset.asset_stock.purchase_date) for asset in dummy_assets]
-    stock_codes = [asset.asset_stock.stock.code for asset in dummy_assets]
+    if len(assets) == 0:
+        return StockAssetResponse(
+            stock_assets=[],
+            total_asset_amount=0.0,
+            total_invest_amount=0.0,
+            total_profit_rate=0.0,
+            total_profit_amount=0.0,
+            total_dividend_amount=0.0,
+        )
+
+    stock_code_date_pairs = [(asset.asset_stock.stock.code, asset.asset_stock.purchase_date) for asset in assets]
+    stock_codes = [asset.asset_stock.stock.code for asset in assets]
     stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies_by_code_and_date(
         session, stock_code_date_pairs
     )
@@ -120,18 +131,18 @@ async def get_assets(
     stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
     current_stock_price_map = await get_current_stock_price(redis_client, stock_daily_map, stock_codes)
 
-    not_found_stock_codes: list[str] = check_not_found_stock(stock_daily_map, current_stock_price_map, dummy_assets)
+    not_found_stock_codes: list[str] = check_not_found_stock(stock_daily_map, current_stock_price_map, assets)
     if not_found_stock_codes:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail={"not_found_stock_codes": not_found_stock_codes}
         )
 
     stock_assets = get_stock_assets(
-        dummy_assets, stock_daily_map, current_stock_price_map, dividend_map, base_currency, exchange_rate_map
+        assets, stock_daily_map, current_stock_price_map, dividend_map, base_currency, exchange_rate_map
     )
 
     (total_asset_amount, total_invest_amount, total_dividend_amount,) = get_asset_stock_totals(
-        dummy_assets, stock_daily_map, current_stock_price_map, dividend_map, base_currency, exchange_rate_map
+        assets, stock_daily_map, current_stock_price_map, dividend_map, base_currency, exchange_rate_map
     )
 
     result: StockAssetResponse = StockAssetResponse.parse(
