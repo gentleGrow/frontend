@@ -211,9 +211,11 @@ async def update_assets(
     assets_to_update = []
 
     existing_assets = await AssetRepository.get_assets_by_ids(session, asset_ids)
+
     existing_assets_map = {asset.id: asset for asset in existing_assets}
 
     stock_codes = [asset_data.stock_code for asset_data in transaction_data]
+
     stocks = await StockRepository.get_by_codes(session, stock_codes)
     stocks_map = {stock.code: stock for stock in stocks}
 
