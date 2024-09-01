@@ -46,6 +46,10 @@ def mock_redis_repositories():
         "app.module.auth.redis_repository.RedisSessionRepository.get", return_value=None
     ), patch(
         "app.module.auth.redis_repository.RedisSessionRepository.save", return_value=None
+    ), patch(
+        "app.module.chart.redis_repository.RedisTipRepository.get", return_value=None
+    ), patch(
+        "app.module.chart.repository.TipRepository.get", return_value=None
     ), patch.object(
         StockRepository, "get_by_codes", return_value=[]
     ):
