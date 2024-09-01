@@ -4,6 +4,9 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.module.asset.model import (  # noqa > relationship purpose
     Asset,
     Dividend,
+    MarketIndexDaily,
+    MarketIndexMonthly,
+    MarketIndexWeekly,
     Stock,
     StockDaily,
     StockMonthly,
