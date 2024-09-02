@@ -3,8 +3,8 @@ from redis.asyncio import Redis
 from app.module.asset.constant import CURRENCY_PAIRS
 from app.module.asset.enum import CurrencyType
 from app.module.asset.model import Asset, Dividend, StockDaily
-from app.module.asset.schema.stock_schema import StockAsset
-from database.redis import RedisExchangeRateRepository, RedisRealTimeStockRepository
+from app.module.asset.redis_repository import RedisExchangeRateRepository, RedisRealTimeStockRepository
+from app.module.asset.schema import StockAsset
 
 
 async def get_exchange_rate_map(redis_client: Redis) -> dict[str, float]:
@@ -185,6 +185,60 @@ def get_asset_stock_totals(
 
         total_dividend_amount += dividend
         total_asset_amount += current_price * asset.asset_stock.quantity
-        total_invest_amount += stock_daily.adj_close_price * asset.asset_stock.quantity
+        total_invest_amount += purchase_price * asset.asset_stock.quantity
 
     return total_asset_amount, total_invest_amount, total_dividend_amount
+
+
+def get_total_asset_amount(
+    assets: list[Asset],
+    current_stock_price_map: dict[str, float],
+    exchange_rate_map: dict[str, float],
+) -> float:
+    total_asset_amount = 0
+
+    for asset in assets:
+        current_price = current_stock_price_map.get(asset.asset_stock.stock.code)
+
+        if current_price is None:
+            continue
+
+        source_country = asset.asset_stock.stock.country.upper()
+        source_currency = CurrencyType[source_country]
+        won_exchange_rate = get_exchange_rate(source_currency, CurrencyType.KOREA, exchange_rate_map)
+
+        current_price = current_price * won_exchange_rate
+
+        total_asset_amount += current_price * asset.asset_stock.quantity
+
+    return total_asset_amount
+
+
+def get_total_investment_amount(
+    assets: list[Asset],
+    stock_daily_map: dict[tuple[str, str], StockDaily],
+    exchange_rate_map: dict[str, float],
+) -> float:
+    total_invest_amount = 0
+
+    for asset in assets:
+        stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.asset_stock.purchase_date))
+
+        if stock_daily is None:
+            continue
+
+        purchase_price = (
+            asset.asset_stock.purchase_price
+            if asset.asset_stock.purchase_price is not None
+            else stock_daily.adj_close_price
+        )
+
+        source_country = asset.asset_stock.stock.country.upper()
+        source_currency = CurrencyType[source_country]
+        won_exchange_rate = get_exchange_rate(source_currency, CurrencyType.KOREA, exchange_rate_map)
+
+        purchase_price *= won_exchange_rate
+
+        total_invest_amount += purchase_price * asset.asset_stock.quantity
+
+    return total_invest_amount

@@ -3,7 +3,7 @@ import asyncio
 from aiohttp import ClientSession, ClientTimeout
 from bs4 import BeautifulSoup
 
-from app.module.asset.schema.stock_schema import StockInfo
+from app.module.asset.schema import StockInfo
 
 
 async def fetch_stock_price(session: ClientSession, code: str) -> int:

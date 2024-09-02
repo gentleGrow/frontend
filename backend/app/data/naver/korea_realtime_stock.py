@@ -4,9 +4,9 @@ import logging
 from app.data.common.constant import STOCK_CACHE_SECOND, STOCK_CHUNK_SIZE
 from app.data.common.service import get_korea_stock_code_list
 from app.data.naver.sources.service import get_stock_prices
-from app.module.asset.schema.stock_schema import StockInfo
+from app.module.asset.redis_repository import RedisRealTimeStockRepository
+from app.module.asset.schema import StockInfo
 from database.dependency import get_redis_pool
-from database.redis import RedisRealTimeStockRepository
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 

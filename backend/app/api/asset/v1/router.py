@@ -8,11 +8,12 @@ from app.common.schema.json_schema import JsonResponse
 from app.module.asset.constant import DUMMY_ASSET_EXPIRE_SECOND, DUMMY_ASSET_FOREIGN_KEY, DUMMY_ASSET_KOREA_KEY
 from app.module.asset.enum import AssetType
 from app.module.asset.model import Asset, AssetStock, Dividend, StockDaily
+from app.module.asset.redis_repository import RedisDummyAssetRepository
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.dividend_repository import DividendRepository
 from app.module.asset.repository.stock_daily_repository import StockDailyRepository
 from app.module.asset.repository.stock_repository import StockRepository
-from app.module.asset.schema.stock_schema import StockAssetRequest, StockAssetResponse
+from app.module.asset.schema import StockAssetRequest, StockAssetResponse
 from app.module.asset.service import (
     check_not_found_stock,
     get_asset_stock_totals,
@@ -24,7 +25,6 @@ from app.module.auth.constant import DUMMY_USER_ID
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from app.module.auth.schema import AccessToken
 from database.dependency import get_mysql_session_router, get_redis_pool
-from database.redis import RedisDummyAssetRepository
 
 asset_stock_router = APIRouter(prefix="/v1")
 
@@ -211,9 +211,11 @@ async def update_assets(
     assets_to_update = []
 
     existing_assets = await AssetRepository.get_assets_by_ids(session, asset_ids)
+
     existing_assets_map = {asset.id: asset for asset in existing_assets}
 
     stock_codes = [asset_data.stock_code for asset_data in transaction_data]
+
     stocks = await StockRepository.get_by_codes(session, stock_codes)
     stocks_map = {stock.code: stock for stock in stocks}
 

@@ -10,7 +10,7 @@ from app.data.yahoo.source.schema import StockDataFrame
 from app.data.yahoo.source.service import format_stock_code, get_last_week_period_bounds
 from app.module.asset.enum import Country, MarketIndex, TimeInterval
 from app.module.asset.model import Stock, StockDaily, StockMonthly, StockWeekly  # noqa: F401 > relationship 설정시 필요합니다.
-from app.module.asset.schema.stock_schema import StockInfo
+from app.module.asset.schema import StockInfo
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session
 
