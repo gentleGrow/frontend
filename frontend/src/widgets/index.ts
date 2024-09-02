@@ -5,3 +5,4 @@ export { default as Menu } from "./header/ui/Menu";
 export { default as DailyInvestmentTip } from "./daily-investment-tip/ui/DailyInvestmentTip";
 export { default as MarketIndex } from "./market-index/ui/MarketIndex";
 export { default as Top10SelectedByRichPerson } from "./top-10-selected-by-rich-person/ui/Top10SelectedByRichPerson";
+export { default as MyStocks } from "./my-stocks/ui/MyStocks";
