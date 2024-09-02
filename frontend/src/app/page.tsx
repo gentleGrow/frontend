@@ -1,6 +1,7 @@
 import {
   DailyInvestmentTip,
   MarketIndex,
+  MyStocks,
   Top10SelectedByRichPerson,
 } from "@/widgets";
 
@@ -10,6 +11,7 @@ export default function Home() {
       <DailyInvestmentTip />
       <MarketIndex />
       <Top10SelectedByRichPerson />
+      <MyStocks />
     </>
   );
 }

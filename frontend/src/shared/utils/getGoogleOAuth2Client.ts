@@ -1,4 +1,4 @@
-import "server-only";
+"use server";
 import { OAuth2Client } from "google-auth-library";
 
 const getGoogleOAuth2Client = () => {
