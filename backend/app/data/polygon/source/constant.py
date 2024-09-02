@@ -1,1 +1,2 @@
 ALL_STOCK = "A.*"
+ALL_MARKET_INDEX = "A.*"

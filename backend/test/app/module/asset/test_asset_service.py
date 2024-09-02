@@ -6,7 +6,6 @@ from app.module.asset.constant import CURRENCY_PAIRS
 from app.module.asset.enum import CurrencyType
 from app.module.asset.service import (
     check_not_found_stock,
-    get_asset_stock_totals,
     get_current_stock_price,
     get_exchange_rate,
     get_exchange_rate_map,
@@ -86,21 +85,3 @@ class TestAssetStock:
         assert len(stock_assets) == len(dummy_assets)
         assert all(asset.current_price > 0 for asset in stock_assets)
         assert all(isinstance(asset.profit_rate, float) for asset in stock_assets)
-
-    def test_get_asset_stock_totals(self, dummy_assets, current_stock_daily_map, current_stock_price_map, dividends):
-        exchange_rate_map = {
-            "USD_KRW": 1200.0,
-        }
-
-        total_asset_amount, total_invest_amount, total_dividend_amount = get_asset_stock_totals(
-            dummy_assets,
-            current_stock_daily_map,
-            current_stock_price_map,
-            {dividend.stock_code: dividend for dividend in dividends},
-            base_currency=True,
-            exchange_rate_map=exchange_rate_map,
-        )
-
-        assert total_asset_amount > 0
-        assert total_invest_amount > 0
-        assert total_dividend_amount > 0

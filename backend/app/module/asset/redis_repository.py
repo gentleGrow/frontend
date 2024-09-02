@@ -1,7 +1,5 @@
 from redis.asyncio import Redis
 
-from app.module.asset.schema import StockAssetResponse
-
 
 class RedisRealTimeStockRepository:
     @staticmethod
@@ -20,14 +18,4 @@ class RedisExchangeRateRepository:
 
     @staticmethod
     async def save(redis_client: Redis, key: str, data: float, expire_time: int) -> None:
-        await redis_client.set(key, data, ex=expire_time)
-
-
-class RedisDummyAssetRepository:
-    @staticmethod
-    async def get(redis_client: Redis, key: str) -> StockAssetResponse | None:
-        return await redis_client.get(key)
-
-    @staticmethod
-    async def save(redis_client: Redis, key: str, data: str, expire_time: int) -> None:
         await redis_client.set(key, data, ex=expire_time)

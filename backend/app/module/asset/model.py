@@ -6,51 +6,6 @@ from app.module.asset.enum import AccountType, AssetType, InvestmentBankType, Pu
 from database.config import MySQLBase
 
 
-class MarketIndexDaily(MySQLBase):
-    __tablename__ = "market_index_daily"
-
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    index_name = Column(String(255), nullable=False)
-    date = Column(Date, nullable=False)
-    open_price = Column(Float, nullable=False)
-    close_price = Column(Float, nullable=False)
-    high_price = Column(Float, nullable=False)
-    low_price = Column(Float, nullable=False)
-    volume = Column(BigInteger, nullable=True)
-
-    __table_args__ = (UniqueConstraint("index_name", "date", name="uq_index_name_date"),)
-
-
-class MarketIndexWeekly(MySQLBase):
-    __tablename__ = "market_index_weekly"
-
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    index_name = Column(String(50), nullable=False)
-    date = Column(Date, nullable=False)
-    open_price = Column(Float, nullable=False)
-    close_price = Column(Float, nullable=False)
-    high_price = Column(Float, nullable=False)
-    low_price = Column(Float, nullable=False)
-    volume = Column(BigInteger, nullable=False)
-
-    __table_args__ = (UniqueConstraint("index_name", "date", name="uq_index_name_date"),)
-
-
-class MarketIndexMonthly(MySQLBase):
-    __tablename__ = "market_index_monthly"
-
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    index_name = Column(String(50), nullable=False)
-    date = Column(Date, nullable=False)
-    open_price = Column(Float, nullable=False)
-    close_price = Column(Float, nullable=False)
-    high_price = Column(Float, nullable=False)
-    low_price = Column(Float, nullable=False)
-    volume = Column(BigInteger, nullable=False)
-
-    __table_args__ = (UniqueConstraint("index_name", "date", name="uq_index_name_date"),)
-
-
 class Dividend(TimestampMixin, MySQLBase):
     __tablename__ = "dividend"
 
@@ -150,3 +105,48 @@ class StockMonthly(MySQLBase):
     trade_volume = Column(BigInteger, nullable=False, info={"description": "Volume of stock traded"})
 
     ___table_args__ = (UniqueConstraint("code", "date", name="uq_code_date"),)
+
+
+class MarketIndexDaily(MySQLBase):
+    __tablename__ = "market_index_daily"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    index_name = Column(String(255), nullable=False)
+    date = Column(Date, nullable=False)
+    open_price = Column(Float, nullable=False)
+    close_price = Column(Float, nullable=False)
+    high_price = Column(Float, nullable=False)
+    low_price = Column(Float, nullable=False)
+    volume = Column(BigInteger, nullable=True)
+
+    __table_args__ = (UniqueConstraint("index_name", "date", name="uq_index_name_date"),)
+
+
+class MarketIndexWeekly(MySQLBase):
+    __tablename__ = "market_index_weekly"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    index_name = Column(String(50), nullable=False)
+    date = Column(Date, nullable=False)
+    open_price = Column(Float, nullable=False)
+    close_price = Column(Float, nullable=False)
+    high_price = Column(Float, nullable=False)
+    low_price = Column(Float, nullable=False)
+    volume = Column(BigInteger, nullable=False)
+
+    __table_args__ = (UniqueConstraint("index_name", "date", name="uq_index_name_date"),)
+
+
+class MarketIndexMonthly(MySQLBase):
+    __tablename__ = "market_index_monthly"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    index_name = Column(String(50), nullable=False)
+    date = Column(Date, nullable=False)
+    open_price = Column(Float, nullable=False)
+    close_price = Column(Float, nullable=False)
+    high_price = Column(Float, nullable=False)
+    low_price = Column(Float, nullable=False)
+    volume = Column(BigInteger, nullable=False)
+
+    __table_args__ = (UniqueConstraint("index_name", "date", name="uq_index_name_date"),)

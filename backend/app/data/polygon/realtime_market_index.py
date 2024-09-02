@@ -6,11 +6,11 @@ import time
 import websocket
 from dotenv import find_dotenv, load_dotenv
 
-from app.data.polygon.source.service import on_close, on_error, on_message_sync, on_open
+from app.data.polygon.source.service import on_close, on_error, on_message_market_index, on_open_market_index
 
 load_dotenv(find_dotenv())
 
-POLYGON_WS_URL = os.getenv("POLYGON_WS_STOCK_URL")
+POLYGON_WS_URL = os.getenv("POLYGON_WS_MARKET_INDEX_URL")
 
 
 def start_websocket(loop):
@@ -19,11 +19,11 @@ def start_websocket(loop):
     while True:
         ws = websocket.WebSocketApp(
             POLYGON_WS_URL,
-            on_message=lambda ws, msg: on_message_sync(ws, msg, loop),
+            on_message=lambda ws, msg: on_message_market_index(ws, msg, loop),
             on_error=on_error,
             on_close=on_close,
         )
-        ws.on_open = on_open
+        ws.on_open = on_open_market_index
         ws.run_forever()
 
         time.sleep(5)

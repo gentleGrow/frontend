@@ -39,7 +39,7 @@ def get_exchange_rate(source: CurrencyType, target: CurrencyType, exchange_rate_
 
 
 async def get_current_stock_price(
-    redis_client: Redis, stock_daily_map: dict[tuple[str, str], StockDaily], stock_codes: list[str]
+    redis_client: Redis, lastest_stock_daily_map: dict[tuple[str, str], StockDaily], stock_codes: list[str]
 ) -> dict[str, float]:
     result = {}
 
@@ -49,9 +49,7 @@ async def get_current_stock_price(
         current_price = current_prices[i]
 
         if current_price is None:
-            latest_date = max([date for (code, date) in stock_daily_map.keys() if code == stock_code], default=None)
-
-            stock_daily = stock_daily_map.get((stock_code, latest_date))
+            stock_daily = lastest_stock_daily_map.get(stock_code)
             current_price = stock_daily.adj_close_price if stock_daily else 0.0
 
         result[stock_code] = float(current_price)
@@ -146,48 +144,25 @@ def get_stock_assets(
     return stock_assets
 
 
-def get_asset_stock_totals(
+def get_total_dividend(
     assets: list[Asset],
-    stock_daily_map: dict[tuple[str, str], StockDaily],
-    current_stock_price_map: dict[str, float],
     dividend_map: dict[str, Dividend],
-    base_currency: bool,
     exchange_rate_map: dict[str, float],
-) -> tuple[float, float, float]:
-    total_asset_amount = 0
-    total_invest_amount = 0
+) -> float:
     total_dividend_amount = 0
 
     for asset in assets:
-        stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.asset_stock.purchase_date))
-        current_price = current_stock_price_map.get(asset.asset_stock.stock.code)
-
-        if not stock_daily or not current_price:
-            continue
-
         dividend_instance = dividend_map.get(asset.asset_stock.stock.code)
         dividend = dividend_instance.dividend if dividend_instance else 0
-
-        purchase_price = (
-            asset.asset_stock.purchase_price
-            if asset.asset_stock.purchase_price is not None
-            else stock_daily.adj_close_price
-        )
 
         source_country = asset.asset_stock.stock.country.upper()
         source_currency = CurrencyType[source_country]
         won_exchange_rate = get_exchange_rate(source_currency, CurrencyType.KOREA, exchange_rate_map)
 
-        if base_currency:
-            current_price = current_price * won_exchange_rate
-            purchase_price *= won_exchange_rate
-            dividend *= won_exchange_rate
-
+        dividend *= won_exchange_rate
         total_dividend_amount += dividend
-        total_asset_amount += current_price * asset.asset_stock.quantity
-        total_invest_amount += purchase_price * asset.asset_stock.quantity
 
-    return total_asset_amount, total_invest_amount, total_dividend_amount
+    return total_dividend_amount
 
 
 def get_total_asset_amount(
@@ -205,12 +180,12 @@ def get_total_asset_amount(
 
         source_country = asset.asset_stock.stock.country.upper()
         source_currency = CurrencyType[source_country]
+
         won_exchange_rate = get_exchange_rate(source_currency, CurrencyType.KOREA, exchange_rate_map)
 
-        current_price = current_price * won_exchange_rate
+        current_price *= won_exchange_rate
 
         total_asset_amount += current_price * asset.asset_stock.quantity
-
     return total_asset_amount
 
 
@@ -227,7 +202,7 @@ def get_total_investment_amount(
         if stock_daily is None:
             continue
 
-        purchase_price = (
+        invest_price = (
             asset.asset_stock.purchase_price
             if asset.asset_stock.purchase_price is not None
             else stock_daily.adj_close_price
@@ -237,8 +212,8 @@ def get_total_investment_amount(
         source_currency = CurrencyType[source_country]
         won_exchange_rate = get_exchange_rate(source_currency, CurrencyType.KOREA, exchange_rate_map)
 
-        purchase_price *= won_exchange_rate
+        invest_price *= won_exchange_rate
 
-        total_invest_amount += purchase_price * asset.asset_stock.quantity
+        total_invest_amount += invest_price * asset.asset_stock.quantity
 
     return total_invest_amount

@@ -39,10 +39,6 @@ def mock_redis_repositories():
     ), patch("app.module.asset.redis_repository.RedisExchangeRateRepository.bulk_get", return_value=[]), patch(
         "app.module.asset.redis_repository.RedisExchangeRateRepository.save", return_value=None
     ), patch(
-        "app.module.asset.redis_repository.RedisDummyAssetRepository.get", return_value=None
-    ), patch(
-        "app.module.asset.redis_repository.RedisDummyAssetRepository.save", return_value=None
-    ), patch(
         "app.module.auth.redis_repository.RedisSessionRepository.get", return_value=None
     ), patch(
         "app.module.auth.redis_repository.RedisSessionRepository.save", return_value=None
