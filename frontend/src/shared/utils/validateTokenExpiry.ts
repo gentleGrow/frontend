@@ -1,4 +1,4 @@
-"use server";
+import "server-only";
 
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { cookies } from "next/headers";
