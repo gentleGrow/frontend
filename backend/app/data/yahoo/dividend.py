@@ -38,11 +38,14 @@ async def insert_dividend_data(session: AsyncSession, stock_list: list[StockInfo
             else:
                 newest_dividend = dividends.iloc[-1]
 
-            dividend = Dividend(dividend=newest_dividend, stock_code=stock.code)
+            dividend = Dividend(
+                dividend=newest_dividend,
+                stock_code=stock.code,
+            )
+
             dividend_list.append(dividend)
 
         await DividendRepository.bulk_upsert(session=session, dividends=dividend_list)
-        print(f"Processed batch {i // batch_size + 1} with {len(batch)} elements.")
 
 
 async def main():
