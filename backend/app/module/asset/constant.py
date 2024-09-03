@@ -3,9 +3,6 @@ from datetime import date
 from app.module.asset.enum import AccountType, CurrencyType, InvestmentBankType, PurchaseCurrencyType
 
 REDIS_STOCK_EXPIRE_SECOND = 60 * 60 * 24
-DUMMY_ASSET_EXPIRE_SECOND = 60 * 60
-DUMMY_ASSET_KOREA_KEY = "dummy_asset_korea"
-DUMMY_ASSET_FOREIGN_KEY = "dummy_asset_foreign"
 
 COUNTRY_TO_CURRENCY = {
     "KOREA": CurrencyType.KOREA,
@@ -78,4 +75,4 @@ ACCOUNT_TYPES = [
     AccountType.REGULAR.value,
 ]
 
-STOCK_QUANTITIES = [6, 3, 2, 4, 5]
+STOCK_QUANTITIES = [1, 1, 2, 4, 5]

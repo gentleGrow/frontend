@@ -4,11 +4,30 @@ from sqlalchemy import func, tuple_
 from sqlalchemy.dialects.mysql import insert as mysql_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.orm import aliased
 
 from app.module.asset.model import StockDaily
 
 
 class StockDailyRepository:
+    @staticmethod
+    async def get_latest(session: AsyncSession, stock_codes: list[str]) -> list[StockDaily]:
+        subquery = (
+            select(StockDaily.code, func.max(StockDaily.date).label("max_date"))
+            .where(StockDaily.code.in_(stock_codes))
+            .group_by(StockDaily.code)
+            .subquery()
+        )
+
+        stock_daily_alias = aliased(StockDaily)
+
+        stmt = select(stock_daily_alias).join(
+            subquery, (stock_daily_alias.code == subquery.c.code) & (stock_daily_alias.date == subquery.c.max_date)
+        )
+
+        result = await session.execute(stmt)
+        return result.scalars().all()
+
     @staticmethod
     async def get_stock_dailies_by_code_and_date(
         session: AsyncSession, stock_code_date_pairs: list[tuple[str, date]]
