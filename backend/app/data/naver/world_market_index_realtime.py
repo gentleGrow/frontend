@@ -1,13 +1,17 @@
 import asyncio
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+
 from app.data.common.constant import MARKET_INDEX_CACHE_SECOND
-from app.data.naver.sources.schema import MarketIndexData
+from app.module.asset.schema import MarketIndexData
+from app.module.asset.enum import ProfitStatus
+from app.module.asset.constant import COUNTRY_TRANSLATIONS, INDEX_NAME_TRANSLATIONS
 from app.module.asset.redis_repository import RedisRealTimeMarketIndexRepository
 from database.dependency import get_redis_pool
-from app.module.asset.enum import COUNTRY_TRANSLATIONS, INDEX_NAME_TRANSLATIONS, ProfitStatus
+
 
 async def fetch_market_data(redis_client):
     driver = webdriver.Chrome()
@@ -47,9 +51,8 @@ async def fetch_market_data(redis_client):
                 current_value = tr_row_data[2].strip().replace(",", "").replace("-", "")
                 change_value = tr_row_data[3].strip().replace(",", "").replace("-", "")
                 change_percent = tr_row_data[4].strip().replace("%", "")
-                profit_status = ProfitStatus.MINUS if '-' in change_percent else ProfitStatus.PLUS
+                profit_status = ProfitStatus.MINUS if "-" in change_percent else ProfitStatus.PLUS
                 change_percent = change_percent.replace("-", "")
-                
 
                 market_index = MarketIndexData(
                     country=country_en,
@@ -57,7 +60,7 @@ async def fetch_market_data(redis_client):
                     current_value=current_value,
                     change_value=change_value,
                     change_percent=change_percent,
-                    profit_status = profit_status,
+                    profit_status=profit_status,
                     update_time=tr_row_data[5],
                 )
 
@@ -72,11 +75,13 @@ async def fetch_market_data(redis_client):
     finally:
         driver.quit()
 
+
 async def main():
     redis_client = await get_redis_pool()
     while True:
         await fetch_market_data(redis_client)
-        await asyncio.sleep(10) 
+        await asyncio.sleep(10)
+
 
 if __name__ == "__main__":
     asyncio.run(main())

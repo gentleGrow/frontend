@@ -13,17 +13,12 @@ class SummaryResponse(BaseModel):
     profit_rate: float = Field(..., description="수익률")
 
 
+class MarketIndiceResponseValue(BaseModel):
+    index_name: str
+    current_value: float
+    change_percent: float
+    profit_status: str
+
+
 class MarketIndiceResponse(BaseModel):
-    market_indices: list[tuple[str, float, float]]
-
-
-class MarketIndexValue(BaseModel):
-    event_type: str
-    index_name: str = Field(..., description="인덱스 심볼")
-    today_opening_value: float = Field(..., description="오늘 하루 시작가")
-    opening_value: float = Field(..., description="1초 내 시작가")
-    closing_value: float = Field(..., description="1초 내 종가")
-    highest_value: float = Field(..., description="1초 내 최대")
-    lowest_value: float = Field(..., description="1초 내 최저")
-    start_time: int = Field(..., description="1초 내 시작 시간")
-    end_time: int = Field(..., description="1초 내 끝 시간")
+    market_indices: list[MarketIndiceResponseValue]
