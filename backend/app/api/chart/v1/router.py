@@ -6,10 +6,11 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.common.auth.security import verify_jwt_token
-from app.module.asset.enum import AssetType
+from app.module.asset.enum import AssetType, MarketIndex
 from app.module.asset.model import Asset, StockDaily
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.stock_daily_repository import StockDailyRepository
+from app.module.asset.schema import MarketIndexData
 from app.module.asset.service import (
     check_not_found_stock,
     get_current_stock_price,
@@ -19,12 +20,10 @@ from app.module.asset.service import (
 )
 from app.module.auth.constant import DUMMY_USER_ID
 from app.module.auth.schema import AccessToken
-from app.module.asset.schema import MarketIndexData
 from app.module.chart.constant import TIP_TODAY_ID_REDIS_KEY
-from app.module.asset.enum import MarketIndex
 from app.module.chart.redis_repository import RedisMarketIndiceRepository, RedisTipRepository
 from app.module.chart.repository import TipRepository
-from app.module.chart.schema import ChartTipResponse, MarketIndiceResponse, SummaryResponse, MarketIndiceResponseValue
+from app.module.chart.schema import ChartTipResponse, MarketIndiceResponse, MarketIndiceResponseValue, SummaryResponse
 from database.dependency import get_mysql_session_router, get_redis_pool
 
 chart_router = APIRouter(prefix="/v1")
@@ -52,9 +51,10 @@ async def get_market_index(
             index_name=market_index_value.index_name,
             current_value=float(market_index_value.current_value),
             change_percent=float(market_index_value.change_percent),
-            profit_status=market_index_value.profit_status
+            profit_status=market_index_value.profit_status,
         )
-        for market_index_value in market_index_values if market_index_value is not None
+        for market_index_value in market_index_values
+        if market_index_value is not None
     ]
 
     return MarketIndiceResponse(market_indices=market_index_pairs)

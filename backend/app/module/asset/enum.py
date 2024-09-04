@@ -92,7 +92,7 @@ class MarketIndex(StrEnum):
     KOSDAQ = "KQ11"  # KOSDAQ Index
     DOW_JONES = "DJI"  # Dow Jones Industrial Average
     NASDAQ = "IXIC"  # Nasdaq Composite
-    SP500 = "GSPC" # S&P500 
+    SP500 = "GSPC"  # S&P500
     NYSE_COMPOSITE = "NYA"  # NYSE Composite Index
     NIKKEI_225 = "N225"  # Nikkei 225
     FTSE_100 = "FTSE"  # FTSE 100 Index

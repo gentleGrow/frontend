@@ -4,9 +4,9 @@ import requests
 from bs4 import BeautifulSoup
 
 from app.data.common.constant import MARKET_INDEX_CACHE_SECOND
-from app.module.asset.schema import MarketIndexData
 from app.module.asset.enum import Country, MarketIndex, ProfitStatus
 from app.module.asset.redis_repository import RedisRealTimeMarketIndexRepository
+from app.module.asset.schema import MarketIndexData
 from database.dependency import get_redis_pool
 
 
