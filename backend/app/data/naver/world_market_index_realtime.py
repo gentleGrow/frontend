@@ -1,25 +1,21 @@
 import asyncio
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-
 from app.data.common.constant import MARKET_INDEX_CACHE_SECOND
-from app.data.naver.sources.constant import INDEX_NAME_TRANSLATIONS
 from app.data.naver.sources.schema import MarketIndexData
 from app.module.asset.redis_repository import RedisRealTimeMarketIndexRepository
 from database.dependency import get_redis_pool
+from app.module.asset.enum import COUNTRY_TRANSLATIONS, INDEX_NAME_TRANSLATIONS, ProfitStatus
 
-
-async def main():
-    redis_client = await get_redis_pool()
+async def fetch_market_data(redis_client):
     driver = webdriver.Chrome()
 
-    driver.get("https://finance.naver.com/world/")
-    bulk_data = []
-
     try:
+        driver.get("https://finance.naver.com/world/")
+        bulk_data = []
+
         america_index_table = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "americaIndex")))
 
         tr_rows = america_index_table.find_elements(By.XPATH, ".//thead/tr")
@@ -43,15 +39,25 @@ async def main():
                         tr_row_data.append(td.text)
 
             if tr_row_data:
+                country_kr = tr_row_data[0]
+                country_en = COUNTRY_TRANSLATIONS.get(country_kr, country_kr)
                 index_name_kr = tr_row_data[1]
                 index_name_en = INDEX_NAME_TRANSLATIONS.get(index_name_kr, index_name_kr)
 
+                current_value = tr_row_data[2].strip().replace(",", "").replace("-", "")
+                change_value = tr_row_data[3].strip().replace(",", "").replace("-", "")
+                change_percent = tr_row_data[4].strip().replace("%", "")
+                profit_status = ProfitStatus.MINUS if '-' in change_percent else ProfitStatus.PLUS
+                change_percent = change_percent.replace("-", "")
+                
+
                 market_index = MarketIndexData(
-                    country=tr_row_data[0],
+                    country=country_en,
                     index_name=index_name_en,
-                    current_value=tr_row_data[2],
-                    change_value=tr_row_data[3],
-                    change_percent=tr_row_data[4],
+                    current_value=current_value,
+                    change_value=change_value,
+                    change_percent=change_percent,
+                    profit_status = profit_status,
                     update_time=tr_row_data[5],
                 )
 
@@ -66,6 +72,11 @@ async def main():
     finally:
         driver.quit()
 
+async def main():
+    redis_client = await get_redis_pool()
+    while True:
+        await fetch_market_data(redis_client)
+        await asyncio.sleep(10) 
 
 if __name__ == "__main__":
     asyncio.run(main())
