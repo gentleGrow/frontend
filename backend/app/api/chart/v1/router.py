@@ -1,7 +1,7 @@
 import json
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,11 +19,12 @@ from app.module.asset.service import (
 )
 from app.module.auth.constant import DUMMY_USER_ID
 from app.module.auth.schema import AccessToken
+from app.module.asset.schema import MarketIndexData
 from app.module.chart.constant import TIP_TODAY_ID_REDIS_KEY
-from app.module.chart.enum import MarketIndexName
+from app.module.asset.enum import MarketIndex
 from app.module.chart.redis_repository import RedisMarketIndiceRepository, RedisTipRepository
 from app.module.chart.repository import TipRepository
-from app.module.chart.schema import ChartTipResponse, MarketIndexValue, MarketIndiceResponse, SummaryResponse
+from app.module.chart.schema import ChartTipResponse, MarketIndiceResponse, SummaryResponse, MarketIndiceResponseValue
 from database.dependency import get_mysql_session_router, get_redis_pool
 
 chart_router = APIRouter(prefix="/v1")
@@ -31,13 +32,13 @@ chart_router = APIRouter(prefix="/v1")
 
 @chart_router.get("/indice", summary="현재 시장 지수", response_model=MarketIndiceResponse)
 async def get_market_index(
-    market_indices: list[MarketIndexName], redis_client: Redis = Depends(get_redis_pool)
+    market_indices: list[MarketIndex] = Query(...), redis_client: Redis = Depends(get_redis_pool)
 ) -> MarketIndiceResponse:
     market_index_keys = [index.value for index in market_indices]
     market_index_values_str = await RedisMarketIndiceRepository.gets(redis_client, market_index_keys)
 
-    market_index_values: list[MarketIndexValue] = [
-        json.loads(value) if value is not None else None for value in market_index_values_str
+    market_index_values: list[MarketIndexData] = [
+        MarketIndexData(**json.loads(value)) if value is not None else None for value in market_index_values_str
     ]
 
     missing_indices = [
@@ -47,14 +48,13 @@ async def get_market_index(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{', '.join(missing_indices)}의 값이 없습니다.")
 
     market_index_pairs = [
-        (
-            market_index_value.index_name,
-            market_index_value.highest_value,
-            (market_index_value.today_opening_value - market_index_value.highest_value)
-            / market_index_value.highest_value
-            * 100,
+        MarketIndiceResponseValue(
+            index_name=market_index_value.index_name,
+            current_value=float(market_index_value.current_value),
+            change_percent=float(market_index_value.change_percent),
+            profit_status=market_index_value.profit_status
         )
-        for market_index_value in market_index_values
+        for market_index_value in market_index_values if market_index_value is not None
     ]
 
     return MarketIndiceResponse(market_indices=market_index_pairs)
