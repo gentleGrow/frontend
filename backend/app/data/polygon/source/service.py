@@ -17,12 +17,14 @@ load_dotenv(find_dotenv())
 POLYGON_API_KEY = os.getenv("POLYGON_API_KEY")
 redis_client = get_redis_pool()
 
+
 async def handle_message(message):
     realtime_stock = json.loads(message)
     for stock_data in realtime_stock:
         await RedisRealTimeStockRepository.save(
             redis_client, stock_data["sym"], stock_data["vw"], expire_time=STOCK_CACHE_SECOND
         )
+
 
 def on_message_sync(ws, message, loop):
     asyncio.run_coroutine_threadsafe(handle_message(message), loop)
@@ -42,5 +44,3 @@ def on_open(ws):
 
     subscribe_message = {"action": "subscribe", "params": ALL_STOCK}
     ws.send(json.dumps(subscribe_message))
-
-

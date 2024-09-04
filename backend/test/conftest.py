@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.common.auth.security import verify_jwt_token
-from app.module.asset.repository.stock_repository import StockRepository
 from database.config import MySQLBase
 from main import app
 
@@ -46,8 +45,6 @@ def mock_redis_repositories():
         "app.module.chart.redis_repository.RedisTipRepository.get", return_value=None
     ), patch(
         "app.module.chart.repository.TipRepository.get", return_value=None
-    ), patch.object(
-        StockRepository, "get_by_codes", return_value=[]
     ):
         yield
 

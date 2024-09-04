@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 
+
 class MarketIndexData(BaseModel):
     country: str = Field(..., description="Country of the market index")
     index_name: str = Field(..., description="Name of the market index")
