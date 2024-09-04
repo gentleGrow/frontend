@@ -1,6 +1,13 @@
 from datetime import date
 
-from app.module.asset.enum import AccountType, CurrencyType, InvestmentBankType, PurchaseCurrencyType, MarketIndex, Country
+from app.module.asset.enum import (
+    AccountType,
+    Country,
+    CurrencyType,
+    InvestmentBankType,
+    MarketIndex,
+    PurchaseCurrencyType,
+)
 
 REDIS_STOCK_EXPIRE_SECOND = 60 * 60 * 24
 

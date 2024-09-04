@@ -6,10 +6,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from app.data.common.constant import MARKET_INDEX_CACHE_SECOND
-from app.module.asset.schema import MarketIndexData
-from app.module.asset.enum import ProfitStatus
 from app.module.asset.constant import COUNTRY_TRANSLATIONS, INDEX_NAME_TRANSLATIONS
+from app.module.asset.enum import ProfitStatus
 from app.module.asset.redis_repository import RedisRealTimeMarketIndexRepository
+from app.module.asset.schema import MarketIndexData
 from database.dependency import get_redis_pool
 
 
