@@ -3344,27 +3344,6 @@ poetry = ">=1.8.0,<2.0.0"
 poetry-core = ">=1.7.0,<2.0.0"
 
 [[package]]
-name = "polygon"
-version = "1.2.0"
-description = "A Complete Python Wrapper for Polygon.io APIs."
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "polygon-1.2.0-py2.py3-none-any.whl", hash = "sha256:79a69c2b055d41c46690ceb0a2110ac12c9e54288180e00f7092b7089018f7e8"},
-]
-
-[package.dependencies]
-httpx = "*"
-requests = "*"
-websocket-client = "*"
-websockets = "*"
-
-[package.extras]
-all = ["orjson", "uvloop"]
-orjson = ["orjson"]
-uvloop = ["uvloop"]
-
-[[package]]
 name = "polygon-api-client"
 version = "1.14.1"
 description = "Official Polygon.io REST and Websocket client."
@@ -5244,6 +5223,22 @@ docs = ["furo", "sphinx", "sphinx-copybutton", "sphinx-inline-tabs", "sphinx-not
 tests = ["pytest", "pytest-cov"]
 
 [[package]]
+name = "webdriver-manager"
+version = "4.0.2"
+description = "Library provides the way to automatically manage drivers for different browsers"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "webdriver_manager-4.0.2-py2.py3-none-any.whl", hash = "sha256:75908d92ecc45ff2b9953614459c633db8f9aa1ff30181cefe8696e312908129"},
+    {file = "webdriver_manager-4.0.2.tar.gz", hash = "sha256:efedf428f92fd6d5c924a0d054e6d1322dd77aab790e834ee767af392b35590f"},
+]
+
+[package.dependencies]
+packaging = "*"
+python-dotenv = "*"
+requests = "*"
+
+[[package]]
 name = "webencodings"
 version = "0.5.1"
 description = "Character encoding aliases for legacy web content"
@@ -5587,4 +5582,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "c3a2f6f6b05c0640b5664389997fee3425b1968f8c4bed5edc9ecca68b3bbb92"
+content-hash = "1f035ee6783c6eef38e0f6c234316f6ee3efd37e2866b551eac6997ae30c69f3"

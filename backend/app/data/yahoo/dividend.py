@@ -57,6 +57,6 @@ async def main():
 
     print("배당금 수집을 완료합니다.")
 
-
 if __name__ == "__main__":
     asyncio.run(main())
+

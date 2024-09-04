@@ -1,7 +1,7 @@
 import json
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -31,7 +31,7 @@ chart_router = APIRouter(prefix="/v1")
 
 @chart_router.get("/indice", summary="현재 시장 지수", response_model=MarketIndiceResponse)
 async def get_market_index(
-    market_indices: list[MarketIndexName], redis_client: Redis = Depends(get_redis_pool)
+    market_indices: list[MarketIndexName] = Query(...), redis_client: Redis = Depends(get_redis_pool)
 ) -> MarketIndiceResponse:
     market_index_keys = [index.value for index in market_indices]
     market_index_values_str = await RedisMarketIndiceRepository.gets(redis_client, market_index_keys)

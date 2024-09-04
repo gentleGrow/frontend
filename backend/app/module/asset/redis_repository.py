@@ -19,3 +19,12 @@ class RedisExchangeRateRepository:
     @staticmethod
     async def save(redis_client: Redis, key: str, data: float, expire_time: int) -> None:
         await redis_client.set(key, data, ex=expire_time)
+
+
+class RedisRealTimeMarketIndexRepository:
+    @staticmethod
+    async def bulk_save(redis_client: Redis, bulk_data: list[tuple[str, str]], expire_time: int) -> None:
+        pipeline = redis_client.pipeline()
+        for key, market_index_json in bulk_data:
+            pipeline.set(key, market_index_json, ex=expire_time)
+        await pipeline.execute()
