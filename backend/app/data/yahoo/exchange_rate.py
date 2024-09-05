@@ -36,7 +36,6 @@ async def main():
                     continue
 
                 cache_key = source_currency + "_" + target_currency
-
                 await RedisExchangeRateRepository.save(redis_client, cache_key, rate, expire_time=STOCK_CACHE_SECOND)
         except Exception as e:
             logging.error(f"An unexpected error occurred in the main loop: {e}")
