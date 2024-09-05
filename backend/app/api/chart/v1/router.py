@@ -18,20 +18,131 @@ from app.module.asset.service import (
     get_total_asset_amount,
     get_total_investment_amount,
 )
+from app.module.asset.services.exchange_rate_service import ExchangeRateService
+from app.module.asset.services.stock_service import StockService
 from app.module.auth.constant import DUMMY_USER_ID
 from app.module.auth.schema import AccessToken
 from app.module.chart.constant import TIP_TODAY_ID_REDIS_KEY
+from app.module.chart.enum import CompositionType
 from app.module.chart.redis_repository import RedisMarketIndiceRepository, RedisTipRepository
 from app.module.chart.repository import TipRepository
-from app.module.chart.schema import ChartTipResponse, MarketIndiceResponse, MarketIndiceResponseValue, SummaryResponse
+from app.module.chart.schema import (
+    ChartTipResponse,
+    CompositionResponse,
+    CompositionResponseValue,
+    MarketIndiceResponse,
+    MarketIndiceResponseValue,
+    SummaryResponse,
+)
+from app.module.chart.service.composition_service import CompositionService
 from database.dependency import get_mysql_session_router, get_redis_pool
 
 chart_router = APIRouter(prefix="/v1")
 
 
+@chart_router.get("/composition", summary="종목 구성", response_model=CompositionResponse)
+async def get_composition(
+    token: AccessToken = Depends(verify_jwt_token),
+    type: CompositionType = Query(CompositionType.COMPOSITION, description="composition은 종목 별, account는 계좌 별 입니다."),
+    session: AsyncSession = Depends(get_mysql_session_router),
+    redis_client: Redis = Depends(get_redis_pool),
+) -> CompositionResponse:
+    user_id = token.get("user")
+    if user_id is None:
+        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
+
+    assets: list[Asset] = await AssetRepository.get_eager(session, user_id, AssetType.STOCK)
+    if len(assets) == 0:
+        return CompositionResponse(composition=[CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)])
+
+    stock_codes = [asset.asset_stock.stock.code for asset in assets]
+    lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, stock_codes)
+    lastest_stock_daily_map = {daily.code: daily for daily in lastest_stock_dailies}
+    current_stock_price_map = await StockService.get_current_stock_price(
+        redis_client, lastest_stock_daily_map, stock_codes
+    )
+    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
+
+    if type is CompositionType.COMPOSITION:
+        stock_composition_data = CompositionService.get_asset_stock_composition(
+            assets, current_stock_price_map, exchange_rate_map
+        )
+
+        composition_data = [
+            CompositionResponseValue(
+                name=item["name"], percent_rate=item["percent_rate"], current_amount=item["current_amount"]
+            )
+            for item in stock_composition_data
+        ]
+
+        return CompositionResponse(composition=composition_data)
+
+    else:
+        account_composition_data = CompositionService.get_asset_stock_account(
+            assets, current_stock_price_map, exchange_rate_map
+        )
+
+        composition_data = [
+            CompositionResponseValue(
+                name=item["name"], percent_rate=item["percent_rate"], current_amount=item["current_amount"]
+            )
+            for item in account_composition_data
+        ]
+
+        return CompositionResponse(composition=composition_data)
+
+
+@chart_router.get("/dummy/composition", summary="종목 구성", response_model=CompositionResponse)
+async def get_dummy_composition(
+    type: CompositionType = Query(CompositionType.COMPOSITION, description="composition은 종목 별, account는 계좌 별 입니다."),
+    session: AsyncSession = Depends(get_mysql_session_router),
+    redis_client: Redis = Depends(get_redis_pool),
+) -> CompositionResponse:
+    assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
+    if len(assets) == 0:
+        return CompositionResponse(composition=[CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)])
+
+    stock_codes = [asset.asset_stock.stock.code for asset in assets]
+    lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, stock_codes)
+    lastest_stock_daily_map = {daily.code: daily for daily in lastest_stock_dailies}
+    current_stock_price_map = await StockService.get_current_stock_price(
+        redis_client, lastest_stock_daily_map, stock_codes
+    )
+    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
+
+    if type is CompositionType.COMPOSITION:
+        stock_composition_data = CompositionService.get_asset_stock_composition(
+            assets, current_stock_price_map, exchange_rate_map
+        )
+
+        composition_data = [
+            CompositionResponseValue(
+                name=item["name"], percent_rate=item["percent_rate"], current_amount=item["current_amount"]
+            )
+            for item in stock_composition_data
+        ]
+
+        return CompositionResponse(composition=composition_data)
+
+    else:
+        account_composition_data = CompositionService.get_asset_stock_account(
+            assets, current_stock_price_map, exchange_rate_map
+        )
+
+        composition_data = [
+            CompositionResponseValue(
+                name=item["name"], percent_rate=item["percent_rate"], current_amount=item["current_amount"]
+            )
+            for item in account_composition_data
+        ]
+
+        return CompositionResponse(composition=composition_data)
+
+
 @chart_router.get("/indice", summary="현재 시장 지수", response_model=MarketIndiceResponse)
 async def get_market_index(
-    market_indices: list[MarketIndex] = Query(...), redis_client: Redis = Depends(get_redis_pool)
+    market_indices: list[MarketIndex] = Query(..., description="KS11, KQ11, DJI, GSPC, IXIC 등등 대표적인 지수 명을 입력 해주세요."),
+    redis_client: Redis = Depends(get_redis_pool),
 ) -> MarketIndiceResponse:
     market_index_keys = [index.value for index in market_indices]
     market_index_values_str = await RedisMarketIndiceRepository.gets(redis_client, market_index_keys)

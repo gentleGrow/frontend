@@ -7,6 +7,7 @@ from app.module.asset.redis_repository import RedisExchangeRateRepository, Redis
 from app.module.asset.schema import StockAsset
 
 
+# 수정!!!! 함수가 많아져 관리가 힘들어지면서, class로 책임 범위 제한을 하려 합니다. 추후 수정 하겠습니다.
 async def get_exchange_rate_map(redis_client: Redis) -> dict[str, float]:
     result = {}
 
@@ -217,3 +218,6 @@ def get_total_investment_amount(
         total_invest_amount += invest_price * asset.asset_stock.quantity
 
     return total_invest_amount
+
+
+# 수정!!!! 함수가 많아져 관리가 힘들어지면서, class로 책임 범위 제한을 하려 합니다. 추후 수정 하겠습니다.

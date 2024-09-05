@@ -115,14 +115,13 @@ async def get_assets(
         session, stock_code_date_pairs
     )
 
-    lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, stock_codes)
-    lastest_stock_daily_map = {daily.code: daily for daily in lastest_stock_dailies}
-
     dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
     dividend_map = {dividend.stock_code: dividend for dividend in dividends}
     exchange_rate_map = await get_exchange_rate_map(redis_client)
     stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
 
+    lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, stock_codes)
+    lastest_stock_daily_map = {daily.code: daily for daily in lastest_stock_dailies}
     current_stock_price_map = await get_current_stock_price(redis_client, lastest_stock_daily_map, stock_codes)
 
     not_found_stock_codes: list[str] = check_not_found_stock(stock_daily_map, current_stock_price_map, assets)

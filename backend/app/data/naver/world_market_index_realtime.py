@@ -1,6 +1,7 @@
 import asyncio
 
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -14,7 +15,16 @@ from database.dependency import get_redis_pool
 
 
 async def fetch_market_data(redis_client):
-    driver = webdriver.Chrome()
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--window-size=1920x1080")
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--remote-debugging-port=9222")
+    driver = webdriver.Chrome(options=chrome_options)
 
     try:
         driver.get("https://finance.naver.com/world/")
@@ -44,7 +54,10 @@ async def fetch_market_data(redis_client):
 
             if tr_row_data:
                 country_kr = tr_row_data[0]
-                country_en = COUNTRY_TRANSLATIONS.get(country_kr, country_kr)
+                if country_kr in COUNTRY_TRANSLATIONS:
+                    country_en = COUNTRY_TRANSLATIONS[country_kr]
+                else:
+                    continue
                 index_name_kr = tr_row_data[1]
                 index_name_en = INDEX_NAME_TRANSLATIONS.get(index_name_kr, index_name_kr)
 

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECharts Pie Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.0.2/dist/echarts.min.js"></script>
+</head>
+<body>
+    <div id="main" style="width: 600px; height: 400px;"></div>
+
+    <script>
+        // Initialize the chart
+        var chart = echarts.init(document.getElementById('main'));
+
+        // Fetch the data from the FastAPI endpoint
+        fetch('http://127.0.0.1:8000/chart-data')
+            .then(response => response.json())
+            .then(data => {
+                var option = {
+                    title: {
+                        text: 'Sample Pie Chart',
+                        left: 'center'
+                    },
+                    tooltip: {
+                        trigger: 'item'
+                    },
+                    series: [
+                        {
+                            name: 'Categories',
+                            type: 'pie',
+                            radius: '50%',
+                            data: data,
+                            emphasis: {
+                                itemStyle: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                };
+
+                // Set the chart options
+                chart.setOption(option);
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    </script>
+</body>
+</html>
