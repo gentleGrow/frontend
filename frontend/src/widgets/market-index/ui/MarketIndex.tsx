@@ -1,22 +1,16 @@
-"use client";
-
+import fetchIndices from "../api/fetchIndices";
 import MarketIndexItem from "./MarketIndexItem";
 import SwiperBox from "./SwiperBox";
 import VerticalTicker from "./VerticalTicker";
-const items = [
-  { stockMarket: "코스피", stockIndex: 192.8, rate: 10 },
-  { stockMarket: "코스닥", stockIndex: 33.8, rate: -10 },
-  { stockMarket: "나스닥", stockIndex: 192.8, rate: 10 },
-  { stockMarket: "달러", stockIndex: 33.8, rate: -10 },
-];
 
-export default function MarketIndex() {
-  const marketIndexItems = items.map((item, i) => (
+export default async function MarketIndex() {
+  const indices = await fetchIndices();
+  const marketIndexItems = indices.map((index, i) => (
     <>
       <MarketIndexItem
-        stockMarket={item.stockMarket}
-        stockIndex={item.stockIndex}
-        rate={item.rate}
+        stockMarket={index.index_name_kr}
+        stockIndex={index.current_value}
+        rate={index.change_percent}
       />
     </>
   ));
@@ -32,15 +26,23 @@ export default function MarketIndex() {
     <div className="relative overflow-hidden rounded-lg border border-gray-20 py-[24px] mobile:rounded-none mobile:border-none">
       <div className="flex mobile:hidden">
         <div className="flex basis-1/2 justify-center">
-          <VerticalTicker items={leftSideMarketIndexItems} />
+          {indices ? (
+            <VerticalTicker items={leftSideMarketIndexItems} />
+          ) : (
+            "주식 지수 정보를 가져오지 못했습니다."
+          )}
         </div>
         <div className="absolute left-1/2 top-1/2 z-10 h-[32px] w-[1px] -translate-x-1/2 -translate-y-1/2 bg-gray-20" />
         <div className="flex basis-1/2 justify-center">
-          <VerticalTicker items={rightSideMarketIndexItems} />
+          {indices ? <VerticalTicker items={rightSideMarketIndexItems} /> : ""}
         </div>
       </div>
       <div className="hidden px-[16px] mobile:flex">
-        {<SwiperBox items={marketIndexItems} />}
+        {indices ? (
+          <SwiperBox items={marketIndexItems} />
+        ) : (
+          "주식 지수 정보를 가져오지 못했습니다."
+        )}
       </div>
     </div>
   );
