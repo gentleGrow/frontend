@@ -1,4 +1,7 @@
-export default function DailyInvestmentTip() {
+import fetchTodayTip from "../api/fetchTodayTip";
+
+export default async function DailyInvestmentTip() {
+  const todayTip = await fetchTodayTip();
   return (
     <div className="flex items-center space-x-[20px] rounded-md border border-gray-20 p-[16px] mobile:flex-col mobile:items-start mobile:space-x-0 mobile:space-y-[20px] mobile:rounded-none mobile:border-none mobile:px-[20px]">
       <h3 className="block shrink-0 text-heading-2">오늘의 투자 tip</h3>
@@ -18,8 +21,7 @@ export default function DailyInvestmentTip() {
         </svg>
 
         <p className="block text-[14px] font-semibold leading-[22px] text-gray-100">
-          ISA 계좌로 투자하면 일반 주식 계좌보다 세금을 줄일 수 있어요. 비과세
-          한도 500만원!
+          {todayTip}
         </p>
       </div>
     </div>
