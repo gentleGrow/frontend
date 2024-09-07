@@ -54,7 +54,14 @@ CURRENCY_PAIRS = [
 
 STOCK_CODES = ["005930", "AAPL", "7203", "446720", "005930", "AAPL"]  # 삼성전자, 애플, 토요타, ETF SOL 다우존스, 삼성전자
 
-PURCHASE_DATES = [date(2015, 7, 22), date(2012, 11, 14), date(2020, 6, 8), date(2024, 5, 28), date(2016, 4, 14), date(2012, 11, 14)]
+PURCHASE_DATES = [
+    date(2015, 7, 22),
+    date(2012, 11, 14),
+    date(2020, 6, 8),
+    date(2024, 5, 28),
+    date(2016, 4, 14),
+    date(2012, 11, 14),
+]
 
 INVESTMENT_BANKS = [
     InvestmentBankType.TOSS.value,
@@ -62,7 +69,7 @@ INVESTMENT_BANKS = [
     InvestmentBankType.NH.value,
     InvestmentBankType.KIWOOM.value,
     InvestmentBankType.MIRAEASSET.value,
-    None
+    None,
 ]
 
 
@@ -82,7 +89,7 @@ ACCOUNT_TYPES = [
     AccountType.REGULAR.value,
     AccountType.ISA.value,
     AccountType.REGULAR.value,
-    None
+    None,
 ]
 
 STOCK_QUANTITIES = [1, 2, 2, 4, 5, 1]

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-
+from app.module.asset.enum import MarketIndex
 
 class ChartTipResponse(BaseModel):
     today_tip: str = Field(..., description="오늘의 투자 tip")
@@ -14,7 +14,10 @@ class SummaryResponse(BaseModel):
 
 
 class MarketIndiceResponseValue(BaseModel):
-    index_name: str = Field(..., description="시장 지수 명칭")
+    index_name: str = Field(
+        ...,
+        example=f"{', '.join([e.value for e in MarketIndex])}"  
+    )
     current_value: float = Field(..., description="현재 지수")
     change_percent: float = Field(..., description="1일 기준 변동성")
 
