@@ -77,5 +77,4 @@ class MarketIndexData(BaseModel):
     current_value: str = Field(..., description="Current value of the index")
     change_value: str = Field(..., description="The change in value from the previous close")
     change_percent: str = Field(..., description="The percentage change from the previous close")
-    profit_status: str = Field(..., description="플러스 마이너스 여부")
     update_time: str = Field(..., description="The time at which the data was last updated")

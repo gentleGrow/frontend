@@ -20,12 +20,12 @@ class AssetStock(TimestampMixin, MySQLBase):
     __tablename__ = "asset_stock"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    account_type = Column(Enum(AccountType), nullable=False, info={"description": "계좌 종류"})
-    investment_bank = Column(Enum(InvestmentBankType), nullable=False, info={"description": "증권사"})
-    purchase_currency_type = Column(Enum(PurchaseCurrencyType), nullable=False, info={"description": "구매 통화"})
+    account_type = Column(Enum(AccountType), nullable=True, info={"description": "계좌 종류"})
+    investment_bank = Column(Enum(InvestmentBankType), nullable=True, info={"description": "증권사"})
+    purchase_currency_type = Column(Enum(PurchaseCurrencyType), nullable=True, info={"description": "구매 통화"})
     purchase_date = Column(Date, nullable=False, info={"description": "구매일자"})
     purchase_price = Column(Float, nullable=True, info={"description": "매입가"})
-    quantity = Column(Integer, nullable=False)
+    quantity = Column(Integer, nullable=False, info={"description": "구매수량"})
 
     stock_id = Column(BigInteger, ForeignKey("stock.id"), primary_key=True)
     asset_id = Column(BigInteger, ForeignKey("asset.id"), primary_key=True)

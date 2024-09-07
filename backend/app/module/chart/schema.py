@@ -17,7 +17,6 @@ class MarketIndiceResponseValue(BaseModel):
     index_name: str = Field(..., description="시장 지수 명칭")
     current_value: float = Field(..., description="현재 지수")
     change_percent: float = Field(..., description="1일 기준 변동성")
-    profit_status: str = Field(..., description="플로스 마이너스 여부")
 
 
 class MarketIndiceResponse(BaseModel):

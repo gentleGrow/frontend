@@ -8,7 +8,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from app.data.common.constant import MARKET_INDEX_CACHE_SECOND
 from app.module.asset.constant import COUNTRY_TRANSLATIONS, INDEX_NAME_TRANSLATIONS
-from app.module.asset.enum import ProfitStatus
 from app.module.asset.redis_repository import RedisRealTimeMarketIndexRepository
 from app.module.asset.schema import MarketIndexData
 from database.dependency import get_redis_pool
@@ -61,11 +60,10 @@ async def fetch_market_data(redis_client):
                 index_name_kr = tr_row_data[1]
                 index_name_en = INDEX_NAME_TRANSLATIONS.get(index_name_kr, index_name_kr)
 
-                current_value = tr_row_data[2].strip().replace(",", "").replace("-", "")
-                change_value = tr_row_data[3].strip().replace(",", "").replace("-", "")
+                current_value = tr_row_data[2].strip().replace(",", "")
+                change_value = tr_row_data[3].strip().replace(",", "")
                 change_percent = tr_row_data[4].strip().replace("%", "")
-                profit_status = ProfitStatus.MINUS if "-" in change_percent else ProfitStatus.PLUS
-                change_percent = change_percent.replace("-", "")
+                change_percent = change_percent
 
                 market_index = MarketIndexData(
                     country=country_en,
@@ -73,7 +71,6 @@ async def fetch_market_data(redis_client):
                     current_value=current_value,
                     change_value=change_value,
                     change_percent=change_percent,
-                    profit_status=profit_status,
                     update_time=tr_row_data[5],
                 )
 

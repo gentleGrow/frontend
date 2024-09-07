@@ -55,10 +55,6 @@ class CurrencyType(StrEnum):
     UNITED_KINGDOM = "GBP"
 
 
-class ProfitStatus(StrEnum):
-    PLUS = "PLUS"
-    MINUS = "MINUS"
-
 
 class TimeInterval(StrEnum):
     DAY = "1d"
