@@ -11,6 +11,33 @@ from app.module.asset.enum import (
 
 REDIS_STOCK_EXPIRE_SECOND = 60 * 60 * 24
 
+MARKET_INDEX_KR_MAPPING = {
+    "KS11": "코스피",
+    "KQ11": "코스닥",
+    "DJI": "다우존스",
+    "IXIC": "나스닥",
+    "GSPC": "S&P 500",
+    "NYA": "NYSE 종합",
+    "N225": "니케이 225",
+    "FTSE": "FTSE 100",
+    "DAX": "독일 DAX",
+    "PX1": "프랑스 CAC 40",
+    "000001.SS": "상하이 종합",
+    "HSI": "항셍",
+    "GSPTSE": "S&P TSX",
+    "AXJO": "ASX 200",
+    "NSEI": "Nifty 50",
+    "BVSP": "브라질 Bovespa",
+    "IMOEX": "모스크바",
+    "FTSEMIB.MI": "FTSE MIB",
+    "IBEX": "IBEX 35",
+    "SMI": "스위스 SMI",
+    "AEX": "네덜란드 AEX",
+    "TSE": "TSE 300",
+    "SX5E": "유로스톡스 50"
+}
+
+
 COUNTRY_TO_CURRENCY = {
     "KOREA": CurrencyType.KOREA,
     "USA": CurrencyType.USA,
