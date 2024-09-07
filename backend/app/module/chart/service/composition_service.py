@@ -1,7 +1,7 @@
 from app.module.asset.enum import CurrencyType
 from app.module.asset.model import Asset
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
-
+from app.module.chart.constant import NONE_ACCOUNT
 
 class CompositionService:
     @staticmethod
@@ -51,7 +51,7 @@ class CompositionService:
         assets: list[Asset], current_stock_price_map: dict[str, float], exchange_rate_map: dict[str, float]
     ) -> list[dict]:
         total_portfolio_value = 0.0
-        bank_composition = {}
+        account_composition = {}
 
         for asset in assets:
             source_country = asset.asset_stock.stock.country.upper()
@@ -61,20 +61,22 @@ class CompositionService:
             )
 
             stock_code = asset.asset_stock.stock.code
-            investment_bank = asset.asset_stock.investment_bank
+            account_type = asset.asset_stock.account_type
+            
             num_shares = asset.asset_stock.quantity
             stock_price = won_exchange_rate * current_stock_price_map.get(stock_code, 0)
             stock_value = num_shares * stock_price
 
-            if investment_bank not in bank_composition:
-                bank_composition[investment_bank] = 0.0
+            if account_type not in account_composition:
+                account_composition[account_type] = 0.0
 
-            bank_composition[investment_bank] += stock_value
+            account_composition[account_type] += stock_value
             total_portfolio_value += stock_value
 
         result = []
-        for bank, bank_value in bank_composition.items():
-            proportion = (bank_value / total_portfolio_value) * 100 if total_portfolio_value > 0 else 0
-
-            result.append({"name": bank.value, "percent_rate": proportion, "current_amount": bank_value})
+        for account, account_value in account_composition.items():
+            proportion = (account_value / total_portfolio_value) * 100 if total_portfolio_value > 0 else 0
+            
+            account_name = account.value if account else NONE_ACCOUNT
+            result.append({"name": account_name, "percent_rate": proportion, "current_amount": account_value})
         return result

@@ -53,7 +53,9 @@ async def get_composition(
 
     assets: list[Asset] = await AssetRepository.get_eager(session, user_id, AssetType.STOCK)
     if len(assets) == 0:
-        return CompositionResponse(composition=[CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)])
+        return CompositionResponse(
+            composition=[CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)]
+        )
 
     stock_codes = [asset.asset_stock.stock.code for asset in assets]
     lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, stock_codes)
@@ -76,7 +78,6 @@ async def get_composition(
         ]
 
         return CompositionResponse(composition=composition_data)
-
     else:
         account_composition_data = CompositionService.get_asset_stock_account(
             assets, current_stock_price_map, exchange_rate_map
@@ -100,7 +101,9 @@ async def get_dummy_composition(
 ) -> CompositionResponse:
     assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
     if len(assets) == 0:
-        return CompositionResponse(composition=[CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)])
+        return CompositionResponse(
+            composition=[CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)]
+        )
 
     stock_codes = [asset.asset_stock.stock.code for asset in assets]
     lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, stock_codes)
@@ -123,7 +126,6 @@ async def get_dummy_composition(
         ]
 
         return CompositionResponse(composition=composition_data)
-
     else:
         account_composition_data = CompositionService.get_asset_stock_account(
             assets, current_stock_price_map, exchange_rate_map
@@ -161,8 +163,7 @@ async def get_market_index(
         MarketIndiceResponseValue(
             index_name=market_index_value.index_name,
             current_value=float(market_index_value.current_value),
-            change_percent=float(market_index_value.change_percent),
-            profit_status=market_index_value.profit_status,
+            change_percent=float(market_index_value.change_percent)
         )
         for market_index_value in market_index_values
         if market_index_value is not None

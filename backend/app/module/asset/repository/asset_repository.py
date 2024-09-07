@@ -5,12 +5,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import NoResultFound
-
+from sqlalchemy.dialects.mysql import insert
 from app.module.asset.enum import AssetType
 from app.module.asset.model import Asset, AssetStock
 
 
 class AssetRepository:
+    @staticmethod
+    async def save(session: AsyncSession, asset: Asset) -> None:
+        session.add(asset)
+        await session.commit()
+    
     @staticmethod
     async def delete_asset(session: AsyncSession, asset_id: int) -> None:
         try:
