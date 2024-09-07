@@ -40,6 +40,31 @@ from database.dependency import get_mysql_session_router, get_redis_pool
 chart_router = APIRouter(prefix="/v1")
 
 
+@chart_router.get("/indice", summary="현재 시장 지수", response_model=MarketIndiceResponse)
+async def get_market_index(
+    redis_client: Redis = Depends(get_redis_pool),
+) -> MarketIndiceResponse:
+    
+    market_index_keys = [market_index.value for market_index in MarketIndex]  
+    market_index_values_str = await RedisMarketIndiceRepository.gets(redis_client, market_index_keys)
+
+    market_index_values: list[MarketIndexData] = [
+        MarketIndexData(**json.loads(value)) if value is not None else None for value in market_index_values_str
+    ]
+
+    market_index_pairs = [
+        MarketIndiceResponseValue(
+            index_name=market_index_value.index_name,
+            current_value=float(market_index_value.current_value),
+            change_percent=float(market_index_value.change_percent),
+        )
+        for market_index_value in market_index_values
+        if market_index_value is not None
+    ]
+
+    return MarketIndiceResponse(market_indices=market_index_pairs)
+
+
 @chart_router.get("/composition", summary="종목 구성", response_model=CompositionResponse)
 async def get_composition(
     token: AccessToken = Depends(verify_jwt_token),
@@ -139,37 +164,6 @@ async def get_dummy_composition(
         ]
 
         return CompositionResponse(composition=composition_data)
-
-
-@chart_router.get("/indice", summary="현재 시장 지수", response_model=MarketIndiceResponse)
-async def get_market_index(
-    market_indices: list[MarketIndex] = Query(..., description="KS11, KQ11, DJI, GSPC, IXIC 등등 대표적인 지수 명을 입력 해주세요."),
-    redis_client: Redis = Depends(get_redis_pool),
-) -> MarketIndiceResponse:
-    market_index_keys = [index.value for index in market_indices]
-    market_index_values_str = await RedisMarketIndiceRepository.gets(redis_client, market_index_keys)
-
-    market_index_values: list[MarketIndexData] = [
-        MarketIndexData(**json.loads(value)) if value is not None else None for value in market_index_values_str
-    ]
-
-    missing_indices = [
-        market_index_keys[i] for i, market_index_value in enumerate(market_index_values) if market_index_value is None
-    ]
-    if missing_indices:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{', '.join(missing_indices)}의 값이 없습니다.")
-
-    market_index_pairs = [
-        MarketIndiceResponseValue(
-            index_name=market_index_value.index_name,
-            current_value=float(market_index_value.current_value),
-            change_percent=float(market_index_value.change_percent)
-        )
-        for market_index_value in market_index_values
-        if market_index_value is not None
-    ]
-
-    return MarketIndiceResponse(market_indices=market_index_pairs)
 
 
 @chart_router.get("/summary", summary="오늘의 리뷰, 나의 총자산, 나의 투자 금액, 수익금", response_model=SummaryResponse)

@@ -92,7 +92,6 @@ async def create_dummy_assets(session: AsyncSession):
     print("[create_dummy_assets] 더미 유저에 assets을 성공적으로 생성 했습니다.")
 
 
-
 async def create_investment_tip(session: AsyncSession):
     investment_tips = [
         {"id": 1, "tip": "초보 투자자는 분산 투자를 고려하세요."},

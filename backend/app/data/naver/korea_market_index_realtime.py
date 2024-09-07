@@ -27,9 +27,7 @@ async def fetch_market_data(redis_client):
     change_value = kospi_area.find("span", {"class": "num2"}).text.strip().replace(",", "")
     num3_span = kospi_area.find("span", {"class": "num3"})
     percent_change = (
-        num3_span.text.replace(num3_span.find("span", {"class": "blind"}).text, "")
-        .strip()
-        .replace("%", "")
+        num3_span.text.replace(num3_span.find("span", {"class": "blind"}).text, "").strip().replace("%", "")
     )
 
     kospi_index = MarketIndexData(

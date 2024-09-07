@@ -55,7 +55,6 @@ class CurrencyType(StrEnum):
     UNITED_KINGDOM = "GBP"
 
 
-
 class TimeInterval(StrEnum):
     DAY = "1d"
     WEEK = "1wk"
@@ -84,29 +83,29 @@ class Country(StrEnum):
 
 
 class MarketIndex(StrEnum):
-    KOSPI = "KS11"  # KOSPI Index
-    KOSDAQ = "KQ11"  # KOSDAQ Index
-    DOW_JONES = "DJI"  # Dow Jones Industrial Average
-    NASDAQ = "IXIC"  # Nasdaq Composite
-    SP500 = "GSPC"  # S&P500
-    NYSE_COMPOSITE = "NYA"  # NYSE Composite Index
-    NIKKEI_225 = "N225"  # Nikkei 225
-    FTSE_100 = "FTSE"  # FTSE 100 Index
-    DAX = "DAX"  # DAX Index
-    CAC_40 = "PX1"  # CAC 40 Index
-    SHANGHAI = "000001.SS"  # Shanghai Composite Index
-    HANG_SENG = "HSI"  # Hang Seng Index
-    SP_TSX = "GSPTSE"  # S&P/TSX Composite Index
-    ASX_200 = "AXJO"  # ASX 200 Index
-    NIFTY_50 = "NSEI"  # Nifty 50 Index
-    BOVESPA = "BVSP"  # Brazil Bovespa Index
-    MOSCOW = "IMOEX"  # Moscow Exchange Index
-    FTSE_MIB = "FTSEMIB.MI"  # FTSE MIB Index
-    IBEX_35 = "IBEX"  # IBEX 35 Index
-    SWISS_MARKET_INDEX = "SMI"  # Swiss Market Index
-    AEX = "AEX"  # AEX Index
-    TSE_300 = "TSE"  # TSE 300 Index
-    EURO_STOXX_50 = "SX5E"  # EURO STOXX 50 Index
+    KOSPI = "KS11"  
+    KOSDAQ = "KQ11"  
+    DOW_JONES = "DJI"  
+    NASDAQ = "IXIC"  
+    SP500 = "GSPC" 
+    NYSE_COMPOSITE = "NYA"  
+    NIKKEI_225 = "N225" 
+    FTSE_100 = "FTSE" 
+    DAX = "DAX" 
+    CAC_40 = "PX1" 
+    SHANGHAI = "000001.SS" 
+    HANG_SENG = "HSI" 
+    SP_TSX = "GSPTSE"  
+    ASX_200 = "AXJO" 
+    NIFTY_50 = "NSEI" 
+    BOVESPA = "BVSP" 
+    MOSCOW = "IMOEX"  
+    FTSE_MIB = "FTSEMIB.MI"  
+    IBEX_35 = "IBEX"  
+    SWISS_MARKET_INDEX = "SMI" 
+    AEX = "AEX"  
+    TSE_300 = "TSE"
+    EURO_STOXX_50 = "SX5E"  
 
 
 class CountryMarketCode(StrEnum):

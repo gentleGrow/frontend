@@ -3,6 +3,7 @@ from app.module.asset.model import Asset
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
 from app.module.chart.constant import NONE_ACCOUNT
 
+
 class CompositionService:
     @staticmethod
     def get_asset_stock_composition(
@@ -62,7 +63,7 @@ class CompositionService:
 
             stock_code = asset.asset_stock.stock.code
             account_type = asset.asset_stock.account_type
-            
+
             num_shares = asset.asset_stock.quantity
             stock_price = won_exchange_rate * current_stock_price_map.get(stock_code, 0)
             stock_value = num_shares * stock_price
@@ -76,7 +77,7 @@ class CompositionService:
         result = []
         for account, account_value in account_composition.items():
             proportion = (account_value / total_portfolio_value) * 100 if total_portfolio_value > 0 else 0
-            
+
             account_name = account.value if account else NONE_ACCOUNT
             result.append({"name": account_name, "percent_rate": proportion, "current_amount": account_value})
         return result
