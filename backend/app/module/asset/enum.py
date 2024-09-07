@@ -1,6 +1,32 @@
 from enum import StrEnum
 
 
+class MarketIndex(StrEnum):
+    KOSPI = "KS11"
+    KOSDAQ = "KQ11"
+    DOW_JONES = "DJI"
+    NASDAQ = "IXIC"
+    SP500 = "GSPC"
+    NYSE_COMPOSITE = "NYA"
+    NIKKEI_225 = "N225"
+    FTSE_100 = "FTSE"
+    DAX = "DAX"
+    CAC_40 = "PX1"
+    SHANGHAI = "000001.SS"
+    HANG_SENG = "HSI"
+    SP_TSX = "GSPTSE"
+    ASX_200 = "AXJO"
+    NIFTY_50 = "NSEI"
+    BOVESPA = "BVSP"
+    MOSCOW = "IMOEX"
+    FTSE_MIB = "FTSEMIB.MI"
+    IBEX_35 = "IBEX"
+    SWISS_MARKET_INDEX = "SMI"
+    AEX = "AEX"
+    TSE_300 = "TSE"
+    EURO_STOXX_50 = "SX5E"
+
+
 class PurchaseCurrencyType(StrEnum):
     KOREA = "KRW"
     USA = "USD"
@@ -80,32 +106,6 @@ class Country(StrEnum):
     NETHERLAND = "NETHERLAND"
     EUROZONE = "EUROZONE"
     KOREA = "KOREA"
-
-
-class MarketIndex(StrEnum):
-    KOSPI = "KS11"  
-    KOSDAQ = "KQ11"  
-    DOW_JONES = "DJI"  
-    NASDAQ = "IXIC"  
-    SP500 = "GSPC" 
-    NYSE_COMPOSITE = "NYA"  
-    NIKKEI_225 = "N225" 
-    FTSE_100 = "FTSE" 
-    DAX = "DAX" 
-    CAC_40 = "PX1" 
-    SHANGHAI = "000001.SS" 
-    HANG_SENG = "HSI" 
-    SP_TSX = "GSPTSE"  
-    ASX_200 = "AXJO" 
-    NIFTY_50 = "NSEI" 
-    BOVESPA = "BVSP" 
-    MOSCOW = "IMOEX"  
-    FTSE_MIB = "FTSEMIB.MI"  
-    IBEX_35 = "IBEX"  
-    SWISS_MARKET_INDEX = "SMI" 
-    AEX = "AEX"  
-    TSE_300 = "TSE"
-    EURO_STOXX_50 = "SX5E"  
 
 
 class CountryMarketCode(StrEnum):

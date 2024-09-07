@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
 from app.common.auth.security import verify_jwt_token
 from app.module.asset.enum import AssetType, MarketIndex
 from app.module.asset.model import Asset, StockDaily
@@ -44,8 +45,8 @@ chart_router = APIRouter(prefix="/v1")
 async def get_market_index(
     redis_client: Redis = Depends(get_redis_pool),
 ) -> MarketIndiceResponse:
-    
-    market_index_keys = [market_index.value for market_index in MarketIndex]  
+
+    market_index_keys = [market_index.value for market_index in MarketIndex]
     market_index_values_str = await RedisMarketIndiceRepository.gets(redis_client, market_index_keys)
 
     market_index_values: list[MarketIndexData] = [
@@ -55,6 +56,7 @@ async def get_market_index(
     market_index_pairs = [
         MarketIndiceResponseValue(
             index_name=market_index_value.index_name,
+            index_name_kr=MARKET_INDEX_KR_MAPPING.get(market_index_value.index_name, "N/A"),
             current_value=float(market_index_value.current_value),
             change_percent=float(market_index_value.change_percent),
         )
@@ -63,6 +65,7 @@ async def get_market_index(
     ]
 
     return MarketIndiceResponse(market_indices=market_index_pairs)
+
 
 
 @chart_router.get("/composition", summary="종목 구성", response_model=CompositionResponse)
