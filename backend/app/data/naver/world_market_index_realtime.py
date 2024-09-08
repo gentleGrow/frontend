@@ -4,14 +4,15 @@ from datetime import datetime
 from redis.asyncio import Redis
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from sqlalchemy.ext.asyncio import AsyncSession
+from webdriver_manager.chrome import ChromeDriverManager
 
 from app.data.common.constant import MARKET_INDEX_CACHE_SECOND
 from app.module.asset.constant import COUNTRY_TRANSLATIONS, INDEX_NAME_TRANSLATIONS
-from app.module.asset.enum import MarketIndex
 from app.module.asset.model import (  # noqa: F401 > relationship 설정시 필요합니다.
     MarketIndexMinutely,
     Stock,
@@ -33,12 +34,8 @@ async def fetch_market_data(redis_client: Redis, session: AsyncSession):
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--window-size=1920x1080")
-    chrome_options.add_argument("--disable-extensions")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--remote-debugging-port=9222")
-    driver = webdriver.Chrome(options=chrome_options)
+    
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
     try:
         driver.get("https://finance.naver.com/world/")

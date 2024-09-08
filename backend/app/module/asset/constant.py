@@ -21,10 +21,10 @@ PURCHASE_DATES = []
 current_date = one_year_ago
 while current_date <= today:
     if (
-        current_date.weekday() < 5 and 
-        current_date not in kr_holidays and 
-        current_date not in us_holidays and 
-        current_date not in [date(2024, 3, 29), date(2024, 5, 1)]  
+        current_date.weekday() < 5
+        and current_date not in kr_holidays
+        and current_date not in us_holidays
+        and current_date not in [date(2024, 3, 29), date(2024, 5, 1)]
     ):
         PURCHASE_DATES.append(current_date)
     current_date += timedelta(days=1)

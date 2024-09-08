@@ -20,7 +20,7 @@ class SummaryResponse(BaseModel):
 
 class MarketIndiceResponseValue(BaseModel):
     index_name: str = Field(..., example=f"{', '.join([e.value for e in MarketIndex])}")
-    index_name_kr: str = Field(..., description="한국어 지수 이름", example=f'{', '.join(MARKET_INDEX_KR_MAPPING.values())}')
+    index_name_kr: str = Field(..., description="한국어 지수 이름", example=f"{', '.join(MARKET_INDEX_KR_MAPPING.values())}")
     current_value: float = Field(..., description="현재 지수")
     change_percent: float = Field(..., description="1일 기준 변동성")
 
@@ -41,7 +41,7 @@ class CompositionResponse(BaseModel):
 
 class PerformanceAnalysisResponseValue(BaseModel):
     name: str = Field(..., description="대상")
-    interval_date: date| datetime = Field(..., description="날짜")
+    interval_date: date | datetime = Field(..., description="날짜")
     profit: float = Field(..., description="수익률")
 
 
