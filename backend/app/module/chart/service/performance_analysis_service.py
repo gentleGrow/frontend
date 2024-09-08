@@ -61,7 +61,7 @@ class PerformanceAnalysis:
                 cumulative_assets, stock_daily_map, exchange_rate_map
             )
 
-            total_profit_rate = 0
+            total_profit_rate = 0.0
             if total_invest_amount > 0:
                 total_profit_rate = ((total_asset_amount - total_invest_amount) / total_invest_amount) * 100
 

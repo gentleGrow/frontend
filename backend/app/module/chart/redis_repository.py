@@ -13,7 +13,7 @@ class RedisTipRepository:
 
 class RedisMarketIndiceRepository:
     @staticmethod
-    async def get(redis_client: Redis, key: str) -> list[str]:
+    async def get(redis_client: Redis, key: str) -> str:
         return await redis_client.get(key)
 
     @staticmethod

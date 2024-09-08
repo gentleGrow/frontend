@@ -281,7 +281,7 @@ async def get_dummy_summary(
     stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies_by_code_and_date(
         session, stock_code_date_pairs
     )
-    exchange_rate_map = await get_exchange_rate_map(redis_client)
+    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
     stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
     current_stock_price_map = await get_current_stock_price(redis_client, stock_daily_map, stock_codes)
 
