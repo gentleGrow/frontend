@@ -1,19 +1,34 @@
 import asyncio
+from datetime import datetime
 
+from redis.asyncio import Redis
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.data.common.constant import MARKET_INDEX_CACHE_SECOND
 from app.module.asset.constant import COUNTRY_TRANSLATIONS, INDEX_NAME_TRANSLATIONS
+from app.module.asset.enum import MarketIndex
+from app.module.asset.model import (  # noqa: F401 > relationship 설정시 필요합니다.
+    MarketIndexMinutely,
+    Stock,
+    StockDaily,
+    StockMonthly,
+    StockWeekly,
+)
 from app.module.asset.redis_repository import RedisRealTimeMarketIndexRepository
+from app.module.asset.repository.market_index_minutely_repository import MarketIndexMinutelyRepository
 from app.module.asset.schema import MarketIndexData
-from database.dependency import get_redis_pool
+from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
+from database.dependency import get_mysql_session, get_redis_pool
 
 
-async def fetch_market_data(redis_client):
+async def fetch_market_data(redis_client: Redis, session: AsyncSession):
+    now = datetime.now().replace(second=0, microsecond=0)
+
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
@@ -27,7 +42,8 @@ async def fetch_market_data(redis_client):
 
     try:
         driver.get("https://finance.naver.com/world/")
-        bulk_data = []
+        redis_bulk_data = []
+        db_bulk_data = []
 
         america_index_table = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "americaIndex")))
 
@@ -74,12 +90,17 @@ async def fetch_market_data(redis_client):
                     update_time=tr_row_data[5],
                 )
 
+                current_index = MarketIndexMinutely(index_name=index_name_en, datetime=now, current_price=current_value)
+
+                db_bulk_data.append(current_index)
+
                 if market_index:
                     market_index_json = market_index.model_dump_json()
-                    bulk_data.append((index_name_en, market_index_json))
+                    redis_bulk_data.append((index_name_en, market_index_json))
 
+        await MarketIndexMinutelyRepository.bulk_upsert(session, db_bulk_data)
         await RedisRealTimeMarketIndexRepository.bulk_save(
-            redis_client, bulk_data, expire_time=MARKET_INDEX_CACHE_SECOND
+            redis_client, redis_bulk_data, expire_time=MARKET_INDEX_CACHE_SECOND
         )
 
     finally:
@@ -88,9 +109,10 @@ async def fetch_market_data(redis_client):
 
 async def main():
     redis_client = await get_redis_pool()
-    while True:
-        await fetch_market_data(redis_client)
-        await asyncio.sleep(10)
+    async with get_mysql_session() as session:
+        while True:
+            await fetch_market_data(redis_client, session)
+            await asyncio.sleep(10)
 
 
 if __name__ == "__main__":

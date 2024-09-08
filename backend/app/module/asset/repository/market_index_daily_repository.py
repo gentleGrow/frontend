@@ -1,3 +1,4 @@
+from sqlalchemy import select
 from sqlalchemy.dialects.mysql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -5,6 +6,16 @@ from app.module.asset.model import MarketIndexDaily
 
 
 class MarketIndexDailyRepository:
+    @staticmethod
+    async def get_by_range_market(session: AsyncSession, date_range: tuple, index_name: str) -> list[MarketIndexDaily]:
+        start_date, end_date = date_range
+        stmt = select(MarketIndexDaily).where(
+            MarketIndexDaily.date.between(start_date, end_date), MarketIndexDaily.index_name == index_name
+        )
+
+        result = await session.execute(stmt)
+        return result.scalars().all()
+
     @staticmethod
     async def save_market_indexes(session: AsyncSession, market_indexes: list[MarketIndexDaily]) -> None:
         session.add_all(market_indexes)

@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 from sqlalchemy.orm.exc import NoResultFound
 
 from app.module.asset.enum import AssetType
@@ -50,6 +50,27 @@ class AssetRepository:
             .options(joinedload(Asset.asset_stock).joinedload(AssetStock.stock))
         )
         return result.unique().scalars().all()
+
+    @staticmethod
+    async def get_eager_by_range(
+        session: AsyncSession, user_id: int, asset_type: AssetType, date_range: tuple
+    ) -> list[Asset]:
+        start_date, end_date = date_range
+
+        result = await session.execute(
+            select(Asset)
+            .filter(
+                and_(
+                    Asset.user_id == user_id,
+                    Asset.asset_type == asset_type,
+                    Asset.deleted_at.is_(None),
+                    Asset.asset_stock.has(AssetStock.purchase_date.between(start_date, end_date)),
+                )
+            )
+            .options(selectinload(Asset.asset_stock).selectinload(AssetStock.stock))
+        )
+
+        return result.scalars().all()
 
     @staticmethod
     async def get_assets_by_ids(session: AsyncSession, asset_ids: list[int]) -> list[Asset]:

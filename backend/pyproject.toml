@@ -238,6 +238,7 @@ aiosqlite = "^0.20.0"
 polygon-api-client = "^1.14.1"
 fakeredis = "^2.23.5"
 webdriver-manager = "^4.0.2"
+holidays = "^0.56"
 
 [build-system]
 requires = ["poetry-core"]

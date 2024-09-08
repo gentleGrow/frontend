@@ -68,7 +68,7 @@ def check_not_found_stock(
         current_stock_daily = current_stock_daily_map.get(asset.asset_stock.stock.code)
         if stock_daily is None or current_stock_daily is None:
             result.append(asset.asset_stock.stock.code)
-            continue
+        
     return result
 
 

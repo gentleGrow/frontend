@@ -5,8 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
 from app.common.auth.security import verify_jwt_token
+from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
 from app.module.asset.enum import AssetType, MarketIndex
 from app.module.asset.model import Asset, StockDaily
 from app.module.asset.repository.asset_repository import AssetRepository
@@ -15,7 +15,6 @@ from app.module.asset.schema import MarketIndexData
 from app.module.asset.service import (
     check_not_found_stock,
     get_current_stock_price,
-    get_exchange_rate_map,
     get_total_asset_amount,
     get_total_investment_amount,
 )
@@ -24,7 +23,7 @@ from app.module.asset.services.stock_service import StockService
 from app.module.auth.constant import DUMMY_USER_ID
 from app.module.auth.schema import AccessToken
 from app.module.chart.constant import TIP_TODAY_ID_REDIS_KEY
-from app.module.chart.enum import CompositionType
+from app.module.chart.enum import CompositionType, IntervalType
 from app.module.chart.redis_repository import RedisMarketIndiceRepository, RedisTipRepository
 from app.module.chart.repository import TipRepository
 from app.module.chart.schema import (
@@ -33,12 +32,55 @@ from app.module.chart.schema import (
     CompositionResponseValue,
     MarketIndiceResponse,
     MarketIndiceResponseValue,
+    PerformanceAnalysisResponse,
+    PerformanceAnalysisResponseValue,
     SummaryResponse,
 )
 from app.module.chart.service.composition_service import CompositionService
+from app.module.chart.service.performance_analysis_service import PerformanceAnalysis
 from database.dependency import get_mysql_session_router, get_redis_pool
 
 chart_router = APIRouter(prefix="/v1")
+
+
+@chart_router.get("/dummy/performance-analysis", summary="투자 성과 분석")
+async def get_dummy_performance_analysis(
+    interval: IntervalType = Query(IntervalType.ONEMONTH, description="기간 별, 투자 성관 분석 데이터가 제공 됩니다."),
+    session: AsyncSession = Depends(get_mysql_session_router),
+    redis_client: Redis = Depends(get_redis_pool),
+) -> PerformanceAnalysisResponse:
+    current_datetime = datetime.now()
+
+    start_datetime = current_datetime - interval.get_timedelta()
+
+    if interval in [IntervalType.ONEMONTH, IntervalType.THREEMONTH, IntervalType.SIXMONTH, IntervalType.ONEYEAR]:
+        user_analysis_data = await PerformanceAnalysis.get_user_analysis(
+            session, redis_client, start_datetime, current_datetime, DUMMY_USER_ID
+        )
+        market_analysis_data = await PerformanceAnalysis.get_market_analysis(
+            session, redis_client, start_datetime, current_datetime
+        )
+    else:
+        user_analysis_data = await PerformanceAnalysis.get_user_analysis_hourly(
+            session, redis_client, start_datetime, current_datetime, DUMMY_USER_ID
+        )
+        market_analysis_data = await PerformanceAnalysis.get_market_analysis_hourly(
+            session, redis_client, start_datetime, current_datetime
+        )
+
+    user_analysis_response = [
+        PerformanceAnalysisResponseValue(name=item["name"], interval_date=item["date"], profit=item["profit"])
+        for item in user_analysis_data
+    ]
+
+    market_analysis_response = [
+        PerformanceAnalysisResponseValue(name=item["name"], interval_date=item["date"], profit=item["profit"])
+        for item in market_analysis_data
+    ]
+
+    return PerformanceAnalysisResponse(
+        performance_analysis={"user": user_analysis_response, "market": market_analysis_response}
+    )
 
 
 @chart_router.get("/indice", summary="현재 시장 지수", response_model=MarketIndiceResponse)
@@ -65,7 +107,6 @@ async def get_market_index(
     ]
 
     return MarketIndiceResponse(market_indices=market_index_pairs)
-
 
 
 @chart_router.get("/composition", summary="종목 구성", response_model=CompositionResponse)
@@ -190,7 +231,7 @@ async def get_summary(
     stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies_by_code_and_date(
         session, stock_code_date_pairs
     )
-    exchange_rate_map = await get_exchange_rate_map(redis_client)
+    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
     stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
     current_stock_price_map = await get_current_stock_price(redis_client, stock_daily_map, stock_codes)
 

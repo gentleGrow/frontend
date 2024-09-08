@@ -1,4 +1,6 @@
-from datetime import date
+from datetime import date, timedelta
+
+import holidays
 
 from app.module.asset.enum import (
     AccountType,
@@ -8,6 +10,68 @@ from app.module.asset.enum import (
     MarketIndex,
     PurchaseCurrencyType,
 )
+
+kr_holidays = holidays.KR()
+us_holidays = holidays.US()
+
+today = date.today()
+one_year_ago = today - timedelta(days=365)
+
+PURCHASE_DATES = []
+current_date = one_year_ago
+while current_date <= today:
+    if (
+        current_date.weekday() < 5 and 
+        current_date not in kr_holidays and 
+        current_date not in us_holidays and 
+        current_date not in [date(2024, 3, 29), date(2024, 5, 1)]  
+    ):
+        PURCHASE_DATES.append(current_date)
+    current_date += timedelta(days=1)
+
+KOREAN_STOCK_CODES = [
+    "005930",
+    "000660",
+    "051910",
+    "035420",
+    "035720",
+    "005490",
+    "207940",
+]
+
+USA_STOCK_CODES = ["AAPL", "MSFT", "AMZN", "GOOGL", "TSLA", "META", "NVDA", "JNJ", "V"]
+
+STOCK_CODES = (KOREAN_STOCK_CODES + USA_STOCK_CODES) * (len(PURCHASE_DATES) // 20 + 1)
+STOCK_CODES = STOCK_CODES[: len(PURCHASE_DATES)]
+
+INVESTMENT_BANKS = [
+    InvestmentBankType.TOSS.value,
+    InvestmentBankType.KB.value,
+    InvestmentBankType.NH.value,
+    InvestmentBankType.KIWOOM.value,
+    InvestmentBankType.MIRAEASSET.value,
+    None,
+] * (len(PURCHASE_DATES) // 6 + 1)
+INVESTMENT_BANKS = INVESTMENT_BANKS[: len(PURCHASE_DATES)]
+
+ACCOUNT_TYPES = [
+    AccountType.REGULAR.value,
+    AccountType.REGULAR.value,
+    AccountType.REGULAR.value,
+    AccountType.ISA.value,
+    AccountType.REGULAR.value,
+    None,
+] * (len(PURCHASE_DATES) // 6 + 1)
+ACCOUNT_TYPES = ACCOUNT_TYPES[: len(PURCHASE_DATES)]
+
+PURCHASECURRENCYTYPES = [
+    PurchaseCurrencyType.KOREA.value,
+    PurchaseCurrencyType.USA.value,
+] * (len(PURCHASE_DATES) // 2 + 1)
+PURCHASECURRENCYTYPES = PURCHASECURRENCYTYPES[: len(PURCHASE_DATES)]
+
+STOCK_QUANTITIES = [i % 5 + 1 for i in range(len(PURCHASE_DATES))]
+
 
 REDIS_STOCK_EXPIRE_SECOND = 60 * 60 * 24
 
@@ -34,7 +98,7 @@ MARKET_INDEX_KR_MAPPING = {
     "SMI": "스위스 SMI",
     "AEX": "네덜란드 AEX",
     "TSE": "TSE 300",
-    "SX5E": "유로스톡스 50"
+    "SX5E": "유로스톡스 50",
 }
 
 
@@ -77,49 +141,6 @@ CURRENCY_PAIRS = [
     (CurrencyType.SWITZERLAND, CurrencyType.USA),
     (CurrencyType.UNITED_KINGDOM, CurrencyType.USA),
 ]
-
-
-STOCK_CODES = ["005930", "AAPL", "7203", "446720", "005930", "AAPL"]  # 삼성전자, 애플, 토요타, ETF SOL 다우존스, 삼성전자
-
-PURCHASE_DATES = [
-    date(2015, 7, 22),
-    date(2012, 11, 14),
-    date(2020, 6, 8),
-    date(2024, 5, 28),
-    date(2016, 4, 14),
-    date(2012, 11, 14),
-]
-
-INVESTMENT_BANKS = [
-    InvestmentBankType.TOSS.value,
-    InvestmentBankType.KB.value,
-    InvestmentBankType.NH.value,
-    InvestmentBankType.KIWOOM.value,
-    InvestmentBankType.MIRAEASSET.value,
-    None,
-]
-
-
-PURCHASECURRENCYTYPES = [
-    PurchaseCurrencyType.KOREA.value,
-    PurchaseCurrencyType.USA.value,
-    PurchaseCurrencyType.KOREA.value,
-    PurchaseCurrencyType.USA.value,
-    PurchaseCurrencyType.KOREA.value,
-    PurchaseCurrencyType.KOREA.value,
-]
-
-
-ACCOUNT_TYPES = [
-    AccountType.REGULAR.value,
-    AccountType.REGULAR.value,
-    AccountType.REGULAR.value,
-    AccountType.ISA.value,
-    AccountType.REGULAR.value,
-    None,
-]
-
-STOCK_QUANTITIES = [1, 2, 2, 4, 5, 1]
 
 
 INDEX_NAME_TRANSLATIONS = {
