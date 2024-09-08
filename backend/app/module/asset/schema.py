@@ -8,18 +8,18 @@ from app.module.asset.enum import AccountType, PurchaseCurrencyType
 
 class StockAsset(BaseModel):
     id: Optional[int] = None
-    account_type: AccountType = Field(..., description="계좌 종류")
+    account_type: AccountType | None = Field(..., description="계좌 종류")
     buy_date: date = Field(..., description="구매일자")
     current_price: float = Field(..., description="현재가")
     dividend: float = Field(..., description="배당금")
     highest_price: float = Field(..., description="주식 하루 중 고가")
-    investment_bank: str = Field(..., description="증권사", examples=["토스증권"])
+    investment_bank: str | None = Field(..., description="증권사", examples=["토스증권"])
     lowest_price: float = Field(..., description="주식 하루 중 저가")
     opening_price: float = Field(..., description="주식 하루 중 시가, 시작되는 가격")
     profit_rate: float = Field(..., description="수익률")
     profit_amount: float = Field(..., description="수익금")
-    purchase_amount: float = Field(..., description="매입금액")
-    purchase_price: float = Field(..., description="매입가")
+    purchase_amount: float | None = Field(..., description="매입금액")
+    purchase_price: float | None = Field(..., description="매입가")
     purchase_currency_type: PurchaseCurrencyType = Field(..., description="매입 통화")
     quantity: int = Field(..., description="수량")
     stock_code: str = Field(..., description="종목 코드", examples=["AAPL"])

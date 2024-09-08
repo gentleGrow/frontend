@@ -5,6 +5,7 @@ from app.module.asset.model import (  # noqa > relationship purpose
     Asset,
     Dividend,
     MarketIndexDaily,
+    MarketIndexMinutely,
     MarketIndexMonthly,
     MarketIndexWeekly,
     Stock,

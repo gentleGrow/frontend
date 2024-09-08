@@ -69,7 +69,7 @@ async def get_dummy_assets(
     not_found_stock_codes: list[str] = check_not_found_stock(stock_daily_map, current_stock_price_map, assets)
     if not_found_stock_codes:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail={"not_found_stock_codes": not_found_stock_codes}
+            status_code=status.HTTP_400_BAD_REQUEST, detail={"다음의 주식 코드를 찾지 못 했습니다.": not_found_stock_codes}
         )
 
     stock_assets = get_stock_assets(

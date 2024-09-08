@@ -1592,6 +1592,20 @@ files = [
 ]
 
 [[package]]
+name = "holidays"
+version = "0.56"
+description = "Generate and work with holidays in Python"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "holidays-0.56-py3-none-any.whl", hash = "sha256:19b6410c3ae899ad5746917f106c5f07c899eba3afa3f4ca82981d3ed677f4c4"},
+    {file = "holidays-0.56.tar.gz", hash = "sha256:86e8550724d34f72b4db2292b2a70983067b2ee80eeaf18a30ea882d821814c5"},
+]
+
+[package.dependencies]
+python-dateutil = "*"
+
+[[package]]
 name = "html5lib"
 version = "1.1"
 description = "HTML parser based on the WHATWG HTML specification"
@@ -5582,4 +5596,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "1f035ee6783c6eef38e0f6c234316f6ee3efd37e2866b551eac6997ae30c69f3"
+content-hash = "0bd902f7bbe0d13adf344c8f61470cb5f4bff2ca740bb6178712b6ce86c0f257"
