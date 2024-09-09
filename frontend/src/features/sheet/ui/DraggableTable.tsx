@@ -1,5 +1,5 @@
 "use client";
-import { useState, useReducer, useMemo } from "react";
+import { useState, useReducer, useMemo, useEffect } from "react";
 import {
   createColumnHelper,
   ColumnDef,
@@ -9,6 +9,7 @@ import {
 import { stockAssets, Asset } from "@/features/sheet/model/types";
 import DraggableTableHeader from "@/widgets/draggable-table/DraggableTableHeader";
 import DragAlongCell from "@/widgets/draggable-table/DragAlongCell";
+import { getDummyStockAssets } from "@/features/sheet/api";
 
 // needed for table body level scope DnD setup
 import {
@@ -90,12 +91,29 @@ const DraggableTable = () => {
     [],
   );
 
-  const [data, setData] = useState(() => [...stockAssets]);
+  // const [data, setData] = useState(() => [...stockAssets]);
+  //const rerender = useReducer(() => ({}), {})[1];
+  // const rerender = () => setData(stockAssets);
+
+  const [data, setData] = useState([]); // 데이터를 상태로 관리
   const [columnOrder, setColumnOrder] = useState<string[]>(() =>
     columns.map((c) => c.id!),
   );
-  //const rerender = useReducer(() => ({}), {})[1];
-  const rerender = () => setData(stockAssets);
+
+  // API에서 데이터 불러오기
+  const fetchData = async () => {
+    try {
+      const stockAssets = await getDummyStockAssets(); // API 호출
+      setData(stockAssets); // 가져온 데이터를 상태로 설정
+    } catch (error) {
+      console.error("데이터를 불러오는 중 오류 발생:", error);
+    }
+  };
+
+  // 컴포넌트가 처음 렌더링될 때 데이터를 불러옴
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const table = useReactTable({
     data,
