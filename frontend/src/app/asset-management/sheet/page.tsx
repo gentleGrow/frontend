@@ -1,5 +1,6 @@
 // pages/asset/sheet/page.tsx
 import Summary from "@/widgets/card/Summary";
+import DraggableTable from "@/features/sheet/ui/DraggableTable";
 
 const Sheet = () => {
   const SUMMARYDATA = [
@@ -12,6 +13,7 @@ const Sheet = () => {
   return (
     <div>
       <Summary summaryData={SUMMARYDATA} />
+      <DraggableTable />
     </div>
   );
 };
