@@ -1,1 +1,1 @@
-ALL_STOCK = "AM.*"
+ALL_STOCK = "A.*"

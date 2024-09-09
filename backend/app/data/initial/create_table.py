@@ -9,6 +9,7 @@ from app.module.asset.model import (  # noqa > relationship purpose
     MarketIndexMonthly,
     MarketIndexWeekly,
     Stock,
+    StockMinutely,
     StockDaily,
     StockMonthly,
     StockWeekly,
@@ -35,9 +36,6 @@ def main():
     else:
         print(f"[create_tables] MYSQL_URL가 정의 되어 있지 않습니다., {MYSQL_URL=}")
 
-
-def lambda_handler(event, context):
-    main()
 
 
 if __name__ == "__main__":
