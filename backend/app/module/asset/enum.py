@@ -45,6 +45,7 @@ class MarketIndex(StrEnum):
     AEX = "AEX"
     TSE_300 = "TSE"
     EURO_STOXX_50 = "SX5E"
+    NYSE = "NYSE"
 
 
 class PurchaseCurrencyType(StrEnum):

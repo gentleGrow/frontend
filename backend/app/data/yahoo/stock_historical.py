@@ -15,7 +15,6 @@ from app.module.auth.model import User  # noqa: F401 > relationship 설정시 �
 from database.dependency import get_mysql_session
 
 
-
 async def process_stock_data(session: AsyncSession, stock_list: list[StockInfo], start_period: int, end_period: int):
     for stock_info in stock_list:
         for interval in TimeInterval:

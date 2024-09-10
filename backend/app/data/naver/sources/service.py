@@ -7,7 +7,6 @@ from icecream import ic
 from app.module.asset.schema import StockInfo
 
 
-
 async def fetch_stock_price(session: ClientSession, code: str) -> int:
     url = f"https://finance.naver.com/item/main.nhn?code={code}"
 
