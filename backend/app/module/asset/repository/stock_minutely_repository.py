@@ -1,6 +1,8 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.module.asset.model import StockMinutely
 from sqlalchemy.dialects.mysql import insert
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.module.asset.model import StockMinutely
+
 
 class StockMinutelyRepository:
     @staticmethod
@@ -25,5 +27,3 @@ class StockMinutelyRepository:
             await session.commit()
         except Exception:
             await session.rollback()
-
-

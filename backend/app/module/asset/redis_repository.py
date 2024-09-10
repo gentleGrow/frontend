@@ -17,6 +17,7 @@ class RedisRealTimeStockRepository:
                 pipe.set(key, price, ex=expire_time)
             await pipe.execute()
 
+
 class RedisExchangeRateRepository:
     @staticmethod
     async def bulk_get(redis_client: Redis, keys: list[str]) -> list[float]:

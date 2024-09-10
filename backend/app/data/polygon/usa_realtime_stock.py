@@ -2,9 +2,10 @@ import asyncio
 import os
 import threading
 import time
-from icecream import ic
+
 import websocket
 from dotenv import find_dotenv, load_dotenv
+
 from app.data.polygon.source.service import PolygonRealTimeService
 
 load_dotenv(find_dotenv())
@@ -16,7 +17,7 @@ class USARealTimeStock:
         self.ws_url = ws_url
         self.loop = asyncio.get_event_loop()
         self.websocket_thread = None
-        self.service = PolygonRealTimeService()  
+        self.service = PolygonRealTimeService()
 
     def start(self):
         self.websocket_thread = threading.Thread(target=self._start_websocket)
@@ -28,10 +29,7 @@ class USARealTimeStock:
 
         while True:
             ws = websocket.WebSocketApp(
-                self.ws_url,
-                on_message=self._on_message,
-                on_error=self._on_error,
-                on_close=self._on_close
+                self.ws_url, on_message=self._on_message, on_error=self._on_error, on_close=self._on_close
             )
             ws.on_open = self._on_open
             ws.run_forever()

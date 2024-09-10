@@ -62,6 +62,7 @@ class Stock(TimestampMixin, MySQLBase):
     asset_stock = relationship("AssetStock", back_populates="stock", overlaps="asset", lazy="selectin")
     dividend = relationship("Dividend", back_populates="stock")
 
+
 class StockMinutely(MySQLBase):
     __tablename__ = "stock_minutely"
 
@@ -71,6 +72,7 @@ class StockMinutely(MySQLBase):
     current_price = Column(Float, nullable=False)
 
     __table_args__ = (UniqueConstraint("code", "datetime", name="uq_code_name_datetime"),)
+
 
 class StockDaily(MySQLBase):
     __tablename__ = "stock_daily"

@@ -6,8 +6,8 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.data.common.constant import STOCK_CACHE_SECOND, STOCK_CHUNK_SIZE
-from app.data.common.service import get_korea_stock_code_list
-from app.data.naver.sources.service import get_stock_prices
+from app.data.common.service import get_world_stock_code_list
+from app.data.naver.sources.service import WorldStockService
 from app.module.asset.model import StockMinutely
 from app.module.asset.redis_repository import RedisRealTimeStockRepository
 from app.module.asset.repository.stock_minutely_repository import StockMinutelyRepository
@@ -17,12 +17,12 @@ from database.dependency import get_mysql_session, get_redis_pool
 
 
 async def collect_stock_data(redis_client: Redis, session: AsyncSession) -> None:
-    stock_code_list: list[StockInfo] = get_korea_stock_code_list()
+    stock_code_list: list[StockInfo] = get_world_stock_code_list()
     now = datetime.now().replace(second=0, microsecond=0)
 
     for i in range(0, len(stock_code_list), STOCK_CHUNK_SIZE):
         stock_info_list: list[StockInfo] = stock_code_list[i : i + STOCK_CHUNK_SIZE]
-        code_price_pairs: list[tuple[str, int | Exception]] = await get_stock_prices(stock_info_list)
+        code_price_pairs: list[tuple[str, int | Exception]] = await WorldStockService.get_world_stock_prices(stock_info_list)
 
         db_bulk_data = []
 
@@ -51,3 +51,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+

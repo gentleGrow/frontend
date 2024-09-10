@@ -9,8 +9,8 @@ from app.module.asset.model import (  # noqa > relationship purpose
     MarketIndexMonthly,
     MarketIndexWeekly,
     Stock,
-    StockMinutely,
     StockDaily,
+    StockMinutely,
     StockMonthly,
     StockWeekly,
 )
@@ -35,7 +35,6 @@ def main():
             print(f"[create_tables] Unexpected error: {e}")
     else:
         print(f"[create_tables] MYSQL_URL가 정의 되어 있지 않습니다., {MYSQL_URL=}")
-
 
 
 if __name__ == "__main__":
