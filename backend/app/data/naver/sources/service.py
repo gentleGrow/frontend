@@ -2,7 +2,6 @@ import asyncio
 
 from aiohttp import ClientSession, ClientTimeout
 from bs4 import BeautifulSoup
-from icecream import ic
 
 from app.module.asset.schema import StockInfo
 
@@ -21,8 +20,7 @@ async def fetch_stock_price(session: ClientSession, code: str) -> int:
 
             price_text = today.select_one(".blind").get_text()
             return int(price_text.replace(",", ""))
-    except Exception as e:
-        ic(f"Error fetching stock price for {code}: {e}")
+    except Exception:
         return 0
 
 

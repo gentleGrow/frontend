@@ -15,10 +15,14 @@ from app.module.asset.repository.stock_minutely_repository import StockMinutelyR
 from app.module.asset.schema import StockInfo
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session, get_redis_pool
-from icecream import ic
+
+from zoneinfo import ZoneInfo
+
+seoul_tz = ZoneInfo("Asia/Seoul")
+
 
 async def collect_stock_data(redis_client: Redis, session: AsyncSession, stock_code_list: list[StockInfo]) -> None:
-    now = datetime.now().replace(second=0, microsecond=0)
+    now = datetime.now(seoul_tz).replace(second=0, microsecond=0)
 
     code_price_pairs = []
     for stockinfo in stock_code_list:
@@ -28,10 +32,10 @@ async def collect_stock_data(redis_client: Redis, session: AsyncSession, stock_c
                 Country[stockinfo.country.upper().replace(" ", "_")],
                 MarketIndex[stockinfo.market_index.upper()],
             )
-            
+
             stock = yfinance.Ticker(stock_code)
             current_price = stock.info.get("bid")
-            
+
             if current_price:
                 code_price_pairs.append((stock_code, current_price))
         except Exception:
@@ -46,7 +50,6 @@ async def collect_stock_data(redis_client: Redis, session: AsyncSession, stock_c
 
     if db_bulk_data:
         await StockMinutelyRepository.bulk_upsert(session, db_bulk_data)
-
 
 
 async def main():

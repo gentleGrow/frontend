@@ -17,57 +17,66 @@ us_holidays = holidays.US()
 today = date.today()
 one_year_ago = today - timedelta(days=365)
 
-PURCHASE_DATES = []
-current_date = one_year_ago
-while current_date <= today:
-    if (
-        current_date.weekday() < 5
-        and current_date not in kr_holidays
-        and current_date not in us_holidays
-        and current_date not in [date(2024, 3, 29), date(2024, 5, 1)]
-    ):
-        PURCHASE_DATES.append(current_date)
-    current_date += timedelta(days=1)
 
-KOREAN_STOCK_CODES = [
-    "005930",
-    "000660",
-    "051910",
-    "035720",
+PURCHASE_DATES = [
+    date(2024, 8, 12),
+    date(2024, 8, 13),
+    date(2024, 8, 14),
+    date(2024, 8, 15),
+    date(2024, 8, 16),
+    date(2024, 8, 19),
+    date(2024, 8, 20),
+    date(2024, 8, 21),
+    date(2024, 8, 22),
+    date(2024, 8, 23),
+    date(2024, 8, 26),
 ]
 
-USA_STOCK_CODES = ["AAPL", "MSFT", "AMZN", "GOOGL", "TSLA", "META", "NVDA"]
-
-STOCK_CODES = (KOREAN_STOCK_CODES + USA_STOCK_CODES) * (len(PURCHASE_DATES) // 20 + 1)
-STOCK_CODES = STOCK_CODES[: len(PURCHASE_DATES)]
+STOCK_CODES = ["005930", "000660", "051910", "035720", "AAPL", "MSFT", "AMZN", "GOOGL", "TSLA", "META", "NVDA"]
 
 INVESTMENT_BANKS = [
     InvestmentBankType.TOSS.value,
+    None,
     InvestmentBankType.KB.value,
+    None,
     InvestmentBankType.NH.value,
+    None,
     InvestmentBankType.KIWOOM.value,
+    None,
     InvestmentBankType.MIRAEASSET.value,
     None,
-] * (len(PURCHASE_DATES) // 6 + 1)
-INVESTMENT_BANKS = INVESTMENT_BANKS[: len(PURCHASE_DATES)]
+    InvestmentBankType.TOSS.value,
+]
 
 ACCOUNT_TYPES = [
     AccountType.REGULAR.value,
-    AccountType.REGULAR.value,
-    AccountType.REGULAR.value,
-    AccountType.ISA.value,
+    None,
     AccountType.REGULAR.value,
     None,
-] * (len(PURCHASE_DATES) // 6 + 1)
-ACCOUNT_TYPES = ACCOUNT_TYPES[: len(PURCHASE_DATES)]
+    AccountType.REGULAR.value,
+    None,
+    AccountType.ISA.value,
+    None,
+    AccountType.REGULAR.value,
+    None,
+    AccountType.REGULAR.value,
+]
 
 PURCHASECURRENCYTYPES = [
+    PurchaseCurrencyType.USA.value,
+    PurchaseCurrencyType.KOREA.value,
+    PurchaseCurrencyType.KOREA.value,
+    PurchaseCurrencyType.KOREA.value,
+    PurchaseCurrencyType.KOREA.value,
     PurchaseCurrencyType.KOREA.value,
     PurchaseCurrencyType.USA.value,
-] * (len(PURCHASE_DATES) // 2 + 1)
-PURCHASECURRENCYTYPES = PURCHASECURRENCYTYPES[: len(PURCHASE_DATES)]
+    PurchaseCurrencyType.KOREA.value,
+    PurchaseCurrencyType.USA.value,
+    PurchaseCurrencyType.KOREA.value,
+    PurchaseCurrencyType.USA.value,
+]
 
-STOCK_QUANTITIES = [i % 5 + 1 for i in range(len(PURCHASE_DATES))]
+STOCK_QUANTITIES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
 
 REDIS_STOCK_EXPIRE_SECOND = 60 * 60 * 24

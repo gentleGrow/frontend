@@ -1,4 +1,5 @@
 import json
+from collections import defaultdict
 from datetime import date, datetime
 
 from redis.asyncio import Redis
@@ -48,11 +49,15 @@ class PerformanceAnalysis:
         )
         exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
-        result = []
-        cumulative_assets = []
-
+        assets_by_date = defaultdict(list)
         for asset in assets:
-            cumulative_assets.append(asset)
+            assets_by_date[asset.asset_stock.purchase_date].append(asset)
+
+        cumulative_assets = []
+        result = []
+
+        for purchase_date, assets_for_date in sorted(assets_by_date.items()):
+            cumulative_assets.extend(assets_for_date)
 
             total_asset_amount = AssetStockService.get_total_asset_amount(
                 cumulative_assets, current_stock_price_map, exchange_rate_map
@@ -67,7 +72,7 @@ class PerformanceAnalysis:
 
             result.append(
                 {
-                    "date": asset.asset_stock.purchase_date,
+                    "date": purchase_date,
                     "name": DUMMY_NAME,
                     "profit": total_profit_rate,
                 }

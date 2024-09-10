@@ -1,7 +1,7 @@
 import datetime
 
 from app.common.util.time import end_timestamp, start_timestamp
-from app.module.asset.enum import Country, CountryMarketCode, MarketIndex, CountryMarketCode
+from app.module.asset.enum import Country, CountryMarketCode, MarketIndex
 from app.module.asset.model import (  # noqa: F401 > relationship 설정시 필요합니다.
     Asset,
     AssetStock,
@@ -33,7 +33,7 @@ def get_period_bounds(stock_history_timerange: int) -> tuple[int, int]:
     return start_timestamp(start_year, current_month), end_timestamp(current_year, current_month)
 
 
-def format_stock_code(code: str, country: Country, market_index: MarketIndex) -> str:
+def format_stock_code(code: str, country: Country, market_index: MarketIndex | None) -> str:
     if country == Country.USA:
         return code
     elif country == Country.KOREA:
@@ -70,4 +70,7 @@ def format_stock_code(code: str, country: Country, market_index: MarketIndex) ->
     elif country == Country.UK:
         return f"{code}.{CountryMarketCode.UK}"
     else:
-        return f"{code}.{market_index.value}"
+        if market_index:
+            return f"{code}.{market_index.value}"
+        else:
+            return f"{code}.{market_index}"

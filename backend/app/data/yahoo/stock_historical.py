@@ -1,6 +1,7 @@
 import asyncio
 
 import pandas as pd
+from icecream import ic
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -28,7 +29,7 @@ async def process_stock_data(session: AsyncSession, stock_list: list[StockInfo],
                     MarketIndex[stock_info.market_index.upper()],
                 )
             except KeyError:
-                print(f"Skipping stock with invalid market index: {stock_info.market_index}")
+                ic(f"Skipping stock with invalid market index: {stock_info.market_index}")
                 continue
 
             url = (
