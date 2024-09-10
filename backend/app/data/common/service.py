@@ -71,42 +71,12 @@ def read_stock_codes_from_excel(filepath: str) -> list[StockInfo]:
     return stock_infos
 
 
+    
 def get_korea_stock_code_list() -> list[StockInfo]:
     return read_stock_codes_from_excel(get_path(KOREA_STOCK_FILEPATH))
 
-def get_world_stock_code_list() -> list[StockInfo]:
-    usa_stock_code_list = read_stock_codes_from_excel(get_path(USA_STOCK_FILEPATH))
-    japan_stock_code_list = read_stock_codes_from_excel(get_path(JAPAN_STOCK_FILEPATH))
-    australia_stock_code_list = read_stock_codes_from_excel(get_path(AUSTRALIA_STOCK_FILEPATH))
-    brazil_stock_code_list = read_stock_codes_from_excel(get_path(BRAZIL_STOCK_FILEPATH))
-    canada_stock_code_list = read_stock_codes_from_excel(get_path(CANADA_STOCK_FILEPATH))
-    china_stock_code_list = read_stock_codes_from_excel(get_path(CHINA_STOCK_FILEPATH))
-    france_stock_code_list = read_stock_codes_from_excel(get_path(FRANCE_STOCK_FILEPATH))
-    germany_stock_code_list = read_stock_codes_from_excel(get_path(GERMANY_STOCK_FILEPATH))
-    hongkong_stock_code_list = read_stock_codes_from_excel(get_path(HONGKONG_STOCK_FILEPATH))
-    india_stock_code_list = read_stock_codes_from_excel(get_path(INDIA_STOCK_FILEPATH))
-    italy_stock_code_list = read_stock_codes_from_excel(get_path(ITALY_STOCK_FILEPATH))
-    netherland_stock_code_list = read_stock_codes_from_excel(get_path(NETHERLAND_STOCK_FILEPATH))
-    spain_stock_code_list = read_stock_codes_from_excel(get_path(SPAIN_STOCK_FILEPATH))
-    switzerland_stock_code_list = read_stock_codes_from_excel(get_path(SWITZERLAND_STOCK_FILEPATH))
-    uk_stock_code_list = read_stock_codes_from_excel(get_path(UK_STOCK_FILEPATH))
-    return (
-        usa_stock_code_list
-        + japan_stock_code_list
-        + australia_stock_code_list
-        + brazil_stock_code_list
-        + canada_stock_code_list
-        + china_stock_code_list
-        + france_stock_code_list
-        + germany_stock_code_list
-        + hongkong_stock_code_list
-        + india_stock_code_list
-        + italy_stock_code_list
-        + netherland_stock_code_list
-        + spain_stock_code_list
-        + switzerland_stock_code_list
-        + uk_stock_code_list
-    )
+def get_usa_stock_code_list() -> list[StockInfo]:
+    return read_stock_codes_from_excel(get_path(USA_STOCK_FILEPATH))
 
 def get_all_stock_code_list() -> list[StockInfo]:
     usa_stock_code_list = read_stock_codes_from_excel(get_path(USA_STOCK_FILEPATH))

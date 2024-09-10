@@ -1,2 +1,0 @@
-USA = "USA"
-NYSE = "NYSE"

@@ -1,5 +1,6 @@
 from enum import StrEnum
 
+
 class CountryMarketCode(StrEnum):
     USA = "O"
     KOREA_KOSPI = "KS"
@@ -18,7 +19,6 @@ class CountryMarketCode(StrEnum):
     SPAIN = "MC"
     SWITZERLAND = "SW"
     NETHERLAND = "AS"
-
 
 
 class MarketIndex(StrEnum):
