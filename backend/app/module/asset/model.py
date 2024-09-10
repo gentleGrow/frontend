@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Column, Date, Enum, Float, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import BigInteger, Column, Date, DateTime, Enum, Float, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from app.common.mixin.timestamp import TimestampMixin
@@ -20,17 +20,17 @@ class AssetStock(TimestampMixin, MySQLBase):
     __tablename__ = "asset_stock"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    account_type = Column(Enum(AccountType), nullable=False, info={"description": "계좌 종류"})
-    investment_bank = Column(Enum(InvestmentBankType), nullable=False, info={"description": "증권사"})
-    purchase_currency_type = Column(Enum(PurchaseCurrencyType), nullable=False, info={"description": "구매 통화"})
+    account_type = Column(Enum(AccountType), nullable=True, info={"description": "계좌 종류"})
+    investment_bank = Column(Enum(InvestmentBankType), nullable=True, info={"description": "증권사"})
+    purchase_currency_type = Column(Enum(PurchaseCurrencyType), nullable=True, info={"description": "구매 통화"})
     purchase_date = Column(Date, nullable=False, info={"description": "구매일자"})
     purchase_price = Column(Float, nullable=True, info={"description": "매입가"})
-    quantity = Column(Integer, nullable=False)
+    quantity = Column(Integer, nullable=False, info={"description": "구매수량"})
 
     stock_id = Column(BigInteger, ForeignKey("stock.id"), primary_key=True)
     asset_id = Column(BigInteger, ForeignKey("asset.id"), primary_key=True)
-    asset = relationship("Asset", back_populates="asset_stock", uselist=False, overlaps="stock,asset")
-    stock = relationship("Stock", back_populates="asset_stock", overlaps="asset,stock")
+    asset = relationship("Asset", back_populates="asset_stock", uselist=False, overlaps="stock,asset", lazy="selectin")
+    stock = relationship("Stock", back_populates="asset_stock", overlaps="asset,stock", lazy="selectin")
 
 
 class Asset(TimestampMixin, MySQLBase):
@@ -41,8 +41,10 @@ class Asset(TimestampMixin, MySQLBase):
 
     user_id = Column(BigInteger, ForeignKey("user.id"), nullable=False)
     user = relationship("User", back_populates="asset")
-    stock = relationship("Stock", secondary="asset_stock", back_populates="asset", overlaps="asset_stock")
-    asset_stock = relationship("AssetStock", back_populates="asset", uselist=False, overlaps="stock")
+    stock = relationship(
+        "Stock", secondary="asset_stock", back_populates="asset", overlaps="asset_stock", lazy="selectin"
+    )
+    asset_stock = relationship("AssetStock", back_populates="asset", uselist=False, overlaps="stock", lazy="selectin")
 
 
 class Stock(TimestampMixin, MySQLBase):
@@ -54,10 +56,21 @@ class Stock(TimestampMixin, MySQLBase):
     market_index = Column(String(255), nullable=False)
     name = Column(String(255), nullable=False)
 
-    asset = relationship("Asset", secondary="asset_stock", back_populates="stock", overlaps="asset_stock")
-    asset_stock = relationship("AssetStock", back_populates="stock", overlaps="asset")
+    asset = relationship(
+        "Asset", secondary="asset_stock", back_populates="stock", overlaps="asset_stock", lazy="selectin"
+    )
+    asset_stock = relationship("AssetStock", back_populates="stock", overlaps="asset", lazy="selectin")
     dividend = relationship("Dividend", back_populates="stock")
 
+class StockMinutely(MySQLBase):
+    __tablename__ = "stock_minutely"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    code = Column(String(255), nullable=False)
+    datetime = Column(DateTime, nullable=False)
+    current_price = Column(Float, nullable=False)
+
+    __table_args__ = (UniqueConstraint("code", "datetime", name="uq_code_name_datetime"),)
 
 class StockDaily(MySQLBase):
     __tablename__ = "stock_daily"
@@ -105,3 +118,59 @@ class StockMonthly(MySQLBase):
     trade_volume = Column(BigInteger, nullable=False, info={"description": "Volume of stock traded"})
 
     ___table_args__ = (UniqueConstraint("code", "date", name="uq_code_date"),)
+
+
+class MarketIndexMinutely(MySQLBase):
+    __tablename__ = "market_index_minutely"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    index_name = Column(String(255), nullable=False)
+    datetime = Column(DateTime, nullable=False)
+    current_price = Column(Float, nullable=False)
+
+    __table_args__ = (UniqueConstraint("index_name", "datetime", name="uq_index_name_datetime"),)
+
+
+class MarketIndexDaily(MySQLBase):
+    __tablename__ = "market_index_daily"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    index_name = Column(String(255), nullable=False)
+    date = Column(Date, nullable=False)
+    open_price = Column(Float, nullable=False)
+    close_price = Column(Float, nullable=False)
+    high_price = Column(Float, nullable=False)
+    low_price = Column(Float, nullable=False)
+    volume = Column(BigInteger, nullable=True)
+
+    __table_args__ = (UniqueConstraint("index_name", "date", name="uq_index_name_date"),)
+
+
+class MarketIndexWeekly(MySQLBase):
+    __tablename__ = "market_index_weekly"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    index_name = Column(String(50), nullable=False)
+    date = Column(Date, nullable=False)
+    open_price = Column(Float, nullable=False)
+    close_price = Column(Float, nullable=False)
+    high_price = Column(Float, nullable=False)
+    low_price = Column(Float, nullable=False)
+    volume = Column(BigInteger, nullable=False)
+
+    __table_args__ = (UniqueConstraint("index_name", "date", name="uq_index_name_date"),)
+
+
+class MarketIndexMonthly(MySQLBase):
+    __tablename__ = "market_index_monthly"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    index_name = Column(String(50), nullable=False)
+    date = Column(Date, nullable=False)
+    open_price = Column(Float, nullable=False)
+    close_price = Column(Float, nullable=False)
+    high_price = Column(Float, nullable=False)
+    low_price = Column(Float, nullable=False)
+    volume = Column(BigInteger, nullable=False)
+
+    __table_args__ = (UniqueConstraint("index_name", "date", name="uq_index_name_date"),)

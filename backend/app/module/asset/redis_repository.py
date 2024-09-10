@@ -10,6 +10,12 @@ class RedisRealTimeStockRepository:
     async def save(redis_client: Redis, key: str, price: int, expire_time: int) -> None:
         await redis_client.set(key, price, ex=expire_time)
 
+    @staticmethod
+    async def bulk_save(redis_client: Redis, stock_data: list[tuple[str, int]], expire_time: int) -> None:
+        async with redis_client.pipeline() as pipe:
+            for key, price in stock_data:
+                pipe.set(key, price, ex=expire_time)
+            await pipe.execute()
 
 class RedisExchangeRateRepository:
     @staticmethod
@@ -21,21 +27,10 @@ class RedisExchangeRateRepository:
         await redis_client.set(key, data, ex=expire_time)
 
 
-class RedisDummyAssetRepository:
+class RedisRealTimeMarketIndexRepository:
     @staticmethod
-    async def get(redis_client: Redis, key: str) -> str:
-        return await redis_client.get(key)
-
-    @staticmethod
-    async def save(redis_client: Redis, key: str, data: str, expire_time: int) -> None:
-        await redis_client.set(key, data, ex=expire_time)
-
-
-class RedisSessionRepository:
-    @staticmethod
-    async def get(redis_client: Redis, key: str) -> str:
-        return await redis_client.get(key)
-
-    @staticmethod
-    async def save(redis_client: Redis, key: str, data: str, expire_time: int) -> None:
-        await redis_client.set(key, data, ex=expire_time)
+    async def bulk_save(redis_client: Redis, bulk_data: list, expire_time: int) -> None:
+        pipeline = redis_client.pipeline()
+        for key, market_index_json in bulk_data:
+            pipeline.set(key, market_index_json, ex=expire_time)
+        await pipeline.execute()

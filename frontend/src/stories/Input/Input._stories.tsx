@@ -3,7 +3,7 @@ import "../../app/globals.css";
 import { Input } from "@/shared";
 import { Input, InputGroup, InputLeftAddon } from "@/shared/ui/input";
 import "@/shared/ui/input/style.css";
-    
+
 const meta: Meta<typeof Input> = {
   title: "React Components/Input",
   component: Input,

@@ -3,10 +3,11 @@ from redis.asyncio import Redis
 from app.module.asset.constant import CURRENCY_PAIRS
 from app.module.asset.enum import CurrencyType
 from app.module.asset.model import Asset, Dividend, StockDaily
-from app.module.asset.schema.stock_schema import StockAsset
-from database.redis import RedisExchangeRateRepository, RedisRealTimeStockRepository
+from app.module.asset.redis_repository import RedisExchangeRateRepository, RedisRealTimeStockRepository
+from app.module.asset.schema import StockAsset
 
 
+# 수정!!!! 함수가 많아져 관리가 힘들어지면서, class로 책임 범위 제한을 하려 합니다. 추후 수정 하겠습니다.
 async def get_exchange_rate_map(redis_client: Redis) -> dict[str, float]:
     result = {}
 
@@ -39,7 +40,7 @@ def get_exchange_rate(source: CurrencyType, target: CurrencyType, exchange_rate_
 
 
 async def get_current_stock_price(
-    redis_client: Redis, stock_daily_map: dict[tuple[str, str], StockDaily], stock_codes: list[str]
+    redis_client: Redis, lastest_stock_daily_map: dict[tuple[str, str], StockDaily], stock_codes: list[str]
 ) -> dict[str, float]:
     result = {}
 
@@ -49,9 +50,7 @@ async def get_current_stock_price(
         current_price = current_prices[i]
 
         if current_price is None:
-            latest_date = max([date for (code, date) in stock_daily_map.keys() if code == stock_code], default=None)
-
-            stock_daily = stock_daily_map.get((stock_code, latest_date))
+            stock_daily = lastest_stock_daily_map.get(stock_code)
             current_price = stock_daily.adj_close_price if stock_daily else 0.0
 
         result[stock_code] = float(current_price)
@@ -69,7 +68,7 @@ def check_not_found_stock(
         current_stock_daily = current_stock_daily_map.get(asset.asset_stock.stock.code)
         if stock_daily is None or current_stock_daily is None:
             result.append(asset.asset_stock.stock.code)
-            continue
+
     return result
 
 
@@ -146,29 +145,65 @@ def get_stock_assets(
     return stock_assets
 
 
-def get_asset_stock_totals(
+def get_total_dividend(
     assets: list[Asset],
-    stock_daily_map: dict[tuple[str, str], StockDaily],
-    current_stock_price_map: dict[str, float],
     dividend_map: dict[str, Dividend],
-    base_currency: bool,
     exchange_rate_map: dict[str, float],
-) -> tuple[float, float, float]:
-    total_asset_amount = 0
-    total_invest_amount = 0
+) -> float:
     total_dividend_amount = 0
 
     for asset in assets:
-        stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.asset_stock.purchase_date))
-        current_price = current_stock_price_map.get(asset.asset_stock.stock.code)
-
-        if not stock_daily or not current_price:
-            continue
-
         dividend_instance = dividend_map.get(asset.asset_stock.stock.code)
         dividend = dividend_instance.dividend if dividend_instance else 0
 
-        purchase_price = (
+        source_country = asset.asset_stock.stock.country.upper()
+        source_currency = CurrencyType[source_country]
+        won_exchange_rate = get_exchange_rate(source_currency, CurrencyType.KOREA, exchange_rate_map)
+
+        dividend *= won_exchange_rate
+        total_dividend_amount += dividend
+
+    return total_dividend_amount
+
+
+def get_total_asset_amount(
+    assets: list[Asset],
+    current_stock_price_map: dict[str, float],
+    exchange_rate_map: dict[str, float],
+) -> float:
+    total_asset_amount = 0
+
+    for asset in assets:
+        current_price = current_stock_price_map.get(asset.asset_stock.stock.code)
+
+        if current_price is None:
+            continue
+
+        source_country = asset.asset_stock.stock.country.upper()
+        source_currency = CurrencyType[source_country]
+
+        won_exchange_rate = get_exchange_rate(source_currency, CurrencyType.KOREA, exchange_rate_map)
+
+        current_price *= won_exchange_rate
+
+        total_asset_amount += current_price * asset.asset_stock.quantity
+    return total_asset_amount
+
+
+def get_total_investment_amount(
+    assets: list[Asset],
+    stock_daily_map: dict[tuple[str, str], StockDaily],
+    exchange_rate_map: dict[str, float],
+) -> float:
+    total_invest_amount = 0
+
+    for asset in assets:
+        stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.asset_stock.purchase_date))
+
+        if stock_daily is None:
+            continue
+
+        invest_price = (
             asset.asset_stock.purchase_price
             if asset.asset_stock.purchase_price is not None
             else stock_daily.adj_close_price
@@ -178,13 +213,11 @@ def get_asset_stock_totals(
         source_currency = CurrencyType[source_country]
         won_exchange_rate = get_exchange_rate(source_currency, CurrencyType.KOREA, exchange_rate_map)
 
-        if base_currency:
-            current_price = current_price * won_exchange_rate
-            purchase_price *= won_exchange_rate
-            dividend *= won_exchange_rate
+        invest_price *= won_exchange_rate
 
-        total_dividend_amount += dividend
-        total_asset_amount += current_price * asset.asset_stock.quantity
-        total_invest_amount += stock_daily.adj_close_price * asset.asset_stock.quantity
+        total_invest_amount += invest_price * asset.asset_stock.quantity
 
-    return total_asset_amount, total_invest_amount, total_dividend_amount
+    return total_invest_amount
+
+
+# 수정!!!! 함수가 많아져 관리가 힘들어지면서, class로 책임 범위 제한을 하려 합니다. 추후 수정 하겠습니다.

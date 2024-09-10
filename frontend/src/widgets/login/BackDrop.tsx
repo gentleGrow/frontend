@@ -1,5 +1,5 @@
 export default function BackDrop() {
   return (
-    <div className="fixed h-svh w-svw bg-black opacity-40 max-[545px]:hidden" />
+    <div className="bg-black max-546:hidden fixed h-svh w-svw opacity-40" />
   );
 }

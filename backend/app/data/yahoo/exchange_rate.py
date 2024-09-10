@@ -5,8 +5,8 @@ import yfinance
 
 from app.data.common.constant import STOCK_CACHE_SECOND
 from app.module.asset.constant import CURRENCY_PAIRS
+from app.module.asset.redis_repository import RedisExchangeRateRepository
 from database.dependency import get_redis_pool
-from database.redis import RedisExchangeRateRepository
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
@@ -36,7 +36,6 @@ async def main():
                     continue
 
                 cache_key = source_currency + "_" + target_currency
-
                 await RedisExchangeRateRepository.save(redis_client, cache_key, rate, expire_time=STOCK_CACHE_SECOND)
         except Exception as e:
             logging.error(f"An unexpected error occurred in the main loop: {e}")

@@ -9,39 +9,43 @@ from app.module.asset.enum import Country, MarketIndex
 from app.module.asset.model import Stock  # noqa: F401 > relationship 설정시 필요합니다.
 from app.module.asset.model import Dividend
 from app.module.asset.repository.dividend_repository import DividendRepository
-from app.module.asset.schema.stock_schema import StockInfo
+from app.module.asset.schema import StockInfo
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session
 
 
-async def insert_dividend_data(session: AsyncSession, stock_list: list[StockInfo]):
-    dividend_list = []
-    for stock in stock_list:
-        try:
-            country_enum = Country[stock.country.upper()]
-            market_index_enum = MarketIndex[stock.market_index.upper()]
+async def insert_dividend_data(session: AsyncSession, stock_list: list[StockInfo], batch_size: int = 100):
+    for i in range(0, len(stock_list), batch_size):
+        batch = stock_list[i : i + batch_size]
 
-            stock_code = format_stock_code(stock.code, country_enum, market_index_enum)
-            stock_info = yfinance.Ticker(stock_code)
+        dividend_list = []
+        for stock in batch:
+            try:
+                country_enum = Country[stock.country.upper()]
+                market_index_enum = MarketIndex[stock.market_index.upper()]
 
-        except Exception as e:
-            print(f"[분석][insert_dividend_data] Error during dividend processing: {e}")
-            continue
+                stock_code = format_stock_code(stock.code, country_enum, market_index_enum)
+                stock_info = yfinance.Ticker(stock_code)
 
-        dividends = stock_info.dividends
+            except Exception as e:
+                print(f"[분석][insert_dividend_data] Error during dividend processing: {e}")
+                continue
 
-        if dividends is None or dividends.empty:
-            newest_dividend = 0
-        else:
-            newest_dividend = dividends.iloc[-1]
+            dividends = stock_info.dividends
 
-        dividend = Dividend(dividend=newest_dividend, stock_code=stock.code)
-        dividend_list.append(dividend)
+            if dividends is None or dividends.empty:
+                newest_dividend = 0
+            else:
+                newest_dividend = dividends.iloc[-1]
 
-    try:
+            dividend = Dividend(
+                dividend=newest_dividend,
+                stock_code=stock.code,
+            )
+
+            dividend_list.append(dividend)
+
         await DividendRepository.bulk_upsert(session=session, dividends=dividend_list)
-    except Exception:
-        await session.rollback()
 
 
 async def main():
@@ -51,7 +55,7 @@ async def main():
     async with get_mysql_session() as session:
         await insert_dividend_data(session, stock_list)
 
-        print("배당금 수집을 완료합니다.")
+    print("배당금 수집을 완료합니다.")
 
 
 if __name__ == "__main__":
