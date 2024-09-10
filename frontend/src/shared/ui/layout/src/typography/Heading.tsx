@@ -11,6 +11,7 @@ const Heading = (props: HeadingProps, ref: Ref<HTMLElement>) => {
   const { as = "h1", fontSize, background, children, color } = props;
   const backgroundColor = background ? background : undefined;
   const colorStyle = colors[color as Color]?.[10];
+
   return React.createElement(
     as,
     {
