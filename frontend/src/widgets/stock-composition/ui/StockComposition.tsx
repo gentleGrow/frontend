@@ -14,15 +14,15 @@ const data = [
 ];
 export default function StockComposition() {
   return (
-    <div className="relative w-full max-w-[558px] rounded-xl border p-[16px]">
+    <div className="relative w-full max-w-[558px] rounded-xl border p-[16px] mobile:h-[642px]">
       <h2 className="text-heading-2">종목 구성</h2>
-      <div className="absolute right-[16px] top-[12px]">
+      <div className="mt-[16px] flex w-full except-mobile:absolute except-mobile:right-[16px] except-mobile:top-[12px] except-mobile:mt-0 except-mobile:w-fit">
         <SegmentedButtonGroup>
           <SegmentedButton>종목별</SegmentedButton>
           <SegmentedButton>계좌별</SegmentedButton>
         </SegmentedButtonGroup>
       </div>
-      <div className="mt-[48px]">
+      <div className="mt-[48px] mobile:mt-[20px]">
         <DonutChart chartName="종목 구성" data={data} />
       </div>
     </div>
