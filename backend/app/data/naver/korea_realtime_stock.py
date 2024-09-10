@@ -1,7 +1,7 @@
 import asyncio
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
-from icecream import ic
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,10 +15,12 @@ from app.module.asset.schema import StockInfo
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session, get_redis_pool
 
+seoul_tz = ZoneInfo("Asia/Seoul")
+
 
 async def collect_stock_data(redis_client: Redis, session: AsyncSession) -> None:
     stock_code_list: list[StockInfo] = get_korea_stock_code_list()
-    now = datetime.now().replace(second=0, microsecond=0)
+    now = datetime.now(seoul_tz).replace(second=0, microsecond=0)
 
     for i in range(0, len(stock_code_list), STOCK_CHUNK_SIZE):
         stock_info_list: list[StockInfo] = stock_code_list[i : i + STOCK_CHUNK_SIZE]
@@ -31,7 +33,7 @@ async def collect_stock_data(redis_client: Redis, session: AsyncSession) -> None
             db_bulk_data.append(current_stock_data)
 
             if isinstance(price, Exception):
-                ic(f"Error occurred for code: {code=}, {price=}")
+                continue
             else:
                 await RedisRealTimeStockRepository.save(redis_client, code, price, expire_time=STOCK_CACHE_SECOND)
 

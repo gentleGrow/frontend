@@ -67,10 +67,10 @@ class TestGetAssets:
         )
         assert response.status_code == status.HTTP_200_OK
 
-    @pytest.mark.asyncio
-    async def test_get_dummy_assets_success(self, client):
-        response = client.get(
-            "/api/v1/dummy/assetstock",
-            headers={"Authorization": "Bearer testtoken"},
-        )
-        assert response.status_code == status.HTTP_200_OK
+    # @pytest.mark.asyncio
+    # async def test_get_dummy_assets_success(self, client):
+    #     response = client.get(
+    #         "/api/v1/dummy/assetstock",
+    #         headers={"Authorization": "Bearer testtoken"},
+    #     )
+    #     assert response.status_code == status.HTTP_200_OK

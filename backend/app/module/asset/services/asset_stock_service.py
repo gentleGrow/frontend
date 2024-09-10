@@ -1,3 +1,5 @@
+from icecream import ic
+
 from app.module.asset.enum import CurrencyType
 from app.module.asset.model import Asset, Dividend, StockDaily
 from app.module.asset.schema import StockAsset
@@ -116,7 +118,7 @@ class AssetStockService:
 
         for asset in assets:
             stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.asset_stock.purchase_date))
-
+            ic(f"{stock_daily=}")
             if stock_daily is None:
                 continue
 
@@ -126,14 +128,23 @@ class AssetStockService:
                 else stock_daily.adj_close_price
             )
 
+            ic(f"{invest_price=}")
+            ic(f"{asset.asset_stock.purchase_price=}")
+            ic(f"{stock_daily.adj_close_price=}")
+
             source_country = asset.asset_stock.stock.country.upper()
             source_currency = CurrencyType[source_country]
             won_exchange_rate = ExchangeRateService.get_exchange_rate(
                 source_currency, CurrencyType.KOREA, exchange_rate_map
             )
 
+            ic(f"{won_exchange_rate=}")
+            ic(f"{asset.asset_stock.quantity=}")
+
             invest_price *= won_exchange_rate
 
             total_invest_amount += invest_price * asset.asset_stock.quantity
 
+        ic(f"{len(assets)=}")
+        ic(f"{total_invest_amount=}")
         return total_invest_amount

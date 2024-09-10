@@ -11,7 +11,7 @@ from app.data.yahoo.source.constant import (
 )
 from app.data.yahoo.source.schema import StockDataFrame
 from app.data.yahoo.source.service import format_stock_code, get_period_bounds
-from app.module.asset.enum import Country, MarketIndex, TimeInterval
+from app.module.asset.enum import Country, TimeInterval
 from app.module.asset.model import Stock, StockDaily, StockMonthly, StockWeekly  # noqa: F401 > relationship 설정시 필요합니다.
 from app.module.asset.schema import StockInfo
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
@@ -28,7 +28,7 @@ async def process_stock_data(session: AsyncSession, stock_list: list[StockInfo],
                 stock_code = format_stock_code(
                     stock_info.code,
                     Country[stock_info.country.upper().replace(" ", "_")],
-                    MarketIndex[stock_info.market_index.upper()],
+                    stock_info.market_index.upper(),
                 )
             except KeyError:
                 print(f"Skipping stock with invalid market index: {stock_info.market_index}")
