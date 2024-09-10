@@ -1,6 +1,26 @@
 from enum import StrEnum
 
 
+class CountryMarketCode(StrEnum):
+    USA = "O"
+    KOREA_KOSPI = "KS"
+    KOREA_KOSDAQ = "KQ"
+    JAPAN = "T"
+    UK = "L"
+    GERMANY = "DE"
+    FRANCE = "PA"
+    CHINA = "SS"
+    HONGKONG = "HK"
+    CANADA = "TO"
+    AUSTRALIA = "AX"
+    INDIA = "BO"
+    BRAZIL = "SA"
+    ITALY = "MI"
+    SPAIN = "MC"
+    SWITZERLAND = "SW"
+    NETHERLAND = "AS"
+
+
 class MarketIndex(StrEnum):
     KOSPI = "KS11"
     KOSDAQ = "KQ11"
@@ -25,6 +45,7 @@ class MarketIndex(StrEnum):
     AEX = "AEX"
     TSE_300 = "TSE"
     EURO_STOXX_50 = "SX5E"
+    NYSE = "NYSE"
 
 
 class PurchaseCurrencyType(StrEnum):
@@ -106,23 +127,3 @@ class Country(StrEnum):
     NETHERLAND = "NETHERLAND"
     EUROZONE = "EUROZONE"
     KOREA = "KOREA"
-
-
-class CountryMarketCode(StrEnum):
-    USA = ""
-    KOREA_KOSPI = "KS"
-    KOREA_KOSDAQ = "KQ"
-    JAPAN = "T"
-    UK = "L"
-    GERMANY = "DE"
-    FRANCE = "PA"
-    CHINA = "SS"
-    HONGKONG = "HK"
-    CANADA = "TO"
-    AUSTRALIA = "AX"
-    INDIA = "BO"
-    BRAZIL = "SA"
-    ITALY = "MI"
-    SPAIN = "MC"
-    SWITZERLAND = "SW"
-    NETHERLAND = "AS"

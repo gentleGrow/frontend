@@ -1,16 +1,18 @@
 import asyncio
 import json
-from icecream import ic
 import os
-from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from datetime import datetime
+
 from dotenv import find_dotenv, load_dotenv
-from app.data.common.constant import STOCK_CACHE_SECOND, REALTIME_BULK_SIZE
+from icecream import ic
+
+from app.data.common.constant import REALTIME_BULK_SIZE, STOCK_CACHE_SECOND
 from app.data.polygon.source.constant import ALL_STOCK
+from app.module.asset.model import StockMinutely
 from app.module.asset.redis_repository import RedisRealTimeStockRepository
 from app.module.asset.repository.stock_minutely_repository import StockMinutelyRepository
-from app.module.asset.model import StockMinutely
-from database.dependency import get_redis_pool, get_mysql_session
+from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
+from database.dependency import get_mysql_session, get_redis_pool
 
 
 class PolygonRealTimeService:
@@ -35,7 +37,7 @@ class PolygonRealTimeService:
 
     async def _save_to_redis(self, stock_data_list):
         redis_bulk_data = [(stock_data["sym"], stock_data["vw"]) for stock_data in stock_data_list]
-        
+
         if redis_bulk_data:
             await RedisRealTimeStockRepository.bulk_save(self.redis_client, redis_bulk_data, STOCK_CACHE_SECOND)
 
@@ -46,9 +48,7 @@ class PolygonRealTimeService:
         for stock_data in stock_data_list:
             try:
                 stock_minutely = StockMinutely(
-                    code=stock_data["sym"],
-                    datetime=now,
-                    current_price=float(stock_data["vw"])
+                    code=stock_data["sym"], datetime=now, current_price=float(stock_data["vw"])
                 )
             except Exception as e:
                 ic(f"{e=}")

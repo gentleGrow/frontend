@@ -1,6 +1,8 @@
 import asyncio
 from datetime import datetime
+from os import getenv
 
+from dotenv import load_dotenv
 from redis.asyncio import Redis
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -25,12 +27,11 @@ from app.module.asset.repository.market_index_minutely_repository import MarketI
 from app.module.asset.schema import MarketIndexData
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session, get_redis_pool
-from os import getenv
 from database.enum import EnvironmentType
-from dotenv import load_dotenv
 
 load_dotenv()
 ENVIRONMENT = getenv("ENVIRONMENT", None)
+
 
 async def fetch_market_data(redis_client: Redis, session: AsyncSession):
     now = datetime.now().replace(second=0, microsecond=0)
@@ -44,7 +45,6 @@ async def fetch_market_data(redis_client: Redis, session: AsyncSession):
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     else:
         driver = webdriver.Chrome(service=Service("/usr/bin/chromedriver"), options=chrome_options)
-
 
     try:
         driver.get("https://finance.naver.com/world/")
