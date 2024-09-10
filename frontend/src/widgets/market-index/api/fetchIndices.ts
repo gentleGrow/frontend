@@ -1,4 +1,3 @@
-import "server-only";
 import { SERVICE_SERVER_URL } from "@/shared";
 interface Indices {
   index_name: string;
