@@ -1,6 +1,4 @@
-from datetime import date, timedelta
-
-import holidays
+from datetime import date
 
 from app.module.asset.enum import (
     AccountType,
@@ -11,11 +9,7 @@ from app.module.asset.enum import (
     PurchaseCurrencyType,
 )
 
-kr_holidays = holidays.KR()
-us_holidays = holidays.US()
-
-today = date.today()
-one_year_ago = today - timedelta(days=365)
+KOSPI = "KOSPI"
 
 
 PURCHASE_DATES = [

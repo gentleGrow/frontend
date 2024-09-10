@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import yfinance
 from redis.asyncio import Redis
@@ -8,15 +9,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.data.common.constant import STOCK_CACHE_SECOND
 from app.data.common.service import get_usa_stock_code_list
 from app.data.yahoo.source.service import format_stock_code
-from app.module.asset.enum import Country, MarketIndex
+from app.module.asset.enum import Country
 from app.module.asset.model import StockMinutely
 from app.module.asset.redis_repository import RedisRealTimeStockRepository
 from app.module.asset.repository.stock_minutely_repository import StockMinutelyRepository
 from app.module.asset.schema import StockInfo
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session, get_redis_pool
-
-from zoneinfo import ZoneInfo
 
 seoul_tz = ZoneInfo("Asia/Seoul")
 
@@ -30,7 +29,7 @@ async def collect_stock_data(redis_client: Redis, session: AsyncSession, stock_c
             stock_code = format_stock_code(
                 stockinfo.code,
                 Country[stockinfo.country.upper().replace(" ", "_")],
-                MarketIndex[stockinfo.market_index.upper()],
+                stockinfo.market_index.upper(),
             )
 
             stock = yfinance.Ticker(stock_code)

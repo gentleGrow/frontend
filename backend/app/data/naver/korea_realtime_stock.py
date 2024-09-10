@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,8 +14,6 @@ from app.module.asset.repository.stock_minutely_repository import StockMinutelyR
 from app.module.asset.schema import StockInfo
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session, get_redis_pool
-
-from zoneinfo import ZoneInfo
 
 seoul_tz = ZoneInfo("Asia/Seoul")
 
