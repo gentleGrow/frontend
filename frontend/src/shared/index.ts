@@ -8,3 +8,4 @@ export { default as setCookieForJWT } from "./utils/setJWTCookie";
 export { SERVICE_SERVER_URL, RESPONSE_STATUS } from "./constants/api";
 export { default as validateTokenExpiry } from "./utils/validateTokenExpiry";
 
+export { default as IncDecRate } from "./ui/IncDecRate";
