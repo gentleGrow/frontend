@@ -9,5 +9,5 @@ export { SERVICE_SERVER_URL, RESPONSE_STATUS } from "./constants/api";
 export { default as validateTokenExpiry } from "./utils/validateTokenExpiry";
 export { default as SegmentedButton } from "./ui/SegmentedButton";
 export { default as SegmentedButtonGroup } from "./ui/SegmentedButtonGroup";
-
+export { default as DonutChart } from "./ui/DonutChart";
 export { default as IncDecRate } from "./ui/IncDecRate";

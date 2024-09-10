@@ -1,3 +1,4 @@
+"use client";
 import React, { ReactNode, useState } from "react";
 import { SegmentedButtonProps } from "../types/component-props";
 
@@ -12,7 +13,7 @@ export default function SegmentedButtonGroup({
     setSelectedIndex(index);
   };
   return (
-    <div className="flex space-x-2 rounded-md bg-gray-10 p-[4px]">
+    <div className="flex w-fit space-x-2 rounded-md bg-gray-10 p-[4px]">
       {childrenArray.map((child, index) => {
         if (React.isValidElement<SegmentedButtonProps>(child)) {
           return React.cloneElement(child, {
