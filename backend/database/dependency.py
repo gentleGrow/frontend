@@ -3,11 +3,11 @@ from os import getenv
 from typing import AsyncGenerator
 
 from dotenv import load_dotenv
-from redis.asyncio import Redis, ConnectionPool
+from redis.asyncio import ConnectionPool, Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-from database.constant import POOL_SIZE
 
 from database.config import mysql_engine, mysql_session_factory
+from database.constant import POOL_SIZE
 from database.enum import EnvironmentType
 
 load_dotenv()
@@ -50,10 +50,5 @@ async def get_mysql_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 def get_redis_pool() -> Redis:
-    pool = ConnectionPool(
-        host=REDIS_HOST,
-        port=REDIS_PORT,
-        max_connections=POOL_SIZE,  
-        decode_responses=True
-    )
+    pool = ConnectionPool(host=REDIS_HOST, port=REDIS_PORT, max_connections=POOL_SIZE, decode_responses=True)
     return Redis(connection_pool=pool)
