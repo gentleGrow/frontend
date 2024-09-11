@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Column, Date, DateTime, Enum, Float, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import BigInteger, Column, Date, DateTime, Enum, Float, ForeignKey, Integer, String, UniqueConstraint, Index
 from sqlalchemy.orm import relationship
 
 from app.common.mixin.timestamp import TimestampMixin
@@ -87,7 +87,7 @@ class StockDaily(MySQLBase):
     opening_price = Column(Float, nullable=False, info={"description": "Opening price of the stock"})
     trade_volume = Column(BigInteger, nullable=False, info={"description": "Volume of stock traded"})
 
-    __table_args__ = (UniqueConstraint("code", "date", name="uq_code_date"),)
+    __table_args__ = (UniqueConstraint("code", "date", name="uq_code_date"),Index("idx_code_date", "code", "date"))
 
 
 class StockWeekly(MySQLBase):

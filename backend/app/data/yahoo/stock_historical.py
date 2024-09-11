@@ -1,6 +1,5 @@
 import asyncio
-
-import pandas as pd
+import yfinance
 from icecream import ic
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -32,15 +31,12 @@ async def process_stock_data(session: AsyncSession, stock_list: list[StockInfo],
                 ic(f"Skipping stock with invalid market index: {stock_info.market_index}")
                 continue
 
-            url = (
-                f"https://query1.finance.yahoo.com/v7/finance/download/{stock_code}"
-                f"?period1={start_period}&period2={end_period}&interval={interval.value}"
-                f"&events=history&includeAdjustedClose=true"
-            )
-
             try:
-                df = pd.read_csv(url)
-            except Exception:
+                stock = yfinance.Ticker(stock_code)
+                df = stock.history(start=start_period, end=end_period, interval=interval.value)
+                df.reset_index(inplace=True)
+            except Exception as e:
+                ic(f"{e=}")
                 continue
 
             stock_rows = []
@@ -48,15 +44,16 @@ async def process_stock_data(session: AsyncSession, stock_list: list[StockInfo],
             for _, row in df.iterrows():
                 try:
                     stock_dataframe = StockDataFrame(
-                        date=row["Date"],
+                        date=row["Date"].strftime("%Y-%m-%d"),
                         open=row["Open"],
                         high=row["High"],
                         low=row["Low"],
                         close=row["Close"],
-                        adj_close=row["Adj Close"],
+                        adj_close=row["Close"],
                         volume=row["Volume"],
                     )
                 except Exception:
+                    ic(f"{e=}")
                     continue
 
                 stock_row = stock_model(
