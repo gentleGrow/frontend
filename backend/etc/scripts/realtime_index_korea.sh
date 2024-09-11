@@ -1,4 +1,4 @@
 #!/bin/bash
-sudo docker stop korea_realtime_market_index_container
-sudo docker rm korea_realtime_market_index_container
-sudo docker run -d --name korea_realtime_market_index_container korea_realtime_market_index
+sudo docker stop realtime_index_korea_container
+sudo docker rm realtime_index_korea_container
+sudo docker run -d --name realtime_index_korea_container realtime_index_korea

@@ -1,4 +1,4 @@
 #!/bin/bash
-sudo docker stop world_realtime_market_index_container
-sudo docker rm world_realtime_market_index_container
-sudo docker run -d --name world_realtime_market_index_container world_realtime_market_index
+sudo docker stop realtime_index_world_container
+sudo docker rm realtime_index_world_container
+sudo docker run -d --name realtime_index_world_container realtime_index_world
