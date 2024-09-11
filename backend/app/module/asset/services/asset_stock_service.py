@@ -1,5 +1,3 @@
-from icecream import ic
-
 from app.module.asset.enum import CurrencyType
 from app.module.asset.model import Asset, Dividend, StockDaily
 from app.module.asset.schema import StockAsset
@@ -118,7 +116,7 @@ class AssetStockService:
 
         for asset in assets:
             stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.asset_stock.purchase_date))
-          
+
             if stock_daily is None:
                 continue
 
@@ -133,7 +131,6 @@ class AssetStockService:
             won_exchange_rate = ExchangeRateService.get_exchange_rate(
                 source_currency, CurrencyType.KOREA, exchange_rate_map
             )
-
 
             invest_price *= won_exchange_rate
 

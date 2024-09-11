@@ -1,43 +1,52 @@
-SERVICE_FASTAPI=fastapi
-SERVICE_STOCK_HOURLY=stock_hourly
-SERVICE_REDISINSIGHT=redisinsight
+DOCKERFILES_DIR=docker
 
-all: build up
+CONTAINERS = realtime_stock_world_container realtime_stock_korea_container stock_container realtime_index_world_container realtime_index_korea_container index_container dividend_container tip_container exchange_rate_container
+IMAGES = realtime_stock_world realtime_stock_korea stock realtime_index_world realtime_index_korea index dividend tip exchange_rate
 
-build:
-	docker-compose build
+SCRIPTS_DIR=etc/scripts
+SHELL_SCRIPTS = realtime_stock_world.sh realtime_stock_korea.sh stock.sh realtime_index_world.sh realtime_index_korea.sh index.sh dividend.sh tip.sh exchange_rate.sh
 
-fastapi:
-	docker-compose build $(SERVICE_FASTAPI)
-	docker-compose up -d --force-recreate $(SERVICE_FASTAPI)
+all: stop_containers remove_containers remove_images build_images run_containers
 
-up:
-	docker-compose up -d
+stop_containers:
+	@echo "Stopping containers..."
+	$(foreach container, $(CONTAINERS), sudo docker stop $(container) || true &&) echo "Containers stopped."
 
-down:
-	docker-compose down
+remove_containers:
+	@echo "Removing containers..."
+	$(foreach container, $(CONTAINERS), sudo docker rm $(container) || true &&) echo "Containers removed."
 
-clean:
-	docker-compose down -v
+remove_images:
+	@echo "Removing images..."
+	$(foreach image, $(IMAGES), sudo docker rmi $(image) || true &&) echo "Images removed."
 
-logs:
-	docker-compose logs -f
+build_images:
+	@echo "Building images..."
+	sudo docker build -t realtime_stock_world -f $(DOCKERFILES_DIR)/Dockerfile.realtime_stock_world .
+	sudo docker build -t realtime_stock_korea -f $(DOCKERFILES_DIR)/Dockerfile.realtime_stock_korea .
+	sudo docker build -t stock -f $(DOCKERFILES_DIR)/Dockerfile.stock .
+	sudo docker build -t realtime_index_world -f $(DOCKERFILES_DIR)/Dockerfile.realtime_index_world .
+	sudo docker build -t realtime_index_korea -f $(DOCKERFILES_DIR)/Dockerfile.realtime_index_korea .
+	sudo docker build -t index -f $(DOCKERFILES_DIR)/Dockerfile.index .
+	sudo docker build -t dividend -f $(DOCKERFILES_DIR)/Dockerfile.dividend .
+	sudo docker build -t tip -f $(DOCKERFILES_DIR)/Dockerfile.tip .
+	sudo docker build -t exchange_rate -f $(DOCKERFILES_DIR)/Dockerfile.exchange_rate .
+	@echo "Images built."
 
-logs-fastapi:
-	docker-compose logs -f $(SERVICE_FASTAPI)
+run_containers:
+	@echo "Running containers..."
+	bash $(SCRIPTS_DIR)/realtime_stock_world.sh
+	bash $(SCRIPTS_DIR)/realtime_stock_korea.sh
+	bash $(SCRIPTS_DIR)/stock.sh
+	bash $(SCRIPTS_DIR)/realtime_index_world.sh
+	bash $(SCRIPTS_DIR)/realtime_index_korea.sh
+	bash $(SCRIPTS_DIR)/index.sh
+	bash $(SCRIPTS_DIR)/dividend.sh
+	bash $(SCRIPTS_DIR)/tip.sh
+	bash $(SCRIPTS_DIR)/exchange_rate.sh
+	@echo "Containers are up and running."
 
-logs-redis-insight:
-	docker-compose logs -f $(SERVICE_REDISINSIGHT)
-
-logs-stock_hourly:
-	docker-compose logs -f $(SERVICE_STOCK_HOURLY)
-
-shell-fastapi:
-	docker-compose exec $(SERVICE_FASTAPI) /bin/bash
-
-rebuild: build up
-
-prune: down
-	-docker system prune -a --volumes -f
-
-.PHONY: all build up down clean logs logs-fastapi logs-redis-insight logs-stock_hourly shell-fastapi rebuild prune
+stop: stop_containers
+remove: remove_containers remove_images
+build: build_images
+run: run_containers
