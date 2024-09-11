@@ -1,4 +1,5 @@
 import asyncio
+
 import yfinance
 from icecream import ic
 from sqlalchemy.exc import IntegrityError
@@ -53,7 +54,6 @@ async def process_stock_data(session: AsyncSession, stock_list: list[StockInfo],
                         volume=row["Volume"],
                     )
                 except Exception:
-                    ic(f"{e=}")
                     continue
 
                 stock_row = stock_model(

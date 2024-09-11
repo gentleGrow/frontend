@@ -1,8 +1,8 @@
 import asyncio
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from icecream import ic
 import yfinance
+from icecream import ic
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.data.common.service import get_all_stock_code_list
 from app.data.yahoo.source.constant import (
@@ -34,7 +34,7 @@ async def process_stock_data(session: AsyncSession, stock_list: list[StockInfo],
             except KeyError:
                 print(f"Skipping stock with invalid market index: {stock_info.market_index}")
                 continue
-            
+
             try:
                 stock = yfinance.Ticker(stock_code)
                 df = stock.history(start=start_period, end=end_period, interval=interval.value)
