@@ -1,6 +1,5 @@
 import asyncio
 from datetime import datetime
-from zoneinfo import ZoneInfo
 
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,13 +13,12 @@ from app.module.asset.repository.stock_minutely_repository import StockMinutelyR
 from app.module.asset.schema import StockInfo
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session, get_redis_pool
-
-seoul_tz = ZoneInfo("Asia/Seoul")
+from app.common.util.time import get_now_datetime
 
 
 async def collect_stock_data(redis_client: Redis, session: AsyncSession) -> None:
     stock_code_list: list[StockInfo] = get_korea_stock_code_list()
-    now = datetime.now(seoul_tz).replace(second=0, microsecond=0)
+    now = get_now_datetime()
 
     for i in range(0, len(stock_code_list), STOCK_CHUNK_SIZE):
         stock_info_list: list[StockInfo] = stock_code_list[i : i + STOCK_CHUNK_SIZE]

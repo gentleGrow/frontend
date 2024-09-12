@@ -1,6 +1,13 @@
 import calendar
 import datetime
 import time
+from zoneinfo import ZoneInfo
+
+
+
+def get_now_datetime():
+    seoul_tz = ZoneInfo("Asia/Seoul")
+    return datetime.now(seoul_tz).replace(second=0, microsecond=0)
 
 
 def start_timestamp(year: int, month: int) -> int:

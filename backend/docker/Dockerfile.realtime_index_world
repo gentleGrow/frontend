@@ -2,7 +2,6 @@ FROM python:3.11
 
 WORKDIR /app
 
-# Install necessary dependencies and Chromium/Chromedriver
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
@@ -37,26 +36,20 @@ RUN apt-get update && apt-get install -y \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Verify if chromedriver is installed
 RUN apt-get install -y chromium-driver && \
     which chromedriver && \
     chromedriver --version || echo "chromedriver not found or installation failed."
 
-# Install Poetry and Peewee
 RUN pip install poetry && \
     pip install peewee==3.17.5
 
-# Copy the project files
 COPY pyproject.toml poetry.lock /app/
 
-# Configure Poetry and install dependencies
 RUN poetry config virtualenvs.create false && \
     poetry install --no-interaction --no-ansi --no-root
 
-# Copy the rest of the project files
 COPY . /app/
 
-# Task file
-COPY ./app/data/naver/world_market_index_realtime.py /app/task.py
+COPY ./app/data/naver/realtime_index_world.py /app/task.py
 
 CMD ["python", "task.py"]
