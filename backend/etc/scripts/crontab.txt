@@ -1,9 +1,9 @@
-1 9 * * 1-5 /home/assetManagement/backend/etc/scripts/start_korea_realtime_stock.sh
-31 23 * * 1-5 /home/assetManagement/backend/etc/scripts/start_world_realtime_stock.sh
+1 9 * * 1-5 /home/assetManagement/backend/etc/scripts/realtime_stock_korea.sh
+31 23 * * 1-5 /home/assetManagement/backend/etc/scripts/realtime_stock_world.sh
 
-0 8 * * * /home/assetManagement/backend/etc/scripts/start_realtime_korea_market_index.sh
-0 8 * * * /home/assetManagement/backend/etc/scripts/start_realtime_world_market_index.sh
+0 8 * * * /home/assetManagement/backend/etc/scripts/realtime_index_korea.sh
+0 8 * * * /home/assetManagement/backend/etc/scripts/realtime_index_world.sh
 
-0 8 * * * /home/assetManagement/backend/etc/scripts/start_stock_historical.sh
+0 8 * * * /home/assetManagement/backend/etc/scripts/stock.sh
 
-0 8 * * * /home/assetManagement/backend/etc/scripts/start_tip.sh
+0 8 * * * /home/assetManagement/backend/etc/scripts/tip.sh

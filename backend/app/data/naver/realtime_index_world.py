@@ -1,7 +1,8 @@
 import asyncio
 from os import getenv
-from icecream import ic
+
 from dotenv import load_dotenv
+from icecream import ic
 from redis.asyncio import Redis
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -12,6 +13,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from sqlalchemy.ext.asyncio import AsyncSession
 from webdriver_manager.chrome import ChromeDriverManager
 
+from app.common.util.time import get_now_datetime
 from app.data.common.constant import MARKET_INDEX_CACHE_SECOND
 from app.module.asset.constant import COUNTRY_TRANSLATIONS, INDEX_NAME_TRANSLATIONS
 from app.module.asset.model import (  # noqa: F401 > relationship 설정시 필요합니다.
@@ -27,7 +29,6 @@ from app.module.asset.schema import MarketIndexData
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session, get_redis_pool
 from database.enum import EnvironmentType
-from app.common.util.time import get_now_datetime
 
 load_dotenv()
 ENVIRONMENT = getenv("ENVIRONMENT", None)
@@ -79,8 +80,8 @@ async def fetch_market_data(redis_client: Redis, session: AsyncSession):
                     country_en = COUNTRY_TRANSLATIONS[country_kr]
                 else:
                     continue
-                index_name_kr = tr_row_data[1]
-                index_name_en = INDEX_NAME_TRANSLATIONS.get(index_name_kr, index_name_kr)
+                name_kr = tr_row_data[1]
+                name_en = INDEX_NAME_TRANSLATIONS.get(name_kr, name_kr)
 
                 current_value = tr_row_data[2].strip().replace(",", "")
                 change_value = tr_row_data[3].strip().replace(",", "")
@@ -89,20 +90,20 @@ async def fetch_market_data(redis_client: Redis, session: AsyncSession):
 
                 market_index = MarketIndexData(
                     country=country_en,
-                    index_name=index_name_en,
+                    name=name_en,
                     current_value=current_value,
                     change_value=change_value,
                     change_percent=change_percent,
                     update_time=tr_row_data[5],
                 )
 
-                current_index = MarketIndexMinutely(index_name=index_name_en, datetime=now, current_price=current_value)
+                current_index = MarketIndexMinutely(name=name_en, datetime=now, current_price=current_value)
 
                 db_bulk_data.append(current_index)
 
                 if market_index:
                     market_index_json = market_index.model_dump_json()
-                    redis_bulk_data.append((index_name_en, market_index_json))
+                    redis_bulk_data.append((name_en, market_index_json))
 
         await MarketIndexMinutelyRepository.bulk_upsert(session, db_bulk_data)
         await RedisRealTimeMarketIndexRepository.bulk_save(

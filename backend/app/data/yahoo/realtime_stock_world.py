@@ -1,12 +1,13 @@
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime
 from zoneinfo import ZoneInfo
 
 import yfinance
 from icecream import ic
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.common.util.time import get_now_datetime
 
 from app.data.common.constant import STOCK_CACHE_SECOND
 from app.data.common.service import StockCodeFileReader
@@ -36,7 +37,7 @@ def fetch_stock_price(stock_code: str) -> tuple[str, float]:
 
 
 async def collect_stock_data(redis_client: Redis, session: AsyncSession, stock_code_list: list[StockInfo]) -> None:
-    now = datetime.now(seoul_tz).replace(second=0, microsecond=0)
+    now = get_now_datetime()
 
     code_price_pairs = []
     db_bulk_data = []
@@ -69,13 +70,11 @@ async def collect_stock_data(redis_client: Redis, session: AsyncSession, stock_c
         db_bulk_data.append(current_stock_data)
 
     if redis_bulk_data:
-        ic("Saving to Redis in bulk.")
         await asyncio.shield(
             RedisRealTimeStockRepository.bulk_save(redis_client, redis_bulk_data, expire_time=STOCK_CACHE_SECOND)
         )
 
     if db_bulk_data:
-        ic("Saving to database in bulk.")
         await asyncio.shield(StockMinutelyRepository.bulk_upsert(session, db_bulk_data))
 
 

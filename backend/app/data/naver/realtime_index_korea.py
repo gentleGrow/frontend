@@ -1,6 +1,5 @@
 import asyncio
-from datetime import datetime
-
+from app.common.util.time import get_now_datetime
 import requests
 from bs4 import BeautifulSoup
 from redis.asyncio import Redis
@@ -24,7 +23,7 @@ from database.dependency import get_mysql_session, get_redis_pool
 
 async def fetch_market_data(redis_client: Redis, session: AsyncSession):
     url = "https://finance.naver.com/"
-    now = datetime.now().replace(second=0, microsecond=0)
+    now = get_now_datetime()
     response = requests.get(url)
     response.raise_for_status()
 
@@ -43,13 +42,13 @@ async def fetch_market_data(redis_client: Redis, session: AsyncSession):
         num3_span.text.replace(num3_span.find("span", {"class": "blind"}).text, "").strip().replace("%", "")
     )
 
-    kospi_db = MarketIndexMinutely(index_name=MarketIndex.KOSPI, datetime=now, current_price=kospi_current_value)
+    kospi_db = MarketIndexMinutely(name=MarketIndex.KOSPI, datetime=now, current_price=kospi_current_value)
 
     db_bulk_data.append(kospi_db)
 
     kospi_index = MarketIndexData(
         country=Country.KOREA,
-        index_name=MarketIndex.KOSPI,
+        name=MarketIndex.KOSPI,
         current_value=kospi_current_value,
         change_value=kospi_change_value,
         change_percent=percent_change,
@@ -66,13 +65,13 @@ async def fetch_market_data(redis_client: Redis, session: AsyncSession):
     num3_span = kosdaq_area.find("span", {"class": "num3"})
     percent_change = "".join(num3_span.stripped_strings).replace("%", "").strip()
 
-    kosdaq_db = MarketIndexMinutely(index_name=MarketIndex.KOSDAQ, datetime=now, current_price=kosdaq_current_value)
+    kosdaq_db = MarketIndexMinutely(name=MarketIndex.KOSDAQ, datetime=now, current_price=kosdaq_current_value)
 
     db_bulk_data.append(kosdaq_db)
 
     kosdaq_index = MarketIndexData(
         country=Country.KOREA,
-        index_name=MarketIndex.KOSDAQ,
+        name=MarketIndex.KOSDAQ,
         current_value=kosdaq_current_value,
         change_value=kosdaq_change_value,
         change_percent=percent_change,

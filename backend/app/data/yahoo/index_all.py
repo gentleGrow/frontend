@@ -32,7 +32,7 @@ async def fetch_and_save_market_index_data(
 
     for index, row in index_data.iterrows():
         market_index_record = model(
-            index_name=index_symbol.value.lstrip("^"),
+            name=index_symbol.value.lstrip("^"),
             date=index.date(),
             open_price=row["Open"],
             close_price=row["Close"],

@@ -1,9 +1,9 @@
 import asyncio
-from datetime import datetime
 
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.common.util.time import get_now_datetime
 from app.data.common.constant import STOCK_CACHE_SECOND, STOCK_CHUNK_SIZE
 from app.data.common.service import get_korea_stock_code_list
 from app.data.naver.sources.service import get_stock_prices
@@ -13,7 +13,7 @@ from app.module.asset.repository.stock_minutely_repository import StockMinutelyR
 from app.module.asset.schema import StockInfo
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session, get_redis_pool
-from app.common.util.time import get_now_datetime
+
 
 
 async def collect_stock_data(redis_client: Redis, session: AsyncSession) -> None:
