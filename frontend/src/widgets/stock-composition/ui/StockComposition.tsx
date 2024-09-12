@@ -28,7 +28,7 @@ const data2 = [
 export default function StockComposition() {
   const [currentData, setCurrentData] = useState<any[]>(data1);
   return (
-    <div className="relative w-full max-w-[558px] rounded-xl border p-[16px] mobile:h-[642px]">
+    <div className="relative w-full max-w-[558px] rounded-xl border p-[16px] mobile:h-[642px] mobile:border-none">
       <h2 className="text-heading-2">종목 구성</h2>
       <div className="mt-[16px] flex w-full except-mobile:absolute except-mobile:right-[16px] except-mobile:top-[12px] except-mobile:mt-0 except-mobile:w-fit">
         <SegmentedButtonGroup>

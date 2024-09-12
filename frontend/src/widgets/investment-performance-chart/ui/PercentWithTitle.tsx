@@ -7,7 +7,7 @@ export default function PercentWithTitle({
 }) {
   return (
     <div className="flex w-[131px] flex-col py-[8px] max-546:w-1/2">
-      <p className="text-body-3">{title}</p>
+      <p className="text-body-3 text-gray-70">{title}</p>
       <p className="text-[28px] font-bold leading-[33.61px]">{percent}%</p>
     </div>
   );

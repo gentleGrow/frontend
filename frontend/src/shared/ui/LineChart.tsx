@@ -40,18 +40,18 @@ export default function LineChart({ data }) {
                     </g>
                   </svg>
                   <span style="margin-left:8px;">${data.values1.name} </span>
-                  <span style="font-weight:bold;color:#007bff;margin-left:4px;">${myReturn}${data.unit}</span>
+                  <span style="font-weight:bold;color:#0B99FF;margin-left:4px;">${myReturn}${data.unit}</span>
                 </div>
                 <div style="display:flex;align-items:center;font-size:12px;margin-bottom:2px;">
                   <svg width="16" height="8" viewBox="0 0 16 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect y="3" width="16" height="2" rx="1" fill="#0000FF"/>
+                    <rect y="3" width="16" height="2" rx="1" fill="#4460F1"/>
                     <g filter="url(#filter0_d_1862_2295)">
-                      <circle cx="8" cy="4" r="3" fill="#0000FF"/>
+                      <circle cx="8" cy="4" r="3" fill="#4460F1"/>
                       <circle cx="8" cy="4" r="2.5" stroke="white"/>
                     </g>
                   </svg>
                   <span style="margin-left:8px;">${data.values2.name}</span>
-                  <span style="font-weight:bold;color:#0000FF;margin-left:4px;">${kospi}${data.unit}</span>
+                  <span style="font-weight:bold;color:#4460F1;margin-left:4px;">${kospi}${data.unit}</span>
                 </div>
               `;
             },
@@ -91,10 +91,10 @@ export default function LineChart({ data }) {
               showSymbol: false,
               symbolSize: 8,
               itemStyle: {
-                color: "#007bff",
+                color: "#0B99FF",
               },
               lineStyle: {
-                color: "#007bff",
+                color: "#0B99FF",
                 width: 2,
               },
               emphasis: {
@@ -111,10 +111,10 @@ export default function LineChart({ data }) {
               showSymbol: false,
               symbolSize: 8,
               itemStyle: {
-                color: "#0000FF",
+                color: "#4460F1",
               },
               lineStyle: {
-                color: "#0000FF",
+                color: "#4460F1",
                 width: 2,
               },
               emphasis: {
