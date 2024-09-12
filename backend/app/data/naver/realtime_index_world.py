@@ -1,7 +1,6 @@
 import asyncio
-from datetime import datetime
 from os import getenv
-
+from icecream import ic
 from dotenv import load_dotenv
 from redis.asyncio import Redis
 from selenium import webdriver
@@ -28,13 +27,14 @@ from app.module.asset.schema import MarketIndexData
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.dependency import get_mysql_session, get_redis_pool
 from database.enum import EnvironmentType
+from app.common.util.time import get_now_datetime
 
 load_dotenv()
 ENVIRONMENT = getenv("ENVIRONMENT", None)
 
 
 async def fetch_market_data(redis_client: Redis, session: AsyncSession):
-    now = datetime.now().replace(second=0, microsecond=0)
+    now = get_now_datetime()
 
     chrome_options = Options()
     chrome_options.add_argument("--headless")
@@ -117,8 +117,12 @@ async def main():
     redis_client = await get_redis_pool()
     async with get_mysql_session() as session:
         while True:
-            await fetch_market_data(redis_client, session)
-            await asyncio.sleep(10)
+            try:
+                await fetch_market_data(redis_client, session)
+            except Exception as err:
+                ic(f"{err=}")
+            finally:
+                await asyncio.sleep(10)
 
 
 if __name__ == "__main__":
