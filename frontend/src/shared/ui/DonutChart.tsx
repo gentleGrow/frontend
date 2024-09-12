@@ -16,7 +16,7 @@ export default function DonutChart({
   data: DonutChartData[];
 }) {
   const chartRef = useRef<HTMLDivElement>(null);
-
+  console.log(data);
   useEffect(() => {
     if (chartRef.current) {
       const chartInstance = echarts.init(chartRef.current);
@@ -136,7 +136,7 @@ export default function DonutChart({
         chartInstance.dispose();
       };
     }
-  }, [data, chartName]);
+  }, [data]);
 
   return <div ref={chartRef} className="h-[256px] mobile:h-[520px]" />;
 }

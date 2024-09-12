@@ -9,9 +9,13 @@ export default function SegmentedButtonGroup({
 }) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(0);
   const childrenArray = React.Children.toArray(children);
-  const handleClick = (index: number) => {
+  const handleClick = (index: number, onClick?: () => void) => {
     setSelectedIndex(index);
+    if (onClick) {
+      onClick();
+    }
   };
+
   return (
     <div className="flex w-full space-x-2 rounded-md bg-gray-10 p-[4px]">
       {childrenArray.map((child, index) => {
@@ -19,7 +23,7 @@ export default function SegmentedButtonGroup({
           return React.cloneElement(child, {
             numberOfButtons: childrenArray.length,
             isSelected: selectedIndex === index,
-            onClick: () => handleClick(index),
+            onClick: () => handleClick(index, child.props.onClick),
           });
         }
         return child;
