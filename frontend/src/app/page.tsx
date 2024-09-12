@@ -1,5 +1,6 @@
 import {
   DailyInvestmentTip,
+  InvestmentPerformanceChart,
   MarketIndex,
   MyStocks,
   StockComposition,
@@ -14,6 +15,7 @@ export default function Home() {
       <Top10SelectedByRichPerson />
       <MyStocks />
       <StockComposition />
+      <InvestmentPerformanceChart />
     </>
   );
 }

@@ -17,7 +17,7 @@ export default function SegmentedButtonGroup({
   };
 
   return (
-    <div className="flex w-full space-x-2 rounded-md bg-gray-10 p-[4px]">
+    <div className="flex w-full rounded-md bg-gray-10 p-[4px]">
       {childrenArray.map((child, index) => {
         if (React.isValidElement<SegmentedButtonProps>(child)) {
           return React.cloneElement(child, {
