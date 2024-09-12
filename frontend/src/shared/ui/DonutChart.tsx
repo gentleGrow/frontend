@@ -16,7 +16,7 @@ export default function DonutChart({
   data: DonutChartData[];
 }) {
   const chartRef = useRef<HTMLDivElement>(null);
-  console.log(data);
+
   useEffect(() => {
     if (chartRef.current) {
       const chartInstance = echarts.init(chartRef.current);
@@ -24,7 +24,7 @@ export default function DonutChart({
       const totalValue = data.reduce((sum, item) => sum + item.value, 0);
 
       const setOption = () => {
-        const isMobile = window.innerWidth <= 375;
+        const isMobile = window.matchMedia("(max-width: 375px)").matches;
 
         const option = {
           color: [
@@ -55,7 +55,6 @@ export default function DonutChart({
               const x = point[0];
               const y = point[1];
 
-              const tooltipWidth = size.contentSize[0];
               const tooltipHeight = size.contentSize[1];
 
               return [x + 10, y - tooltipHeight - 10];
@@ -65,9 +64,9 @@ export default function DonutChart({
             icon: "path://M4,2 h12 a2,2 0 0 1 2,2 v12 a2,2 0 0 1 -2,2 h-12 a2,2 0 0 1 -2,-2 v-12 a2,2 0 0 1 2,-2 z",
             itemWidth: 12,
             itemHeight: 12,
-            orient: isMobile ? "horizontal" : "vertical", // 작은 화면에서 수평 정렬
-            right: isMobile ? "center" : 14, // 작은 화면에서는 중앙 정렬, 큰 화면에서는 오른쪽 정렬
-            top: isMobile ? "bottom" : "center", // 작은 화면에서는 차트 아래에 배치
+            orient: isMobile ? "horizontal" : "vertical",
+            right: isMobile ? "center" : 14,
+            top: isMobile ? "bottom" : "center",
             formatter: (name) => {
               const item = data.find((i) => i.name === name);
               const percent = item ? (item.value / totalValue) * 100 : 0;
