@@ -39,7 +39,7 @@ export default function InvestmentPerformanceChart() {
   return (
     <div className="relative h-[388px] w-full max-w-[787px] rounded-xl border p-[16px] mobile:border-none max-546:h-[500px]">
       <h2 className="text-heading-2">투자 성과 분석</h2>
-      <div className="mt-[16px] flex w-full min-545:absolute min-545:right-[16px] min-545:top-[12px] min-545:mt-0 min-545:w-fit">
+      <div className="min-546:absolute min-546:right-[16px] min-546:top-[12px] min-546:mt-0 min-546:w-fit mt-[16px] flex w-full">
         <SegmentedButtonGroup>
           {PERIODS.map((period) => (
             <SegmentedButton
@@ -53,7 +53,7 @@ export default function InvestmentPerformanceChart() {
           ))}
         </SegmentedButtonGroup>
       </div>
-      <div className="flex h-full items-center min-545:justify-between max-546:flex-col">
+      <div className="min-546:justify-between flex h-full items-center max-546:flex-col">
         <div className="space-y-[32px] max-546:mt-[24px] max-546:flex max-546:w-full max-546:space-x-[16px] max-546:space-y-0">
           <PercentWithTitle title="내 수익률" percent={30.12} />
           <PercentWithTitle title="시장 수익률 대비" percent={8.57} />

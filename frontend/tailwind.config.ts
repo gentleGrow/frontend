@@ -7,13 +7,13 @@ const config: Config = {
     extend: {
       screens: {
         mobile: {
-          max: "375px",
+          max: "376px",
         },
         "except-mobile": {
           min: "376px",
         },
-        "min-545": {
-          min: "545px",
+        "min-546": {
+          min: "546px",
         },
         "max-546": {
           max: "546px",

@@ -157,7 +157,7 @@ export default function LineChart({ data }) {
   return (
     <div
       ref={chartRef}
-      className="h-full w-full pb-[16px] min-545:px-[16px] max-546:h-[328px]"
+      className="min-546:px-[16px] h-full w-full pb-[16px] max-546:h-[328px]"
     />
   );
 }
