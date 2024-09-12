@@ -15,7 +15,7 @@ class MarketIndexWeeklyRepository:
         stmt = insert(MarketIndexWeekly).values(
             [
                 {
-                    "index_name": market_index.index_name,
+                    "name": market_index.name,
                     "date": market_index.date,
                     "open_price": market_index.open_price,
                     "high_price": market_index.high_price,

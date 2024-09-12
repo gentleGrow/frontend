@@ -97,8 +97,8 @@ async def get_market_index(
 
     market_index_pairs = [
         MarketIndiceResponseValue(
-            index_name=market_index_value.index_name,
-            index_name_kr=MARKET_INDEX_KR_MAPPING.get(market_index_value.index_name, "N/A"),
+            name=market_index_value.name,
+            name_kr=MARKET_INDEX_KR_MAPPING.get(market_index_value.name, "N/A"),
             current_value=float(market_index_value.current_value),
             change_percent=float(market_index_value.change_percent),
         )

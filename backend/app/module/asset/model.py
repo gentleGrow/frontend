@@ -138,18 +138,18 @@ class MarketIndexMinutely(MySQLBase):
     __tablename__ = "market_index_minutely"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    index_name = Column(String(255), nullable=False)
+    name = Column(String(255), nullable=False)
     datetime = Column(DateTime, nullable=False)
     current_price = Column(Float, nullable=False)
 
-    __table_args__ = (UniqueConstraint("index_name", "datetime", name="uq_index_name_datetime"),)
+    __table_args__ = (UniqueConstraint("name", "datetime", name="uq_name_datetime"),)
 
 
 class MarketIndexDaily(MySQLBase):
     __tablename__ = "market_index_daily"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    index_name = Column(String(255), nullable=False)
+    name = Column(String(255), nullable=False)
     date = Column(Date, nullable=False)
     open_price = Column(Float, nullable=False)
     close_price = Column(Float, nullable=False)
@@ -157,14 +157,14 @@ class MarketIndexDaily(MySQLBase):
     low_price = Column(Float, nullable=False)
     volume = Column(BigInteger, nullable=True)
 
-    __table_args__ = (UniqueConstraint("index_name", "date", name="uq_index_name_date"),)
+    __table_args__ = (UniqueConstraint("name", "date", name="uq_name_date"),)
 
 
 class MarketIndexWeekly(MySQLBase):
     __tablename__ = "market_index_weekly"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    index_name = Column(String(50), nullable=False)
+    name = Column(String(50), nullable=False)
     date = Column(Date, nullable=False)
     open_price = Column(Float, nullable=False)
     close_price = Column(Float, nullable=False)
@@ -172,14 +172,14 @@ class MarketIndexWeekly(MySQLBase):
     low_price = Column(Float, nullable=False)
     volume = Column(BigInteger, nullable=False)
 
-    __table_args__ = (UniqueConstraint("index_name", "date", name="uq_index_name_date"),)
+    __table_args__ = (UniqueConstraint("name", "date", name="uq_name_date"),)
 
 
 class MarketIndexMonthly(MySQLBase):
     __tablename__ = "market_index_monthly"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    index_name = Column(String(50), nullable=False)
+    name = Column(String(50), nullable=False)
     date = Column(Date, nullable=False)
     open_price = Column(Float, nullable=False)
     close_price = Column(Float, nullable=False)
@@ -187,4 +187,4 @@ class MarketIndexMonthly(MySQLBase):
     low_price = Column(Float, nullable=False)
     volume = Column(BigInteger, nullable=False)
 
-    __table_args__ = (UniqueConstraint("index_name", "date", name="uq_index_name_date"),)
+    __table_args__ = (UniqueConstraint("name", "date", name="uq_name_date"),)
