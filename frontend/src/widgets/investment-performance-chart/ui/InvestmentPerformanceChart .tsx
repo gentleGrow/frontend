@@ -37,24 +37,27 @@ export default function InvestmentPerformanceChart() {
   const currentData = PERFORMANCE_DATA[currentPerformanceDataKey];
 
   return (
-    <div className="relative h-[388px] w-full max-w-[787px] rounded-xl border p-[16px] mobile:border-none max-546:h-[500px]">
+    <div className="relative h-[388px] w-full max-w-[787px] rounded-xl border p-[16px] mobile:h-[500px] mobile:border-none">
       <h2 className="text-heading-2">투자 성과 분석</h2>
-      <div className="min-546:absolute min-546:right-[16px] min-546:top-[12px] min-546:mt-0 min-546:w-fit mt-[16px] flex w-full">
-        <SegmentedButtonGroup>
-          {PERIODS.map((period) => (
-            <SegmentedButton
-              key={period.period}
-              onClick={() =>
-                setCurrentPerformanceDataKey(period.performanceDataKey)
-              }
-            >
-              {period.period}
-            </SegmentedButton>
-          ))}
-        </SegmentedButtonGroup>
+      <div className="mt-[16px] flex w-full justify-between except-mobile:absolute except-mobile:right-[16px] except-mobile:top-[12px] except-mobile:mt-0">
+        <div className="w-[176px] shrink-0 mobile:hidden" />
+        <div className="w-full except-mobile:w-[428px]">
+          <SegmentedButtonGroup>
+            {PERIODS.map((period) => (
+              <SegmentedButton
+                key={period.period}
+                onClick={() =>
+                  setCurrentPerformanceDataKey(period.performanceDataKey)
+                }
+              >
+                {period.period}
+              </SegmentedButton>
+            ))}
+          </SegmentedButtonGroup>
+        </div>
       </div>
-      <div className="min-546:justify-between flex h-full items-center max-546:flex-col">
-        <div className="space-y-[32px] max-546:mt-[24px] max-546:flex max-546:w-full max-546:space-x-[16px] max-546:space-y-0">
+      <div className="flex h-full items-center mobile:flex-col except-mobile:justify-between">
+        <div className="space-y-[32px] mobile:mt-[24px] mobile:flex mobile:w-full mobile:space-x-[16px] mobile:space-y-0">
           <PercentWithTitle title="내 수익률" percent={30.12} />
           <PercentWithTitle title="시장 수익률 대비" percent={8.57} />
         </div>

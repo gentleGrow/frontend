@@ -30,7 +30,7 @@ export default function StockComposition() {
   return (
     <div className="relative w-full max-w-[558px] rounded-xl border p-[16px] mobile:h-[642px] mobile:border-none">
       <h2 className="text-heading-2">종목 구성</h2>
-      <div className="mt-[16px] flex w-full except-mobile:absolute except-mobile:right-[16px] except-mobile:top-[12px] except-mobile:mt-0 except-mobile:w-fit">
+      <div className="mt-[16px] flex w-full except-mobile:absolute except-mobile:right-[16px] except-mobile:top-[12px] except-mobile:mt-0 except-mobile:w-[148px]">
         <SegmentedButtonGroup>
           <SegmentedButton onClick={() => setCurrentData(data1)}>
             종목별

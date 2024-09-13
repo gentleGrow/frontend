@@ -126,6 +126,7 @@ export default function LineChart({ data }) {
             },
           ],
           legend: {
+            itemGap: 48,
             data: [{ name: data.values1.name }, { name: data.values2.name }],
             bottom: 0,
             textStyle: {
@@ -157,7 +158,7 @@ export default function LineChart({ data }) {
   return (
     <div
       ref={chartRef}
-      className="min-546:px-[16px] h-full w-full pb-[16px] max-546:h-[328px]"
+      className="h-full w-full pb-[16px] min-546:px-[16px] max-546:h-[328px]"
     />
   );
 }
