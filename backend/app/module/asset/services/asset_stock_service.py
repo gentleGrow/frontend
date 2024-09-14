@@ -3,8 +3,38 @@ from app.module.asset.model import Asset, Dividend, StockDaily
 from app.module.asset.schema import StockAsset
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
 
-
 class AssetStockService:
+    @staticmethod
+    def get_total_profit_rate_minute(
+        ) -> float:
+        pass
+    
+    @staticmethod
+    def get_total_asset_amount(
+        assets: list[Asset],
+        current_stock_price_map: dict[str, float],
+        exchange_rate_map: dict[str, float],
+    ) -> float:
+        total_asset_amount = 0.0
+
+        for asset in assets:
+            current_price = current_stock_price_map.get(asset.asset_stock.stock.code)
+
+            if current_price is None:
+                continue
+
+            source_country = asset.asset_stock.stock.country.upper()
+            source_currency = CurrencyType[source_country]
+
+            won_exchange_rate = ExchangeRateService.get_exchange_rate(
+                source_currency, CurrencyType.KOREA, exchange_rate_map
+            )
+
+            current_price *= won_exchange_rate
+
+            total_asset_amount += current_price * asset.asset_stock.quantity
+        return total_asset_amount
+    
     @staticmethod
     def get_stock_assets(
         assets: list[Asset],
@@ -80,31 +110,6 @@ class AssetStockService:
 
         return stock_assets
 
-    @staticmethod
-    def get_total_asset_amount(
-        assets: list[Asset],
-        current_stock_price_map: dict[str, float],
-        exchange_rate_map: dict[str, float],
-    ) -> float:
-        total_asset_amount = 0
-
-        for asset in assets:
-            current_price = current_stock_price_map.get(asset.asset_stock.stock.code)
-
-            if current_price is None:
-                continue
-
-            source_country = asset.asset_stock.stock.country.upper()
-            source_currency = CurrencyType[source_country]
-
-            won_exchange_rate = ExchangeRateService.get_exchange_rate(
-                source_currency, CurrencyType.KOREA, exchange_rate_map
-            )
-
-            current_price *= won_exchange_rate
-
-            total_asset_amount += current_price * asset.asset_stock.quantity
-        return total_asset_amount
 
     @staticmethod
     def get_total_investment_amount(

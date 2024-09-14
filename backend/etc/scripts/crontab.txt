@@ -5,5 +5,5 @@
 0 8 * * * /home/assetManagement/backend/etc/scripts/realtime_index_world.sh
 
 0 8 * * * /home/assetManagement/backend/etc/scripts/stock.sh
-
+0 8 * * * /home/assetManagement/backend/etc/scripts/dividend.sh
 0 8 * * * /home/assetManagement/backend/etc/scripts/tip.sh

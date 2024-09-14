@@ -61,11 +61,11 @@ async def get_dummy_performance_analysis(
             session, redis_client, start_datetime, current_datetime
         )
     else:
-        user_analysis_data = await PerformanceAnalysis.get_user_analysis_hourly(
-            session, redis_client, start_datetime, current_datetime, DUMMY_USER_ID
+        user_analysis_data = await PerformanceAnalysis.get_user_analysis_short(
+            session, redis_client, start_datetime, current_datetime, DUMMY_USER_ID, interval
         )
-        market_analysis_data = await PerformanceAnalysis.get_market_analysis_hourly(
-            session, redis_client, start_datetime, current_datetime
+        market_analysis_data = await PerformanceAnalysis.get_market_analysis_short(
+            session, redis_client, start_datetime, current_datetime, interval
         )
 
     user_analysis_response = [

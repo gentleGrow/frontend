@@ -15,7 +15,6 @@ from app.module.auth.model import User  # noqa: F401 > relationship 설정시 �
 from database.dependency import get_mysql_session, get_redis_pool
 
 
-
 async def collect_stock_data(redis_client: Redis, session: AsyncSession) -> None:
     stock_code_list: list[StockInfo] = get_korea_stock_code_list()
     now = get_now_datetime()
