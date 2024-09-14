@@ -7,6 +7,12 @@ from app.module.asset.model import Stock
 
 class StockRepository:
     @staticmethod
+    async def get_all(session: AsyncSession) -> list[Stock]:
+        stmt = select(Stock)
+        result = await session.execute(stmt)
+        return result.scalars().all()
+
+    @staticmethod
     async def get_stock(session: AsyncSession, stock_id: int) -> Stock:
         stock_instance = await session.execute(select(Stock).where(Stock.id == stock_id))
         return stock_instance.scalar_one_or_none()

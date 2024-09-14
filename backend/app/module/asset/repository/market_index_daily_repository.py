@@ -7,7 +7,7 @@ from app.module.asset.model import MarketIndexDaily
 
 class MarketIndexDailyRepository:
     @staticmethod
-    async def get_by_range_market(session: AsyncSession, date_range: tuple, name: str) -> list[MarketIndexDaily]:
+    async def get_by_range(session: AsyncSession, date_range: tuple, name: str) -> list[MarketIndexDaily]:
         start_date, end_date = date_range
         stmt = select(MarketIndexDaily).where(
             MarketIndexDaily.date.between(start_date, end_date), MarketIndexDaily.name == name

@@ -5,13 +5,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.common.auth.security import verify_jwt_token
 from app.common.schema.json_schema import JsonResponse
-from app.module.asset.enum import AssetType
-from app.module.asset.model import Asset, AssetStock, Dividend, StockDaily
+from app.module.asset.enum import AccountType, AssetType, InvestmentBankType
+from app.module.asset.model import Asset, AssetStock, Dividend, Stock, StockDaily
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.dividend_repository import DividendRepository
 from app.module.asset.repository.stock_daily_repository import StockDailyRepository
 from app.module.asset.repository.stock_repository import StockRepository
-from app.module.asset.schema import StockAssetRequest, StockAssetResponse
+from app.module.asset.schema import (
+    BankAccountResponse,
+    StockAssetRequest,
+    StockAssetResponse,
+    StockListResponse,
+    StockListResponseValue,
+)
 from app.module.asset.service import (
     check_not_found_stock,
     get_current_stock_price,
@@ -27,6 +33,24 @@ from app.module.auth.schema import AccessToken
 from database.dependency import get_mysql_session_router, get_redis_pool
 
 asset_stock_router = APIRouter(prefix="/v1")
+
+
+@asset_stock_router.get("/bank-accounts", summary="증권사와 계좌 리스트를 반환합니다.", response_model=BankAccountResponse)
+async def get_bank_account_list(session: AsyncSession = Depends(get_mysql_session_router)) -> BankAccountResponse:
+    investment_bank_list = [bank.value for bank in InvestmentBankType]
+
+    account_list = [account.value for account in AccountType]
+
+    return BankAccountResponse(investment_bank_list=investment_bank_list, account_list=account_list)
+
+
+@asset_stock_router.get("/stocks", summary="주시 종목 코드를 반환합니다.", response_model=StockListResponse)
+async def get_stocklist(session: AsyncSession = Depends(get_mysql_session_router)) -> StockListResponse:
+    stock_list: list[Stock] = await StockRepository.get_all(session)
+
+    stock_response_list = [StockListResponseValue(name=stock.name, code=stock.code) for stock in stock_list]
+
+    return StockListResponse(stock_list=stock_response_list)
 
 
 @asset_stock_router.get("/dummy/assetstock", summary="임시 자산 정보를 반환합니다.", response_model=StockAssetResponse)

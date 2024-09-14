@@ -29,3 +29,18 @@ class IntervalType(StrEnum):
         elif self == IntervalType.ONEYEAR:
             return timedelta(days=360)
         return timedelta(days=30)
+
+    def get_interval(self) -> int:
+        if self == IntervalType.ONEDAY:
+            return 15
+        elif self == IntervalType.FIVEDAY:
+            return 30
+        elif self == IntervalType.ONEMONTH:
+            return 1
+        elif self == IntervalType.THREEMONTH:
+            return 1
+        elif self == IntervalType.SIXMONTH:
+            return 1
+        elif self == IntervalType.ONEYEAR:
+            return 1
+        return 1

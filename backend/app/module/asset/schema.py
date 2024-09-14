@@ -38,6 +38,20 @@ class StockAssetRequest(BaseModel):
     stock_code: str = Field(..., description="종목 코드", examples=["AAPL"])
 
 
+class BankAccountResponse(BaseModel):
+    investment_bank_list: list[str]
+    account_list: list[str]
+
+
+class StockListResponseValue(BaseModel):
+    name: str
+    code: str
+
+
+class StockListResponse(BaseModel):
+    stock_list: list[StockListResponseValue]
+
+
 class StockAssetResponse(BaseModel):
     stock_assets: list[StockAsset]
     total_asset_amount: float
