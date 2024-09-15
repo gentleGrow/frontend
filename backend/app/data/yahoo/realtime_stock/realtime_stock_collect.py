@@ -1,28 +1,24 @@
-import os
-import sys
+import argparse
+import asyncio
+import json
 
-from icecream import ic  
-import argparse  
-import asyncio  
-import json  
-
-import yfinance  
-from redis.asyncio import Redis  
-from sqlalchemy.ext.asyncio import AsyncSession  
+import yfinance
+from icecream import ic
+from redis.asyncio import Redis
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.common.util.time import get_now_datetime
-from app.data.common.constant import STOCK_CACHE_SECOND  
-from app.data.yahoo.source.service import format_stock_code  
-from app.module.asset.enum import Country  
-from app.module.asset.model import StockMinutely  
-from app.module.asset.redis_repository import RedisRealTimeStockRepository  
-from app.module.asset.repository.stock_minutely_repository import StockMinutelyRepository  
-from app.module.asset.schema import StockInfo  
-from database.dependency import get_mysql_session, get_redis_pool  
+from app.data.common.constant import STOCK_CACHE_SECOND
+from app.data.yahoo.source.service import format_stock_code
+from app.module.asset.enum import Country
+from app.module.asset.model import StockMinutely
+from app.module.asset.redis_repository import RedisRealTimeStockRepository
+from app.module.asset.repository.stock_minutely_repository import StockMinutelyRepository
+from app.module.asset.schema import StockInfo
+from database.dependency import get_mysql_session, get_redis_pool
 
 
-
-def fetch_stock_price(stock_code: str, code:str) -> tuple[str, float]:
+def fetch_stock_price(stock_code: str, code: str) -> tuple[str, float]:
     try:
         stock = yfinance.Ticker(stock_code)
         current_price = stock.info.get("bid")
@@ -44,7 +40,9 @@ async def collect_stock_data(redis_client: Redis, session: AsyncSession, stock_c
     event_loop = asyncio.get_event_loop()
 
     for stock_dict in stock_code_list:
-        trimmed_stock_dict = {key: value.strip() if isinstance(value, str) else value for key, value in stock_dict.items()}
+        trimmed_stock_dict = {
+            key: value.strip() if isinstance(value, str) else value for key, value in stock_dict.items()
+        }
         stockinfo = StockInfo(**trimmed_stock_dict)
         try:
             country = Country[stockinfo.country.upper().replace(" ", "_")]

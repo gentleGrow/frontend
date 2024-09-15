@@ -12,7 +12,7 @@ from app.module.asset.enum import (
 KOSPI = "KOSPI"
 
 # STOCK_CODES = ["005930", "000660", "051910", "035720", "AAPL", "MSFT", "AMZN", "GOOGL", "TSLA", "META", "NVDA"]
-STOCK_CODES = ["AAPL", "MSFT", "AMZN", "GOOGL", "TSLA", "META", "NVDA","AAPL", "MSFT"]
+STOCK_CODES = ["AAPL", "MSFT", "AMZN", "GOOGL", "TSLA", "META", "NVDA", "AAPL", "MSFT"]
 
 PURCHASE_DATES = [
     date(2024, 8, 16),
