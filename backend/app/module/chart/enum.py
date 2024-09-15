@@ -8,7 +8,6 @@ class CompositionType(StrEnum):
 
 
 class IntervalType(StrEnum):
-    ONEDAY = "1day"
     FIVEDAY = "5day"
     ONEMONTH = "1month"
     THREEMONTH = "3month"
@@ -16,9 +15,7 @@ class IntervalType(StrEnum):
     ONEYEAR = "1year"
 
     def get_timedelta(self) -> timedelta:
-        if self == IntervalType.ONEDAY:
-            return timedelta(hours=24)
-        elif self == IntervalType.FIVEDAY:
+        if self == IntervalType.FIVEDAY:
             return timedelta(hours=5 * 24)
         elif self == IntervalType.ONEMONTH:
             return timedelta(days=30)
@@ -31,9 +28,7 @@ class IntervalType(StrEnum):
         return timedelta(days=30)
 
     def get_interval(self) -> int:
-        if self == IntervalType.ONEDAY:
-            return 15
-        elif self == IntervalType.FIVEDAY:
+        if self == IntervalType.FIVEDAY:
             return 30
         elif self == IntervalType.ONEMONTH:
             return 1

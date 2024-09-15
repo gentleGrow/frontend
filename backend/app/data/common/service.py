@@ -103,11 +103,15 @@ class StockCodeFileReader:
             spain_stock_code_list,
             switzerland_stock_code_list,
             uk_stock_code_list,
-            korea_stock_code_list
+            korea_stock_code_list,
         ]
 
     @staticmethod
-    def get_all_stock_code_list() -> list[StockInfo]:
+    def get_korea_stock_code_list() -> list[StockInfo]:
+        return StockCodeFileReader._read_stock_codes_from_excel(StockCodeFileReader._get_path(KOREA_STOCK_FILEPATH))
+
+    @staticmethod
+    def get_world_stock_code_list() -> list[StockInfo]:
         usa_stock_code_list = StockCodeFileReader._read_stock_codes_from_excel(
             StockCodeFileReader._get_path(USA_STOCK_FILEPATH)
         )
@@ -153,9 +157,6 @@ class StockCodeFileReader:
         uk_stock_code_list = StockCodeFileReader._read_stock_codes_from_excel(
             StockCodeFileReader._get_path(UK_STOCK_FILEPATH)
         )
-        korea_stock_code_list = StockCodeFileReader._read_stock_codes_from_excel(
-            StockCodeFileReader._get_path(KOREA_STOCK_FILEPATH)
-        )
         return (
             usa_stock_code_list
             + japan_stock_code_list
@@ -172,7 +173,6 @@ class StockCodeFileReader:
             + spain_stock_code_list
             + switzerland_stock_code_list
             + uk_stock_code_list
-            # + korea_stock_code_list
         )
 
     @staticmethod
@@ -261,6 +261,7 @@ def read_stock_codes_from_excel(filepath: str) -> list[StockInfo]:
             print(f"AttributeError: {e}, row: {row}")
 
     return stock_infos
+
 
 def get_all_stock_code_list() -> list[StockInfo]:
     usa_stock_code_list = read_stock_codes_from_excel(get_path(USA_STOCK_FILEPATH))

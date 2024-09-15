@@ -1,11 +1,11 @@
 import asyncio
-
+from icecream import ic
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.common.util.time import get_now_datetime
 from app.data.common.constant import STOCK_CACHE_SECOND, STOCK_CHUNK_SIZE
-from app.data.common.service import get_korea_stock_code_list
+from app.data.common.service import StockCodeFileReader
 from app.data.naver.sources.service import get_stock_prices
 from app.module.asset.model import StockMinutely
 from app.module.asset.redis_repository import RedisRealTimeStockRepository
@@ -16,7 +16,7 @@ from database.dependency import get_mysql_session, get_redis_pool
 
 
 async def collect_stock_data(redis_client: Redis, session: AsyncSession) -> None:
-    stock_code_list: list[StockInfo] = get_korea_stock_code_list()
+    stock_code_list: list[StockInfo] = StockCodeFileReader.get_korea_stock_code_list()
     now = get_now_datetime()
 
     for i in range(0, len(stock_code_list), STOCK_CHUNK_SIZE):
@@ -26,6 +26,8 @@ async def collect_stock_data(redis_client: Redis, session: AsyncSession) -> None
         db_bulk_data = []
 
         for code, price in code_price_pairs:
+            ic(code)
+            ic(price)
             current_stock_data = StockMinutely(code=code, datetime=now, current_price=price)
             db_bulk_data.append(current_stock_data)
 
@@ -45,7 +47,7 @@ async def main():
                 await collect_stock_data(redis_client, session)
             except Exception:
                 continue
-            await asyncio.sleep(10)
+            await asyncio.sleep(5)
 
 
 if __name__ == "__main__":

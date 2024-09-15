@@ -1,5 +1,5 @@
 import asyncio
-
+from icecream import ic
 from aiohttp import ClientSession, ClientTimeout
 from bs4 import BeautifulSoup
 
@@ -14,13 +14,22 @@ async def fetch_stock_price(session: ClientSession, code: str) -> int:
             response.raise_for_status()
             html = await response.text()
             soup = BeautifulSoup(html, "html.parser")
-            today = soup.select_one("#chart_area > div.rate_info > div")
+            today = soup.select_one("#chart_area > div.rate_info > div.today")
+            
             if today is None:
                 return 0
-
-            price_text = today.select_one(".blind").get_text()
-            return int(price_text.replace(",", ""))
-    except Exception:
+            
+            no_today = today.select_one("p.no_today")
+            if no_today:
+                price_element = no_today.select_one("em.no_up .blind") or no_today.select_one("em.no_down .blind")
+                if price_element:
+                    price_text = price_element.get_text()
+                    return int(price_text.replace(",", ""))
+            else:
+                price_text = today.select_one(".blind").get_text()
+                return int(price_text.replace(",", ""))
+    except Exception as e:
+        ic(e)
         return 0
 
 
