@@ -1,9 +1,7 @@
 from redis.asyncio import Redis
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.module.asset.model import Asset, StockDaily
 from app.module.asset.redis_repository import RedisRealTimeStockRepository
-from app.module.chart.enum import IntervalType
 
 
 class StockService:

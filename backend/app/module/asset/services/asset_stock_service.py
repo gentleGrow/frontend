@@ -1,21 +1,43 @@
+from datetime import datetime
+
 from app.module.asset.enum import CurrencyType
 from app.module.asset.model import Asset, Dividend, StockDaily
 from app.module.asset.schema import StockAsset
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
 
+
 class AssetStockService:
     @staticmethod
-    def get_total_profit_rate_minute(
-        ) -> float:
-        pass
-    
+    def get_total_asset_amount_minute(
+        assets: list[Asset],
+        stock_interval_date_price_map: dict[str, float],
+        exchange_rate_map: dict[str, float],
+        current_datetime: datetime,
+    ) -> float:
+        result = 0.0
+
+        for asset in assets:
+            current_price = stock_interval_date_price_map.get(f"{asset.asset_stock.stock.code}_{current_datetime}")
+
+            if current_price is None:
+                continue
+            source_country = asset.asset_stock.stock.country.upper()
+            source_currency = CurrencyType[source_country]
+
+            won_exchange_rate = ExchangeRateService.get_exchange_rate(
+                source_currency, CurrencyType.KOREA, exchange_rate_map
+            )
+            current_price *= won_exchange_rate
+            result += current_price * asset.asset_stock.quantity
+        return result
+
     @staticmethod
     def get_total_asset_amount(
         assets: list[Asset],
         current_stock_price_map: dict[str, float],
         exchange_rate_map: dict[str, float],
     ) -> float:
-        total_asset_amount = 0.0
+        result = 0.0
 
         for asset in assets:
             current_price = current_stock_price_map.get(asset.asset_stock.stock.code)
@@ -32,9 +54,9 @@ class AssetStockService:
 
             current_price *= won_exchange_rate
 
-            total_asset_amount += current_price * asset.asset_stock.quantity
-        return total_asset_amount
-    
+            result += current_price * asset.asset_stock.quantity
+        return result
+
     @staticmethod
     def get_stock_assets(
         assets: list[Asset],
@@ -109,7 +131,6 @@ class AssetStockService:
             stock_assets.append(stock_asset)
 
         return stock_assets
-
 
     @staticmethod
     def get_total_investment_amount(

@@ -1,15 +1,12 @@
+import argparse
 import asyncio
 import json
-import os
-import sys
+
 import yfinance
 from icecream import ic
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../"))
-
-sys.path.append(project_root)
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-import argparse
+
 from app.common.util.time import get_now_datetime
 from app.data.common.constant import STOCK_CACHE_SECOND
 from app.data.yahoo.source.service import format_stock_code
@@ -20,17 +17,18 @@ from app.module.asset.repository.stock_minutely_repository import StockMinutelyR
 from app.module.asset.schema import StockInfo
 from database.dependency import get_mysql_session, get_redis_pool
 
-def fetch_stock_price(stock_code: str) -> tuple[str, float]:
+
+def fetch_stock_price(stock_code: str, code: str) -> tuple[str, float]:
     try:
         stock = yfinance.Ticker(stock_code)
         current_price = stock.info.get("bid")
-        return stock_code, current_price
+        return code, current_price
     except ValueError as ve:
         ic(f"Error fetching stock data for {stock_code}: {ve}")
-        return stock_code, 0.0
+        return code, 0.0
     except Exception as e:
         ic(f"Error fetching stock data: {e}")
-        return stock_code, 0.0
+        return code, 0.0
 
 
 async def collect_stock_data(redis_client: Redis, session: AsyncSession, stock_code_list: list[StockInfo]) -> None:
@@ -38,21 +36,26 @@ async def collect_stock_data(redis_client: Redis, session: AsyncSession, stock_c
     code_price_pairs = []
     db_bulk_data = []
     fetch_tasks = []
-    
+
     event_loop = asyncio.get_event_loop()
 
-
     for stock_dict in stock_code_list:
-        stockinfo = StockInfo(**stock_dict)
+        trimmed_stock_dict = {
+            key: value.strip() if isinstance(value, str) else value for key, value in stock_dict.items()
+        }
+        stockinfo = StockInfo(**trimmed_stock_dict)
         try:
+            country = Country[stockinfo.country.upper().replace(" ", "_")]
             stock_code = format_stock_code(
                 stockinfo.code,
-                Country[stockinfo.country.upper().replace(" ", "_")],
+                country,
                 stockinfo.market_index.upper(),
             )
-            
-            fetch_tasks.append(event_loop.run_in_executor(None, fetch_stock_price, stock_code))
+
+            fetch_tasks.append(event_loop.run_in_executor(None, fetch_stock_price, stock_code, stockinfo.code))
         except Exception as e:
+            ic(stock_dict)
+            ic(stockinfo)
             ic(f"Error formatting stock code: {e}")
             continue
 
@@ -70,14 +73,15 @@ async def collect_stock_data(redis_client: Redis, session: AsyncSession, stock_c
     if db_bulk_data:
         await StockMinutelyRepository.bulk_upsert(session, db_bulk_data)
 
+
 async def main():
     parser = argparse.ArgumentParser(description="Process stock code chunk.")
-    parser.add_argument('stock_code_list', type=str, help="JSON serialized list of stock codes")
+    parser.add_argument("stock_code_list", type=str, help="JSON serialized list of stock codes")
     args = parser.parse_args()
 
     stock_code_list_chunk = json.loads(args.stock_code_list)
     redis_client = get_redis_pool()
-    
+
     while True:
         try:
             async with get_mysql_session() as session:
@@ -85,8 +89,7 @@ async def main():
         except Exception as e:
             ic(f"Error occurred: {e}")
         finally:
-            await asyncio.sleep(20)
-
+            await asyncio.sleep(10)
 
 
 if __name__ == "__main__":

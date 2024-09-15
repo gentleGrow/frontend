@@ -1,10 +1,10 @@
 DOCKERFILES_DIR=docker
 
-CONTAINERS = realtime_stock_world_container realtime_stock_korea_container stock_container realtime_index_world_container realtime_index_korea_container index_container dividend_container tip_container exchange_rate_container
-IMAGES = realtime_stock_world realtime_stock_korea stock realtime_index_world realtime_index_korea index dividend tip exchange_rate
+CONTAINERS = realtime_stock_container stock_container realtime_index_world_container realtime_index_korea_container index_container dividend_container tip_container exchange_rate_container
+IMAGES = realtime_stock_world stock realtime_index_world realtime_index_korea index dividend tip exchange_rate
 
 SCRIPTS_DIR=etc/scripts
-SHELL_SCRIPTS = realtime_stock_world.sh realtime_stock_korea.sh stock.sh realtime_index_world.sh realtime_index_korea.sh index.sh dividend.sh tip.sh exchange_rate.sh
+SHELL_SCRIPTS = realtime_stock.sh stock.sh realtime_index_world.sh realtime_index_korea.sh index.sh dividend.sh tip.sh exchange_rate.sh
 
 all: stop_containers remove_containers remove_images build_images run_containers
 
@@ -22,8 +22,7 @@ remove_images:
 
 build_images:
 	@echo "Building images..."
-	sudo docker build -t realtime_stock_world -f $(DOCKERFILES_DIR)/Dockerfile.realtime_stock_world .
-	sudo docker build -t realtime_stock_korea -f $(DOCKERFILES_DIR)/Dockerfile.realtime_stock_korea .
+	sudo docker build -t realtime_stock -f $(DOCKERFILES_DIR)/Dockerfile.realtime_stock .
 	sudo docker build -t stock -f $(DOCKERFILES_DIR)/Dockerfile.stock .
 	sudo docker build -t realtime_index_world -f $(DOCKERFILES_DIR)/Dockerfile.realtime_index_world .
 	sudo docker build -t realtime_index_korea -f $(DOCKERFILES_DIR)/Dockerfile.realtime_index_korea .
@@ -35,8 +34,7 @@ build_images:
 
 run_containers:
 	@echo "Running containers..."
-	bash $(SCRIPTS_DIR)/realtime_stock_world.sh
-	bash $(SCRIPTS_DIR)/realtime_stock_korea.sh
+	bash $(SCRIPTS_DIR)/realtime_stock.sh
 	bash $(SCRIPTS_DIR)/stock.sh
 	bash $(SCRIPTS_DIR)/realtime_index_world.sh
 	bash $(SCRIPTS_DIR)/realtime_index_korea.sh
