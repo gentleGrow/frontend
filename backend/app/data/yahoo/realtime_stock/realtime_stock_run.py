@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 
 from more_itertools import chunked
 
@@ -15,8 +16,11 @@ async def spawn_cluster_process(stock_code_list_chunk):
         "app/data/yahoo/realtime_stock/realtime_stock_collect.py",
         json.dumps(stock_code_list_chunk_serializable),
     ]
+    
+    env = os.environ.copy()
+    env["PYTHONPATH"] = "/Users/kcw2297/Desktop/assetManagement/backend"
 
-    process = await asyncio.create_subprocess_exec(*command, cwd="/Users/kcw2297/Desktop/assetManagement/backend")
+    process = await asyncio.create_subprocess_exec(*command, cwd="/Users/kcw2297/Desktop/assetManagement/backend", env=env)
 
     print(f"Spawned subprocess with PID: {process.pid}")
 
@@ -24,7 +28,7 @@ async def spawn_cluster_process(stock_code_list_chunk):
 
 
 async def main():
-    stock_code_list = StockCodeFileReader.get_world_stock_code_list()
+    stock_code_list = StockCodeFileReader.get_all_stock_code_list()
 
     stock_code_list_chunks = chunked(stock_code_list, REALTIME_STOCK_LIST)
 

@@ -12,28 +12,18 @@ from app.module.asset.enum import (
 KOSPI = "KOSPI"
 
 # STOCK_CODES = ["005930", "000660", "051910", "035720", "AAPL", "MSFT", "AMZN", "GOOGL", "TSLA", "META", "NVDA"]
-# STOCK_CODES = ["AAPL", "MSFT", "AMZN", "GOOGL", "TSLA", "META", "NVDA"]
-STOCK_CODES = ["AAPL", "MSFT"]
+STOCK_CODES = ["AAPL", "MSFT", "AMZN", "GOOGL", "TSLA", "META", "NVDA","AAPL", "MSFT"]
 
 PURCHASE_DATES = [
-    date(2024,9,13),
-    date(2024,9,13),
-    # date(2024,9,14),
-    # date(2024,9,14),
-    # date(2024,9,14),
-    # date(2024,9,13),
-    # date(2024,9,14),
-    # date(2024, 8, 12),
-    # date(2024, 8, 13),
-    # date(2024, 8, 14),
-    # date(2024, 8, 14),
-    # date(2024, 8, 16),
-    # date(2024, 8, 19),
-    # date(2024, 8, 20),
-    # date(2024, 8, 21),
-    # date(2024, 8, 22),
-    # date(2024, 8, 23),
-    # date(2024, 8, 26),
+    date(2024, 8, 16),
+    date(2024, 8, 19),
+    date(2024, 8, 20),
+    date(2024, 8, 21),
+    date(2024, 8, 22),
+    date(2024, 8, 23),
+    date(2024, 8, 26),
+    date(2024, 9, 13),
+    date(2024, 9, 13),
 ]
 
 INVESTMENT_BANKS = [

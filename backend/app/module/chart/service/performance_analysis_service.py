@@ -1,12 +1,9 @@
 import json
 from collections import defaultdict
-from datetime import date, datetime, timedelta, time
+from datetime import date, datetime, time, timedelta
 
-from icecream import ic
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.module.asset.enum import AssetType, MarketIndex
 
 from app.module.asset.enum import AssetType, MarketIndex
 from app.module.asset.model import MarketIndexDaily, StockDaily, StockMinutely
@@ -33,14 +30,16 @@ class PerformanceAnalysis:
         user_id: int,
         interval: IntervalType,
     ) -> list[dict]:
-        assets = await AssetRepository.get_eager_by_range(session, user_id, AssetType.STOCK, (interval_start, interval_end))
+        assets = await AssetRepository.get_eager_by_range(
+            session, user_id, AssetType.STOCK, (interval_start, interval_end)
+        )
 
         stock_code_date_pairs = [(asset.asset_stock.stock.code, asset.asset_stock.purchase_date) for asset in assets]
         stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies_by_code_and_date(
             session, stock_code_date_pairs
         )
         stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
-        
+
         exchange_rate_map: dict[str, float] = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
         stock_codes = [asset.asset_stock.stock.code for asset in assets]
@@ -62,36 +61,31 @@ class PerformanceAnalysis:
 
         min_purchase_date = min(assets_by_date.keys())
         min_purchase_datetime = datetime.combine(min_purchase_date, time.min)
-        current_datetime = min(stock_minutely.datetime for stock_minutely in interval_data if stock_minutely.datetime > min_purchase_datetime)
+        current_datetime = min(
+            stock_minutely.datetime
+            for stock_minutely in interval_data
+            if stock_minutely.datetime > min_purchase_datetime
+        )
 
         for purchase_date, assets in sorted(assets_by_date.items()):
             cumulative_assets.extend(assets)
-            
+
             purchase_datetime_max = min_purchase_datetime = datetime.combine(purchase_date, time.max)
-            
+
             while current_datetime < purchase_datetime_max:
                 total_asset_amount = AssetStockService.get_total_asset_amount_minute(
-                        assets,
-                        stock_interval_date_price_map,
-                        exchange_rate_map,
-                        current_datetime
-                    )
-                
+                    assets, stock_interval_date_price_map, exchange_rate_map, current_datetime
+                )
+
                 total_invest_amount = AssetStockService.get_total_investment_amount(
                     cumulative_assets, stock_daily_map, exchange_rate_map
                 )
-                
+
                 total_profit_rate = 0.0
                 if total_invest_amount > 0:
                     total_profit_rate = ((total_asset_amount - total_invest_amount) / total_invest_amount) * 100
 
-                result.append(
-                    {
-                        "date": current_datetime,
-                        "name":DUMMY_NAME,
-                        "profit":total_profit_rate
-                    }
-                )
+                result.append({"date": current_datetime, "name": DUMMY_NAME, "profit": total_profit_rate})
 
                 current_datetime += timedelta(minutes=interval.get_interval())
 
