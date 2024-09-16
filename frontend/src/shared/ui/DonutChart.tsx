@@ -3,9 +3,9 @@ import React, { useRef, useEffect } from "react";
 import * as echarts from "echarts";
 
 interface DonutChartData {
-  value: number;
+  current_amount: number;
   name: string;
-  percent: number;
+  percent_rate_rate: number; // 이 필드는 더 이상 사용되지 않으므로 제거해도 됩니다.
 }
 
 export default function DonutChart({
@@ -21,7 +21,10 @@ export default function DonutChart({
     if (chartRef.current) {
       const chartInstance = echarts.init(chartRef.current);
 
-      const totalValue = data.reduce((sum, item) => sum + item.value, 0);
+      const totalCurrentAmount = data.reduce(
+        (sum, item) => sum + item.current_amount,
+        0,
+      );
 
       const setOption = () => {
         const isMobile = window.matchMedia("(max-width: 840px)").matches;
@@ -69,7 +72,9 @@ export default function DonutChart({
             top: isMobile ? "bottom" : "center",
             formatter: (name) => {
               const item = data.find((i) => i.name === name);
-              const percent = item ? (item.value / totalValue) * 100 : 0;
+              const percent = item
+                ? (item.current_amount / totalCurrentAmount) * 100
+                : 0;
 
               const maxNameLength = isMobile
                 ? Math.floor((window.innerWidth - 64 - 70) / 8)
@@ -118,7 +123,10 @@ export default function DonutChart({
               labelLine: {
                 show: false,
               },
-              data,
+              data: data.map((item) => ({
+                value: item.current_amount, // ECharts가 사용할 필드로 변환
+                name: item.name,
+              })),
             },
           ],
         };
