@@ -7,16 +7,10 @@ const config: Config = {
     extend: {
       screens: {
         mobile: {
-          max: "376px",
+          max: "840px",
         },
         "except-mobile": {
-          min: "376px",
-        },
-        "min-546": {
-          min: "546px",
-        },
-        "max-546": {
-          max: "546px",
+          min: "840px",
         },
       },
       colors: {

@@ -24,7 +24,7 @@ export default function DonutChart({
       const totalValue = data.reduce((sum, item) => sum + item.value, 0);
 
       const setOption = () => {
-        const isMobile = window.matchMedia("(max-width: 375px)").matches;
+        const isMobile = window.matchMedia("(max-width: 840px)").matches;
 
         const option = {
           color: [
@@ -70,17 +70,22 @@ export default function DonutChart({
             formatter: (name) => {
               const item = data.find((i) => i.name === name);
               const percent = item ? (item.value / totalValue) * 100 : 0;
+
+              const maxNameLength = isMobile
+                ? Math.floor((window.innerWidth - 64 - 70) / 8)
+                : 10;
               const formattedName =
-                name.length > 10 ? name.substring(0, 10) + "..." : name;
+                name.length > maxNameLength
+                  ? name.substring(0, maxNameLength) + "..."
+                  : name;
 
               return `{name|${formattedName}}{space|} {percent|${percent.toFixed(2)}%}`;
             },
+
             textStyle: {
               rich: {
                 name: {
-                  width: isMobile ? 220 : 84,
-                  overflow: "truncate",
-                  ellipsis: "...",
+                  width: isMobile ? window.innerWidth - 64 - 70 : 84,
                 },
                 space: {
                   width: 24,
@@ -97,8 +102,8 @@ export default function DonutChart({
             {
               name: chartName,
               type: "pie",
-              radius: isMobile ? ["50%", "80%"] : ["60%", "95%"],
-              center: isMobile ? ["50%", "27%"] : ["47%", "50%"],
+              radius: ["64px", "128px"],
+              center: isMobile ? ["50%", "27%"] : ["128px", "50%"],
               left: "0",
               right: isMobile ? "0" : "200px",
               avoidLabelOverlap: true,

@@ -25,7 +25,7 @@ export default function SearchBar() {
         <path
           d="M16 16L19 19"
           stroke="#5D646E"
-          stroke-width="1.5"
+          strokeWidth="1.5"
           stroke-linecap="round"
         />
         <circle
@@ -33,7 +33,7 @@ export default function SearchBar() {
           cy="11.5"
           r="5.75"
           stroke="#5D646E"
-          stroke-width="1.5"
+          strokeWidth="1.5"
         />
       </svg>
     </InputWithImage>

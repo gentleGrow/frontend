@@ -2,10 +2,10 @@
 import { DonutChart, SegmentedButton, SegmentedButtonGroup } from "@/shared";
 import { useState } from "react";
 const data1 = [
-  { value: 1234, name: "Apple", percent: 10.12 },
+  { value: 1234, name: "Appleeeeeeeeeeeeeeeee", percent: 100 },
   { value: 1233, name: "AAA", percent: 10.01 },
   { value: 1232, name: "AAAAAA", percent: 10.01 },
-  { value: 1231, name: "AAAAAAAAAA", percent: 10.01 },
+  { value: 1231, name: "AAAAAAAAAAAAAAAAAAAA", percent: 100 },
   { value: 1230, name: "AAAAAAAAAAA", percent: 10.01 },
   { value: 1229, name: "AAAAAAAAAAAA", percent: 10.01 },
   { value: 1228, name: "AAAAAAAAAAAAA", percent: 10.01 },
@@ -28,7 +28,7 @@ const data2 = [
 export default function StockComposition() {
   const [currentData, setCurrentData] = useState<any[]>(data1);
   return (
-    <div className="relative w-full max-w-[558px] rounded-xl border p-[16px] mobile:h-[642px] mobile:border-none">
+    <div className="relative w-full rounded-xl border p-[16px] mobile:h-[642px] mobile:border-none">
       <h2 className="text-heading-2">종목 구성</h2>
       <div className="mt-[16px] flex w-full except-mobile:absolute except-mobile:right-[16px] except-mobile:top-[12px] except-mobile:mt-0 except-mobile:w-[148px]">
         <SegmentedButtonGroup>
