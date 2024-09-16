@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from app.module.asset.enum import CurrencyType
-from app.module.asset.model import Asset, Dividend, StockDaily
+from app.module.asset.model import Asset, StockDaily
 from app.module.asset.schema import StockAsset
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
 
@@ -62,7 +62,7 @@ class AssetStockService:
         assets: list[Asset],
         stock_daily_map: dict[tuple[str, str], StockDaily],
         current_stock_price_map: dict[str, float],
-        dividend_map: dict[str, Dividend],
+        dividend_map: dict[str, float],
         base_currency: bool,
         exchange_rate_map: dict[str, float],
     ) -> list[StockAsset]:
@@ -76,6 +76,8 @@ class AssetStockService:
                 continue
 
             dividend = dividend_map.get(asset.asset_stock.stock.code)
+            if dividend is None:
+                dividend = 0.0
 
             purchase_price = (
                 asset.asset_stock.purchase_price

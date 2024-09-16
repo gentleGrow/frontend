@@ -5,7 +5,6 @@ from app.module.asset.enum import CurrencyType
 from app.module.asset.model import Asset, StockDaily
 from app.module.asset.redis_repository import RedisExchangeRateRepository, RedisRealTimeStockRepository
 from app.module.asset.schema import StockAsset
-from icecream import ic
 
 
 # 수정!!!! 함수가 많아져 관리가 힘들어지면서, class로 책임 범위 제한을 하려 합니다. 추후 수정 하겠습니다.
@@ -92,7 +91,7 @@ def get_stock_assets(
         dividend = dividend_map.get(asset.asset_stock.stock.code)
         if dividend is None:
             dividend = 0.0
-            
+
         purchase_price = (
             asset.asset_stock.purchase_price
             if asset.asset_stock.purchase_price is not None
@@ -151,7 +150,7 @@ def get_total_dividend(
     dividend_map: dict[str, float],
     exchange_rate_map: dict[str, float],
 ) -> float:
-    total_dividend_amount = 0
+    total_dividend_amount = 0.0
 
     for asset in assets:
         dividend = dividend_map.get(asset.asset_stock.stock.code)
@@ -174,7 +173,7 @@ def get_total_asset_amount(
     exchange_rate_map: dict[str, float],
 ) -> float:
     total_asset_amount = 0
-    
+
     for asset in assets:
         current_price = current_stock_price_map.get(asset.asset_stock.stock.code)
         if current_price is None:
@@ -187,7 +186,7 @@ def get_total_asset_amount(
 
         current_price *= won_exchange_rate
         total_asset_amount += current_price * asset.asset_stock.quantity
-        
+
     return total_asset_amount
 
 
