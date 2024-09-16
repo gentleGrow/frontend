@@ -4,8 +4,8 @@ import os
 from os import getenv
 
 from dotenv import load_dotenv
-from more_itertools import chunked
 from icecream import ic
+from more_itertools import chunked
 
 from app.data.common.service import StockCodeFileReader
 from app.data.yahoo.source.constant import REALTIME_STOCK_LIST
@@ -28,28 +28,26 @@ async def spawn_cluster_process(stock_code_list_chunk):
 
         env = os.environ.copy()
         env["PYTHONPATH"] = "/Users/kcw2297/Desktop/assetManagement/backend"
-        
+
         process = await asyncio.create_subprocess_exec(
             *command, cwd="/Users/kcw2297/Desktop/assetManagement/backend", env=env
         )
 
         print(f"Spawned subprocess with PID: {process.pid}")
     else:
-        python_executable = "/usr/local/bin/python"  
-        script_path = "/app/app/data/yahoo/realtime_stock/realtime_stock_collect.py" 
+        python_executable = "/usr/local/bin/python"
+        script_path = "/app/app/data/yahoo/realtime_stock/realtime_stock_collect.py"
 
         command = [
-            python_executable, script_path,
+            python_executable,
+            script_path,
             json.dumps(stock_code_list_chunk_serializable),
         ]
 
         env = os.environ.copy()
-        env["PYTHONPATH"] = "/app" 
+        env["PYTHONPATH"] = "/app"
 
-
-        process = await asyncio.create_subprocess_exec(
-            *command, cwd="/app", env=env
-        )
+        process = await asyncio.create_subprocess_exec(*command, cwd="/app", env=env)
 
         print(f"Spawned subprocess with PID: {process.pid}")
 

@@ -83,7 +83,7 @@ async def get_dummy_assets(
     lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, stock_codes)
     lastest_stock_daily_map = {daily.code: daily for daily in lastest_stock_dailies}
 
-    dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
+    dividends: list[Dividend] = await DividendRepository.get_dividends_recent(session, stock_codes)
     dividend_map = {dividend.stock_code: dividend for dividend in dividends}
     exchange_rate_map = await get_exchange_rate_map(redis_client)
     stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
@@ -139,7 +139,7 @@ async def get_assets(
         session, stock_code_date_pairs
     )
 
-    dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
+    dividends: list[Dividend] = await DividendRepository.get_dividends_recent(session, stock_codes)
     dividend_map = {dividend.stock_code: dividend for dividend in dividends}
     exchange_rate_map = await get_exchange_rate_map(redis_client)
     stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
