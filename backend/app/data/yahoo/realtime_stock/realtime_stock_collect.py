@@ -54,8 +54,6 @@ async def collect_stock_data(redis_client: Redis, session: AsyncSession, stock_c
 
             fetch_tasks.append(event_loop.run_in_executor(None, fetch_stock_price, stock_code, stockinfo.code))
         except Exception as e:
-            ic(stock_dict)
-            ic(stockinfo)
             ic(f"Error formatting stock code: {e}")
             continue
 
@@ -67,8 +65,8 @@ async def collect_stock_data(redis_client: Redis, session: AsyncSession, stock_c
         current_stock_data = StockMinutely(code=code, datetime=now, current_price=price)
         db_bulk_data.append(current_stock_data)
 
-    if redis_bulk_data:
-        await RedisRealTimeStockRepository.bulk_save(redis_client, redis_bulk_data, expire_time=STOCK_CACHE_SECOND)
+    # if redis_bulk_data:
+    #     await RedisRealTimeStockRepository.bulk_save(redis_client, redis_bulk_data, expire_time=STOCK_CACHE_SECOND)
 
     if db_bulk_data:
         await StockMinutelyRepository.bulk_upsert(session, db_bulk_data)

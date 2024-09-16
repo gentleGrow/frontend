@@ -1,7 +1,6 @@
 from sqlalchemy import extract, select
 from sqlalchemy.dialects.mysql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.module.asset.model import StockMinutely
 
 

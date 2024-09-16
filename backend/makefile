@@ -1,7 +1,7 @@
 DOCKERFILES_DIR=docker
 
 CONTAINERS = realtime_stock_container stock_container realtime_index_world_container realtime_index_korea_container index_container dividend_container tip_container exchange_rate_container
-IMAGES = realtime_stock_world stock realtime_index_world realtime_index_korea index dividend tip exchange_rate
+IMAGES = realtime_stock stock realtime_index_world realtime_index_korea index dividend tip exchange_rate
 
 SCRIPTS_DIR=etc/scripts
 SHELL_SCRIPTS = realtime_stock.sh stock.sh realtime_index_world.sh realtime_index_korea.sh index.sh dividend.sh tip.sh exchange_rate.sh
