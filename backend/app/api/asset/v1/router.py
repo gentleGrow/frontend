@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from icecream import ic
 from pydantic import StrictBool
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
