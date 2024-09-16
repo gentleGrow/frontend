@@ -35,15 +35,32 @@ from app.module.chart.schema import (
     PerformanceAnalysisResponse,
     PerformanceAnalysisResponseValue,
     SummaryResponse,
+    # EstimateDividendResponse,
+    # EstimateDividendValue
 )
 from app.module.chart.service.composition_service import CompositionService
 from app.module.chart.service.performance_analysis_service import PerformanceAnalysis
 from database.dependency import get_mysql_session_router, get_redis_pool
+# from app.module.chart.service.estimate_dividend_service import EstimateDividendService
+
 
 chart_router = APIRouter(prefix="/v1")
 
+# @chart_router.get("/dummy/estimate-dividend", summary="예상 배당액", response_model=EstimateDividendResponse)
+# async def get_dummy_estimate_dividend(
+#     session: AsyncSession = Depends(get_mysql_session_router),
+#     redis_client: Redis = Depends(get_redis_pool),
+# )->EstimateDividendResponse:
+#     assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
+#     if len(assets) == 0:
+#         return []
+    
+#     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
+#     total_dividend_list = await EstimateDividendService.get_total_estimate_dividend(session, assets, exchange_rate_map)
+#     return
 
-@chart_router.get("/dummy/performance-analysis", summary="투자 성과 분석")
+
+@chart_router.get("/dummy/performance-analysis", summary="투자 성과 분석", response_model=PerformanceAnalysisResponse)
 async def get_dummy_performance_analysis(
     interval: IntervalType = Query(IntervalType.ONEMONTH, description="기간 별, 투자 성관 분석 데이터가 제공 됩니다."),
     session: AsyncSession = Depends(get_mysql_session_router),

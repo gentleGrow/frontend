@@ -6,16 +6,15 @@ import yfinance
 from icecream import ic
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.common.util.time import get_now_datetime
 from app.data.common.constant import STOCK_CACHE_SECOND
+from app.common.util.time import get_now_datetime
 from app.data.yahoo.source.service import format_stock_code
 from app.module.asset.enum import Country
 from app.module.asset.model import StockMinutely
-from app.module.asset.redis_repository import RedisRealTimeStockRepository
 from app.module.asset.repository.stock_minutely_repository import StockMinutelyRepository
 from app.module.asset.schema import StockInfo
 from database.dependency import get_mysql_session, get_redis_pool
+from app.module.asset.redis_repository import RedisRealTimeStockRepository
 
 
 def fetch_stock_price(stock_code: str, code: str) -> tuple[str, float]:
@@ -54,8 +53,6 @@ async def collect_stock_data(redis_client: Redis, session: AsyncSession, stock_c
 
             fetch_tasks.append(event_loop.run_in_executor(None, fetch_stock_price, stock_code, stockinfo.code))
         except Exception as e:
-            ic(stock_dict)
-            ic(stockinfo)
             ic(f"Error formatting stock code: {e}")
             continue
 

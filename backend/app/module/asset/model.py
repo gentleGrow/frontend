@@ -23,9 +23,11 @@ class Dividend(TimestampMixin, MySQLBase):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     dividend = Column(Float, nullable=False, info={"description": "배당금"})
-    stock_code = Column(String(255), ForeignKey("stock.code"), nullable=False, unique=True)
+    stock_code = Column(String(255), ForeignKey("stock.code"), nullable=False)
+    date = Column(Date, nullable=False, info={"description": "배당일자"})
 
     stock = relationship("Stock", back_populates="dividend")
+    __table_args__ = (UniqueConstraint("stock_code", "date", name="uq_code_date"),)
 
 
 class AssetStock(TimestampMixin, MySQLBase):

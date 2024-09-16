@@ -1,3 +1,4 @@
+from icecream import ic
 from sqlalchemy.dialects.mysql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -15,6 +16,23 @@ class DividendRepository:
     @staticmethod
     async def get_dividends(session: AsyncSession, stock_codes: list[str]) -> list[Dividend]:
         result = await session.execute(select(Dividend).where(Dividend.stock_code.in_(stock_codes)))
+        return result.scalars().all()
+    
+    @staticmethod
+    async def get_dividends_recent(session: AsyncSession, stock_codes: list[str]) -> list[Dividend]:
+        subquery = (
+            select(Dividend.stock_code, func.max(Dividend.date).label('max_date'))
+            .where(Dividend.stock_code.in_(stock_codes))
+            .group_by(Dividend.stock_code)
+            .subquery()
+        )
+        
+        query = (
+            select(Dividend)
+            .join(subquery, (Dividend.stock_code == subquery.c.stock_code) & (Dividend.date == subquery.c.max_date))
+        )
+        
+        result = await session.execute(query)
         return result.scalars().all()
 
     @staticmethod
@@ -42,16 +60,20 @@ class DividendRepository:
     @staticmethod
     async def bulk_upsert(session: AsyncSession, dividends: list[Dividend]) -> None:
         stmt = insert(Dividend).values(
-            [{"dividend": dividend.dividend, "stock_code": dividend.stock_code} for dividend in dividends]
+            [
+                {"dividend": float(dividend.dividend), "stock_code": str(dividend.stock_code), "date": dividend.date}
+                for dividend in dividends
+            ]
         )
 
-        update_stmt = {"dividend": stmt.inserted.dividend}
+        update_stmt = {"dividend": stmt.inserted.dividend, "updated_at": func.now()}
 
         upsert_stmt = stmt.on_duplicate_key_update(update_stmt)
 
         try:
             await session.execute(upsert_stmt)
             await session.commit()
+            ic("성공적으로 저장하였습니다.")
         except Exception as e:
             await session.rollback()
-            print(f"[Error][bulk_upsert] Failed to upsert dividends: {e}")
+            ic(f"저장에 실패했습니다. 에러: {e}")
