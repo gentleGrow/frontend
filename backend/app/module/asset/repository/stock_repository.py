@@ -1,6 +1,7 @@
 from sqlalchemy.dialects.mysql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.sql import func
 
 from app.module.asset.model import Stock
 
@@ -55,6 +56,7 @@ class StockRepository:
             "name": stmt.inserted.name,
             "market_index": stmt.inserted.market_index,
             "country": stmt.inserted.country,
+            "updated_at": func.now(),
         }
 
         upsert_stmt = stmt.on_duplicate_key_update(update_dict)

@@ -49,9 +49,21 @@ class PerformanceAnalysisResponse(BaseModel):
     performance_analysis: dict[str, list[PerformanceAnalysisResponseValue]]
 
 
-# class EstimateDividendValue(BaseModel):
-#     date:date
-#     amount:float
+class EstimateDividendValue(BaseModel):
+    date: date
+    amount: float
 
-# class EstimateDividendResponse(BaseModel):
-#     estimate_dividend_list = list[EstimateDividendValue]
+
+class EstimateDividendResponse(BaseModel):
+    estimate_dividend_list: list[EstimateDividendValue]
+
+
+class MyStockResponseValue(BaseModel):
+    name: str
+    current_price:float
+    profit_rate:float
+    profit_amount:float
+    quantity:int
+
+class MyStockResponse(BaseModel):
+    my_stock_list: list[MyStockResponseValue]

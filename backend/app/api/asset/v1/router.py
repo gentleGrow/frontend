@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from icecream import ic
 from pydantic import StrictBool
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -84,7 +85,8 @@ async def get_dummy_assets(
     lastest_stock_daily_map = {daily.code: daily for daily in lastest_stock_dailies}
 
     dividends: list[Dividend] = await DividendRepository.get_dividends_recent(session, stock_codes)
-    dividend_map = {dividend.stock_code: dividend for dividend in dividends}
+
+    dividend_map = {dividend.stock_code: dividend.dividend for dividend in dividends}
     exchange_rate_map = await get_exchange_rate_map(redis_client)
     stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
 
@@ -140,7 +142,7 @@ async def get_assets(
     )
 
     dividends: list[Dividend] = await DividendRepository.get_dividends_recent(session, stock_codes)
-    dividend_map = {dividend.stock_code: dividend for dividend in dividends}
+    dividend_map = {dividend.stock_code: dividend.dividend for dividend in dividends}
     exchange_rate_map = await get_exchange_rate_map(redis_client)
     stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
 

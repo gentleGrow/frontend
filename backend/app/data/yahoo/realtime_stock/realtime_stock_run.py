@@ -65,6 +65,8 @@ async def main():
     pids = await asyncio.gather(*cluster_tasks, return_exceptions=True)
 
     print(f"All subprocesses started with PIDs: {pids}")
+    while True:
+        await asyncio.sleep(3600)
 
 
 if __name__ == "__main__":
