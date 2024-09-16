@@ -23,14 +23,16 @@ async def insert_dividend_data(session: AsyncSession, stock_list: list[StockInfo
         dividend_list = []
         for stock in stock_list_batch:
             try:
+                
                 stock_code = format_stock_code(
                     stock.code.strip(), Country[stock.country.upper().strip()], stock.market_index.upper().strip()
                 )
 
+                    
                 stock_info = yfinance.Ticker(stock_code)
-                
-                dividends = stock_info.dividends
 
+                dividends = stock_info.dividends
+                        
                 if dividends.empty:
                     continue
 
@@ -49,6 +51,7 @@ async def insert_dividend_data(session: AsyncSession, stock_list: list[StockInfo
                 ic(f"[분석][insert_dividend_data] Error during dividend processing for {stock.code}: {e}")
                 continue
 
+        ic(len(dividend_list))
         await DividendRepository.bulk_upsert(session=session, dividends=dividend_list)
 
 

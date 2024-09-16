@@ -21,7 +21,7 @@ class AssetStockService:
 
             if current_price is None:
                 continue
-            source_country = asset.asset_stock.stock.country.upper()
+            source_country = asset.asset_stock.stock.country.upper().strip()
             source_currency = CurrencyType[source_country]
 
             won_exchange_rate = ExchangeRateService.get_exchange_rate(
@@ -45,7 +45,7 @@ class AssetStockService:
             if current_price is None:
                 continue
 
-            source_country = asset.asset_stock.stock.country.upper()
+            source_country = asset.asset_stock.stock.country.upper().strip()
             source_currency = CurrencyType[source_country]
 
             won_exchange_rate = ExchangeRateService.get_exchange_rate(
@@ -75,8 +75,7 @@ class AssetStockService:
             if not stock_daily or not current_price:
                 continue
 
-            dividend_instance = dividend_map.get(asset.asset_stock.stock.code)
-            dividend = dividend_instance.dividend if dividend_instance else 0
+            dividend = dividend_map.get(asset.asset_stock.stock.code)
 
             purchase_price = (
                 asset.asset_stock.purchase_price
@@ -85,7 +84,7 @@ class AssetStockService:
             )
 
             profit_rate = ((current_price - purchase_price) / purchase_price) * 100
-            source_country = asset.asset_stock.stock.country.upper()
+            source_country = asset.asset_stock.stock.country.upper().strip()
             source_currency = CurrencyType[source_country]
             won_exchange_rate = ExchangeRateService.get_exchange_rate(
                 source_currency, CurrencyType.KOREA, exchange_rate_map
@@ -152,7 +151,7 @@ class AssetStockService:
                 else stock_daily.adj_close_price
             )
 
-            source_country = asset.asset_stock.stock.country.upper()
+            source_country = asset.asset_stock.stock.country.upper().strip()
             source_currency = CurrencyType[source_country]
             won_exchange_rate = ExchangeRateService.get_exchange_rate(
                 source_currency, CurrencyType.KOREA, exchange_rate_map

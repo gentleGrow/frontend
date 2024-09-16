@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.common.auth.security import verify_jwt_token
 from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
 from app.module.asset.enum import AssetType, MarketIndex
-from app.module.asset.model import Asset, StockDaily
+from app.module.asset.model import Asset, StockDaily, Dividend
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.stock_daily_repository import StockDailyRepository
 from app.module.asset.schema import MarketIndexData
@@ -26,7 +26,7 @@ from app.module.chart.constant import TIP_TODAY_ID_REDIS_KEY
 from app.module.chart.enum import CompositionType, IntervalType
 from app.module.chart.redis_repository import RedisMarketIndiceRepository, RedisTipRepository
 from app.module.chart.repository import TipRepository
-from app.module.chart.schema import (
+from app.module.chart.schema import ( 
     ChartTipResponse,
     CompositionResponse,
     CompositionResponseValue,
@@ -35,29 +35,66 @@ from app.module.chart.schema import (
     PerformanceAnalysisResponse,
     PerformanceAnalysisResponseValue,
     SummaryResponse,
-    # EstimateDividendResponse,
-    # EstimateDividendValue
+    EstimateDividendResponse,
+    EstimateDividendValue
 )
+from app.module.asset.repository.dividend_repository import DividendRepository
 from app.module.chart.service.composition_service import CompositionService
 from app.module.chart.service.performance_analysis_service import PerformanceAnalysis
 from database.dependency import get_mysql_session_router, get_redis_pool
-# from app.module.chart.service.estimate_dividend_service import EstimateDividendService
-
+from app.module.asset.services.dividend_service import DividendService
+from icecream import ic
 
 chart_router = APIRouter(prefix="/v1")
-
-# @chart_router.get("/dummy/estimate-dividend", summary="예상 배당액", response_model=EstimateDividendResponse)
-# async def get_dummy_estimate_dividend(
-#     session: AsyncSession = Depends(get_mysql_session_router),
-#     redis_client: Redis = Depends(get_redis_pool),
-# )->EstimateDividendResponse:
-#     assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
-#     if len(assets) == 0:
-#         return []
+@chart_router.get("/estimate-dividend", summary="예상 배당액", response_model=EstimateDividendResponse)
+async def get_dummy_estimate_dividend(
+    token: AccessToken = Depends(verify_jwt_token),
+    session: AsyncSession = Depends(get_mysql_session_router),
+    redis_client: Redis = Depends(get_redis_pool),
+)->EstimateDividendResponse:
+    user_id = token.get("user")
+    if user_id is None:
+        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
     
-#     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
-#     total_dividend_list = await EstimateDividendService.get_total_estimate_dividend(session, assets, exchange_rate_map)
-#     return
+    assets: list[Asset] = await AssetRepository.get_eager(session, user_id, AssetType.STOCK)
+    if len(assets) == 0:
+        return EstimateDividendResponse(estimate_dividend_list=[])
+
+    stock_codes = [asset.asset_stock.stock.code for asset in assets]
+    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
+    dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
+    dividend_map = {f"{dividend.stock_code}_{dividend.date}" : dividend.dividend for dividend in dividends}
+    total_dividends = await DividendService.get_total_estimate_dividend(assets, exchange_rate_map,dividend_map)
+    
+    estimate_dividend_list = [
+        EstimateDividendValue(date=dividend_date, amount=amount)
+        for dividend_date, amount in sorted(total_dividends.items())
+    ]
+    
+    return EstimateDividendResponse(estimate_dividend_list=estimate_dividend_list)
+
+
+@chart_router.get("/dummy/estimate-dividend", summary="더미 예상 배당액", response_model=EstimateDividendResponse)
+async def get_dummy_estimate_dividend(
+    session: AsyncSession = Depends(get_mysql_session_router),
+    redis_client: Redis = Depends(get_redis_pool),
+)->EstimateDividendResponse:
+    assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
+    if len(assets) == 0:
+        return []
+
+    stock_codes = [asset.asset_stock.stock.code for asset in assets]
+    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
+    dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
+    dividend_map = {f"{dividend.stock_code}_{dividend.date}" : dividend.dividend for dividend in dividends}
+    total_dividends = await DividendService.get_total_estimate_dividend(assets, exchange_rate_map,dividend_map)
+    
+    estimate_dividend_list = [
+        EstimateDividendValue(date=dividend_date, amount=amount)
+        for dividend_date, amount in sorted(total_dividends.items())
+    ]
+    
+    return EstimateDividendResponse(estimate_dividend_list=estimate_dividend_list)
 
 
 @chart_router.get("/dummy/performance-analysis", summary="투자 성과 분석", response_model=PerformanceAnalysisResponse)

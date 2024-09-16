@@ -77,7 +77,7 @@ class TestAssetStock:
             dummy_assets,
             current_stock_daily_map,
             current_stock_price_map,
-            {dividend.stock_code: dividend for dividend in dividends},
+            {dividend.stock_code: dividend.dividend for dividend in dividends},
             base_currency=True,
             exchange_rate_map=exchange_rate_map,
         )
