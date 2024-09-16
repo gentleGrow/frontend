@@ -5,7 +5,7 @@ import * as echarts from "echarts";
 interface DonutChartData {
   current_amount: number;
   name: string;
-  percent_rate_rate: number; // 이 필드는 더 이상 사용되지 않으므로 제거해도 됩니다.
+  percent_rate_rate: number;
 }
 
 export default function DonutChart({
@@ -108,7 +108,7 @@ export default function DonutChart({
               name: chartName,
               type: "pie",
               radius: ["64px", "128px"],
-              center: isMobile ? ["50%", "27%"] : ["128px", "50%"],
+              center: isMobile ? ["50%", "128px"] : ["128px", "50%"],
               left: "0",
               right: isMobile ? "0" : "200px",
               avoidLabelOverlap: true,
@@ -124,7 +124,7 @@ export default function DonutChart({
                 show: false,
               },
               data: data.map((item) => ({
-                value: item.current_amount, // ECharts가 사용할 필드로 변환
+                value: item.current_amount,
                 name: item.name,
               })),
             },
@@ -150,5 +150,7 @@ export default function DonutChart({
     }
   }, [data]);
 
-  return <div ref={chartRef} className="h-[256px] mobile:h-[520px]" />;
+  const chartHeight = 276 + data.length * 25;
+
+  return <div ref={chartRef} style={{ height: `${chartHeight}px` }} />;
 }
