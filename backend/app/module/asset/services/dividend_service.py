@@ -2,6 +2,7 @@ from collections import defaultdict
 from datetime import date
 
 from pandas import to_datetime
+from icecream import ic
 
 from app.module.asset.enum import CurrencyType
 from app.module.asset.model import Asset
@@ -10,7 +11,48 @@ from app.module.asset.services.exchange_rate_service import ExchangeRateService
 
 class DividendService:
     @staticmethod
-    async def get_total_estimate_dividend(
+    async def get_composition(
+        assets: list[Asset],
+        exchange_rate_map: dict[str, float],
+        dividend_map: dict[str, float],
+    ) -> list[tuple[str, float, float]]:
+        if len(assets) == 0:
+            return []
+        
+        total_dividend = defaultdict(float)
+        total_dividend_sum = 0.0
+        
+        for asset in assets:
+            source_country = asset.asset_stock.stock.country.upper().strip()
+            source_currency = CurrencyType[source_country]
+
+            won_exchange_rate = ExchangeRateService.get_exchange_rate(
+                source_currency, CurrencyType.KOREA, exchange_rate_map
+            )
+
+            stock_code = asset.asset_stock.stock.code
+            quantity = asset.asset_stock.quantity
+            
+            dividend = dividend_map.get(stock_code)
+            
+            if dividend is None:
+                continue
+
+            current_total_dividend = dividend * won_exchange_rate * quantity
+
+            total_dividend[stock_code] += current_total_dividend
+            total_dividend_sum += current_total_dividend
+        
+        return [
+            (stock_code, dividend, (dividend / total_dividend_sum) * 100)
+            for stock_code, dividend in total_dividend.items()
+        ]
+
+    
+    
+    
+    @staticmethod
+    def get_total_estimate_dividend(
         assets: list[Asset],
         exchange_rate_map: dict[str, float],
         dividend_map: dict[str, float],
