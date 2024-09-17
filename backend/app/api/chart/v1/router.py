@@ -1,10 +1,10 @@
 import json
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-from icecream import ic
+
 from app.common.auth.security import verify_jwt_token
 from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
 from app.module.asset.enum import AssetType, MarketIndex
@@ -49,6 +49,109 @@ from app.module.chart.service.performance_analysis_service import PerformanceAna
 from database.dependency import get_mysql_session_router, get_redis_pool
 
 chart_router = APIRouter(prefix="/v1")
+
+
+@chart_router.get("/dummy/performance-analysis", summary="더미 투자 성과 분석", response_model=PerformanceAnalysisResponse)
+async def get_dummy_performance_analysis(
+    interval: IntervalType = Query(IntervalType.ONEMONTH, description="기간 별, 투자 성관 분석 데이터가 제공 됩니다."),
+    session: AsyncSession = Depends(get_mysql_session_router),
+    redis_client: Redis = Depends(get_redis_pool),
+) -> PerformanceAnalysisResponse:
+    current_datetime = datetime.now()
+
+    start_datetime = current_datetime - interval.get_timedelta()
+
+    if interval in [IntervalType.ONEMONTH, IntervalType.THREEMONTH, IntervalType.SIXMONTH, IntervalType.ONEYEAR]:
+        market_analysis_result: dict[date, float] = await PerformanceAnalysis.get_market_analysis(
+            session, redis_client, start_datetime, current_datetime
+        )
+        user_analysis_result: dict[date, float] = await PerformanceAnalysis.get_user_analysis(
+            session, redis_client, start_datetime, current_datetime, DUMMY_USER_ID, market_analysis_result
+        )
+        sorted_dates = sorted(market_analysis_result.keys())
+        xAxises = [date.strftime("%Y.%m.%d") for date in sorted_dates]
+        user_analysis_profit = [user_analysis_result[date] for date in sorted_dates]
+        market_analysis_profit = [market_analysis_result[date] for date in sorted_dates]
+
+        return PerformanceAnalysisResponse(
+            xAxises=xAxises,
+            values1={"values": user_analysis_profit, "name": "내 수익률"},
+            values2={"values": market_analysis_profit, "name": "코스피"},
+            unit="%",
+        )
+    else:
+        market_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_market_analysis_short( 
+            session, redis_client, start_datetime, current_datetime, interval
+        )
+        user_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_user_analysis_short( 
+            session, redis_client, start_datetime, current_datetime, DUMMY_USER_ID, interval, market_analysis_result_short 
+        )
+        sorted_dates = sorted(market_analysis_result_short.keys())
+        xAxises_short = [datetime.strftime("%Y.%m.%d:%H:%M") for datetime in sorted_dates]
+        user_analysis_profit_short = [user_analysis_result_short[datetime] for datetime in sorted_dates]
+        market_analysis_profit_short = [market_analysis_result_short[datetime] for datetime in sorted_dates]
+
+        return PerformanceAnalysisResponse(
+            xAxises=xAxises_short,
+            values1={"values": user_analysis_profit_short, "name": "내 수익률"},
+            values2={"values": market_analysis_profit_short, "name": "코스피"},
+            unit="%",
+        )
+
+    
+
+
+@chart_router.get("/performance-analysis", summary="투자 성과 분석", response_model=PerformanceAnalysisResponse)
+async def get_performance_analysis(
+    token: AccessToken = Depends(verify_jwt_token),
+    interval: IntervalType = Query(IntervalType.ONEMONTH, description="기간 별, 투자 성관 분석 데이터가 제공 됩니다."),
+    session: AsyncSession = Depends(get_mysql_session_router),
+    redis_client: Redis = Depends(get_redis_pool),
+) -> PerformanceAnalysisResponse:
+    user_id = token.get("user")
+    if user_id is None:
+        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
+
+    current_datetime = datetime.now()
+
+    start_datetime = current_datetime - interval.get_timedelta()
+
+    if interval in [IntervalType.ONEMONTH, IntervalType.THREEMONTH, IntervalType.SIXMONTH, IntervalType.ONEYEAR]:
+        market_analysis_result: dict[date, float] = await PerformanceAnalysis.get_market_analysis(
+            session, redis_client, start_datetime, current_datetime
+        )
+        user_analysis_result: dict[date, float] = await PerformanceAnalysis.get_user_analysis(
+            session, redis_client, start_datetime, current_datetime, DUMMY_USER_ID, market_analysis_result
+        )
+        sorted_dates = sorted(market_analysis_result.keys())
+        xAxises = [date.strftime("%Y.%m.%d") for date in sorted_dates]
+        user_analysis_profit = [user_analysis_result[date] for date in sorted_dates]
+        market_analysis_profit = [market_analysis_result[date] for date in sorted_dates]
+
+        return PerformanceAnalysisResponse(
+            xAxises=xAxises,
+            values1={"values": user_analysis_profit, "name": "내 수익률"},
+            values2={"values": market_analysis_profit, "name": "코스피"},
+            unit="%",
+        )
+    else:
+        market_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_market_analysis_short( 
+            session, redis_client, start_datetime, current_datetime, interval
+        )
+        user_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_user_analysis_short( 
+            session, redis_client, start_datetime, current_datetime, DUMMY_USER_ID, interval, market_analysis_result_short 
+        )
+        sorted_dates = sorted(market_analysis_result_short.keys())
+        xAxises_short = [datetime.strftime("%Y.%m.%d:%H:%M") for datetime in sorted_dates]
+        user_analysis_profit_short = [user_analysis_result_short[datetime] for datetime in sorted_dates]
+        market_analysis_profit_short = [market_analysis_result_short[datetime] for datetime in sorted_dates]
+
+        return PerformanceAnalysisResponse(
+            xAxises=xAxises_short,
+            values1={"values": user_analysis_profit_short, "name": "내 수익률"},
+            values2={"values": market_analysis_profit_short, "name": "코스피"},
+            unit="%",
+        )
 
 
 @chart_router.get(
@@ -233,79 +336,6 @@ async def get_dummy_my_stock(
     ]
 
     return MyStockResponse(my_stock_list=my_stock_list)
-
-@chart_router.get("/performance-analysis", summary="투자 성과 분석", response_model=PerformanceAnalysisResponse)
-async def get_performance_analysis(
-    token: AccessToken = Depends(verify_jwt_token),
-    interval: IntervalType = Query(IntervalType.ONEMONTH, description="기간 별, 투자 성관 분석 데이터가 제공 됩니다."),
-    session: AsyncSession = Depends(get_mysql_session_router),
-    redis_client: Redis = Depends(get_redis_pool),
-) -> PerformanceAnalysisResponse:
-    user_id = token.get("user")
-    if user_id is None:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
-
-    current_datetime = datetime.now()
-
-    start_datetime = current_datetime - interval.get_timedelta()
-
-    if interval in [IntervalType.ONEMONTH, IntervalType.THREEMONTH, IntervalType.SIXMONTH, IntervalType.ONEYEAR]:
-        user_analysis_date, user_analysis_profit = await PerformanceAnalysis.get_user_analysis(
-            session, redis_client, start_datetime, current_datetime, user_id
-        )
-        market_analysis_date, market_analysis_profit = await PerformanceAnalysis.get_market_analysis(
-            session, redis_client, start_datetime, current_datetime
-        )
-    else:
-        user_analysis_date, user_analysis_profit = await PerformanceAnalysis.get_user_analysis_short(
-            session, redis_client, start_datetime, current_datetime, user_id, interval
-        )
-        market_analysis_date, market_analysis_profit = await PerformanceAnalysis.get_market_analysis_short(
-            session, redis_client, start_datetime, current_datetime, interval
-        )
-
-    return PerformanceAnalysisResponse(
-        xAxises1 = user_analysis_date,
-        values1 = {"values":user_analysis_profit, "name":"내 수익률"},
-        xAxises2 = market_analysis_date,
-        values2 = {"values":market_analysis_profit, "name":"코스피"},
-        unit = "%"
-    )
-
-
-
-@chart_router.get("/dummy/performance-analysis", summary="더미 투자 성과 분석", response_model=PerformanceAnalysisResponse)
-async def get_dummy_performance_analysis(
-    interval: IntervalType = Query(IntervalType.ONEMONTH, description="기간 별, 투자 성관 분석 데이터가 제공 됩니다."),
-    session: AsyncSession = Depends(get_mysql_session_router),
-    redis_client: Redis = Depends(get_redis_pool),
-) -> PerformanceAnalysisResponse:
-    current_datetime = datetime.now()
-
-    start_datetime = current_datetime - interval.get_timedelta()
-
-    if interval in [IntervalType.ONEMONTH, IntervalType.THREEMONTH, IntervalType.SIXMONTH, IntervalType.ONEYEAR]:
-        user_analysis_date, user_analysis_profit = await PerformanceAnalysis.get_user_analysis(
-            session, redis_client, start_datetime, current_datetime, DUMMY_USER_ID
-        )
-        market_analysis_date, market_analysis_profit = await PerformanceAnalysis.get_market_analysis(
-            session, redis_client, start_datetime, current_datetime
-        )
-    else:
-        user_analysis_date, user_analysis_profit = await PerformanceAnalysis.get_user_analysis_short(
-            session, redis_client, start_datetime, current_datetime, DUMMY_USER_ID, interval
-        )
-        market_analysis_date, market_analysis_profit = await PerformanceAnalysis.get_market_analysis_short(
-            session, redis_client, start_datetime, current_datetime, interval
-        )
-
-    return PerformanceAnalysisResponse(
-        xAxises1 = user_analysis_date,
-        values1 = {"values":user_analysis_profit, "name":"내 수익률"},
-        xAxises2 = market_analysis_date,
-        values2 = {"values":market_analysis_profit, "name":"코스피"},
-        unit = "%"
-    )
 
 
 @chart_router.get("/indice", summary="현재 시장 지수", response_model=MarketIndiceResponse)

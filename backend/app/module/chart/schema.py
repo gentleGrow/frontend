@@ -40,11 +40,10 @@ class CompositionResponse(BaseModel):
 
 
 class PerformanceAnalysisResponse(BaseModel):
-    xAxises1: list[date|datetime]
+    xAxises: list[str]
     values1: dict
-    xAxises2: list[date|datetime]
-    values2:dict
-    unit:str
+    values2: dict
+    unit: str
 
 
 class EstimateDividendEveryValue(BaseModel):
