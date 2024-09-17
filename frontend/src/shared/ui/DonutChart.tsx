@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import * as echarts from "echarts";
 import { DonutChartData } from "../types/charts";
 
@@ -11,6 +11,7 @@ export default function DonutChart({
   data: DonutChartData[];
 }) {
   const chartRef = useRef<HTMLDivElement>(null);
+  const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
   useEffect(() => {
     if (chartRef.current) {
@@ -64,7 +65,7 @@ export default function DonutChart({
             itemHeight: 12,
             orient: isMobile ? "horizontal" : "vertical",
             right: isMobile ? "center" : 14,
-            top: isMobile ? "bottom" : "center",
+            top: isMobile ? "bottom" : "top",
             formatter: (name) => {
               const item = data.find((i) => i.name === name);
               const percent = item
@@ -134,6 +135,7 @@ export default function DonutChart({
       const handleResize = () => {
         setOption();
         chartInstance.resize();
+        setWindowWidth(window.innerWidth);
       };
 
       window.addEventListener("resize", handleResize);
@@ -146,6 +148,7 @@ export default function DonutChart({
   }, [data]);
 
   const chartHeight = 276 + data.length * 25;
+  const maxHeight = windowWidth > 840 ? 256 : chartHeight;
 
-  return <div ref={chartRef} style={{ height: `${chartHeight}px` }} />;
+  return <div ref={chartRef} style={{ height: `${maxHeight}px` }} />;
 }
