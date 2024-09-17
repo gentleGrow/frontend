@@ -8,7 +8,7 @@ const PERFORMANCE_DATA = {
   dailyPerformanceData: {
     tooltipLabel: ["09:00", "13:00", "17:00", "21:00", "01:00", "05:00"],
     xAxises: ["09:00", "13:00", "17:00", "21:00", "01:00", "05:00"],
-    values1: { values: [50, 30, 28, 35, 40, 45], name: "내 수익률" },
+    values1: { values: [50, 0, 28, 0, 40, 45], name: "내 수익률" },
     values2: { values: [48, 28, 29, 34, 37, 42], name: "코스피" },
     unit: "%",
   },

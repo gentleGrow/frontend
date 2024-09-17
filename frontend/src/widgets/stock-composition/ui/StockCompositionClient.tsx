@@ -1,13 +1,17 @@
 "use client";
-import { DonutChart, SegmentedButton, SegmentedButtonGroup } from "@/shared";
+import {
+  DonutChart,
+  DonutChartData,
+  SegmentedButton,
+  SegmentedButtonGroup,
+} from "@/shared";
 import { useState } from "react";
-import { Composition } from "../types/types";
 export default function StockCompositionClient({
   compositionData,
   accountData,
 }: {
-  compositionData: Composition[];
-  accountData: Composition[];
+  compositionData: DonutChartData[];
+  accountData: DonutChartData[];
 }) {
   const [currentData, setCurrentData] = useState<any[]>(compositionData);
 

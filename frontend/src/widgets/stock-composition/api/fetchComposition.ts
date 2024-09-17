@@ -1,9 +1,8 @@
-import { SERVICE_SERVER_URL } from "@/shared";
-import { Composition } from "../types/types";
+import { DonutChartData, SERVICE_SERVER_URL } from "@/shared";
 
 const fetchComposition = async (
   type: "composition" | "account" = "composition",
-): Promise<Composition[]> => {
+): Promise<DonutChartData[]> => {
   try {
     const response = await fetch(
       `${SERVICE_SERVER_URL}/api/chart/v1/dummy/composition?type=${type}`,

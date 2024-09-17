@@ -1,12 +1,7 @@
 "use client";
 import React, { useRef, useEffect } from "react";
 import * as echarts from "echarts";
-
-interface DonutChartData {
-  current_amount: number;
-  name: string;
-  percent_rate_rate: number;
-}
+import { DonutChartData } from "../types/charts";
 
 export default function DonutChart({
   chartName,
