@@ -1,6 +1,7 @@
 from datetime import timedelta
 from enum import StrEnum
 
+
 class EstimateDividendType(StrEnum):
     EVERY = "every"
     TYPE = "type"

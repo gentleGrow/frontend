@@ -39,14 +39,12 @@ class CompositionResponse(BaseModel):
     composition: list[CompositionResponseValue]
 
 
-class PerformanceAnalysisResponseValue(BaseModel):
-    name: str = Field(..., description="대상")
-    interval_date: date | datetime = Field(..., description="날짜")
-    profit: float = Field(..., description="수익률")
-
-
 class PerformanceAnalysisResponse(BaseModel):
-    performance_analysis: dict[str, list[PerformanceAnalysisResponseValue]]
+    xAxises1: list[date|datetime]
+    values1: dict
+    xAxises2: list[date|datetime]
+    values2:dict
+    unit:str
 
 
 class EstimateDividendEveryValue(BaseModel):
@@ -56,14 +54,14 @@ class EstimateDividendEveryValue(BaseModel):
 
 class EstimateDividendEveryResponse(BaseModel):
     estimate_dividend_list: list[EstimateDividendEveryValue]
-    
-    
+
+
 class EstimateDividendTypeValue(BaseModel):
     code: str
     amount: float
     composition_rate: float
 
-    
+
 class EstimateDividendTypeResponse(BaseModel):
     estimate_dividend_list: list[EstimateDividendTypeValue]
 

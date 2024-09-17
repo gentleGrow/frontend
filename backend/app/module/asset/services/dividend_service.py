@@ -2,7 +2,6 @@ from collections import defaultdict
 from datetime import date
 
 from pandas import to_datetime
-from icecream import ic
 
 from app.module.asset.enum import CurrencyType
 from app.module.asset.model import Asset
@@ -18,10 +17,10 @@ class DividendService:
     ) -> list[tuple[str, float, float]]:
         if len(assets) == 0:
             return []
-        
-        total_dividend = defaultdict(float)
+
+        total_dividend: defaultdict[str, float] = defaultdict(float)
         total_dividend_sum = 0.0
-        
+
         for asset in assets:
             source_country = asset.asset_stock.stock.country.upper().strip()
             source_currency = CurrencyType[source_country]
@@ -32,9 +31,9 @@ class DividendService:
 
             stock_code = asset.asset_stock.stock.code
             quantity = asset.asset_stock.quantity
-            
+
             dividend = dividend_map.get(stock_code)
-            
+
             if dividend is None:
                 continue
 
@@ -42,15 +41,12 @@ class DividendService:
 
             total_dividend[stock_code] += current_total_dividend
             total_dividend_sum += current_total_dividend
-        
+
         return [
             (stock_code, dividend, (dividend / total_dividend_sum) * 100)
             for stock_code, dividend in total_dividend.items()
         ]
 
-    
-    
-    
     @staticmethod
     def get_total_estimate_dividend(
         assets: list[Asset],
