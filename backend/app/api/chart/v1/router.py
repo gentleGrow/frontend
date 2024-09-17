@@ -26,7 +26,7 @@ from app.module.asset.services.stock_service import StockService
 from app.module.auth.constant import DUMMY_USER_ID
 from app.module.auth.schema import AccessToken
 from app.module.chart.constant import TIP_TODAY_ID_REDIS_KEY
-from app.module.chart.enum import CompositionType, IntervalType, EstimateDividendType
+from app.module.chart.enum import CompositionType, EstimateDividendType, IntervalType
 from app.module.chart.redis_repository import RedisMarketIndiceRepository, RedisTipRepository
 from app.module.chart.repository import TipRepository
 from app.module.chart.schema import (
@@ -35,14 +35,13 @@ from app.module.chart.schema import (
     CompositionResponseValue,
     EstimateDividendEveryResponse,
     EstimateDividendEveryValue,
-    MarketIndiceResponse,
-    EstimateDividendTypeValue,
     EstimateDividendTypeResponse,
+    EstimateDividendTypeValue,
+    MarketIndiceResponse,
     MarketIndiceResponseValue,
     MyStockResponse,
     MyStockResponseValue,
     PerformanceAnalysisResponse,
-    PerformanceAnalysisResponseValue,
     SummaryResponse,
 )
 from app.module.chart.service.composition_service import CompositionService
@@ -51,7 +50,12 @@ from database.dependency import get_mysql_session_router, get_redis_pool
 
 chart_router = APIRouter(prefix="/v1")
 
-@chart_router.get("/dummy/estimate-dividend", summary="더미 예상 배당액", response_model=EstimateDividendEveryResponse| EstimateDividendTypeResponse)
+
+@chart_router.get(
+    "/dummy/estimate-dividend",
+    summary="더미 예상 배당액",
+    response_model=EstimateDividendEveryResponse | EstimateDividendTypeResponse,
+)
 async def get_dummy_estimate_dividend(
     category: EstimateDividendType = Query(EstimateDividendType.EVERY, description="every는 모두, type은 종목 별 입니다."),
     session: AsyncSession = Depends(get_mysql_session_router),
@@ -68,7 +72,7 @@ async def get_dummy_estimate_dividend(
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
     dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
     dividend_map = {f"{dividend.stock_code}_{dividend.date}": dividend.dividend for dividend in dividends}
-    
+
     recent_dividends: list[Dividend] = await DividendRepository.get_dividends_recent(session, stock_codes)
     recent_dividend_map = {dividend.stock_code: dividend.dividend for dividend in recent_dividends}
 
@@ -80,22 +84,20 @@ async def get_dummy_estimate_dividend(
         ]
         return EstimateDividendEveryResponse(estimate_dividend_list=estimate_dividend_list)
     else:
-        total_dividends = await DividendService.get_composition(assets, exchange_rate_map, recent_dividend_map)
+        total_type_dividends: list[tuple[str, float, float]] = await DividendService.get_composition(
+            assets, exchange_rate_map, recent_dividend_map
+        )
         estimate_dividend_list = [
-            EstimateDividendTypeValue(
-                code=stock_code,
-                amount=amount,
-                composition_rate=composition_rate
-            )
-            for stock_code, amount, composition_rate in total_dividends
+            EstimateDividendTypeValue(code=stock_code, amount=amount, composition_rate=composition_rate)
+            for stock_code, amount, composition_rate in total_type_dividends
         ]
-        
+
         return EstimateDividendTypeResponse(estimate_dividend_list=estimate_dividend_list)
-    
 
 
-
-@chart_router.get("/estimate-dividend", summary="예상 배당액", response_model=EstimateDividendEveryResponse| EstimateDividendTypeResponse)
+@chart_router.get(
+    "/estimate-dividend", summary="예상 배당액", response_model=EstimateDividendEveryResponse | EstimateDividendTypeResponse
+)
 async def get_estimate_dividend(
     token: AccessToken = Depends(verify_jwt_token),
     category: EstimateDividendType = Query(EstimateDividendType.EVERY, description="every는 모두, type은 종목 별 입니다."),
@@ -105,7 +107,7 @@ async def get_estimate_dividend(
     user_id = token.get("user")
     if user_id is None:
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
-    
+
     assets: list[Asset] = await AssetRepository.get_eager(session, user_id, AssetType.STOCK)
     if len(assets) == 0:
         if category == EstimateDividendType.EVERY:
@@ -117,7 +119,7 @@ async def get_estimate_dividend(
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
     dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
     dividend_map = {f"{dividend.stock_code}_{dividend.date}": dividend.dividend for dividend in dividends}
-    
+
     recent_dividends: list[Dividend] = await DividendRepository.get_dividends_recent(session, stock_codes)
     recent_dividend_map = {dividend.stock_code: dividend.dividend for dividend in recent_dividends}
 
@@ -129,18 +131,15 @@ async def get_estimate_dividend(
         ]
         return EstimateDividendEveryResponse(estimate_dividend_list=estimate_dividend_list)
     else:
-        total_dividends = await DividendService.get_composition(assets, exchange_rate_map, recent_dividend_map)
+        total_type_dividends: list[tuple[str, float, float]] = await DividendService.get_composition(
+            assets, exchange_rate_map, recent_dividend_map
+        )
         estimate_dividend_list = [
-            EstimateDividendTypeValue(
-                code=stock_code,
-                amount=amount,
-                composition_rate=composition_rate
-            )
-            for stock_code, amount, composition_rate in total_dividends
+            EstimateDividendTypeValue(code=stock_code, amount=amount, composition_rate=composition_rate)
+            for stock_code, amount, composition_rate in total_type_dividends
         ]
-        
+
         return EstimateDividendTypeResponse(estimate_dividend_list=estimate_dividend_list)
-    
 
 
 @chart_router.get("/my-stock", summary="내 보유 주식", response_model=MyStockResponse)
@@ -235,8 +234,47 @@ async def get_dummy_my_stock(
 
     return MyStockResponse(my_stock_list=my_stock_list)
 
+@chart_router.get("/performance-analysis", summary="투자 성과 분석", response_model=PerformanceAnalysisResponse)
+async def get_performance_analysis(
+    token: AccessToken = Depends(verify_jwt_token),
+    interval: IntervalType = Query(IntervalType.ONEMONTH, description="기간 별, 투자 성관 분석 데이터가 제공 됩니다."),
+    session: AsyncSession = Depends(get_mysql_session_router),
+    redis_client: Redis = Depends(get_redis_pool),
+) -> PerformanceAnalysisResponse:
+    user_id = token.get("user")
+    if user_id is None:
+        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
 
-@chart_router.get("/dummy/performance-analysis", summary="투자 성과 분석", response_model=PerformanceAnalysisResponse)
+    current_datetime = datetime.now()
+
+    start_datetime = current_datetime - interval.get_timedelta()
+
+    if interval in [IntervalType.ONEMONTH, IntervalType.THREEMONTH, IntervalType.SIXMONTH, IntervalType.ONEYEAR]:
+        user_analysis_date, user_analysis_profit = await PerformanceAnalysis.get_user_analysis(
+            session, redis_client, start_datetime, current_datetime, user_id
+        )
+        market_analysis_date, market_analysis_profit = await PerformanceAnalysis.get_market_analysis(
+            session, redis_client, start_datetime, current_datetime
+        )
+    else:
+        user_analysis_date, user_analysis_profit = await PerformanceAnalysis.get_user_analysis_short(
+            session, redis_client, start_datetime, current_datetime, user_id, interval
+        )
+        market_analysis_date, market_analysis_profit = await PerformanceAnalysis.get_market_analysis_short(
+            session, redis_client, start_datetime, current_datetime, interval
+        )
+
+    return PerformanceAnalysisResponse(
+        xAxises1 = user_analysis_date,
+        values1 = {"values":user_analysis_profit, "name":"내 수익률"},
+        xAxises2 = market_analysis_date,
+        values2 = {"values":market_analysis_profit, "name":"코스피"},
+        unit = "%"
+    )
+
+
+
+@chart_router.get("/dummy/performance-analysis", summary="더미 투자 성과 분석", response_model=PerformanceAnalysisResponse)
 async def get_dummy_performance_analysis(
     interval: IntervalType = Query(IntervalType.ONEMONTH, description="기간 별, 투자 성관 분석 데이터가 제공 됩니다."),
     session: AsyncSession = Depends(get_mysql_session_router),
@@ -247,32 +285,26 @@ async def get_dummy_performance_analysis(
     start_datetime = current_datetime - interval.get_timedelta()
 
     if interval in [IntervalType.ONEMONTH, IntervalType.THREEMONTH, IntervalType.SIXMONTH, IntervalType.ONEYEAR]:
-        user_analysis_data = await PerformanceAnalysis.get_user_analysis(
+        user_analysis_date, user_analysis_profit = await PerformanceAnalysis.get_user_analysis(
             session, redis_client, start_datetime, current_datetime, DUMMY_USER_ID
         )
-        market_analysis_data = await PerformanceAnalysis.get_market_analysis(
+        market_analysis_date, market_analysis_profit = await PerformanceAnalysis.get_market_analysis(
             session, redis_client, start_datetime, current_datetime
         )
     else:
-        user_analysis_data = await PerformanceAnalysis.get_user_analysis_short(
+        user_analysis_date, user_analysis_profit = await PerformanceAnalysis.get_user_analysis_short(
             session, redis_client, start_datetime, current_datetime, DUMMY_USER_ID, interval
         )
-        market_analysis_data = await PerformanceAnalysis.get_market_analysis_short(
+        market_analysis_date, market_analysis_profit = await PerformanceAnalysis.get_market_analysis_short(
             session, redis_client, start_datetime, current_datetime, interval
         )
 
-    user_analysis_response = [
-        PerformanceAnalysisResponseValue(name=item["name"], interval_date=item["date"], profit=item["profit"])
-        for item in user_analysis_data
-    ]
-
-    market_analysis_response = [
-        PerformanceAnalysisResponseValue(name=item["name"], interval_date=item["date"], profit=item["profit"])
-        for item in market_analysis_data
-    ]
-
     return PerformanceAnalysisResponse(
-        performance_analysis={"user": user_analysis_response, "market": market_analysis_response}
+        xAxises1 = user_analysis_date,
+        values1 = {"values":user_analysis_profit, "name":"내 수익률"},
+        xAxises2 = market_analysis_date,
+        values2 = {"values":market_analysis_profit, "name":"코스피"},
+        unit = "%"
     )
 
 
