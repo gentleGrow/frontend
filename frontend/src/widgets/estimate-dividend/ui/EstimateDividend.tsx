@@ -171,7 +171,9 @@ export default function EstimateDividend() {
             }}
           />
         ) : (
-          "<DonutChart/>"
+          <div className="py-[41px]">
+            <DonutChart chartName="예상 배당액" data={donutChartData} />
+          </div>
         )}
       </div>
     </div>

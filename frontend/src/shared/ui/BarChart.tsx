@@ -2,7 +2,6 @@
 import { useEffect } from "react";
 import * as echarts from "echarts";
 import { BarChartData } from "../types/charts";
-import { lineHeight } from "./themes/variables/typography";
 
 export default function BarChart({ chartData }: { chartData: BarChartData }) {
   useEffect(() => {

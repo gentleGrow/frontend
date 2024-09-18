@@ -12,9 +12,11 @@ export default function DonutChart({
 }) {
   const chartRef = useRef<HTMLDivElement>(null);
   const [windowWidth, setWindowWidth] = useState<number>(0);
+
   useEffect(() => {
     setWindowWidth(window.innerWidth);
   }, []);
+
   useEffect(() => {
     if (chartRef.current) {
       const chartInstance = echarts.init(chartRef.current);
@@ -26,6 +28,19 @@ export default function DonutChart({
 
       const setOption = () => {
         const isMobile = window.matchMedia("(max-width: 840px)").matches;
+        const gap = 56;
+        const legendWidth = 174;
+
+        const containerWidth =
+          chartRef.current?.offsetWidth || window.innerWidth;
+
+        const seriesRadius = 128;
+
+        const seriesWidth = seriesRadius * 2;
+
+        const totalContentWidth = seriesWidth + gap + legendWidth;
+
+        const leftMargin = (containerWidth - totalContentWidth) / 2;
 
         const option = {
           color: [
@@ -66,8 +81,8 @@ export default function DonutChart({
             itemWidth: 12,
             itemHeight: 12,
             orient: isMobile ? "horizontal" : "vertical",
-            right: isMobile ? "center" : 14,
-            top: isMobile ? "bottom" : "top",
+            left: isMobile ? "center" : leftMargin + seriesWidth + gap,
+            top: isMobile ? "bottom" : "middle",
             formatter: (name) => {
               const item = data.find((i) => i.name === name);
               const percent = item
@@ -82,7 +97,9 @@ export default function DonutChart({
                   ? name.substring(0, maxNameLength) + "..."
                   : name;
 
-              return `{name|${formattedName}}{space|} {percent|${percent.toFixed(2)}%}`;
+              return `{name|${formattedName}}{space|} {percent|${percent.toFixed(
+                2,
+              )}%}`;
             },
 
             textStyle: {
@@ -106,9 +123,11 @@ export default function DonutChart({
               name: chartName,
               type: "pie",
               radius: ["64px", "128px"],
-              center: isMobile ? ["50%", "128px"] : ["128px", "50%"],
+              center: isMobile
+                ? ["50%", "128px"]
+                : [leftMargin + seriesRadius, "50%"],
               left: "0",
-              right: isMobile ? "0" : "200px",
+              right: isMobile ? "0" : "0",
               avoidLabelOverlap: true,
               itemStyle: {
                 borderColor: "#fff",
