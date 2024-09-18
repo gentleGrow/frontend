@@ -1,10 +1,11 @@
 import json
 from datetime import date, datetime, timedelta
+from collections import defaultdict
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from icecream import ic
 from app.common.auth.security import verify_jwt_token
 from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
 from app.module.asset.enum import AssetType, MarketIndex
@@ -49,6 +50,123 @@ from app.module.chart.service.performance_analysis_service import PerformanceAna
 from database.dependency import get_mysql_session_router, get_redis_pool
 
 chart_router = APIRouter(prefix="/v1")
+
+
+
+
+@chart_router.get(
+    "/dummy/estimate-dividend",
+    summary="더미 예상 배당액",
+    response_model=EstimateDividendEveryResponse | EstimateDividendTypeResponse,
+)
+async def get_dummy_estimate_dividend(
+    category: EstimateDividendType = Query(EstimateDividendType.EVERY, description="every는 모두, type은 종목 별 입니다."),
+    session: AsyncSession = Depends(get_mysql_session_router),
+    redis_client: Redis = Depends(get_redis_pool),
+) -> EstimateDividendEveryResponse | EstimateDividendTypeResponse:
+    assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
+    if len(assets) == 0:
+        if category == EstimateDividendType.EVERY:
+            return EstimateDividendEveryResponse(estimate_dividend_list=[])
+        else:
+            return EstimateDividendTypeResponse(estimate_dividend_list=[])
+
+    stock_codes = [asset.asset_stock.stock.code for asset in assets]
+    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
+    dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
+    dividend_map = {f"{dividend.stock_code}_{dividend.date}": dividend.dividend for dividend in dividends}
+
+    recent_dividends: list[Dividend] = await DividendRepository.get_dividends_recent(session, stock_codes)
+    recent_dividend_map = {dividend.stock_code: dividend.dividend for dividend in recent_dividends}
+
+    if category == EstimateDividendType.EVERY:
+        total_dividends = DividendService.get_total_estimate_dividend(assets, exchange_rate_map, dividend_map)
+        dividend_by_year_month: dict[int, dict[int, float]] = defaultdict(lambda: defaultdict(float))
+
+        for date_str, dividend_amount in total_dividends.items():
+            dividend_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+            year = dividend_date.year
+            month = dividend_date.month
+
+            dividend_by_year_month[year][month] += dividend_amount
+
+        response_data = {}
+
+        for year, months in dividend_by_year_month.items():
+            xAxises = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"]
+            
+            data = [months.get(month, 0.0) for month in range(1, 13)]
+            total = sum(data)
+
+            response_data[str(year)] = EstimateDividendEveryValue(
+                xAxises=xAxises,
+                data=data,
+                unit="만원",  
+                total=total
+            )
+
+        sorted_response_data = dict(sorted(response_data.items(), key=lambda item: int(item[0])))
+
+        return EstimateDividendEveryResponse(sorted_response_data)
+    else:
+        total_type_dividends: list[tuple[str, float, float]] = await DividendService.get_composition(
+            assets, exchange_rate_map, recent_dividend_map
+        )
+        estimate_dividend_list = [
+            EstimateDividendTypeValue(code=stock_code, amount=amount, composition_rate=composition_rate)
+            for stock_code, amount, composition_rate in total_type_dividends
+        ]
+
+        return EstimateDividendTypeResponse(estimate_dividend_list)
+
+
+@chart_router.get(
+    "/estimate-dividend", summary="예상 배당액", response_model=EstimateDividendEveryResponse | EstimateDividendTypeResponse
+)
+async def get_estimate_dividend(
+    token: AccessToken = Depends(verify_jwt_token),
+    category: EstimateDividendType = Query(EstimateDividendType.EVERY, description="every는 모두, type은 종목 별 입니다."),
+    session: AsyncSession = Depends(get_mysql_session_router),
+    redis_client: Redis = Depends(get_redis_pool),
+) -> EstimateDividendEveryResponse | EstimateDividendTypeResponse:
+    user_id = token.get("user")
+    if user_id is None:
+        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
+
+    assets: list[Asset] = await AssetRepository.get_eager(session, user_id, AssetType.STOCK)
+    if len(assets) == 0:
+        if category == EstimateDividendType.EVERY:
+            return EstimateDividendEveryResponse(estimate_dividend_list=[])
+        else:
+            return EstimateDividendTypeResponse(estimate_dividend_list=[])
+
+    stock_codes = [asset.asset_stock.stock.code for asset in assets]
+    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
+    dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
+    dividend_map = {f"{dividend.stock_code}_{dividend.date}": dividend.dividend for dividend in dividends}
+
+    recent_dividends: list[Dividend] = await DividendRepository.get_dividends_recent(session, stock_codes)
+    recent_dividend_map = {dividend.stock_code: dividend.dividend for dividend in recent_dividends}
+
+    if category == EstimateDividendType.EVERY:
+        total_dividends = DividendService.get_total_estimate_dividend(assets, exchange_rate_map, dividend_map)
+        estimate_dividend_list = [
+            EstimateDividendEveryValue(date=dividend_date, amount=amount)
+            for dividend_date, amount in sorted(total_dividends.items())
+        ]
+        return EstimateDividendEveryResponse(estimate_dividend_list=estimate_dividend_list)
+    else:
+        total_type_dividends: list[tuple[str, float, float]] = await DividendService.get_composition(
+            assets, exchange_rate_map, recent_dividend_map
+        )
+        estimate_dividend_list = [
+            EstimateDividendTypeValue(code=stock_code, amount=amount, composition_rate=composition_rate)
+            for stock_code, amount, composition_rate in total_type_dividends
+        ]
+
+        return EstimateDividendTypeResponse(estimate_dividend_list=estimate_dividend_list)
+
+
 
 
 @chart_router.get("/dummy/performance-analysis", summary="더미 투자 성과 분석", response_model=PerformanceAnalysisResponse)
@@ -162,98 +280,6 @@ async def get_performance_analysis(
             values2={"values": market_analysis_profit_short, "name": "코스피"},
             unit="%",
         )
-
-
-@chart_router.get(
-    "/dummy/estimate-dividend",
-    summary="더미 예상 배당액",
-    response_model=EstimateDividendEveryResponse | EstimateDividendTypeResponse,
-)
-async def get_dummy_estimate_dividend(
-    category: EstimateDividendType = Query(EstimateDividendType.EVERY, description="every는 모두, type은 종목 별 입니다."),
-    session: AsyncSession = Depends(get_mysql_session_router),
-    redis_client: Redis = Depends(get_redis_pool),
-) -> EstimateDividendEveryResponse | EstimateDividendTypeResponse:
-    assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
-    if len(assets) == 0:
-        if category == EstimateDividendType.EVERY:
-            return EstimateDividendEveryResponse(estimate_dividend_list=[])
-        else:
-            return EstimateDividendTypeResponse(estimate_dividend_list=[])
-
-    stock_codes = [asset.asset_stock.stock.code for asset in assets]
-    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
-    dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
-    dividend_map = {f"{dividend.stock_code}_{dividend.date}": dividend.dividend for dividend in dividends}
-
-    recent_dividends: list[Dividend] = await DividendRepository.get_dividends_recent(session, stock_codes)
-    recent_dividend_map = {dividend.stock_code: dividend.dividend for dividend in recent_dividends}
-
-    if category == EstimateDividendType.EVERY:
-        total_dividends = DividendService.get_total_estimate_dividend(assets, exchange_rate_map, dividend_map)
-        estimate_dividend_list = [
-            EstimateDividendEveryValue(date=dividend_date, amount=amount)
-            for dividend_date, amount in sorted(total_dividends.items())
-        ]
-        return EstimateDividendEveryResponse(estimate_dividend_list=estimate_dividend_list)
-    else:
-        total_type_dividends: list[tuple[str, float, float]] = await DividendService.get_composition(
-            assets, exchange_rate_map, recent_dividend_map
-        )
-        estimate_dividend_list = [
-            EstimateDividendTypeValue(code=stock_code, amount=amount, composition_rate=composition_rate)
-            for stock_code, amount, composition_rate in total_type_dividends
-        ]
-
-        return EstimateDividendTypeResponse(estimate_dividend_list=estimate_dividend_list)
-
-
-@chart_router.get(
-    "/estimate-dividend", summary="예상 배당액", response_model=EstimateDividendEveryResponse | EstimateDividendTypeResponse
-)
-async def get_estimate_dividend(
-    token: AccessToken = Depends(verify_jwt_token),
-    category: EstimateDividendType = Query(EstimateDividendType.EVERY, description="every는 모두, type은 종목 별 입니다."),
-    session: AsyncSession = Depends(get_mysql_session_router),
-    redis_client: Redis = Depends(get_redis_pool),
-) -> EstimateDividendEveryResponse | EstimateDividendTypeResponse:
-    user_id = token.get("user")
-    if user_id is None:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
-
-    assets: list[Asset] = await AssetRepository.get_eager(session, user_id, AssetType.STOCK)
-    if len(assets) == 0:
-        if category == EstimateDividendType.EVERY:
-            return EstimateDividendEveryResponse(estimate_dividend_list=[])
-        else:
-            return EstimateDividendTypeResponse(estimate_dividend_list=[])
-
-    stock_codes = [asset.asset_stock.stock.code for asset in assets]
-    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
-    dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
-    dividend_map = {f"{dividend.stock_code}_{dividend.date}": dividend.dividend for dividend in dividends}
-
-    recent_dividends: list[Dividend] = await DividendRepository.get_dividends_recent(session, stock_codes)
-    recent_dividend_map = {dividend.stock_code: dividend.dividend for dividend in recent_dividends}
-
-    if category == EstimateDividendType.EVERY:
-        total_dividends = DividendService.get_total_estimate_dividend(assets, exchange_rate_map, dividend_map)
-        estimate_dividend_list = [
-            EstimateDividendEveryValue(date=dividend_date, amount=amount)
-            for dividend_date, amount in sorted(total_dividends.items())
-        ]
-        return EstimateDividendEveryResponse(estimate_dividend_list=estimate_dividend_list)
-    else:
-        total_type_dividends: list[tuple[str, float, float]] = await DividendService.get_composition(
-            assets, exchange_rate_map, recent_dividend_map
-        )
-        estimate_dividend_list = [
-            EstimateDividendTypeValue(code=stock_code, amount=amount, composition_rate=composition_rate)
-            for stock_code, amount, composition_rate in total_type_dividends
-        ]
-
-        return EstimateDividendTypeResponse(estimate_dividend_list=estimate_dividend_list)
-
 
 @chart_router.get("/my-stock", summary="내 보유 주식", response_model=MyStockResponse)
 async def get_my_stock(

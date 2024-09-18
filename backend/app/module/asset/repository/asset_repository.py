@@ -15,7 +15,7 @@ class AssetRepository:
     async def save(session: AsyncSession, asset: Asset) -> None:
         session.add(asset)
         await session.commit()
-        
+
     @staticmethod
     async def delete_asset(session: AsyncSession, asset_id: int) -> None:
         try:
