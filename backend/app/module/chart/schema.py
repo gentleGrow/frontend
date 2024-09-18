@@ -1,6 +1,4 @@
-from datetime import date
-
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, RootModel
 
 from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
 from app.module.asset.enum import MarketIndex
@@ -47,12 +45,14 @@ class PerformanceAnalysisResponse(BaseModel):
 
 
 class EstimateDividendEveryValue(BaseModel):
-    date: date
-    amount: float
+    xAxises: list[str] = Field(..., description="월별 표시 (1월, 2월, ...)")
+    data: list[float] = Field(..., description="월별 배당금 데이터")
+    unit: str = Field(..., description="단위")
+    total: float = Field(..., description="해당 연도의 배당금 총합")
 
+class EstimateDividendEveryResponse(RootModel[dict[str, EstimateDividendEveryValue]]):
+    pass
 
-class EstimateDividendEveryResponse(BaseModel):
-    estimate_dividend_list: list[EstimateDividendEveryValue]
 
 
 class EstimateDividendTypeValue(BaseModel):
@@ -61,8 +61,8 @@ class EstimateDividendTypeValue(BaseModel):
     composition_rate: float
 
 
-class EstimateDividendTypeResponse(BaseModel):
-    estimate_dividend_list: list[EstimateDividendTypeValue]
+class EstimateDividendTypeResponse(RootModel[list[EstimateDividendTypeValue]]):
+    pass
 
 
 class MyStockResponseValue(BaseModel):

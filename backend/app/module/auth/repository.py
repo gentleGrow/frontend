@@ -26,8 +26,7 @@ class UserRepository:
         return new_user
 
     @staticmethod
-    async def get_by_name(session: AsyncSession, user_name:str) -> User | None:
+    async def get_by_name(session: AsyncSession, user_name: str) -> User | None:
         select_instance = select(User).where(User.nickname == user_name)
         result = await session.execute(select_instance)
         return result.scalars().first()
-    
