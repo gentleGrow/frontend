@@ -1,10 +1,10 @@
 DOCKERFILES_DIR=docker
 
-CONTAINERS = realtime_stock_container stock_container realtime_index_world_container realtime_index_korea_container index_container dividend_container tip_container exchange_rate_container
-IMAGES = realtime_stock stock realtime_index_world realtime_index_korea index dividend tip exchange_rate
+CONTAINERS = realtime_stock_container stock_container realtime_index_world_container realtime_index_korea_container index_container dividend_container tip_container exchange_rate_container rich_portfolio_container
+IMAGES = realtime_stock stock realtime_index_world realtime_index_korea index dividend tip exchange_rate rich_portfolio
 
 SCRIPTS_DIR=etc/scripts
-SHELL_SCRIPTS = realtime_stock.sh stock.sh realtime_index_world.sh realtime_index_korea.sh index.sh dividend.sh tip.sh exchange_rate.sh
+SHELL_SCRIPTS = realtime_stock.sh stock.sh realtime_index_world.sh realtime_index_korea.sh index.sh dividend.sh tip.sh exchange_rate.sh rich_portfolio.sh
 
 all: stop_containers remove_containers remove_images build_images run_containers
 
@@ -30,6 +30,7 @@ build_images:
 	sudo docker build -t dividend -f $(DOCKERFILES_DIR)/Dockerfile.dividend .
 	sudo docker build -t tip -f $(DOCKERFILES_DIR)/Dockerfile.tip .
 	sudo docker build -t exchange_rate -f $(DOCKERFILES_DIR)/Dockerfile.exchange_rate .
+	sudo docker build -t rich_portfolio -f $(DOCKERFILES_DIR)/Dockerfile.rich_portfolio .
 	@echo "Images built."
 
 run_containers:
@@ -42,6 +43,7 @@ run_containers:
 	bash $(SCRIPTS_DIR)/dividend.sh
 	bash $(SCRIPTS_DIR)/tip.sh
 	bash $(SCRIPTS_DIR)/exchange_rate.sh
+	bash $(SCRIPTS_DIR)/rich_portfolio.sh
 	@echo "Containers are up and running."
 
 stop: stop_containers

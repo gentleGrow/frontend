@@ -80,16 +80,22 @@ async def get_dummy_performance_analysis(
             unit="%",
         )
     else:
-        market_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_market_analysis_short( 
+        market_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_market_analysis_short(
             session, redis_client, start_datetime, current_datetime, interval
         )
-        user_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_user_analysis_short( 
-            session, redis_client, start_datetime, current_datetime, DUMMY_USER_ID, interval, market_analysis_result_short 
+        user_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_user_analysis_short(
+            session,
+            redis_client,
+            start_datetime,
+            current_datetime,
+            DUMMY_USER_ID,
+            interval,
+            market_analysis_result_short,
         )
-        sorted_dates = sorted(market_analysis_result_short.keys())
-        xAxises_short = [datetime.strftime("%Y.%m.%d:%H:%M") for datetime in sorted_dates]
-        user_analysis_profit_short = [user_analysis_result_short[datetime] for datetime in sorted_dates]
-        market_analysis_profit_short = [market_analysis_result_short[datetime] for datetime in sorted_dates]
+        sorted_datetimes = sorted(market_analysis_result_short.keys())
+        xAxises_short = [datetime.strftime("%Y.%m.%d:%H:%M") for datetime in sorted_datetimes]
+        user_analysis_profit_short = [user_analysis_result_short[datetime] for datetime in sorted_datetimes]
+        market_analysis_profit_short = [market_analysis_result_short[datetime] for datetime in sorted_datetimes]
 
         return PerformanceAnalysisResponse(
             xAxises=xAxises_short,
@@ -97,8 +103,6 @@ async def get_dummy_performance_analysis(
             values2={"values": market_analysis_profit_short, "name": "코스피"},
             unit="%",
         )
-
-    
 
 
 @chart_router.get("/performance-analysis", summary="투자 성과 분석", response_model=PerformanceAnalysisResponse)
@@ -135,16 +139,22 @@ async def get_performance_analysis(
             unit="%",
         )
     else:
-        market_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_market_analysis_short( 
+        market_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_market_analysis_short(
             session, redis_client, start_datetime, current_datetime, interval
         )
-        user_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_user_analysis_short( 
-            session, redis_client, start_datetime, current_datetime, DUMMY_USER_ID, interval, market_analysis_result_short 
+        user_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_user_analysis_short(
+            session,
+            redis_client,
+            start_datetime,
+            current_datetime,
+            DUMMY_USER_ID,
+            interval,
+            market_analysis_result_short,
         )
-        sorted_dates = sorted(market_analysis_result_short.keys())
-        xAxises_short = [datetime.strftime("%Y.%m.%d:%H:%M") for datetime in sorted_dates]
-        user_analysis_profit_short = [user_analysis_result_short[datetime] for datetime in sorted_dates]
-        market_analysis_profit_short = [market_analysis_result_short[datetime] for datetime in sorted_dates]
+        sorted_datetimes = sorted(market_analysis_result_short.keys())
+        xAxises_short = [datetime.strftime("%Y.%m.%d:%H:%M") for datetime in sorted_datetimes]
+        user_analysis_profit_short = [user_analysis_result_short[datetime] for datetime in sorted_datetimes]
+        market_analysis_profit_short = [market_analysis_result_short[datetime] for datetime in sorted_datetimes]
 
         return PerformanceAnalysisResponse(
             xAxises=xAxises_short,
