@@ -15,3 +15,9 @@ export interface DonutChartData {
   percent_rate: number;
   current_amount: number;
 }
+
+export interface BarChartData {
+  xAxises: string[];
+  data: number[];
+  unit: string;
+}

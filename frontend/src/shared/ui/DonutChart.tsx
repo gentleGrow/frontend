@@ -11,8 +11,10 @@ export default function DonutChart({
   data: DonutChartData[];
 }) {
   const chartRef = useRef<HTMLDivElement>(null);
-  const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
-
+  const [windowWidth, setWindowWidth] = useState<number>(0);
+  useEffect(() => {
+    setWindowWidth(window.innerWidth);
+  }, []);
   useEffect(() => {
     if (chartRef.current) {
       const chartInstance = echarts.init(chartRef.current);
@@ -145,7 +147,7 @@ export default function DonutChart({
         chartInstance.dispose();
       };
     }
-  }, [data]);
+  }, [data, windowWidth]);
 
   const chartHeight = 276 + data.length * 25;
   const maxHeight = windowWidth > 840 ? 256 : chartHeight;

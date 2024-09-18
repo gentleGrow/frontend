@@ -12,4 +12,10 @@ export { default as SegmentedButtonGroup } from "./ui/SegmentedButtonGroup";
 export { default as DonutChart } from "./ui/DonutChart";
 export { default as IncDecRate } from "./ui/IncDecRate";
 export { default as LineChart } from "./ui/LineChart";
-export type { LineChartData, DonutChartData } from "./types/charts";
+export type {
+  LineChartData,
+  DonutChartData,
+  BarChartData,
+} from "./types/charts";
+export { default as BarChart } from "./ui/BarChart";
+export { RightArrowButton, LeftArrowButton } from "./ui/arrow-buttons";

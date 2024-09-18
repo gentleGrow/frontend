@@ -1,5 +1,6 @@
 import {
   DailyInvestmentTip,
+  EstimateDividend,
   InvestmentPerformanceChart,
   MarketIndex,
   MyStocks,
@@ -16,6 +17,9 @@ export default function Home() {
       <MyStocks />
       <StockComposition />
       <InvestmentPerformanceChart />
+      <div className="pt-12">
+        <EstimateDividend />
+      </div>
     </>
   );
 }

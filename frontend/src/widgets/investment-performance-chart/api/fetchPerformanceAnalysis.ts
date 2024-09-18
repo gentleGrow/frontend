@@ -8,9 +8,7 @@ const fetchPerformanceAnalysis = async (): Promise<LineChartData> => {
     if (!response.ok) {
       throw new Error(`${response.status}: ${await response.json()}`);
     }
-    const performanceAnalysis = await response
-      .json()
-      .then((data) => data.today_tip);
+    const performanceAnalysis = await response.json();
     return performanceAnalysis;
   } catch (error) {
     console.error(error);
