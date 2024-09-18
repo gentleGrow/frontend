@@ -122,7 +122,7 @@ export default function DonutChart({
             {
               name: chartName,
               type: "pie",
-              radius: ["64px", "128px"],
+              radius: ["82px", "128px"],
               center: isMobile
                 ? ["50%", "128px"]
                 : [leftMargin + seriesRadius, "50%"],
