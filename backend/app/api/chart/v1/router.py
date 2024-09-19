@@ -1,16 +1,16 @@
 import json
 from collections import defaultdict
 from datetime import date, datetime, timedelta
-from icecream import ic
-from app.module.asset.enum import CurrencyType
-from app.module.auth.repository import UserRepository
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.data.investing.sources.enum import RicePeople
+from icecream import ic
 from app.common.auth.security import verify_jwt_token
+from app.data.investing import rich_portfolio
+from app.data.investing.sources.enum import RicePeople
 from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
-from app.module.asset.enum import AssetType, MarketIndex
+from app.module.asset.enum import AssetType, CurrencyType, MarketIndex
 from app.module.asset.model import Asset, Dividend, StockDaily
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.dividend_repository import DividendRepository
@@ -27,10 +27,16 @@ from app.module.asset.services.dividend_service import DividendService
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
 from app.module.asset.services.stock_service import StockService
 from app.module.auth.constant import DUMMY_USER_ID
+from app.module.auth.repository import UserRepository
 from app.module.auth.schema import AccessToken
-from app.module.chart.constant import TIP_TODAY_ID_REDIS_KEY, RICHPICKKEY, RICH_PICK_SECOND, RICHPICKNAMEKEY
+from app.module.chart.constant import RICH_PICK_SECOND, RICHPICKKEY, RICHPICKNAMEKEY, TIP_TODAY_ID_REDIS_KEY
 from app.module.chart.enum import CompositionType, EstimateDividendType, IntervalType
-from app.module.chart.redis_repository import RedisMarketIndiceRepository, RedisTipRepository, RedisRickPickRepository
+from app.module.chart.redis_repository import (
+    RedisMarketIndiceRepository, 
+    RedisRichPickRepository, 
+    RedisTipRepository,
+    RedisRichPortfolioRepository
+)
 from app.module.chart.repository import TipRepository
 from app.module.chart.schema import (
     ChartTipResponse,
@@ -45,9 +51,11 @@ from app.module.chart.schema import (
     MyStockResponse,
     MyStockResponseValue,
     PerformanceAnalysisResponse,
-    SummaryResponse,
+    RichPickResponse,
     RichPickValue,
-    RichPickResponse
+    SummaryResponse,
+    RichPortfolioValue,
+    RichPortfolioResponse
 )
 from app.module.chart.service.composition_service import CompositionService
 from app.module.chart.service.performance_analysis_service import PerformanceAnalysis
@@ -55,20 +63,35 @@ from database.dependency import get_mysql_session_router, get_redis_pool
 
 chart_router = APIRouter(prefix="/v1")
 
+@chart_router.get("/rich-portfolio", summary="부자들의 포트폴리오", response_model=RichPortfolioResponse)
+async def get_rich_portfolio(
+    redis_client: Redis = Depends(get_redis_pool)
+) -> RichPortfolioResponse:
+    rich_people = [person.value for person in RicePeople]
+    rich_portfolios: list[str] = await RedisRichPortfolioRepository.gets(redis_client, rich_people)
+
+    response_data = [
+        RichPortfolioValue(
+            name=person,
+            stock=json.loads(portfolio_raw)
+        )
+        for person, portfolio_raw in zip(rich_people, rich_portfolios)
+    ]
+
+    return RichPortfolioResponse(response_data)
 
 
 @chart_router.get("/rich-pick", summary="부자들이 선택한 종목 TOP10", response_model=RichPickResponse)
 async def get_rich_pick(
-    session: AsyncSession = Depends(get_mysql_session_router),
-    redis_client: Redis = Depends(get_redis_pool)
+    session: AsyncSession = Depends(get_mysql_session_router), redis_client: Redis = Depends(get_redis_pool)
 ) -> RichPickResponse:
-    
-    #[수정]!!!!!!!!! N+1 문제 해결
-    top_10_stocks_raw = await RedisRickPickRepository.get(redis_client, RICHPICKKEY)
-    stock_name_map_raw = await RedisRickPickRepository.get(redis_client, RICHPICKNAMEKEY)
-    if top_10_stocks_raw is None or stock_name_map_raw is None:    
+
+    # [수정]!!!!!!!!! N+1 문제 !!!!!!!!!!!!
+    top_10_stocks_raw: str = await RedisRichPickRepository.get(redis_client, RICHPICKKEY)
+    stock_name_map_raw: str = await RedisRichPickRepository.get(redis_client, RICHPICKNAMEKEY)
+    if top_10_stocks_raw is None or stock_name_map_raw is None:
         stock_count = {}
-        stock_name_map = {}
+        stock_name_map: dict[str, str] = {}
         for person in RicePeople:
             user = await UserRepository.get_by_name(session, person)
             eager_assets = await AssetRepository.get_eager(session, user.id, AssetType.STOCK)
@@ -79,12 +102,15 @@ async def get_rich_pick(
                 else:
                     stock_count[stock_code] += 1
                 stock_name_map[stock_code] = asset.asset_stock.stock.name
-        top_10_stocks = [stock[0] for stock in sorted(stock_count.items(), key=lambda x: x[1], reverse=True)[:10]]
-        await RedisRickPickRepository.save(redis_client, RICHPICKKEY, json.dumps(top_10_stocks), RICH_PICK_SECOND)
-        await RedisRickPickRepository.save(redis_client, RICHPICKNAMEKEY, json.dumps(stock_name_map), RICH_PICK_SECOND)
+        top_10_stocks: list[str] = [
+            stock[0] for stock in sorted(stock_count.items(), key=lambda x: x[1], reverse=True)[:10]
+        ]
+        await RedisRichPickRepository.save(redis_client, RICHPICKKEY, json.dumps(top_10_stocks), RICH_PICK_SECOND)
+        await RedisRichPickRepository.save(redis_client, RICHPICKNAMEKEY, json.dumps(stock_name_map), RICH_PICK_SECOND)
     else:
-        top_10_stocks: list[str] = json.loads(top_10_stocks_raw)
-        stock_name_map: dict[str,str] = json.loads(stock_name_map_raw)
+        # mypy if-else 내부에 중복 네이밍 무시
+        top_10_stocks: list[str] = json.loads(top_10_stocks_raw)  # type: ignore
+        stock_name_map: dict[str, str] = json.loads(stock_name_map_raw)  # type: ignore
 
     lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, top_10_stocks)
     lastest_stock_daily_map = {daily.code: daily for daily in lastest_stock_dailies}
@@ -92,28 +118,23 @@ async def get_rich_pick(
         redis_client, lastest_stock_daily_map, top_10_stocks
     )
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
-    stock_daily_profit: dict[str, float] = StockService.get_daily_profit(lastest_stock_daily_map, current_stock_price_map, top_10_stocks)
-    won_exchange_rate = ExchangeRateService.get_exchange_rate(
-        CurrencyType.USA, CurrencyType.KOREA, exchange_rate_map
+    stock_daily_profit: dict[str, float] = StockService.get_daily_profit(
+        lastest_stock_daily_map, current_stock_price_map, top_10_stocks
     )
-    
-    stock_korea_price = {
-        stock_code: price * won_exchange_rate
-        for stock_code, price in current_stock_price_map.items()
-    }
-    
+    won_exchange_rate = ExchangeRateService.get_exchange_rate(CurrencyType.USA, CurrencyType.KOREA, exchange_rate_map)
+
+    stock_korea_price = {stock_code: price * won_exchange_rate for stock_code, price in current_stock_price_map.items()}
+
     response_data = [
         RichPickValue(
-            name=stock_name_map.get(stock_code), 
+            name=stock_name_map.get(stock_code),
             price=stock_korea_price[stock_code],
-            rate=stock_daily_profit[stock_code]
+            rate=stock_daily_profit[stock_code],
         )
         for stock_code in top_10_stocks
     ]
     
     return RichPickResponse(response_data)
-
-
 
 
 @chart_router.get(

@@ -49,7 +49,6 @@ class EstimateDividendEveryValue(BaseModel):
     data: list[float] = Field(..., description="월별 배당금 데이터")
     unit: str = Field(..., description="단위")
     total: float = Field(..., description="해당 연도의 배당금 총합")
-    
 
 
 class EstimateDividendEveryResponse(RootModel[dict[str, EstimateDividendEveryValue]]):
@@ -79,9 +78,21 @@ class MyStockResponse(BaseModel):
 
 
 class RichPickValue(BaseModel):
-    name:str
-    price:float
-    rate:float
+    name: str
+    price: float
+    rate: float
+
 
 class RichPickResponse(RootModel[list[RichPickValue]]):
     pass
+
+
+class RichPortfolioValue(BaseModel):
+    name: str
+    stock: dict[str,str]
+
+
+class RichPortfolioResponse(RootModel[list[RichPortfolioValue]]):
+    pass
+
+
