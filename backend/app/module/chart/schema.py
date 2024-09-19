@@ -89,10 +89,8 @@ class RichPickResponse(RootModel[list[RichPickValue]]):
 
 class RichPortfolioValue(BaseModel):
     name: str
-    stock: dict[str,str]
+    stock: dict[str, str]
 
 
 class RichPortfolioResponse(RootModel[list[RichPortfolioValue]]):
     pass
-
-
