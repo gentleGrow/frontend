@@ -19,6 +19,7 @@
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "echarts": "^5.5.1",
+    "embla-carousel-react": "^8.3.0",
     "google-auth-library": "^9.13.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.438.0",

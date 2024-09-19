@@ -73,6 +73,7 @@ export default function DonutChart({
             "#AFC0FF",
             "#D8DADC",
           ],
+
           tooltip: {
             trigger: "item",
             formatter: (params: any) => {

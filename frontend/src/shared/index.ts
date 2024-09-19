@@ -18,4 +18,10 @@ export type {
   BarChartData,
 } from "./types/charts";
 export { default as BarChart } from "./ui/BarChart";
-export { RightArrowButton, LeftArrowButton } from "./ui/arrow-buttons";
+export {
+  RightArrowButton,
+  LeftArrowButton,
+  ArrowButtons,
+} from "./ui/arrow-buttons";
+export { default as PortfolioItem } from "./ui/PortfolioItem";
+export { default as PortfolioCarousel } from "./ui/PortfolioCarousel";

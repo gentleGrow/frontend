@@ -9,8 +9,16 @@ const config: Config = {
         mobile: {
           max: "840px",
         },
+        tablet: {
+          min: "841px",
+          max: "1280px",
+        },
         "except-mobile": {
           min: "840px",
+        },
+
+        "except-tablet": {
+          min: "1280px",
         },
       },
       colors: {

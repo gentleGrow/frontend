@@ -117,7 +117,9 @@ export default function EstimateDividend() {
     barChartNavItems.length - 1,
   );
   return (
-    <div className="relative h-[388px] w-full rounded-xl border p-[16px] mobile:h-[500px] mobile:border-none">
+    <div
+      className={`relative ${selectedTab === "모두" ? "h-[388px]" : "h-full"} w-full rounded-xl border p-[16px] ${selectedTab === "모두" ? "mobile:h-[500px]" : "h-full"} mobile:border-none`}
+    >
       <h2 className="text-heading-2">예상 배당액</h2>
       <div className="mt-[16px] flex w-full justify-between except-mobile:absolute except-mobile:right-[16px] except-mobile:top-[12px] except-mobile:mt-0">
         <div className="w-[176px] shrink-0 mobile:hidden" />
@@ -161,7 +163,9 @@ export default function EstimateDividend() {
         </>
       )}
 
-      <div className="h-[217px] w-full">
+      <div
+        className={`${selectedTab === "모두" ? "h-[217px]" : "h-full"} w-full`}
+      >
         {selectedTab === "모두" ? (
           <BarChart
             chartData={{

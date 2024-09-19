@@ -26,7 +26,7 @@ export default function SearchBar() {
           d="M16 16L19 19"
           stroke="#5D646E"
           strokeWidth="1.5"
-          stroke-linecap="round"
+          strokeLinecap="round"
         />
         <circle
           cx="11.5"
