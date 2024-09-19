@@ -1,10 +1,11 @@
 import asyncio
 from datetime import date
 from os import getenv
-
+from redis.asyncio import Redis
 from dotenv import load_dotenv
 from icecream import ic
 from selenium import webdriver
+import json
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -12,7 +13,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from sqlalchemy.ext.asyncio import AsyncSession
 from webdriver_manager.chrome import ChromeDriverManager
-
+from app.module.chart.redis_repository import RedisRichPortfolioRepository
 from app.data.investing.sources.enum import RicePeople
 from app.module.asset.enum import AssetType, PurchaseCurrencyType
 from app.module.asset.model import Asset, AssetStock
@@ -21,14 +22,16 @@ from app.module.asset.repository.stock_repository import StockRepository
 from app.module.auth.enum import ProviderEnum
 from app.module.auth.model import User
 from app.module.auth.repository import UserRepository
-from database.dependency import get_mysql_session
+from database.dependency import get_mysql_session, get_redis_pool
 from database.enum import EnvironmentType
+from app.module.chart.constant import TIP_EXPIRE_SECOND
+
 
 load_dotenv()
 ENVIRONMENT = getenv("ENVIRONMENT", None)
 
 
-async def fetch_rich_porfolio(session: AsyncSession, person: str):
+async def fetch_rich_porfolio(redis_client:Redis, session: AsyncSession, person: str):
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
@@ -49,7 +52,7 @@ async def fetch_rich_porfolio(session: AsyncSession, person: str):
     rows = tbody.find_elements(By.TAG_NAME, "tr")
 
     stock_codes = []
-    percentages = []
+    percentages = {}
 
     for row in rows:
         columns = row.find_elements(By.TAG_NAME, "td")
@@ -63,11 +66,13 @@ async def fetch_rich_porfolio(session: AsyncSession, person: str):
                         stock_codes.append(code)
                     elif index == 3:
                         percentage = a_tag.get_attribute("textContent")
-                        percentages.append(percentage)
+                        percentages[code] = percentage
             except Exception as err:
                 ic(err)
                 continue
-
+            
+    await RedisRichPortfolioRepository.save(redis_client, person, json.dumps(percentages), TIP_EXPIRE_SECOND)
+    
     user = await UserRepository.get_by_name(session, person)
     if user is None:
         person_user = User(social_id=f"{person}_id", provider=ProviderEnum.GOOGLE, nickname=person)
@@ -83,8 +88,9 @@ async def fetch_rich_porfolio(session: AsyncSession, person: str):
 
     bulk_assets = []
 
-    for i in range(len(stock_codes)):
-        stock = stock_dict.get(stock_codes[i])
+    for stock in stock_codes:
+        stock = stock_dict.get(stock)
+        
         if not stock:
             ic("stock이 존재하지 않습니다.")
             continue
@@ -113,9 +119,10 @@ async def fetch_rich_porfolio(session: AsyncSession, person: str):
 
 
 async def main():
+    redis_client = get_redis_pool()
     async with get_mysql_session() as session:
         for person in RicePeople:
-            await fetch_rich_porfolio(session, person.value)
+            await fetch_rich_porfolio(redis_client, session, person.value)
 
 
 if __name__ == "__main__":
