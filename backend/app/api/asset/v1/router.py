@@ -208,7 +208,7 @@ async def create_assets(
         assets_to_create.append(new_asset)
 
     await AssetRepository.save_assets(session, assets_to_create)
-    return JsonResponse(status_code=status.HTTP_200_OK, content={"detail": "주식 자산 테이블을 성공적으로 등록하였습니다."})
+    return JsonResponse(status_code=status.HTTP_201_CREATED, content={"detail": "주식 자산 테이블을 성공적으로 등록하였습니다."})
 
 
 @asset_stock_router.put("/assetstock", summary="자산관리 정보를 수정합니다.", response_model=JsonResponse)
