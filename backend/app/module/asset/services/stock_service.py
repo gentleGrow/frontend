@@ -6,6 +6,20 @@ from app.module.asset.redis_repository import RedisRealTimeStockRepository
 
 class StockService:
     @staticmethod
+    def get_daily_profit(
+        lastest_stock_daily_map: dict[tuple[str, str], StockDaily],
+        current_stock_price_map: dict[str, float],
+        stock_codes:list[str]
+    ) -> dict[str, float]:
+        result = {}
+        for stock_code in stock_codes:
+            stock_daily = lastest_stock_daily_map.get(stock_code)
+            current_stock_price = current_stock_price_map.get(stock_code)
+            stock_profit = ((current_stock_price - stock_daily.adj_close_price) / stock_daily.adj_close_price) * 100
+            result[stock_code] = stock_profit
+        return result
+
+    @staticmethod
     async def get_current_stock_price(
         redis_client: Redis, lastest_stock_daily_map: dict[tuple[str, str], StockDaily], stock_codes: list[str]
     ) -> dict[str, float]:
