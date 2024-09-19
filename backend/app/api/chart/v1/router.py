@@ -1,11 +1,13 @@
 import json
-from datetime import date, datetime, timedelta
 from collections import defaultdict
-
+from datetime import date, datetime, timedelta
+from icecream import ic
+from app.module.asset.enum import CurrencyType
+from app.module.auth.repository import UserRepository
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-from icecream import ic
+from app.data.investing.sources.enum import RicePeople
 from app.common.auth.security import verify_jwt_token
 from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
 from app.module.asset.enum import AssetType, MarketIndex
@@ -26,9 +28,9 @@ from app.module.asset.services.exchange_rate_service import ExchangeRateService
 from app.module.asset.services.stock_service import StockService
 from app.module.auth.constant import DUMMY_USER_ID
 from app.module.auth.schema import AccessToken
-from app.module.chart.constant import TIP_TODAY_ID_REDIS_KEY
+from app.module.chart.constant import TIP_TODAY_ID_REDIS_KEY, RICHPICKKEY, RICH_PICK_SECOND, RICHPICKNAMEKEY
 from app.module.chart.enum import CompositionType, EstimateDividendType, IntervalType
-from app.module.chart.redis_repository import RedisMarketIndiceRepository, RedisTipRepository
+from app.module.chart.redis_repository import RedisMarketIndiceRepository, RedisTipRepository, RedisRickPickRepository
 from app.module.chart.repository import TipRepository
 from app.module.chart.schema import (
     ChartTipResponse,
@@ -44,12 +46,72 @@ from app.module.chart.schema import (
     MyStockResponseValue,
     PerformanceAnalysisResponse,
     SummaryResponse,
+    RichPickValue,
+    RichPickResponse
 )
 from app.module.chart.service.composition_service import CompositionService
 from app.module.chart.service.performance_analysis_service import PerformanceAnalysis
 from database.dependency import get_mysql_session_router, get_redis_pool
 
 chart_router = APIRouter(prefix="/v1")
+
+
+
+@chart_router.get("/rich-pick", summary="부자들이 선택한 종목 TOP10", response_model=RichPickResponse)
+async def get_rich_pick(
+    session: AsyncSession = Depends(get_mysql_session_router),
+    redis_client: Redis = Depends(get_redis_pool)
+) -> RichPickResponse:
+    
+    #[수정]!!!!!!!!! N+1 문제 해결
+    top_10_stocks_raw = await RedisRickPickRepository.get(redis_client, RICHPICKKEY)
+    stock_name_map_raw = await RedisRickPickRepository.get(redis_client, RICHPICKNAMEKEY)
+    if top_10_stocks_raw is None or stock_name_map_raw is None:    
+        stock_count = {}
+        stock_name_map = {}
+        for person in RicePeople:
+            user = await UserRepository.get_by_name(session, person)
+            eager_assets = await AssetRepository.get_eager(session, user.id, AssetType.STOCK)
+            for asset in eager_assets:
+                stock_code = asset.asset_stock.stock.code
+                if stock_code not in stock_count:
+                    stock_count[stock_code] = 1
+                else:
+                    stock_count[stock_code] += 1
+                stock_name_map[stock_code] = asset.asset_stock.stock.name
+        top_10_stocks = [stock[0] for stock in sorted(stock_count.items(), key=lambda x: x[1], reverse=True)[:10]]
+        await RedisRickPickRepository.save(redis_client, RICHPICKKEY, json.dumps(top_10_stocks), RICH_PICK_SECOND)
+        await RedisRickPickRepository.save(redis_client, RICHPICKNAMEKEY, json.dumps(stock_name_map), RICH_PICK_SECOND)
+    else:
+        top_10_stocks: list[str] = json.loads(top_10_stocks_raw)
+        stock_name_map: dict[str,str] = json.loads(stock_name_map_raw)
+
+    lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, top_10_stocks)
+    lastest_stock_daily_map = {daily.code: daily for daily in lastest_stock_dailies}
+    current_stock_price_map: dict[str, float] = await StockService.get_current_stock_price(
+        redis_client, lastest_stock_daily_map, top_10_stocks
+    )
+    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
+    stock_daily_profit: dict[str, float] = StockService.get_daily_profit(lastest_stock_daily_map, current_stock_price_map, top_10_stocks)
+    won_exchange_rate = ExchangeRateService.get_exchange_rate(
+        CurrencyType.USA, CurrencyType.KOREA, exchange_rate_map
+    )
+    
+    stock_korea_price = {
+        stock_code: price * won_exchange_rate
+        for stock_code, price in current_stock_price_map.items()
+    }
+    
+    response_data = [
+        RichPickValue(
+            name=stock_name_map.get(stock_code), 
+            price=stock_korea_price[stock_code],
+            rate=stock_daily_profit[stock_code]
+        )
+        for stock_code in top_10_stocks
+    ]
+    
+    return RichPickResponse(response_data)
 
 
 
@@ -94,16 +156,11 @@ async def get_dummy_estimate_dividend(
 
         for year, months in dividend_by_year_month.items():
             xAxises = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"]
-            
+
             data = [months.get(month, 0.0) for month in range(1, 13)]
             total = sum(data)
 
-            response_data[str(year)] = EstimateDividendEveryValue(
-                xAxises=xAxises,
-                data=data,
-                unit="만원",  
-                total=total
-            )
+            response_data[str(year)] = EstimateDividendEveryValue(xAxises=xAxises, data=data, unit="만원", total=total)
 
         sorted_response_data = dict(sorted(response_data.items(), key=lambda item: int(item[0])))
 
@@ -150,11 +207,28 @@ async def get_estimate_dividend(
 
     if category == EstimateDividendType.EVERY:
         total_dividends = DividendService.get_total_estimate_dividend(assets, exchange_rate_map, dividend_map)
-        estimate_dividend_list = [
-            EstimateDividendEveryValue(date=dividend_date, amount=amount)
-            for dividend_date, amount in sorted(total_dividends.items())
-        ]
-        return EstimateDividendEveryResponse(estimate_dividend_list=estimate_dividend_list)
+        dividend_by_year_month: dict[int, dict[int, float]] = defaultdict(lambda: defaultdict(float))
+
+        for date_str, dividend_amount in total_dividends.items():
+            dividend_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+            year = dividend_date.year
+            month = dividend_date.month
+
+            dividend_by_year_month[year][month] += dividend_amount
+
+        response_data = {}
+
+        for year, months in dividend_by_year_month.items():
+            xAxises = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"]
+
+            data = [months.get(month, 0.0) for month in range(1, 13)]
+            total = sum(data)
+
+            response_data[str(year)] = EstimateDividendEveryValue(xAxises=xAxises, data=data, unit="만원", total=total)
+
+        sorted_response_data = dict(sorted(response_data.items(), key=lambda item: int(item[0])))
+
+        return EstimateDividendEveryResponse(sorted_response_data)
     else:
         total_type_dividends: list[tuple[str, float, float]] = await DividendService.get_composition(
             assets, exchange_rate_map, recent_dividend_map
@@ -164,9 +238,7 @@ async def get_estimate_dividend(
             for stock_code, amount, composition_rate in total_type_dividends
         ]
 
-        return EstimateDividendTypeResponse(estimate_dividend_list=estimate_dividend_list)
-
-
+        return EstimateDividendTypeResponse(estimate_dividend_list)
 
 
 @chart_router.get("/dummy/performance-analysis", summary="더미 투자 성과 분석", response_model=PerformanceAnalysisResponse)
@@ -280,6 +352,7 @@ async def get_performance_analysis(
             values2={"values": market_analysis_profit_short, "name": "코스피"},
             unit="%",
         )
+
 
 @chart_router.get("/my-stock", summary="내 보유 주식", response_model=MyStockResponse)
 async def get_my_stock(
