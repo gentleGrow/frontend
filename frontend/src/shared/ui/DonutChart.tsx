@@ -29,7 +29,6 @@ export default function DonutChart({
       );
 
       const setOption = () => {
-        // isPortfolio가 true인 경우 항상 모바일 크기로 설정
         const isMobile =
           isPortfolio || window.matchMedia("(max-width: 840px)").matches;
         const gap = 56;
@@ -38,14 +37,28 @@ export default function DonutChart({
         const containerWidth =
           chartRef.current?.offsetWidth || window.innerWidth;
 
-        // `isPortfolio`가 true일 때 도넛 크기를 114로 설정
-        const seriesRadius = isPortfolio ? 114 : 128;
+        const seriesOuterRadius = isPortfolio ? 54 : 128;
+        const seriesInnerRadius = isPortfolio ? 27 : 82;
 
-        const seriesWidth = seriesRadius * 2;
+        const seriesWidth = seriesOuterRadius * 2;
 
         const totalContentWidth = seriesWidth + gap + legendWidth;
 
         const leftMargin = (containerWidth - totalContentWidth) / 2;
+
+        const legendData = isPortfolio
+          ? data.slice(0, 2).map((item) => item.name)
+          : data.map((item) => item.name);
+
+        let maxNameLength;
+        if (isPortfolio) {
+          const nameMaxWidth = containerWidth > 60 ? containerWidth - 60 : 84;
+          maxNameLength = Math.floor((nameMaxWidth - 60) / 5);
+        } else if (isMobile) {
+          maxNameLength = Math.floor((containerWidth - 64 - 70) / 5);
+        } else {
+          maxNameLength = 10;
+        }
 
         const option = {
           color: [
@@ -62,8 +75,10 @@ export default function DonutChart({
           ],
           tooltip: {
             trigger: "item",
-            formatter: (params) => {
-              return `<span style="font-size:12px; line-height:18px; color:#2A2D31"> ${params.name} · <span style="font-weight:bold">${params.percent}</span>%<br/><span style="font-weight:bold">₩${params.value.toLocaleString(
+            formatter: (params: any) => {
+              return `<span style="font-size:12px; line-height:18px; color:#2A2D31"> ${
+                params.name
+              } · <span style="font-weight:bold">${params.percent}</span>%<br/><span style="font-weight:bold">₩${params.value.toLocaleString(
                 "ko-KR",
               )}원</span></span>`;
             },
@@ -72,7 +87,13 @@ export default function DonutChart({
             textStyle: {
               color: "#2A2D31",
             },
-            position: function (point, params, dom, rect, size) {
+            position: function (
+              point: any,
+              params: any,
+              dom: any,
+              rect: any,
+              size: any,
+            ) {
               const x = point[0];
               const y = point[1];
 
@@ -86,38 +107,50 @@ export default function DonutChart({
             itemWidth: 12,
             itemHeight: 12,
             orient: isMobile ? "horizontal" : "vertical",
-            left: isMobile ? "center" : leftMargin + seriesWidth + gap,
+            left: isMobile || isPortfolio ? 0 : leftMargin + seriesWidth + gap,
+            right: isMobile || isPortfolio ? 0 : undefined,
             top: isMobile ? "bottom" : "middle",
-            formatter: (name) => {
+            data: legendData,
+            padding: isMobile || isPortfolio ? [0, 10] : [0, 0],
+            formatter: (name: string) => {
               const item = data.find((i) => i.name === name);
               const percent = item
                 ? (item.current_amount / totalCurrentAmount) * 100
                 : 0;
 
-              const maxNameLength = isMobile
-                ? Math.floor((window.innerWidth - 64 - 70) / 8)
-                : 10;
               const formattedName =
                 name.length > maxNameLength
                   ? name.substring(0, maxNameLength) + "..."
                   : name;
 
-              return `{name|${formattedName}}{space|} {percent|${percent.toFixed(
-                2,
-              )}%}`;
+              if (isPortfolio) {
+                return `{name|${formattedName}}{percent|${percent.toFixed(
+                  2,
+                )}%}`;
+              } else {
+                return `{name|${formattedName}}{space|} {percent|${percent.toFixed(
+                  2,
+                )}%}`;
+              }
             },
-
             textStyle: {
               rich: {
                 name: {
-                  width: isMobile ? window.innerWidth - 64 - 70 : 84,
+                  width: isPortfolio
+                    ? containerWidth > 60
+                      ? containerWidth - 60
+                      : 84
+                    : isMobile
+                      ? window.innerWidth - 64 - 70
+                      : 84,
+                  align: "left",
                 },
                 space: {
                   width: 24,
                 },
                 percent: {
                   align: "right",
-                  width: 40,
+                  width: 20,
                   fontWeight: "bold",
                 },
               },
@@ -127,12 +160,14 @@ export default function DonutChart({
             {
               name: chartName,
               type: "pie",
-              radius: ["82px", `${seriesRadius}px`],
+              radius: [`${seriesInnerRadius}px`, `${seriesOuterRadius}px`],
               center: isMobile
-                ? ["50%", "128px"]
-                : [leftMargin + seriesRadius, "50%"],
+                ? isPortfolio
+                  ? ["50%", "64px"]
+                  : ["50%", "128px"]
+                : [leftMargin + seriesOuterRadius, "50%"],
               left: "0",
-              right: isMobile ? "0" : "0",
+              right: "0",
               avoidLabelOverlap: true,
               itemStyle: {
                 borderColor: "#fff",
@@ -173,8 +208,12 @@ export default function DonutChart({
     }
   }, [data, windowWidth, isPortfolio]);
 
-  const chartHeight = 276 + data.length * 25;
-  const maxHeight = windowWidth > 840 ? 256 : chartHeight;
+  const chartHeight = isPortfolio ? 128 + 2 * 25 : 276 + data.length * 25;
+  const maxHeight = isPortfolio
+    ? chartHeight
+    : windowWidth > 840
+      ? 256
+      : chartHeight;
 
   return <div ref={chartRef} style={{ height: `${maxHeight}px` }} />;
 }
