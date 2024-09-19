@@ -1,9 +1,11 @@
 import {
   DailyInvestmentTip,
   EstimateDividend,
+  ExplorePortfolio,
   InvestmentPerformanceChart,
   MarketIndex,
   MyStocks,
+  RichPortfolio,
   StockComposition,
   Top10SelectedByRichPerson,
 } from "@/widgets";
@@ -20,6 +22,8 @@ export default function Home() {
       <div className="pt-12">
         <EstimateDividend />
       </div>
+      <RichPortfolio />
+      <ExplorePortfolio />
     </>
   );
 }

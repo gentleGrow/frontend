@@ -9,3 +9,5 @@ export { default as MyStocks } from "./my-stocks/ui/MyStocks";
 export { default as StockComposition } from "./stock-composition/ui/StockComposition";
 export { default as InvestmentPerformanceChart } from "./investment-performance-chart/ui/InvestmentPerformanceChart";
 export { default as EstimateDividend } from "./estimate-dividend/ui/EstimateDividend";
+export { default as ExplorePortfolio } from "./explore-portfolio/ui/ExplorePortfolio";
+export { default as RichPortfolio } from "./rich-portfolios/ui/RichPortfolio";

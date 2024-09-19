@@ -6,9 +6,11 @@ import { DonutChartData } from "../types/charts";
 export default function DonutChart({
   chartName,
   data,
+  isPortfolio = false,
 }: {
   chartName: string;
   data: DonutChartData[];
+  isPortfolio?: boolean;
 }) {
   const chartRef = useRef<HTMLDivElement>(null);
   const [windowWidth, setWindowWidth] = useState<number>(0);
@@ -27,14 +29,17 @@ export default function DonutChart({
       );
 
       const setOption = () => {
-        const isMobile = window.matchMedia("(max-width: 840px)").matches;
+        // isPortfolio가 true인 경우 항상 모바일 크기로 설정
+        const isMobile =
+          isPortfolio || window.matchMedia("(max-width: 840px)").matches;
         const gap = 56;
         const legendWidth = 174;
 
         const containerWidth =
           chartRef.current?.offsetWidth || window.innerWidth;
 
-        const seriesRadius = 128;
+        // `isPortfolio`가 true일 때 도넛 크기를 114로 설정
+        const seriesRadius = isPortfolio ? 114 : 128;
 
         const seriesWidth = seriesRadius * 2;
 
@@ -122,7 +127,7 @@ export default function DonutChart({
             {
               name: chartName,
               type: "pie",
-              radius: ["82px", "128px"],
+              radius: ["82px", `${seriesRadius}px`],
               center: isMobile
                 ? ["50%", "128px"]
                 : [leftMargin + seriesRadius, "50%"],
@@ -166,7 +171,7 @@ export default function DonutChart({
         chartInstance.dispose();
       };
     }
-  }, [data, windowWidth]);
+  }, [data, windowWidth, isPortfolio]);
 
   const chartHeight = 276 + data.length * 25;
   const maxHeight = windowWidth > 840 ? 256 : chartHeight;
