@@ -1,5 +1,5 @@
 import { SERVICE_SERVER_URL } from "@/shared";
-import "server-only";
+
 const fetchTodayTip = async (): Promise<string> => {
   try {
     const response = await fetch(`${SERVICE_SERVER_URL}/api/chart/v1/tip`);

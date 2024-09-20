@@ -7,16 +7,18 @@ const config: Config = {
     extend: {
       screens: {
         mobile: {
-          max: "375px",
+          max: "840px",
+        },
+        tablet: {
+          min: "841px",
+          max: "1280px",
         },
         "except-mobile": {
-          min: "376px",
+          min: "840px",
         },
-        "min-545": {
-          min: "545px",
-        },
-        "max-546": {
-          max: "546px",
+
+        "except-tablet": {
+          min: "1280px",
         },
       },
       colors: {
