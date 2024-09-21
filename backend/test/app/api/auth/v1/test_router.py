@@ -1,11 +1,11 @@
-from unittest.mock import patch
+# from unittest.mock import patch
 
-import pytest
-from fastapi import status
-from fastapi.testclient import TestClient
+# import pytest
+# from fastapi import status
+# from fastapi.testclient import TestClient
 
-from app.module.auth.jwt import JWTBuilder
-from main import app
+# from app.module.auth.jwt import JWTBuilder
+# from main import app
 
 # client = TestClient(app)
 

@@ -43,12 +43,11 @@ async def get_bank_account_list() -> BankAccountResponse:
     return BankAccountResponse(investment_bank_list=investment_bank_list, account_list=account_list)
 
 
-# 리팩토링 확인 선!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 @asset_stock_router.get("/stocks", summary="주시 종목 코드를 반환합니다.", response_model=StockListResponse)
 async def get_stocklist(session: AsyncSession = Depends(get_mysql_session_router)) -> StockListResponse:
     stock_list: list[Stock] = await StockRepository.get_all(session)
-
+    
     return StockListResponse([StockListValue(name=stock.name, code=stock.code) for stock in stock_list])
 
 
@@ -106,6 +105,8 @@ async def get_dummy_assets(
 
     return StockAssetResponse.parse(stock_assets, total_asset_amount, total_invest_amount, total_dividend_amount)
 
+
+# 리팩토링 확인 선!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 @asset_stock_router.get("/assetstock", summary="사용자의 자산 정보를 반환합니다.", response_model=StockAssetResponse)
 async def get_assets(

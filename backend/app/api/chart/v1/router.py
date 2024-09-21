@@ -30,14 +30,13 @@ from app.module.auth.repository import UserRepository
 from app.module.auth.schema import AccessToken
 from app.module.chart.constant import RICH_PICK_SECOND, RICHPICKKEY, RICHPICKNAMEKEY, TIP_TODAY_ID_REDIS_KEY
 from app.module.chart.enum import CompositionType, EstimateDividendType, IntervalType
-from app.module.chart.redis_repository import (
+from app.module.chart.redis_repository import (  # RedisRichPortfolioRepository,
     RedisMarketIndiceRepository,
     RedisRichPickRepository,
-    RedisRichPortfolioRepository,
     RedisTipRepository,
 )
 from app.module.chart.repository import TipRepository
-from app.module.chart.schema import (
+from app.module.chart.schema import (  # RichPortfolioResponse,; RichPortfolioValue,
     ChartTipResponse,
     CompositionResponse,
     CompositionResponseValue,
@@ -52,8 +51,6 @@ from app.module.chart.schema import (
     PerformanceAnalysisResponse,
     RichPickResponse,
     RichPickValue,
-    RichPortfolioResponse,
-    RichPortfolioValue,
     SummaryResponse,
 )
 from app.module.chart.service.composition_service import CompositionService
@@ -63,17 +60,17 @@ from database.dependency import get_mysql_session_router, get_redis_pool
 chart_router = APIRouter(prefix="/v1")
 
 
-@chart_router.get("/rich-portfolio", summary="부자들의 포트폴리오", response_model=RichPortfolioResponse)
-async def get_rich_portfolio(redis_client: Redis = Depends(get_redis_pool)) -> RichPortfolioResponse:
-    rich_people = [person.value for person in RicePeople]
-    rich_portfolios: list[str] = await RedisRichPortfolioRepository.gets(redis_client, rich_people)
+# @chart_router.get("/rich-portfolio", summary="부자들의 포트폴리오", response_model=RichPortfolioResponse)
+# async def get_rich_portfolio(redis_client: Redis = Depends(get_redis_pool)) -> RichPortfolioResponse:
+#     rich_people = [person.value for person in RicePeople]
+#     rich_portfolios: list[str] = await RedisRichPortfolioRepository.gets(redis_client, rich_people)
 
-    response_data = [
-        RichPortfolioValue(name=person, stock=json.loads(portfolio_raw))
-        for person, portfolio_raw in zip(rich_people, rich_portfolios)
-    ]
+#     response_data = [
+#         RichPortfolioValue(name=person, stock=json.loads(portfolio_raw))
+#         for person, portfolio_raw in zip(rich_people, rich_portfolios)
+#     ]
 
-    return RichPortfolioResponse(response_data)
+#     return RichPortfolioResponse(response_data)
 
 
 @chart_router.get("/rich-pick", summary="부자들이 선택한 종목 TOP10", response_model=RichPickResponse)

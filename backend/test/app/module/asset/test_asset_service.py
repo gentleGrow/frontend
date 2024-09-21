@@ -1,17 +1,16 @@
-from unittest.mock import AsyncMock
+# from unittest.mock import AsyncMock
 
-import pytest
+# import pytest
 
-from app.module.asset.constant import CURRENCY_PAIRS
-from app.module.asset.enum import CurrencyType
-from app.module.asset.service import (
-    check_not_found_stock,
-    get_current_stock_price,
-    get_exchange_rate,
-    get_exchange_rate_map,
-    get_stock_assets,
-)
-
+# from app.module.asset.constant import CURRENCY_PAIRS
+# from app.module.asset.enum import CurrencyType
+# from app.module.asset.service import (
+#     check_not_found_stock,
+#     get_current_stock_price,
+#     get_exchange_rate,
+#     get_exchange_rate_map,
+#     get_stock_assets,
+# )
 
 # class TestAssetStock:
 #     @pytest.mark.asyncio

@@ -1,22 +1,29 @@
-import pytest
 import asyncio
+from os import getenv
+from sqlalchemy.pool import NullPool
+import pytest
+from dotenv import load_dotenv
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
-from database.dependency import get_redis_pool
+
 from app.common.auth.security import verify_jwt_token
+from app.module.asset.model import Stock, StockDaily, StockMonthly, StockWeekly  # noqa: F401 > relationship 설정시 필요합니다.
+from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.config import MySQLBase
+from database.dependency import get_redis_pool
 from main import app
-from os import getenv
-from dotenv import load_dotenv
+from icecream import ic
 
 load_dotenv()
 
 
-TEST_DATABASE_URL = getenv("ENVIRONMENT", None)
+TEST_DATABASE_URL = getenv("TEST_DATABASE_URL", None)
 
-test_engine = create_async_engine(TEST_DATABASE_URL, pool_pre_ping=True)
+
+test_engine = create_async_engine(TEST_DATABASE_URL, pool_pre_ping=True, poolclass=NullPool)
 TestSessionLocal = sessionmaker(bind=test_engine, class_=AsyncSession, expire_on_commit=False)
+
 
 @pytest.fixture(scope="session")
 def event_loop():
@@ -24,11 +31,13 @@ def event_loop():
     yield loop
     loop.close()
 
-@pytest.fixture(scope="function", autouse=True)
-async def init_db():
+
+async def create_tables():
     async with test_engine.begin() as conn:
         await conn.run_sync(MySQLBase.metadata.create_all)
-    yield
+
+
+async def drop_tables():
     async with test_engine.begin() as conn:
         await conn.run_sync(MySQLBase.metadata.drop_all)
 
@@ -36,16 +45,18 @@ async def init_db():
 @pytest.fixture(scope="function")
 async def db_session():
     async with TestSessionLocal() as session:
+        await create_tables()
         yield session
         await session.rollback()
+        await drop_tables()
 
 
 @pytest.fixture(scope="function")
 async def redis_client():
-    redis = get_redis_pool() 
+    redis = get_redis_pool()
     yield redis
-    await redis.close() 
-        
+    await redis.close()
+
 
 def override_verify_jwt_token():
     return {"user": 999}
@@ -59,6 +70,6 @@ def override_dependencies():
 
 
 @pytest.fixture(scope="function")
-def client(override_dependencies):
+def client():
     with TestClient(app) as c:
         yield c

@@ -1,25 +1,48 @@
-import pytest
-from fastapi import status
 from app.module.asset.enum import AccountType, InvestmentBankType
-
+from icecream import ic
+from sqlalchemy import text
 class TestGetBankAccounts:
     """
     api: /api/v1/bank-accounts
+    method: GET
     """
+
     async def test_get_bank_accounts(self, client):
-        #given
+        # given
         response = client.get("/api/v1/bank-accounts")
-        
-        #when
+
+        # when
         response_data = response.json()
         expected_investment_banks = [bank.value for bank in InvestmentBankType]
         expected_account_types = [account.value for account in AccountType]
-        
-        #then
+
+        # then
         assert response_data["investment_bank_list"] == expected_investment_banks
         assert response_data["account_list"] == expected_account_types
 
 
+class TestGetStockList:
+    """
+    api: /api/v1/stocks
+    method: GET
+    """
+    async def test_get_stock_list(self, client, db_session, setup_initial_data):
+        # Given
+        setup_initial_data
+
+        # When
+        response = client.get("/api/v1/stocks")
+
+        # Then
+        response_data = response.json()
+        ic(len(response_data))
+
+        expected_stocks = [
+            {"name": "Apple Inc.", "code": "AAPL"},
+            {"name": "Tesla Inc.", "code": "TSLA"},
+        ]
+
+        assert response_data == expected_stocks
 
 
 
@@ -103,5 +126,3 @@ class TestGetBankAccounts:
 #             headers={"Authorization": "Bearer testtoken"},
 #         )
 #         assert response.status_code == status.HTTP_200_OK
-
-

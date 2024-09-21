@@ -244,6 +244,7 @@ asyncmy = "^0.2.9"
 pytest = "^8.2"
 pluggy = "^1.5"
 pytest-asyncio = "^0.24.0"
+pytest-xdist = "^3.6.1"
 
 [build-system]
 requires = ["poetry-core"]

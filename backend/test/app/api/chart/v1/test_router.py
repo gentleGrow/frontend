@@ -1,8 +1,7 @@
-from unittest.mock import patch
+# from unittest.mock import patch
 
-import pytest
-from fastapi import status
-
+# import pytest
+# from fastapi import status
 
 # class TestGetTodayTip:
 #     @pytest.mark.asyncio
