@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, RootModel
 
 from app.module.asset.enum import AccountType, PurchaseCurrencyType
 
@@ -43,13 +43,13 @@ class BankAccountResponse(BaseModel):
     account_list: list[str]
 
 
-class StockListResponseValue(BaseModel):
+class StockListValue(BaseModel):
     name: str
     code: str
 
 
-class StockListResponse(BaseModel):
-    stock_list: list[StockListResponseValue]
+class StockListResponse(RootModel[list[StockListValue]]):
+    pass
 
 
 class StockAssetResponse(BaseModel):

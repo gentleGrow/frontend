@@ -10,8 +10,9 @@ from app.module.auth.model import User  # noqa: F401 > relationship 설정시 �
 @pytest.fixture(scope="function")
 async def setup_initial_data(db_session):
     async with db_session as session:
-        stock = Stock(code="AAPL", country="USA", market_index="NASDAQ", name="Apple Inc.")
-        session.add(stock)
+        stock_1 = Stock(code="AAPL", country="USA", market_index="NASDAQ", name="Apple Inc.")
+        stock_2 = Stock(code="TSLA", country="USA", market_index="NASDAQ", name="Tesla Inc.")
+        session.add_all([stock_1, stock_2])
         await session.commit()
 
 
@@ -34,7 +35,7 @@ async def setup_dummy_asset(db_session):
         return asset.id
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def transaction_data_success():
     return [
         {
@@ -49,7 +50,7 @@ def transaction_data_success():
     ]
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def transaction_data_with_invalid_id():
     return [
         {
@@ -65,7 +66,7 @@ def transaction_data_with_invalid_id():
     ]
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def transaction_data_with_wrong_stock_code():
     return [
         {
@@ -80,12 +81,12 @@ def transaction_data_with_wrong_stock_code():
     ]
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def exchange_rate():
     return {"USD_KRW": 1200.0, "KRW_USD": 0.00083}
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def mock_source_to_target_exchange_rate():
     return [
         1330.0,  # USD to KRW
@@ -113,12 +114,12 @@ def mock_source_to_target_exchange_rate():
     ]
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def current_stock_price_map() -> dict[str, float]:
     return {"AAPL": 155.0, "GOOGL": 2800.0}
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def stock_dailies() -> list[StockDaily]:
     return [
         StockDaily(
@@ -151,12 +152,12 @@ def stock_dailies() -> list[StockDaily]:
     ]
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def dividends() -> list[Dividend]:
     return [Dividend(stock_code="AAPL", dividend=0.5), Dividend(stock_code="GOOGL", dividend=0.8)]
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def dummy_assets() -> list[Asset]:
     return [
         Asset(
@@ -188,6 +189,6 @@ def dummy_assets() -> list[Asset]:
     ]
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def current_stock_daily_map(stock_dailies) -> dict[tuple[str, date], StockDaily]:
     return {(daily.code, daily.date): daily for daily in stock_dailies}
