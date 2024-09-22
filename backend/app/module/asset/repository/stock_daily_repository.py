@@ -17,7 +17,7 @@ class StockDailyRepository:
         stmt = select(StockDaily).where(tuple_(StockDaily.code, StockDaily.date).in_(stock_code_date_pairs))
         result = await session.execute(stmt)
         return result.scalars().all()
-    
+
     @staticmethod
     async def get_latest(session: AsyncSession, stock_codes: list[str]) -> list[StockDaily]:
         subquery = (

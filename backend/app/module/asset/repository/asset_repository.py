@@ -19,7 +19,7 @@ class AssetRepository:
             .options(joinedload(Asset.asset_stock).joinedload(AssetStock.stock))
         )
         return result.unique().scalars().all()
-    
+
     @staticmethod
     async def save(session: AsyncSession, asset: Asset) -> None:
         session.add(asset)

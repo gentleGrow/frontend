@@ -1,7 +1,7 @@
 from redis.asyncio import Redis
 
 from app.module.asset.constant import CURRENCY_PAIRS
-from app.module.asset.enum import CurrencyType, BaseCurrency
+from app.module.asset.enum import BaseCurrency, CurrencyType
 from app.module.asset.model import Asset, StockDaily
 from app.module.asset.redis_repository import RedisExchangeRateRepository, RedisRealTimeStockRepository
 from app.module.asset.schema import StockAsset

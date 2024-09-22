@@ -1,8 +1,9 @@
 from enum import StrEnum
 
+
 class BaseCurrency(StrEnum):
     WON = "won"
-    DOLLAR = 'dollar'
+    DOLLAR = "dollar"
 
 
 class CountryMarketCode(StrEnum):

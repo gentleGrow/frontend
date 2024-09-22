@@ -23,7 +23,7 @@ class DividendRepository:
 
         result = await session.execute(query)
         return result.scalars().all()
-    
+
     @staticmethod
     async def get_dividend(session: AsyncSession, stock_code: str) -> Dividend:
         result = await session.execute(select(Dividend).where(Dividend.stock_code == stock_code))

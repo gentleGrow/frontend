@@ -1,14 +1,11 @@
 from app.module.asset.enum import AccountType, InvestmentBankType
-from fastapi import status
-from icecream import ic
-
 
 # class TestGetDummyAssetStock:
 #     """
 #     api: /api/v1/sample/assetstock
 #     method: GET
 #     """
-    
+
 #     async def test_not_found(
 #         self,
 #         client,
@@ -28,8 +25,8 @@ from icecream import ic
 #         assert response.status_code == status.HTTP_404_NOT_FOUND
 #         assert "다음의 주식 코드를 찾지 못 했습니다." in response_data["detail"]
 #         not_found_stock_codes = response_data["detail"]["다음의 주식 코드를 찾지 못 했습니다."]
-        
-#         expected_not_found_stock_codes = ["UNKNOWN_CODE"]  
+
+#         expected_not_found_stock_codes = ["UNKNOWN_CODE"]
 #         assert not_found_stock_codes == expected_not_found_stock_codes
 
 
@@ -72,8 +69,7 @@ class TestGetStockList:
         expected_stocks = [
             {"name": "Apple Inc.", "code": "AAPL"},
             {"name": "Tesla Inc.", "code": "TSLA"},
+            {"name": "삼성전자", "code": "005930"},
         ]
 
         assert response_data == expected_stocks
-
-

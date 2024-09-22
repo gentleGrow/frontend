@@ -2,9 +2,9 @@ from datetime import date
 from typing import Optional
 
 from pydantic import BaseModel, Field, RootModel
-from app.module.asset.model import Asset
-from app.module.asset.enum import AccountType, PurchaseCurrencyType
 
+from app.module.asset.enum import AccountType, PurchaseCurrencyType
+from app.module.asset.model import Asset
 
 
 class StockAsset(BaseModel):
@@ -77,9 +77,9 @@ class StockAssetResponse(BaseModel):
             total_profit_amount=total_asset_amount - total_invest_amount,
             total_dividend_amount=total_dividend_amount,
         )
-        
+
     @staticmethod
-    def validate_assets(assets: list[Asset]) -> "StockAssetResponse":
+    def validate_assets(assets: list[Asset]) -> Optional["StockAssetResponse"]:
         if len(assets) == 0:
             return StockAssetResponse(
                 stock_assets=[],

@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.common.auth.security import verify_jwt_token
 from app.data.investing.sources.enum import RicePeople
 from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
-from app.module.asset.enum import AssetType, CurrencyType, MarketIndex
+from app.module.asset.enum import AssetType, BaseCurrency, CurrencyType, MarketIndex
 from app.module.asset.model import Asset, Dividend, StockDaily
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.dividend_repository import DividendRepository
@@ -106,7 +106,7 @@ async def get_rich_pick(
 
     lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, top_10_stocks)
     lastest_stock_daily_map = {daily.code: daily for daily in lastest_stock_dailies}
-    current_stock_price_map: dict[str, float] = await StockService.get_current_stock_price(
+    current_stock_price_map: dict[str, float] = await StockService.get_current_stock_price_by_code(
         redis_client, lastest_stock_daily_map, top_10_stocks
     )
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
@@ -399,7 +399,7 @@ async def get_my_stock(
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
     stock_assets: list[StockAsset] = AssetStockService.get_stock_assets(
-        assets, stock_daily_map, current_stock_price_map, dividend_map, True, exchange_rate_map
+        assets, stock_daily_map, current_stock_price_map, dividend_map, BaseCurrency.WON, exchange_rate_map
     )
 
     my_stock_list = [
@@ -443,7 +443,7 @@ async def get_dummy_my_stock(
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
     stock_assets: list[StockAsset] = AssetStockService.get_stock_assets(
-        assets, stock_daily_map, current_stock_price_map, dividend_map, True, exchange_rate_map
+        assets, stock_daily_map, current_stock_price_map, dividend_map, BaseCurrency.WON, exchange_rate_map
     )
 
     my_stock_list = [
