@@ -1,38 +1,155 @@
 from datetime import date
-
+from app.module.auth.constant import DUMMY_USER_ID, DUMMY_NAME
 import pytest
-
+from sqlalchemy.ext.asyncio import AsyncSession
+from redis.asyncio import Redis
 from app.module.asset.enum import AccountType, AssetType, InvestmentBankType, PurchaseCurrencyType
-from app.module.asset.model import Asset, AssetStock, Dividend, Stock, StockDaily
+from app.module.asset.model import Asset, AssetStock, Dividend, Stock, StockDaily, Dividend
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
+from app.module.auth.enum import ProviderEnum, UserRoleEnum
 
 
 @pytest.fixture(scope="function")
-async def setup_initial_data(db_session):
-    async with db_session as session:
-        stock_1 = Stock(code="AAPL", country="USA", market_index="NASDAQ", name="Apple Inc.")
-        stock_2 = Stock(code="TSLA", country="USA", market_index="NASDAQ", name="Tesla Inc.")
-        session.add_all([stock_1, stock_2])
-        await session.commit()
+async def setup_realtime_stock_price(redis_client: Redis):
+    keys = ["AAPL", "TSLA"]
+    values = ["220.0", "230.0"]
+    await redis_client.mset({key: value for key, value in zip(keys, values)})
+    yield keys, values
+    await redis_client.flushall()
+
 
 
 @pytest.fixture(scope="function")
-async def setup_dummy_asset(db_session):
-    async with db_session as session:
-        asset_stock = AssetStock(
-            account_type=AccountType.ISA.value,
-            investment_bank=InvestmentBankType.MIRAEASSET.value,
-            purchase_currency_type=PurchaseCurrencyType.USA.value,
-            purchase_date=date(2023, 8, 22),
-            purchase_price=2750.0,
-            quantity=10,
-            stock_id=1,
-        )
+async def setup_exchange_rate(redis_client: Redis):
+    keys = ["USD_KRW", "KRW_USD"]
+    values = ["1300.0", "0.00075"]
+    await redis_client.mset({key: value for key, value in zip(keys, values)})
+    yield keys, values
+    await redis_client.flushall()
 
-        asset = Asset(asset_type=AssetType.STOCK.value, user_id=999, asset_stock=asset_stock)
-        session.add(asset)
-        await session.commit()
-        return asset.id
+
+@pytest.fixture(scope="function")
+async def setup_dividend(db_session: AsyncSession, setup_stock):
+    dividend1 = Dividend(
+        dividend=1.5,  
+        stock_code="AAPL",
+        date=date(2024, 8, 13)
+    )
+    
+    dividend2 = Dividend(
+        dividend=1.6,  
+        stock_code="AAPL",
+        date=date(2024, 8, 14)
+    )
+    
+    dividend3 = Dividend(
+        dividend=0.8,  
+        stock_code="TSLA",
+        date=date(2024, 8, 13)
+    )
+    
+    dividend4 = Dividend(
+        dividend=0.9,  
+        stock_code="TSLA",
+        date=date(2024, 8, 14)
+    )
+
+    db_session.add_all([dividend1, dividend2, dividend3, dividend4])
+    await db_session.commit()
+
+
+@pytest.fixture(scope="function")
+async def setup_user(db_session:AsyncSession):
+    user = User(id=DUMMY_USER_ID, social_id='test_social_id', provider=ProviderEnum.GOOGLE, role=UserRoleEnum.USER, nickname=DUMMY_NAME)
+    db_session.add(user)
+    await db_session.commit()
+
+
+@pytest.fixture(scope="function")
+async def setup_stock(db_session:AsyncSession):
+    stock_1 = Stock(id=1, code="AAPL", country="USA", market_index="NASDAQ", name="Apple Inc.")
+    stock_2 = Stock(id=2, code="TSLA", country="USA", market_index="NASDAQ", name="Tesla Inc.")
+    db_session.add_all([stock_1, stock_2])
+    await db_session.commit()
+
+
+@pytest.fixture(scope="function")
+async def setup_stock_daily(db_session: AsyncSession, setup_stock):
+    stock_daily_1 = StockDaily(
+        adj_close_price=150.0,
+        close_price=148.0,
+        code="AAPL",
+        date=date(2024, 8, 13),
+        highest_price=152.0,
+        lowest_price=147.0,
+        opening_price=149.0,
+        trade_volume=1000000
+    )
+    
+    stock_daily_2 = StockDaily(
+        adj_close_price=151.0,
+        close_price=149.0,
+        code="AAPL",
+        date=date(2024, 8, 14),
+        highest_price=153.0,
+        lowest_price=148.0,
+        opening_price=150.0,
+        trade_volume=1050000
+    )
+    
+    stock_daily_3 = StockDaily(
+        adj_close_price=720.0,
+        close_price=715.0,
+        code="TSLA",
+        date=date(2024, 8, 13),
+        highest_price=730.0,
+        lowest_price=710.0,
+        opening_price=720.0,
+        trade_volume=1500000
+    )
+    
+    stock_daily_4 = StockDaily(
+        adj_close_price=725.0,
+        close_price=720.0,
+        code="TSLA",
+        date=date(2024, 8, 14),
+        highest_price=735.0,
+        lowest_price=715.0,
+        opening_price=725.0,
+        trade_volume=1600000
+    )
+    
+    db_session.add_all([stock_daily_1, stock_daily_2, stock_daily_3, stock_daily_4])
+    await db_session.commit()
+
+
+@pytest.fixture(scope="function")
+async def setup_asset(db_session:AsyncSession, setup_user, setup_stock):
+    asset_stock1 = AssetStock(
+        account_type=AccountType.ISA.value,
+        investment_bank=InvestmentBankType.MIRAEASSET.value,
+        purchase_currency_type=PurchaseCurrencyType.USA.value,
+        purchase_date=date(2024, 8, 13),
+        purchase_price=500.0,
+        quantity=1,
+        stock_id=1,
+    )
+    
+    asset_stock2 = AssetStock(
+        account_type=AccountType.PENSION.value,
+        investment_bank=InvestmentBankType.TOSS.value,
+        purchase_currency_type=PurchaseCurrencyType.KOREA.value,
+        purchase_date=date(2024, 8, 14),
+        purchase_price=1000.0,
+        quantity=2,
+        stock_id=2,
+    )
+    
+
+    asset1 = Asset(asset_type=AssetType.STOCK.value, user_id=DUMMY_USER_ID, asset_stock=asset_stock1)
+    asset2 = Asset(asset_type=AssetType.STOCK.value, user_id=DUMMY_USER_ID, asset_stock=asset_stock2)
+    db_session.add_all([asset1, asset2])
+    await db_session.commit()
 
 
 @pytest.fixture(scope="function")

@@ -12,6 +12,15 @@ from app.module.asset.model import Asset, AssetStock
 
 class AssetRepository:
     @staticmethod
+    async def get_eager(session: AsyncSession, user_id: int, asset_type: AssetType) -> list[Asset]:
+        result = await session.execute(
+            select(Asset)
+            .filter(and_(Asset.user_id == user_id, Asset.asset_type == asset_type, Asset.deleted_at.is_(None)))
+            .options(joinedload(Asset.asset_stock).joinedload(AssetStock.stock))
+        )
+        return result.unique().scalars().all()
+    
+    @staticmethod
     async def save(session: AsyncSession, asset: Asset) -> None:
         session.add(asset)
         await session.commit()
@@ -41,15 +50,6 @@ class AssetRepository:
     async def save_assets(session: AsyncSession, assets: list[Asset]) -> None:
         session.add_all(assets)
         await session.commit()
-
-    @staticmethod
-    async def get_eager(session: AsyncSession, user_id: int, asset_type: AssetType) -> list[Asset]:
-        result = await session.execute(
-            select(Asset)
-            .filter(and_(Asset.user_id == user_id, Asset.asset_type == asset_type, Asset.deleted_at.is_(None)))
-            .options(joinedload(Asset.asset_stock).joinedload(AssetStock.stock))
-        )
-        return result.unique().scalars().all()
 
     @staticmethod
     async def get_eager_by_range(

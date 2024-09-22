@@ -1,19 +1,18 @@
 import asyncio
 from os import getenv
-from sqlalchemy.pool import NullPool
+import fakeredis
 import pytest
 from dotenv import load_dotenv
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
-
+from sqlalchemy.pool import NullPool
+from database.dependency import get_test_redis_pool
 from app.common.auth.security import verify_jwt_token
 from app.module.asset.model import Stock, StockDaily, StockMonthly, StockWeekly  # noqa: F401 > relationship 설정시 필요합니다.
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from database.config import MySQLBase
-from database.dependency import get_redis_pool
 from main import app
-from icecream import ic
 
 load_dotenv()
 
@@ -53,8 +52,9 @@ async def db_session():
 
 @pytest.fixture(scope="function")
 async def redis_client():
-    redis = get_redis_pool()
+    redis = get_test_redis_pool()
     yield redis
+    await redis.flushall()
     await redis.close()
 
 

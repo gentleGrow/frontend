@@ -14,7 +14,7 @@ class ExchangeRateService:
 
         for i, key in enumerate(keys):
             rate = exchange_rates[i]
-            result[key] = rate if rate is not None else 0.0
+            result[key] = float(rate) if rate is not None else 0.0
         return result
 
     @staticmethod

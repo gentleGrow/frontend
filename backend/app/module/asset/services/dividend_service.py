@@ -1,14 +1,24 @@
 from collections import defaultdict
 from datetime import date
-
+from sqlalchemy.ext.asyncio import AsyncSession
 from pandas import to_datetime
-
+from app.module.asset.repository.dividend_repository import DividendRepository
 from app.module.asset.enum import CurrencyType
-from app.module.asset.model import Asset
+from app.module.asset.model import Asset, Dividend
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
 
 
 class DividendService:
+    @staticmethod
+    async def get_recent_map(
+        session: AsyncSession,
+        assets:list[Asset]
+    ) -> dict[str, Dividend]:
+        stock_codes = [asset.asset_stock.stock.code for asset in assets]
+        dividends: list[Dividend] = await DividendRepository.get_dividends_recent(session, stock_codes)
+        return {dividend.stock_code: dividend.dividend for dividend in dividends}
+    
+    
     @staticmethod
     async def get_composition(
         assets: list[Asset],
