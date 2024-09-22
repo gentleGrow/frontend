@@ -9,16 +9,6 @@ from app.module.asset.model import Dividend
 
 class DividendRepository:
     @staticmethod
-    async def get_dividend(session: AsyncSession, stock_code: str) -> Dividend:
-        result = await session.execute(select(Dividend).where(Dividend.stock_code == stock_code))
-        return result.scalar_one_or_none()
-
-    @staticmethod
-    async def get_dividends(session: AsyncSession, stock_codes: list[str]) -> list[Dividend]:
-        result = await session.execute(select(Dividend).where(Dividend.stock_code.in_(stock_codes)))
-        return result.scalars().all()
-
-    @staticmethod
     async def get_dividends_recent(session: AsyncSession, stock_codes: list[str]) -> list[Dividend]:
         subquery = (
             select(Dividend.stock_code, func.max(Dividend.date).label("max_date"))
@@ -32,6 +22,16 @@ class DividendRepository:
         )
 
         result = await session.execute(query)
+        return result.scalars().all()
+
+    @staticmethod
+    async def get_dividend(session: AsyncSession, stock_code: str) -> Dividend:
+        result = await session.execute(select(Dividend).where(Dividend.stock_code == stock_code))
+        return result.scalar_one_or_none()
+
+    @staticmethod
+    async def get_dividends(session: AsyncSession, stock_codes: list[str]) -> list[Dividend]:
+        result = await session.execute(select(Dividend).where(Dividend.stock_code.in_(stock_codes)))
         return result.scalars().all()
 
     @staticmethod

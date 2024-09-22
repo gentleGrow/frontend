@@ -50,7 +50,6 @@ async def insert_dividend_data(session: AsyncSession, stock_list: list[StockInfo
                 ic(f"[분석][insert_dividend_data] Error during dividend processing for {stock.code}: {e}")
                 continue
 
-        ic(len(dividend_list))
         await DividendRepository.bulk_upsert(session=session, dividends=dividend_list)
 
 

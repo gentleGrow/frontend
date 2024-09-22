@@ -1,9 +1,10 @@
 from datetime import date
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, RootModel
 
 from app.module.asset.enum import AccountType, PurchaseCurrencyType
+from app.module.asset.model import Asset
 
 
 class StockAsset(BaseModel):
@@ -43,13 +44,13 @@ class BankAccountResponse(BaseModel):
     account_list: list[str]
 
 
-class StockListResponseValue(BaseModel):
+class StockListValue(BaseModel):
     name: str
     code: str
 
 
-class StockListResponse(BaseModel):
-    stock_list: list[StockListResponseValue]
+class StockListResponse(RootModel[list[StockListValue]]):
+    pass
 
 
 class StockAssetResponse(BaseModel):
@@ -76,6 +77,19 @@ class StockAssetResponse(BaseModel):
             total_profit_amount=total_asset_amount - total_invest_amount,
             total_dividend_amount=total_dividend_amount,
         )
+
+    @staticmethod
+    def validate_assets(assets: list[Asset]) -> Optional["StockAssetResponse"]:
+        if len(assets) == 0:
+            return StockAssetResponse(
+                stock_assets=[],
+                total_asset_amount=0.0,
+                total_invest_amount=0.0,
+                total_profit_rate=0.0,
+                total_profit_amount=0.0,
+                total_dividend_amount=0.0,
+            )
+        return None
 
 
 class StockInfo(BaseModel):

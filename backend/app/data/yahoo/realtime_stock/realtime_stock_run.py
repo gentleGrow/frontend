@@ -56,7 +56,6 @@ async def spawn_cluster_process(stock_code_list_chunk):
 
 async def main():
     stock_code_list = StockCodeFileReader.get_all_stock_code_list()
-    ic(len(stock_code_list))
 
     stock_code_list_chunks = chunked(stock_code_list, REALTIME_STOCK_LIST)
 

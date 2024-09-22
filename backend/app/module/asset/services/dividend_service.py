@@ -2,13 +2,21 @@ from collections import defaultdict
 from datetime import date
 
 from pandas import to_datetime
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.module.asset.enum import CurrencyType
-from app.module.asset.model import Asset
+from app.module.asset.model import Asset, Dividend
+from app.module.asset.repository.dividend_repository import DividendRepository
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
 
 
 class DividendService:
+    @staticmethod
+    async def get_recent_map(session: AsyncSession, assets: list[Asset]) -> dict[str, float]:
+        stock_codes = [asset.asset_stock.stock.code for asset in assets]
+        dividends: list[Dividend] = await DividendRepository.get_dividends_recent(session, stock_codes)
+        return {dividend.stock_code: dividend.dividend for dividend in dividends}
+
     @staticmethod
     async def get_composition(
         assets: list[Asset],
@@ -106,21 +114,9 @@ class DividendService:
     def get_total_dividend(
         assets: list[Asset], dividend_map: dict[str, float], exchange_rate_map: dict[str, float]
     ) -> float:
-        total_dividend_amount = 0
+        total_dividend_amount = 0.0
 
         for asset in assets:
-            dividend = dividend_map.get(asset.asset_stock.stock.code)
-            if dividend is None:
-                dividend = 0.0
-
-            source_country = asset.asset_stock.stock.country.upper().strip()
-            source_currency = CurrencyType[source_country]
-            won_exchange_rate = ExchangeRateService.get_exchange_rate(
-                source_currency, CurrencyType.KOREA, exchange_rate_map
-            )
-
-            current_dividend = dividend * won_exchange_rate * asset.asset_stock.quantity
-
-            total_dividend_amount += current_dividend
+            total_dividend_amount += dividend_map.get(asset.asset_stock.stock.code, 0.0) * asset.asset_stock.quantity * ExchangeRateService.get_won_exchange_rate(asset, exchange_rate_map)
 
         return total_dividend_amount

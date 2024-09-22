@@ -27,8 +27,6 @@ async def collect_stock_data(redis_client: Redis, session: AsyncSession) -> None
         db_bulk_data = []
 
         for code, price in code_price_pairs:
-            ic(code)
-            ic(price)
             current_stock_data = StockMinutely(code=code, datetime=now, current_price=price)
             db_bulk_data.append(current_stock_data)
 

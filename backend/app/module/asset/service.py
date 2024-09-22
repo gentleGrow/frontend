@@ -1,7 +1,7 @@
 from redis.asyncio import Redis
 
 from app.module.asset.constant import CURRENCY_PAIRS
-from app.module.asset.enum import CurrencyType
+from app.module.asset.enum import BaseCurrency, CurrencyType
 from app.module.asset.model import Asset, StockDaily
 from app.module.asset.redis_repository import RedisExchangeRateRepository, RedisRealTimeStockRepository
 from app.module.asset.schema import StockAsset
@@ -103,7 +103,7 @@ def get_stock_assets(
         source_currency = CurrencyType[source_country]
         won_exchange_rate = get_exchange_rate(source_currency, CurrencyType.KOREA, exchange_rate_map)
 
-        if base_currency:
+        if base_currency == BaseCurrency.WON:
             current_price = current_price * won_exchange_rate
             opening_price = stock_daily.opening_price * won_exchange_rate
             highest_price = stock_daily.highest_price * won_exchange_rate

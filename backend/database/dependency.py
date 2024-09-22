@@ -21,6 +21,9 @@ else:
 
 REDIS_PORT = int(getenv("REDIS_PORT", 6379))
 
+TEST_REDIS_HOST = getenv("TEST_REDIS_HOST", None)
+TEST_REDIS_PORT = int(getenv("TEST_REDIS_PORT", 6379))
+
 
 async def get_mysql_session_router() -> AsyncGenerator[AsyncSession, None]:
     db = mysql_session_factory()
@@ -51,4 +54,9 @@ async def get_mysql_session() -> AsyncGenerator[AsyncSession, None]:
 
 def get_redis_pool() -> Redis:
     pool = ConnectionPool(host=REDIS_HOST, port=REDIS_PORT, max_connections=POOL_SIZE, decode_responses=True)
+    return Redis(connection_pool=pool)
+
+
+def get_test_redis_pool() -> Redis:
+    pool = ConnectionPool(host=TEST_REDIS_HOST, port=TEST_REDIS_PORT, max_connections=POOL_SIZE, decode_responses=True)
     return Redis(connection_pool=pool)

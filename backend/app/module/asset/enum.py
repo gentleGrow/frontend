@@ -1,6 +1,11 @@
 from enum import StrEnum
 
 
+class BaseCurrency(StrEnum):
+    WON = "won"
+    DOLLAR = "dollar"
+
+
 class CountryMarketCode(StrEnum):
     USA = "O"
     KOREA_KOSPI = "KS"

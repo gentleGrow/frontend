@@ -40,7 +40,7 @@ class AssetStock(TimestampMixin, MySQLBase):
     purchase_date = Column(Date, nullable=False, info={"description": "구매일자"})
     purchase_price = Column(Float, nullable=True, info={"description": "매입가"})
     quantity = Column(Integer, nullable=False, info={"description": "구매수량"})
-
+    
     stock_id = Column(BigInteger, ForeignKey("stock.id"), primary_key=True)
     asset_id = Column(BigInteger, ForeignKey("asset.id"), primary_key=True)
     asset = relationship("Asset", back_populates="asset_stock", uselist=False, overlaps="stock,asset", lazy="selectin")

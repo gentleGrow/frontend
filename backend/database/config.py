@@ -17,13 +17,16 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 
-# sqlalchemy_logger = logging.getLogger("sqlalchemy.engine")
-# sqlalchemy_logger.setLevel(logging.INFO)
-
 ENVIRONMENT = getenv("ENVIRONMENT", None)
+
 
 if ENVIRONMENT == EnvironmentType.DEV:
     MYSQL_URL = getenv("LOCAL_MYSQL_URL", None)
+    mysql_engine = create_async_engine(
+        MYSQL_URL, pool_pre_ping=True, echo=False, pool_size=POOL_SIZE, max_overflow=MAX_OVERFLOW
+    )
+elif ENVIRONMENT == EnvironmentType.TEST:
+    MYSQL_URL = getenv("TEST_DATABASE_URL", None)
     mysql_engine = create_async_engine(
         MYSQL_URL, pool_pre_ping=True, echo=False, pool_size=POOL_SIZE, max_overflow=MAX_OVERFLOW
     )
