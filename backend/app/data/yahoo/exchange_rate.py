@@ -1,14 +1,11 @@
 import asyncio
-import logging
 
 import yfinance
-
+from icecream import ic
 from app.data.common.constant import STOCK_CACHE_SECOND
 from app.module.asset.constant import CURRENCY_PAIRS
 from app.module.asset.redis_repository import RedisExchangeRateRepository
 from database.dependency import get_redis_pool
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
 async def fetch_exchange_rate(source_currency: str, target_currency: str) -> float | None:
@@ -16,12 +13,16 @@ async def fetch_exchange_rate(source_currency: str, target_currency: str) -> flo
     try:
         ticker = yfinance.Ticker(url)
         exchange_rate_history = ticker.history(period="1d")
-        if not exchange_rate_history.empty:
-            rate = exchange_rate_history["Close"].iloc[0]
-            return rate
-    except Exception:
+        
+        if exchange_rate_history.empty:
+            ic(f"No data found for {url}")
+            return None
+        
+        rate = exchange_rate_history["Close"].iloc[0]
+        return rate
+    except Exception as e:
+        ic(e)
         return None
-    return None
 
 
 async def main():
@@ -38,7 +39,7 @@ async def main():
                 cache_key = source_currency + "_" + target_currency
                 await RedisExchangeRateRepository.save(redis_client, cache_key, rate, expire_time=STOCK_CACHE_SECOND)
         except Exception as e:
-            logging.error(f"An unexpected error occurred in the main loop: {e}")
+            ic(e)
 
         await asyncio.sleep(10)
 

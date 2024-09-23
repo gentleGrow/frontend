@@ -199,11 +199,7 @@ async def get_estimate_dividend(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> EstimateDividendEveryResponse | EstimateDividendTypeResponse:
-    user_id = token.get("user")
-    if user_id is None:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
-
-    assets: list[Asset] = await AssetRepository.get_eager(session, user_id, AssetType.STOCK)
+    assets: list[Asset] = await AssetRepository.get_eager(session, token.get("user"), AssetType.STOCK)
     if len(assets) == 0:
         if category == EstimateDividendType.EVERY:
             return EstimateDividendEveryResponse(estimate_dividend_list=[])
@@ -315,10 +311,6 @@ async def get_performance_analysis(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> PerformanceAnalysisResponse:
-    user_id = token.get("user")
-    if user_id is None:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
-
     current_datetime = datetime.now()
 
     start_datetime = current_datetime - interval.get_timedelta()
@@ -373,11 +365,7 @@ async def get_my_stock(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> MyStockResponse:
-    user_id = token.get("user")
-    if user_id is None:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
-
-    assets: list[Asset] = await AssetRepository.get_eager(session, user_id, AssetType.STOCK)
+    assets: list[Asset] = await AssetRepository.get_eager(session, token.get("user"), AssetType.STOCK)
     if len(assets) == 0:
         return MyStockResponse(my_stock_list=[])
 
@@ -464,7 +452,6 @@ async def get_sample_my_stock(
 async def get_market_index(
     redis_client: Redis = Depends(get_redis_pool),
 ) -> MarketIndiceResponse:
-
     market_index_keys = [market_index.value for market_index in MarketIndex]
     market_index_values_str = await RedisMarketIndiceRepository.gets(redis_client, market_index_keys)
 
@@ -493,11 +480,7 @@ async def get_composition(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> CompositionResponse:
-    user_id = token.get("user")
-    if user_id is None:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
-
-    assets: list[Asset] = await AssetRepository.get_eager(session, user_id, AssetType.STOCK)
+    assets: list[Asset] = await AssetRepository.get_eager(session, token.get("user"), AssetType.STOCK)
     if len(assets) == 0:
         return CompositionResponse(
             composition=[CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)]
@@ -554,7 +537,7 @@ async def get_sample_composition(
     stock_codes = [asset.asset_stock.stock.code for asset in assets]
     lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, stock_codes)
     lastest_stock_daily_map = {daily.code: daily for daily in lastest_stock_dailies}
-    current_stock_price_map = await StockService.get_current_stock_price(
+    current_stock_price_map = await StockService.get_current_stock_price_by_code(
         redis_client, lastest_stock_daily_map, stock_codes
     )
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
@@ -593,11 +576,7 @@ async def get_summary(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> SummaryResponse:
-    user_id = token.get("user")
-    if user_id is None:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
-
-    assets: list[Asset] = await AssetRepository.get_eager(session, int(user_id), AssetType.STOCK)
+    assets: list[Asset] = await AssetRepository.get_eager(session, token.get("user"), AssetType.STOCK)
     if len(assets) == 0:
         return SummaryResponse(
             today_review_rate=0.0, total_asset_amount=0, total_investment_amount=0, profit_amount=0, profit_rate=0.0

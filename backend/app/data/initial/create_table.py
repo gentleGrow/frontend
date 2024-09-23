@@ -3,6 +3,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.module.asset.model import (  # noqa > relationship purpose
     Asset,
+    AssetField,
     Dividend,
     MarketIndexDaily,
     MarketIndexMinutely,

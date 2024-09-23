@@ -1,5 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from pydantic import StrictBool
+from fastapi import APIRouter, Depends, HTTPException, status
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -79,20 +78,13 @@ async def get_sample_assetstocks(
     return StockAssetResponse.parse(stock_assets, total_asset_amount, total_invest_amount, total_dividend_amount)
 
 
-# 리팩토링 확인 선!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
 @asset_stock_router.get("/assetstock", summary="사용자의 자산 정보를 반환합니다.", response_model=StockAssetResponse)
 async def get_assets(
     token: AccessToken = Depends(verify_jwt_token),
     redis_client: Redis = Depends(get_redis_pool),
     session: AsyncSession = Depends(get_mysql_session_router),
 ) -> StockAssetResponse:
-    user_id = token.get("user")
-    if user_id is None:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
-
-    assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
+    assets: list[Asset] = await AssetRepository.get_eager(session, token.get("user"), AssetType.STOCK)
 
     validation_response = StockAssetResponse.validate_assets(assets)
     if validation_response:
@@ -123,16 +115,14 @@ async def get_assets(
     return StockAssetResponse.parse(stock_assets, total_asset_amount, total_invest_amount, total_dividend_amount)
 
 
+# 리팩토링 확인 선!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 @asset_stock_router.post("/assetstock", summary="자산관리 정보를 등록합니다.", response_model=JsonResponse)
 async def create_assets(
     transaction_data: list[StockAssetRequest],
     token: dict = Depends(verify_jwt_token),
     session: AsyncSession = Depends(get_mysql_session_router),
 ) -> JsonResponse:
-    user_id = token.get("user")
-    if user_id is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
-
     assets_to_create = []
 
     stock_codes = [asset_data.stock_code for asset_data in transaction_data]
@@ -151,7 +141,7 @@ async def create_assets(
 
         new_asset = Asset(
             asset_type=AssetType.STOCK,
-            user_id=user_id,
+            user_id = token.get("user"),
             asset_stock=AssetStock(
                 account_type=asset_data.account_type,
                 investment_bank=asset_data.investment_bank,
@@ -174,10 +164,6 @@ async def update_assets(
     token: dict = Depends(verify_jwt_token),
     session: AsyncSession = Depends(get_mysql_session_router),
 ) -> JsonResponse:
-    user_id = token.get("user")
-    if user_id is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
-
     asset_ids = [asset_data.id for asset_data in transaction_data if asset_data.id]
 
     assets_to_update = []

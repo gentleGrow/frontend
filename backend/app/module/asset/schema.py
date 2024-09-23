@@ -73,7 +73,7 @@ class StockAssetResponse(BaseModel):
             stock_assets=stock_assets,
             total_asset_amount=total_asset_amount,
             total_invest_amount=total_invest_amount,
-            total_profit_rate=((total_asset_amount - total_invest_amount) / total_invest_amount) * 100,
+            total_profit_rate=((total_asset_amount - total_invest_amount) / total_invest_amount) * 100 if total_invest_amount > 0 else 0.0,
             total_profit_amount=total_asset_amount - total_invest_amount,
             total_dividend_amount=total_dividend_amount,
         )
