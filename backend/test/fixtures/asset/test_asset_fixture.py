@@ -38,7 +38,7 @@ async def setup_dividend(db_session: AsyncSession, setup_stock):
     dividend3 = Dividend(dividend=0.8, stock_code="TSLA", date=date(2024, 8, 13))
 
     dividend4 = Dividend(dividend=0.9, stock_code="TSLA", date=date(2024, 8, 14))
-    
+
     dividend5 = Dividend(dividend=100.0, stock_code="005930", date=date(2024, 8, 13))
 
     dividend6 = Dividend(dividend=105.0, stock_code="005930", date=date(2024, 8, 14))
@@ -114,7 +114,7 @@ async def setup_stock_daily(db_session: AsyncSession, setup_stock):
         opening_price=725.0,
         trade_volume=1600000,
     )
-    
+
     stock_daily_5 = StockDaily(
         adj_close_price=70000.0,
         close_price=70000.0,
@@ -125,7 +125,7 @@ async def setup_stock_daily(db_session: AsyncSession, setup_stock):
         opening_price=70500.0,
         trade_volume=1000,
     )
-    
+
     stock_daily_6 = StockDaily(
         adj_close_price=72000.0,
         close_price=72000.0,
@@ -162,7 +162,7 @@ async def setup_asset(db_session: AsyncSession, setup_user, setup_stock):
         quantity=2,
         stock_id=2,
     )
-    
+
     asset_stock3 = AssetStock(
         account_type=AccountType.REGULAR.value,
         investment_bank=InvestmentBankType.KB.value,

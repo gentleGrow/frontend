@@ -5,6 +5,7 @@ from app.module.asset.model import Asset, StockDaily
 from app.module.asset.schema import StockAsset
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
 
+
 class AssetStockService:
     @staticmethod
     def get_total_asset_amount_minute(
@@ -39,7 +40,11 @@ class AssetStockService:
         result = 0.0
 
         for asset in assets:
-            result += current_stock_price_map.get(asset.asset_stock.stock.code) * asset.asset_stock.quantity * ExchangeRateService.get_won_exchange_rate(asset, exchange_rate_map)
+            result += (
+                current_stock_price_map.get(asset.asset_stock.stock.code)
+                * asset.asset_stock.quantity
+                * ExchangeRateService.get_won_exchange_rate(asset, exchange_rate_map)
+            )
         return result
 
     @staticmethod
@@ -53,32 +58,48 @@ class AssetStockService:
         stock_assets = []
 
         for asset in assets:
-            apply_exchange_rate:float = (
+            apply_exchange_rate: float = (
                 ExchangeRateService.get_dollar_exchange_rate(asset, exchange_rate_map)
                 if asset.asset_stock.purchase_currency_type == PurchaseCurrencyType.USA
                 else ExchangeRateService.get_won_exchange_rate(asset, exchange_rate_map)
             )
-            
-            stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.asset_stock.purchase_date))
+
+            stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.asset_stock.purchase_date), None)
+            if stock_daily is None:
+                continue
+
             purchase_price = (
-                asset.asset_stock.purchase_price
-                if asset.asset_stock.purchase_price 
-                else stock_daily.adj_close_price
+                asset.asset_stock.purchase_price if asset.asset_stock.purchase_price else stock_daily.adj_close_price
             )
 
             stock_asset = StockAsset(
                 id=asset.id,
                 account_type=asset.asset_stock.account_type,
                 buy_date=asset.asset_stock.purchase_date,
-                current_price=current_stock_price_map.get(asset.asset_stock.stock.code) * apply_exchange_rate,
-                dividend=dividend_map.get(asset.asset_stock.stock.code, 0.0) * asset.asset_stock.quantity * apply_exchange_rate,
+                current_price=current_stock_price_map.get(asset.asset_stock.stock.code, 0.0) * apply_exchange_rate,
+                dividend=dividend_map.get(asset.asset_stock.stock.code, 0.0)
+                * asset.asset_stock.quantity
+                * apply_exchange_rate,
                 highest_price=stock_daily.highest_price * apply_exchange_rate,
                 investment_bank=asset.asset_stock.investment_bank,
                 lowest_price=stock_daily.lowest_price * apply_exchange_rate,
                 opening_price=stock_daily.opening_price * apply_exchange_rate,
-                profit_rate=(((current_stock_price_map.get(asset.asset_stock.stock.code) * apply_exchange_rate) - purchase_price) / purchase_price) * 100,
-                profit_amount=((current_stock_price_map.get(asset.asset_stock.stock.code) * apply_exchange_rate) - purchase_price) * asset.asset_stock.quantity,
-                purchase_amount=asset.asset_stock.purchase_price * asset.asset_stock.quantity if asset.asset_stock.purchase_price else None,
+                profit_rate=(
+                    (
+                        (current_stock_price_map.get(asset.asset_stock.stock.code, 0.0) * apply_exchange_rate)
+                        - purchase_price
+                    )
+                    / purchase_price
+                )
+                * 100,
+                profit_amount=(
+                    (current_stock_price_map.get(asset.asset_stock.stock.code, 0.0) * apply_exchange_rate)
+                    - purchase_price
+                )
+                * asset.asset_stock.quantity,
+                purchase_amount=asset.asset_stock.purchase_price * asset.asset_stock.quantity
+                if asset.asset_stock.purchase_price
+                else None,
                 purchase_price=asset.asset_stock.purchase_price,
                 purchase_currency_type=asset.asset_stock.purchase_currency_type,
                 quantity=asset.asset_stock.quantity,
@@ -91,7 +112,6 @@ class AssetStockService:
 
         return stock_assets
 
-
     @staticmethod
     def get_total_investment_amount(
         assets: list[Asset],
@@ -99,14 +119,16 @@ class AssetStockService:
         exchange_rate_map: dict[str, float],
     ) -> float:
         total_invest_amount = 0.0
-        
 
         for asset in assets:
-            stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.asset_stock.purchase_date))
-            
+            stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.asset_stock.purchase_date), None)
+            if stock_daily is None:
+                continue
+
             invest_price = (
                 asset.asset_stock.purchase_price * ExchangeRateService.get_won_exchange_rate(asset, exchange_rate_map)
-                if asset.asset_stock.purchase_currency_type == PurchaseCurrencyType.USA and asset.asset_stock.purchase_price
+                if asset.asset_stock.purchase_currency_type == PurchaseCurrencyType.USA
+                and asset.asset_stock.purchase_price
                 else asset.asset_stock.purchase_price
                 if asset.asset_stock.purchase_price
                 else stock_daily.adj_close_price * ExchangeRateService.get_won_exchange_rate(asset, exchange_rate_map)

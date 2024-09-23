@@ -1,5 +1,6 @@
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.module.asset.enum import AssetType
 from app.module.asset.model import Asset
 from app.module.asset.repository.asset_repository import AssetRepository

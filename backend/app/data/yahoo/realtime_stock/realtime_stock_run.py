@@ -4,7 +4,6 @@ import os
 from os import getenv
 
 from dotenv import load_dotenv
-from icecream import ic
 from more_itertools import chunked
 
 from app.data.common.service import StockCodeFileReader

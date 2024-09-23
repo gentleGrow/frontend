@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.common.auth.security import verify_jwt_token
 from app.data.investing.sources.enum import RicePeople
 from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
-from app.module.asset.enum import AssetType, BaseCurrency, CurrencyType, MarketIndex
+from app.module.asset.enum import AssetType, CurrencyType, MarketIndex
 from app.module.asset.model import Asset, Dividend, StockDaily
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.dividend_repository import DividendRepository
@@ -130,11 +130,11 @@ async def get_rich_pick(
 
 
 @chart_router.get(
-    "/dummy/estimate-dividend",
+    "/sample/estimate-dividend",
     summary="더미 예상 배당액",
     response_model=EstimateDividendEveryResponse | EstimateDividendTypeResponse,
 )
-async def get_dummy_estimate_dividend(
+async def get_sample_estimate_dividend(
     category: EstimateDividendType = Query(EstimateDividendType.EVERY, description="every는 모두, type은 종목 별 입니다."),
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
@@ -254,8 +254,8 @@ async def get_estimate_dividend(
         return EstimateDividendTypeResponse(estimate_dividend_list)
 
 
-@chart_router.get("/dummy/performance-analysis", summary="더미 투자 성과 분석", response_model=PerformanceAnalysisResponse)
-async def get_dummy_performance_analysis(
+@chart_router.get("/sample/performance-analysis", summary="더미 투자 성과 분석", response_model=PerformanceAnalysisResponse)
+async def get_sample_performance_analysis(
     interval: IntervalType = Query(IntervalType.ONEMONTH, description="기간 별, 투자 성관 분석 데이터가 제공 됩니다."),
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
@@ -399,7 +399,7 @@ async def get_my_stock(
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
     stock_assets: list[StockAsset] = AssetStockService.get_stock_assets(
-        assets, stock_daily_map, current_stock_price_map, dividend_map, BaseCurrency.WON, exchange_rate_map
+        assets, stock_daily_map, current_stock_price_map, dividend_map, exchange_rate_map
     )
 
     my_stock_list = [
@@ -416,8 +416,8 @@ async def get_my_stock(
     return MyStockResponse(my_stock_list=my_stock_list)
 
 
-@chart_router.get("/dummy/my-stock", summary="내 보유 주식", response_model=MyStockResponse)
-async def get_dummy_my_stock(
+@chart_router.get("/sample/my-stock", summary="내 보유 주식", response_model=MyStockResponse)
+async def get_sample_my_stock(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> MyStockResponse:
@@ -443,7 +443,7 @@ async def get_dummy_my_stock(
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
     stock_assets: list[StockAsset] = AssetStockService.get_stock_assets(
-        assets, stock_daily_map, current_stock_price_map, dividend_map, BaseCurrency.WON, exchange_rate_map
+        assets, stock_daily_map, current_stock_price_map, dividend_map, exchange_rate_map
     )
 
     my_stock_list = [
@@ -539,8 +539,8 @@ async def get_composition(
         return CompositionResponse(composition=composition_data)
 
 
-@chart_router.get("/dummy/composition", summary="종목 구성", response_model=CompositionResponse)
-async def get_dummy_composition(
+@chart_router.get("/sample/composition", summary="종목 구성", response_model=CompositionResponse)
+async def get_sample_composition(
     type: CompositionType = Query(CompositionType.COMPOSITION, description="composition은 종목 별, account는 계좌 별 입니다."),
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
@@ -642,8 +642,8 @@ async def get_summary(
     )
 
 
-@chart_router.get("/dummy/summary", summary="오늘의 리뷰, 나의 총자산, 나의 투자 금액, 수익금", response_model=SummaryResponse)
-async def get_dummy_summary(
+@chart_router.get("/sample/summary", summary="오늘의 리뷰, 나의 총자산, 나의 투자 금액, 수익금", response_model=SummaryResponse)
+async def get_sample_summary(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> SummaryResponse:

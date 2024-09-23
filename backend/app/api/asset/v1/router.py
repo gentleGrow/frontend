@@ -26,8 +26,6 @@ from app.module.auth.constant import DUMMY_USER_ID
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
 from app.module.auth.schema import AccessToken
 from database.dependency import get_mysql_session_router, get_redis_pool
-from icecream import ic
-
 
 asset_stock_router = APIRouter(prefix="/v1")
 
@@ -47,13 +45,9 @@ async def get_stocklist(session: AsyncSession = Depends(get_mysql_session_router
     return StockListResponse([StockListValue(name=stock.name, code=stock.code) for stock in stock_list])
 
 
-# 리팩토링 확인 선!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
 @asset_stock_router.get("/sample/assetstock", summary="임시 자산 정보를 반환합니다.", response_model=StockAssetResponse)
-async def get_dummy_assetstocks(
-    session: AsyncSession = Depends(get_mysql_session_router),
-    redis_client: Redis = Depends(get_redis_pool)
+async def get_sample_assetstocks(
+    session: AsyncSession = Depends(get_mysql_session_router), redis_client: Redis = Depends(get_redis_pool)
 ) -> StockAssetResponse:
     assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
     validation_response = StockAssetResponse.validate_assets(assets)
@@ -85,12 +79,14 @@ async def get_dummy_assetstocks(
     return StockAssetResponse.parse(stock_assets, total_asset_amount, total_invest_amount, total_dividend_amount)
 
 
+# 리팩토링 확인 선!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
 @asset_stock_router.get("/assetstock", summary="사용자의 자산 정보를 반환합니다.", response_model=StockAssetResponse)
 async def get_assets(
     token: AccessToken = Depends(verify_jwt_token),
     redis_client: Redis = Depends(get_redis_pool),
     session: AsyncSession = Depends(get_mysql_session_router),
-    base_currency: StrictBool = Query(True, description="원화는 True, 종목통화는 False"),
 ) -> StockAssetResponse:
     user_id = token.get("user")
     if user_id is None:
@@ -117,7 +113,7 @@ async def get_assets(
         )
 
     stock_assets: list[StockAsset] = AssetStockService.get_stock_assets(
-        assets, stock_daily_map, current_stock_price_map, dividend_map, base_currency, exchange_rate_map
+        assets, stock_daily_map, current_stock_price_map, dividend_map, exchange_rate_map
     )
 
     total_asset_amount = AssetStockService.get_total_asset_amount(assets, current_stock_price_map, exchange_rate_map)
