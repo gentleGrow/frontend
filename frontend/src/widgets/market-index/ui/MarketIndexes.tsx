@@ -22,8 +22,8 @@ export default async function MarketIndexes() {
   );
 
   return (
-    <div className="relative flex h-[80px] w-full items-center overflow-hidden rounded-md border border-gray-20 bg-gray-0 mobile:h-[95px] mobile:rounded-none mobile:border-none">
-      <div className="flex w-full mobile:hidden">
+    <div className="relative flex h-[80px] w-full items-center overflow-hidden rounded-md border border-gray-20 bg-gray-0 mobile:block mobile:h-[95px] mobile:rounded-none mobile:border-none">
+      <div className="flex mobile:hidden">
         <div className="flex w-1/2 justify-center">
           {indexes ? (
             <VerticalTicker items={leftSideMarketIndexItems} />
@@ -36,7 +36,7 @@ export default async function MarketIndexes() {
           {indexes ? <VerticalTicker items={rightSideMarketIndexItems} /> : ""}
         </div>
       </div>
-      <div className="hidden mobile:flex">
+      <div className="hidden h-full items-center px-[16px] mobile:flex">
         {indexes ? (
           <SwiperBox items={marketIndexItems} />
         ) : (
