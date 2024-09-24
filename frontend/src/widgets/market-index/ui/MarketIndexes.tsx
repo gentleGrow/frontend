@@ -1,7 +1,6 @@
 import fetchIndexes from "../api/fetchIndexes";
 import MarketIndexItem from "./MarketIndexItem";
 import SwiperBox from "./SwiperBox";
-import VerticalTicker from "./VerticalTicker";
 
 export default async function MarketIndexes() {
   const indexes = await fetchIndexes();
@@ -14,29 +13,10 @@ export default async function MarketIndexes() {
       />
     </>
   ));
-  const leftSideMarketIndexItems = marketIndexItems.filter(
-    (_, i) => (i + 1) % 2 === 1,
-  );
-  const rightSideMarketIndexItems = marketIndexItems.filter(
-    (_, i) => (i + 1) % 2 === 0,
-  );
 
   return (
-    <div className="relative flex h-[80px] w-full items-center overflow-hidden rounded-md border border-gray-20 bg-gray-0 mobile:block mobile:h-[95px] mobile:rounded-none mobile:border-none">
-      <div className="flex mobile:hidden">
-        <div className="flex w-1/2 justify-center">
-          {indexes ? (
-            <VerticalTicker items={leftSideMarketIndexItems} />
-          ) : (
-            "주식 지수 정보를 가져오지 못했습니다."
-          )}
-        </div>
-        <div className="absolute left-1/2 top-1/2 z-10 h-[32px] w-[1px] -translate-x-1/2 -translate-y-1/2 bg-gray-20" />
-        <div className="flex w-1/2 justify-center">
-          {indexes ? <VerticalTicker items={rightSideMarketIndexItems} /> : ""}
-        </div>
-      </div>
-      <div className="hidden h-full items-center px-[16px] mobile:flex">
+    <div className="relative h-[95px] w-full items-center overflow-hidden rounded-md border border-gray-20 bg-gray-0 mobile:rounded-none mobile:border-none">
+      <div className="flex h-full items-center px-[16px]">
         {indexes ? (
           <SwiperBox items={marketIndexItems} />
         ) : (

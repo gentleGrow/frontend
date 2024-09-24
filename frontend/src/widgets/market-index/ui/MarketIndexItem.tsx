@@ -10,7 +10,7 @@ export default function MarketIndexItem({
   rate: number;
 }) {
   return (
-    <div className="flex justify-center space-x-[24px] border-r border-gray-20 text-heading-4 mobile:flex-col mobile:space-x-0 mobile:space-y-[12px] mobile:px-[16px] except-mobile:items-center except-mobile:border-r-0">
+    <div className="flex flex-col justify-center space-y-[12px] border-r border-gray-20 px-[16px] text-heading-4">
       <p className="">{stockMarket}</p>
       <div className="flex items-center space-x-[8px]">
         <p>{stockIndex}</p>
