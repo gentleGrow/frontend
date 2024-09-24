@@ -12,24 +12,24 @@ from app.module.auth.constant import DUMMY_USER_ID
 
 
 class TestDividendService:
-    async def test_get_recent_map(self, db_session: AsyncSession, setup_dividend, setup_asset):
+    async def test_get_recent_map(self, session: AsyncSession, setup_dividend, setup_asset):
         # Given
-        assets = await db_session.execute(select(Asset).filter(Asset.user_id == DUMMY_USER_ID))
+        assets = await session.execute(select(Asset).filter(Asset.user_id == DUMMY_USER_ID))
         assets = assets.scalars().all()
 
         # When
-        result = await DividendService.get_recent_map(db_session, assets)
+        result = await DividendService.get_recent_map(session, assets)
 
         # Then
         assert result["AAPL"] == 1.60
         assert result["TSLA"] == 0.90
 
     async def test_get_total_dividend(
-        self, db_session: AsyncSession, redis_client: Redis, setup_exchange_rate, setup_asset, setup_dividend
+        self, session: AsyncSession, redis_client: Redis, setup_exchange_rate, setup_asset, setup_dividend
     ):
         # Given
-        assets: list[Asset] = await AssetRepository.get_eager(db_session, DUMMY_USER_ID, AssetType.STOCK)
-        dividend_map = await DividendService.get_recent_map(db_session, assets)
+        assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
+        dividend_map = await DividendService.get_recent_map(session, assets)
         exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
         # When

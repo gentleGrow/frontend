@@ -43,11 +43,11 @@ async def drop_tables():
 
 
 @pytest.fixture(scope="function")
-async def db_session():
-    async with TestSessionLocal() as session:
+async def session():
+    async with TestSessionLocal() as test_session:
         await create_tables()
-        yield session
-        await session.rollback()
+        yield test_session
+        await test_session.rollback()
         await drop_tables()
 
 

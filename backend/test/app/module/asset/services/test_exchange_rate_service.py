@@ -11,10 +11,10 @@ from app.module.auth.constant import DUMMY_USER_ID
 class TestExchangeRateService:
     @pytest.mark.asyncio
     async def test_get_dollar_exchange_rate_for_foreign_asset(
-        self, db_session, redis_client, setup_exchange_rate, setup_asset
+        self, session, redis_client, setup_exchange_rate, setup_asset
     ):
         # Given
-        assets: list[Asset] = await AssetRepository.get_eager(db_session, DUMMY_USER_ID, AssetType.STOCK)
+        assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
         exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
         foreign_assets = [asset for asset in assets if asset.asset_stock.stock.country.upper().strip() != "USA"]
@@ -31,10 +31,10 @@ class TestExchangeRateService:
 
     @pytest.mark.asyncio
     async def test_get_dollar_exchange_rate_for_dollar_asset(
-        self, db_session, redis_client, setup_exchange_rate, setup_asset
+        self, session, redis_client, setup_exchange_rate, setup_asset
     ):
         # Given
-        assets: list[Asset] = await AssetRepository.get_eager(db_session, DUMMY_USER_ID, AssetType.STOCK)
+        assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
         exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
         usa_assets = [asset for asset in assets if asset.asset_stock.stock.country.upper().strip() == "USA"]
@@ -48,10 +48,10 @@ class TestExchangeRateService:
 
     @pytest.mark.asyncio
     async def test_get_won_exchange_rate_for_korean_asset(
-        self, db_session, redis_client, setup_exchange_rate, setup_asset
+        self, session, redis_client, setup_exchange_rate, setup_asset
     ):
         # Given
-        assets: list[Asset] = await AssetRepository.get_eager(db_session, DUMMY_USER_ID, AssetType.STOCK)
+        assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
         exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
         korean_assets = [asset for asset in assets if asset.asset_stock.stock.country.upper().strip() == "KOREA"]
@@ -65,10 +65,10 @@ class TestExchangeRateService:
 
     @pytest.mark.asyncio
     async def test_get_won_exchange_rate_for_foreign_asset(
-        self, db_session, redis_client, setup_exchange_rate, setup_asset
+        self, session, redis_client, setup_exchange_rate, setup_asset
     ):
         # Given
-        assets: list[Asset] = await AssetRepository.get_eager(db_session, DUMMY_USER_ID, AssetType.STOCK)
+        assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
         exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
         foreign_assets = [asset for asset in assets if asset.asset_stock.stock.country.upper().strip() != "KOREA"]

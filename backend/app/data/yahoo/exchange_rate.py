@@ -2,6 +2,7 @@ import asyncio
 
 import yfinance
 from icecream import ic
+
 from app.data.common.constant import STOCK_CACHE_SECOND
 from app.module.asset.constant import CURRENCY_PAIRS
 from app.module.asset.redis_repository import RedisExchangeRateRepository
@@ -13,11 +14,11 @@ async def fetch_exchange_rate(source_currency: str, target_currency: str) -> flo
     try:
         ticker = yfinance.Ticker(url)
         exchange_rate_history = ticker.history(period="1d")
-        
+
         if exchange_rate_history.empty:
             ic(f"No data found for {url}")
             return None
-        
+
         rate = exchange_rate_history["Close"].iloc[0]
         return rate
     except Exception as e:

@@ -7,15 +7,39 @@ from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.services.stock_daily_service import StockDailyService
 from app.module.asset.services.stock_service import StockService
 from app.module.auth.constant import DUMMY_USER_ID
-
+from app.module.asset.repository.stock_repository import StockRepository
 
 class TestStockService:
-    async def test_check_not_found_stock(self, db_session: AsyncSession, setup_asset, setup_stock_daily, setup_user):
+    async def test_get_stock_map(
+        self,
+        session: AsyncSession,
+        setup_asset,
+        setup_stock,
+        setup_user
+    ):
         # Given
-        assets: list[Asset] = await AssetRepository.get_eager(db_session, DUMMY_USER_ID, AssetType.STOCK)
+        stock_code = "AAPL"
+        
+        expected_stocks = await StockRepository.get_by_code(session, stock_code)
+        expected_stock_map = {expected_stocks.code: expected_stocks}
 
-        stock_daily_map = await StockDailyService.get_map_range(db_session, assets)
-        lastest_stock_daily_map = await StockDailyService.get_latest_map(db_session, assets)
+        # When
+        stock_map = await StockService.get_stock_map(session, stock_code)
+
+        # Then
+        assert len(stock_map) == len(expected_stock_map)
+        for code, stock in expected_stock_map.items():
+            assert code in stock_map
+            assert stock_map[code] == stock
+    
+    
+    
+    async def test_check_not_found_stock(self, session: AsyncSession, setup_asset, setup_stock_daily, setup_user):
+        # Given
+        assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
+
+        stock_daily_map = await StockDailyService.get_map_range(session, assets)
+        lastest_stock_daily_map = await StockDailyService.get_latest_map(session, assets)
 
         current_stock_price_map = {stock_code: None for stock_code in lastest_stock_daily_map.keys()}
 
@@ -28,7 +52,7 @@ class TestStockService:
 
     async def test_get_current_stock_price(
         self,
-        db_session: AsyncSession,
+        session: AsyncSession,
         redis_client: Redis,
         setup_user,
         setup_stock_daily,
@@ -36,8 +60,8 @@ class TestStockService:
         setup_asset,
     ):
         # Given
-        assets = await AssetRepository.get_eager(db_session, DUMMY_USER_ID, AssetType.STOCK)
-        lastest_stock_daily_map = await StockDailyService.get_latest_map(db_session, assets)
+        assets = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
+        lastest_stock_daily_map = await StockDailyService.get_latest_map(session, assets)
 
         expected_keys, expected_values = setup_realtime_stock_price
         current_prices = await StockService.get_current_stock_price(redis_client, lastest_stock_daily_map, assets)

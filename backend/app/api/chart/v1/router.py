@@ -14,13 +14,7 @@ from app.module.asset.model import Asset, Dividend, StockDaily
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.dividend_repository import DividendRepository
 from app.module.asset.repository.stock_daily_repository import StockDailyRepository
-from app.module.asset.schema import MarketIndexData, StockAsset
-from app.module.asset.service import (
-    check_not_found_stock,
-    get_current_stock_price,
-    get_total_asset_amount,
-    get_total_investment_amount,
-)
+from app.module.asset.schema import MarketIndexData
 from app.module.asset.services.asset_stock_service import AssetStockService
 from app.module.asset.services.dividend_service import DividendService
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
@@ -386,7 +380,7 @@ async def get_my_stock(
     )
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
-    stock_assets: list[StockAsset] = AssetStockService.get_stock_assets(
+    stock_assets:list[dict] = await AssetStockService.get_stock_assets(
         assets, stock_daily_map, current_stock_price_map, dividend_map, exchange_rate_map
     )
 
@@ -430,7 +424,7 @@ async def get_sample_my_stock(
     )
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
-    stock_assets: list[StockAsset] = AssetStockService.get_stock_assets(
+    stock_assets: list[dict] = await AssetStockService.get_stock_assets(
         assets, stock_daily_map, current_stock_price_map, dividend_map, exchange_rate_map
     )
 

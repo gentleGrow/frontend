@@ -1,12 +1,41 @@
 from datetime import date, datetime
-
-from app.module.asset.enum import CurrencyType, PurchaseCurrencyType
-from app.module.asset.model import Asset, StockDaily
-from app.module.asset.schema import StockAsset
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.module.asset.enum import CurrencyType, PurchaseCurrencyType, StockAsset, AssetType
+from app.module.asset.model import Asset, StockDaily, Stock, AssetStock
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
+from app.module.asset.repository.asset_field_repository import AssetFieldRepository
+from app.module.asset.schema import AssetStockPostRequest
+from app.module.asset.repository.asset_repository import AssetRepository
 
 
 class AssetStockService:
+    @staticmethod
+    async def save_asset_stock_by_post(
+        session: AsyncSession,
+        request_data:AssetStockPostRequest,
+        stock_id:int,
+        user_id:str
+    ) -> None:
+        result = []
+
+        new_asset = Asset(
+            asset_type=AssetType.STOCK,
+            user_id=user_id,
+            asset_stock=AssetStock(
+                account_type=request_data.account_type,
+                investment_bank=request_data.investment_bank,
+                purchase_currency_type=request_data.purchase_currency_type,
+                purchase_date=request_data.buy_date,
+                purchase_price=request_data.purchase_price,
+                quantity=request_data.quantity,
+                stock_id=stock_id,
+            ),
+        )
+        result.append(new_asset)
+            
+        await AssetRepository.save_assets(session, result)
+        
+    
     @staticmethod
     def get_total_asset_amount_minute(
         assets: list[Asset],
@@ -48,13 +77,17 @@ class AssetStockService:
         return result
 
     @staticmethod
-    def get_stock_assets(
+    async def get_stock_assets(
+        session: AsyncSession,
+        user_id: str,
         assets: list[Asset],
         stock_daily_map: dict[tuple[str, date], StockDaily],
         current_stock_price_map: dict[str, float],
         dividend_map: dict[str, float],
         exchange_rate_map: dict[str, float],
-    ) -> list[StockAsset]:
+    ) -> list[dict]:
+        asset_field = await AssetFieldRepository.get(session, user_id)
+        
         stock_assets = []
 
         for asset in assets:
@@ -72,43 +105,29 @@ class AssetStockService:
                 asset.asset_stock.purchase_price if asset.asset_stock.purchase_price else stock_daily.adj_close_price
             )
 
-            stock_asset = StockAsset(
-                id=asset.id,
-                account_type=asset.asset_stock.account_type,
-                buy_date=asset.asset_stock.purchase_date,
-                current_price=current_stock_price_map.get(asset.asset_stock.stock.code, 0.0) * apply_exchange_rate,
-                dividend=dividend_map.get(asset.asset_stock.stock.code, 0.0)
-                * asset.asset_stock.quantity
-                * apply_exchange_rate,
-                highest_price=stock_daily.highest_price * apply_exchange_rate,
-                investment_bank=asset.asset_stock.investment_bank,
-                lowest_price=stock_daily.lowest_price * apply_exchange_rate,
-                opening_price=stock_daily.opening_price * apply_exchange_rate,
-                profit_rate=(
-                    (
-                        (current_stock_price_map.get(asset.asset_stock.stock.code, 0.0) * apply_exchange_rate)
-                        - purchase_price
-                    )
-                    / purchase_price
-                )
-                * 100,
-                profit_amount=(
-                    (current_stock_price_map.get(asset.asset_stock.stock.code, 0.0) * apply_exchange_rate)
-                    - purchase_price
-                )
-                * asset.asset_stock.quantity,
-                purchase_amount=asset.asset_stock.purchase_price * asset.asset_stock.quantity
-                if asset.asset_stock.purchase_price
-                else None,
-                purchase_price=asset.asset_stock.purchase_price,
-                purchase_currency_type=asset.asset_stock.purchase_currency_type,
-                quantity=asset.asset_stock.quantity,
-                stock_code=asset.asset_stock.stock.code,
-                stock_name=asset.asset_stock.stock.name,
-                stock_volume=stock_daily.trade_volume,
-            )
+            stock_asset_data = {
+                StockAsset.ID: asset.id,
+                StockAsset.ACCOUNT_TYPE: asset.asset_stock.account_type or None,
+                StockAsset.BUY_DATE: asset.asset_stock.purchase_date,
+                StockAsset.CURRENT_PRICE: (current_stock_price_map.get(asset.asset_stock.stock.code, 0.0) * apply_exchange_rate),
+                StockAsset.DIVIDEND: (dividend_map.get(asset.asset_stock.stock.code, 0.0) * asset.asset_stock.quantity * apply_exchange_rate),
+                StockAsset.HIGHEST_PRICE: (stock_daily.highest_price * apply_exchange_rate) if stock_daily.highest_price else None,
+                StockAsset.INVESTMENT_BANK: asset.asset_stock.investment_bank or None,
+                StockAsset.LOWEST_PRICE: (stock_daily.lowest_price * apply_exchange_rate) if stock_daily.lowest_price else None,
+                StockAsset.OPENING_PRICE: (stock_daily.opening_price * apply_exchange_rate) if stock_daily.opening_price else None,
+                StockAsset.PROFIT_RATE: ((current_stock_price_map.get(asset.asset_stock.stock.code, 0.0) * apply_exchange_rate - purchase_price) / purchase_price * 100) if purchase_price else None,
+                StockAsset.PROFIT_AMOUNT: ((current_stock_price_map.get(asset.asset_stock.stock.code, 0.0) * apply_exchange_rate - purchase_price) * asset.asset_stock.quantity) if purchase_price else None,
+                StockAsset.PURCHASE_AMOUNT: (asset.asset_stock.purchase_price * asset.asset_stock.quantity) if asset.asset_stock.purchase_price else None,
+                StockAsset.PURCHASE_PRICE: asset.asset_stock.purchase_price or None,
+                StockAsset.PURCHASE_CURRENCY_TYPE: asset.asset_stock.purchase_currency_type or None,
+                StockAsset.QUANTITY: asset.asset_stock.quantity,
+                StockAsset.STOCK_CODE: asset.asset_stock.stock.code,
+                StockAsset.STOCK_NAME: asset.asset_stock.stock.name,
+                StockAsset.STOCK_VOLUME: stock_daily.trade_volume if stock_daily.trade_volume else None
+            }
+            stock_asset_data = {field: value for field, value in stock_asset_data.items() if field in asset_field.field_preference}
 
-            stock_assets.append(stock_asset)
+            stock_assets.append(stock_asset_data)
 
         return stock_assets
 

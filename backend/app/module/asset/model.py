@@ -1,4 +1,5 @@
 from sqlalchemy import (
+    JSON,
     BigInteger,
     Column,
     Date,
@@ -7,7 +8,6 @@ from sqlalchemy import (
     Float,
     ForeignKey,
     Index,
-    JSON,
     Integer,
     String,
     UniqueConstraint,
@@ -18,12 +18,13 @@ from app.common.mixin.timestamp import TimestampMixin
 from app.module.asset.enum import AccountType, AssetType, InvestmentBankType, PurchaseCurrencyType
 from database.config import MySQLBase
 
+
 class AssetField(TimestampMixin, MySQLBase):
     __tablename__ = "asset_field"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     user_id = Column(BigInteger, ForeignKey("user.id"), nullable=False, unique=True)
-    field_preferences = Column(JSON, nullable=False, default={})
+    field_preference = Column(JSON, nullable=False, default=list)
 
 
 class Dividend(TimestampMixin, MySQLBase):

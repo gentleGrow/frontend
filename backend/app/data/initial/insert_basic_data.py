@@ -1,7 +1,8 @@
 import asyncio
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from icecream import ic
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.module.asset.constant import (
     ACCOUNT_TYPES,
     INVESTMENT_BANKS,
@@ -10,12 +11,12 @@ from app.module.asset.constant import (
     STOCK_CODES,
     STOCK_QUANTITIES,
 )
-from app.module.asset.schema import StockAsset
-from app.module.asset.repository.asset_field_repository import AssetFieldRepository
 from app.module.asset.enum import AssetType
-from app.module.asset.model import Asset, AssetStock, AssetField
+from app.module.asset.model import Asset, AssetField, AssetStock
+from app.module.asset.repository.asset_field_repository import AssetFieldRepository
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.stock_repository import StockRepository
+from app.module.asset.enum import StockAsset
 from app.module.auth.constant import ADMIN_USER_ID, DUMMY_USER_ID
 from app.module.auth.enum import ProviderEnum, UserRoleEnum
 from app.module.auth.model import User
@@ -111,22 +112,19 @@ async def create_investment_tip(session: AsyncSession):
     await TipRepository.save_invest_tips(session, investment_tips)
     ic("[create_investment_tip] investment_tips를 성공적으로 생성 했습니다.")
 
+
 async def create_asset_field(session: AsyncSession):
     asset_field = await AssetFieldRepository.get(session, DUMMY_USER_ID)
     if asset_field:
         ic("이미 asset_field를 저장하였습니다.")
         return
-    
-    field_preferences = {field: True for field in StockAsset.model_fields.keys()}
 
     fields_to_disable = ["stock_volume", "purchase_currency_type", "purchase_price", "purchase_amount"]
-    for field in fields_to_disable:
-        if field in field_preferences:
-            field_preferences[field] = False
+    field_preference = [field for field in [field.value for field in StockAsset] if field not in fields_to_disable]
 
     asset_field = AssetField(
         user_id=DUMMY_USER_ID,
-        field_preferences=field_preferences
+        field_preference=field_preference 
     )
 
     await AssetFieldRepository.save(session, asset_field)
@@ -153,6 +151,7 @@ async def main():
             await create_asset_field(session)
         except Exception as err:
             ic(f"asset_field 생성 중 에러가 생겼습니다. {err=}")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

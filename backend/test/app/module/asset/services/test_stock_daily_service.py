@@ -9,13 +9,13 @@ from app.module.auth.constant import DUMMY_USER_ID
 
 
 class TestStockDailyService:
-    async def test_get_latest_map(self, db_session: AsyncSession, setup_stock_daily, setup_asset):
+    async def test_get_latest_map(self, session: AsyncSession, setup_stock_daily, setup_asset):
         # Given
-        assets = await db_session.execute(select(Asset).filter(Asset.user_id == DUMMY_USER_ID))
+        assets = await session.execute(select(Asset).filter(Asset.user_id == DUMMY_USER_ID))
         assets = assets.scalars().all()
 
         # When
-        result = await StockDailyService.get_latest_map(db_session, assets)
+        result = await StockDailyService.get_latest_map(session, assets)
 
         # Then
         assert len(result) == 3
@@ -30,13 +30,13 @@ class TestStockDailyService:
         assert latest_tsla.code == "TSLA"
         assert latest_tsla.date == date(2024, 8, 14)
 
-    async def test_get_map_range(self, db_session: AsyncSession, setup_stock_daily, setup_asset):
+    async def test_get_map_range(self, session: AsyncSession, setup_stock_daily, setup_asset):
         # Given
-        assets = await db_session.execute(select(Asset).filter(Asset.user_id == DUMMY_USER_ID))
+        assets = await session.execute(select(Asset).filter(Asset.user_id == DUMMY_USER_ID))
         assets = assets.scalars().all()
 
         # When
-        result = await StockDailyService.get_map_range(db_session, assets)
+        result = await StockDailyService.get_map_range(session, assets)
 
         # Then
         assert len(result) == 3
