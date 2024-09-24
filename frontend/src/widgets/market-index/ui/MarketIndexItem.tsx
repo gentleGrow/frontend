@@ -9,9 +9,10 @@ export default function MarketIndexItem({
   stockIndex: number;
   rate: number;
 }) {
+  console.log(stockMarket);
   return (
-    <div className="except-mobile:border-r-0 except-mobile:items-center except-mobile:space-x-[24px] flex shrink-0 justify-center border-r border-gray-20 px-[16px] text-heading-4 mobile:flex-col mobile:space-y-[12px]">
-      <p>{stockMarket}</p>
+    <div className="flex justify-center space-x-[24px] border-r border-gray-20 text-heading-4 mobile:flex-col mobile:space-y-[12px] except-mobile:items-center except-mobile:border-r-0">
+      <p className="">{stockMarket}</p>
       <div className="flex items-center space-x-[8px]">
         <p>{stockIndex}</p>
         <IncDecRate rate={rate} />

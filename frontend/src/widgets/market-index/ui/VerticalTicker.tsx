@@ -19,10 +19,8 @@ export default function VerticalTicker({ items }: { items: any[] }) {
     return () => clearInterval(timerId);
   }, [items]);
   return (
-    <div className="flex">
-      <div className={"flex items-center " + className}>
-        {items[currentItem]}
-      </div>
+    <div className="flex w-full items-center">
+      <div className={"flex-grow " + className}>{items[currentItem]}</div>
     </div>
   );
 }

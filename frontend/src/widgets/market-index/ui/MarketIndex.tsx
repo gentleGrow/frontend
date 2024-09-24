@@ -8,7 +8,7 @@ export default async function MarketIndex() {
   const marketIndexItems = indices.map((index, i) => (
     <>
       <MarketIndexItem
-        stockMarket={index.index_name_kr}
+        stockMarket={index.name_kr}
         stockIndex={index.current_value}
         rate={index.change_percent}
       />
@@ -23,9 +23,9 @@ export default async function MarketIndex() {
   );
 
   return (
-    <div className="relative overflow-hidden rounded-lg border border-gray-20 py-[24px] mobile:rounded-none mobile:border-none">
-      <div className="flex mobile:hidden">
-        <div className="flex basis-1/2 justify-center">
+    <div className="relative flex h-[80px] w-full overflow-hidden rounded-md border border-gray-20 bg-gray-0 py-[24px] mobile:rounded-none mobile:border-none">
+      <div className="flex w-full mobile:hidden">
+        <div className="flex w-1/2 justify-center">
           {indices ? (
             <VerticalTicker items={leftSideMarketIndexItems} />
           ) : (
@@ -33,11 +33,11 @@ export default async function MarketIndex() {
           )}
         </div>
         <div className="absolute left-1/2 top-1/2 z-10 h-[32px] w-[1px] -translate-x-1/2 -translate-y-1/2 bg-gray-20" />
-        <div className="flex basis-1/2 justify-center">
+        <div className="flex w-1/2 justify-center">
           {indices ? <VerticalTicker items={rightSideMarketIndexItems} /> : ""}
         </div>
       </div>
-      <div className="hidden px-[16px] mobile:flex">
+      <div className="hidden mobile:flex">
         {indices ? (
           <SwiperBox items={marketIndexItems} />
         ) : (

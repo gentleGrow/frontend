@@ -12,9 +12,16 @@ import {
 
 export default function Home() {
   return (
-    <>
-      <DailyInvestmentTip />
-      <MarketIndex />
+    <div className="mx-auto max-w-[1400px] bg-gray-5 p-[20px]">
+      <div className="mb-[20px] flex space-x-[16px]">
+        <div className="w-7/12">
+          <DailyInvestmentTip />
+        </div>
+        <div className="w-5/12">
+          <MarketIndex />
+        </div>
+      </div>
+
       <Top10SelectedByRichPerson />
       <MyStocks />
       <StockComposition />
@@ -24,6 +31,6 @@ export default function Home() {
       </div>
       <RichPortfolio />
       <ExplorePortfolio />
-    </>
+    </div>
   );
 }
