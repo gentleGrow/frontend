@@ -1,21 +1,21 @@
 import { SERVICE_SERVER_URL } from "@/shared";
-interface Indices {
-  index_name: string;
-  index_name_kr: string;
+export interface Indexes {
+  name: string;
+  name_kr: string;
   current_value: number;
   change_percent: number;
 }
-const fetchIndices = async (): Promise<Indices[]> => {
+const fetchIndexes = async (): Promise<Indexes[]> => {
   try {
     const response = await fetch(`${SERVICE_SERVER_URL}/api/chart/v1/indice`);
     if (!response.ok) {
       throw new Error(`${response.status}: ${await response.json()}`);
     }
-    const indices = await response.json().then((data) => data.market_indices);
-    return indices;
+    const indexes = await response.json().then((data) => data.market_indices);
+    return indexes;
   } catch (error) {
     console.error(error);
     return [];
   }
 };
-export default fetchIndices;
+export default fetchIndexes;

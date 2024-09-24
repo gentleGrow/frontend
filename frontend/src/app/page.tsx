@@ -13,11 +13,11 @@ import {
 export default function Home() {
   return (
     <div className="mx-auto max-w-[1400px] bg-gray-5 p-[20px]">
-      <div className="mb-[20px] flex space-x-[16px]">
-        <div className="w-7/12">
+      <div className="mb-[20px] flex space-x-[16px] mobile:flex-col mobile:space-x-0 mobile:space-y-[16px]">
+        <div className="w-7/12 mobile:w-full">
           <DailyInvestmentTip />
         </div>
-        <div className="w-5/12">
+        <div className="w-5/12 mobile:w-full">
           <MarketIndex />
         </div>
       </div>
