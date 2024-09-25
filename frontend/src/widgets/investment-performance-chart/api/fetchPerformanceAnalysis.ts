@@ -3,7 +3,7 @@ import { LineChartData, SERVICE_SERVER_URL } from "@/shared";
 const fetchPerformanceAnalysis = async (): Promise<LineChartData> => {
   try {
     const response = await fetch(
-      `${SERVICE_SERVER_URL}/api/chart/v1/dummy/performance-analysis`,
+      `${SERVICE_SERVER_URL}/api/chart/v1/sample/performance-analysis`,
     );
     if (!response.ok) {
       throw new Error(`${response.status}: ${await response.json()}`);

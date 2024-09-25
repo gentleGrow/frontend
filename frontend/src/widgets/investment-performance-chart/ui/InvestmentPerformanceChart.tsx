@@ -37,7 +37,7 @@ export default function InvestmentPerformanceChart() {
   const currentData = PERFORMANCE_DATA[currentPerformanceDataKey];
 
   return (
-    <div className="relative h-[388px] w-full rounded-xl border p-[16px] mobile:h-[500px] mobile:border-none">
+    <div className="relative h-[388px] w-full rounded-xl border bg-white p-[16px] mobile:h-[500px] mobile:border-none">
       <h2 className="text-heading-2">투자 성과 분석</h2>
       <div className="mt-[16px] flex w-full justify-between except-mobile:absolute except-mobile:right-[16px] except-mobile:top-[12px] except-mobile:mt-0">
         <div className="w-[176px] shrink-0 mobile:hidden" />

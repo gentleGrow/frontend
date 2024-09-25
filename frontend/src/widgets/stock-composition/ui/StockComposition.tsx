@@ -8,7 +8,7 @@ export default async function StockComposition() {
   ]);
 
   return (
-    <div className="relative w-full rounded-xl border p-[16px] mobile:border-none">
+    <div className="relative w-full rounded-xl border bg-white p-[16px] mobile:border-none">
       <h2 className="text-heading-2">종목 구성</h2>
 
       {
