@@ -1,42 +1,77 @@
 from datetime import date
 from typing import Optional
 
+from fastapi import HTTPException, status
 from pydantic import BaseModel, Field, RootModel
 
-from app.module.asset.enum import AccountType, PurchaseCurrencyType
+from app.module.asset.constant import RequiredAssetField
+from app.module.asset.enum import AccountType, InvestmentBankType, PurchaseCurrencyType, StockAsset
 from app.module.asset.model import Asset
 
 
-class StockAsset(BaseModel):
-    id: Optional[int] = None
-    account_type: AccountType | None = Field(..., description="계좌 종류")
+class AssetStockPostRequest(BaseModel):
     buy_date: date = Field(..., description="구매일자")
-    current_price: float = Field(..., description="현재가")
-    dividend: float = Field(..., description="배당금")
-    highest_price: float = Field(..., description="주식 하루 중 고가")
-    investment_bank: str | None = Field(..., description="증권사", examples=["토스증권"])
-    lowest_price: float = Field(..., description="주식 하루 중 저가")
-    opening_price: float = Field(..., description="주식 하루 중 시가, 시작되는 가격")
-    profit_rate: float = Field(..., description="수익률")
-    profit_amount: float = Field(..., description="수익금")
-    purchase_amount: float | None = Field(..., description="매입금액")
-    purchase_price: float | None = Field(..., description="매입가")
     purchase_currency_type: PurchaseCurrencyType = Field(..., description="매입 통화")
     quantity: int = Field(..., description="수량")
     stock_code: str = Field(..., description="종목 코드", examples=["AAPL"])
-    stock_name: str = Field(..., description="종목명", examples=["BGF리테일"])
-    stock_volume: int = Field(..., description="주식 하루 중 거래량")
+    account_type: AccountType | None = Field(None, description="계좌 종류", example=f"{AccountType.ISA} (Optional)")
+    investment_bank: InvestmentBankType | None = Field(
+        None, description="증권사", example=f"{InvestmentBankType.TOSS} (Optional)"
+    )
+    purchase_price: float | None = Field(None, description="매입가", example=f"{62000} (Optional)")
 
 
-class StockAssetRequest(BaseModel):
-    id: Optional[int] = None
-    account_type: AccountType = Field(..., description="계좌 종류")
+class UpdateAssetFieldRequest(RootModel[list[str]]):
+    class Config:
+        json_schema_extra = {"example": [
+                "id",
+                "buy_date",
+                "purchase_currency_type",
+                "quantity",
+                "stock_code",
+                "account_type",
+                "current_price",
+                "dividend",
+                "highest_price",
+                "investment_bank",
+                "lowest_price",
+                "opening_price",
+                "profit_rate",
+                "profit_amount",
+                "purchase_amount",
+                "purchase_price",
+                "stock_name",
+                "stock_volume"
+            ]
+        }
+
+    @staticmethod
+    def validate_request_data(request_data: "UpdateAssetFieldRequest"):
+        for field in request_data.root:
+            if field not in StockAsset._value2member_map_:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"'{field}'은 올바른 필드가 아닙니다. 다음의 필드 중 선택해주세요. {list(StockAsset._value2member_map_)}",
+                )
+
+        missing_fields = [field for field in RequiredAssetField if field not in request_data.root]
+        if missing_fields:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"필수 필드가 누락되었습니다: {missing_fields}")
+
+
+class AssetStockPutRequest(BaseModel):
+    id: int = Field(..., description="자산 고유 값")
     buy_date: date = Field(..., description="구매일자")
-    investment_bank: str = Field(..., description="증권사", examples=["토스증권"])
-    purchase_price: float = Field(..., description="매입가")
     purchase_currency_type: PurchaseCurrencyType = Field(..., description="매입 통화")
     quantity: int = Field(..., description="수량")
     stock_code: str = Field(..., description="종목 코드", examples=["AAPL"])
+    account_type: AccountType | None = Field(None, description="계좌 종류", example=f"{AccountType.ISA} (Optional)")
+    investment_bank: str | None = Field(None, description="증권사", example=f"{InvestmentBankType.TOSS} (Optional)")
+    purchase_price: float | None = Field(None, description="매입가", example=f"{62000} (Optional)")
+
+
+class AssetFieldResponse(RootModel[list[str]]):
+    pass
 
 
 class BankAccountResponse(BaseModel):
@@ -53,8 +88,8 @@ class StockListResponse(RootModel[list[StockListValue]]):
     pass
 
 
-class StockAssetResponse(BaseModel):
-    stock_assets: list[StockAsset]
+class AssetStockResponse(BaseModel):
+    stock_assets: list[dict]
     total_asset_amount: float
     total_invest_amount: float
     total_profit_rate: float
@@ -64,24 +99,26 @@ class StockAssetResponse(BaseModel):
     @classmethod
     def parse(
         cls,
-        stock_assets: list[StockAsset],
+        stock_assets: list[dict],
         total_asset_amount: float,
         total_invest_amount: float,
         total_dividend_amount: float,
-    ) -> "StockAssetResponse":
+    ) -> "AssetStockResponse":
         return cls(
             stock_assets=stock_assets,
             total_asset_amount=total_asset_amount,
             total_invest_amount=total_invest_amount,
-            total_profit_rate=((total_asset_amount - total_invest_amount) / total_invest_amount) * 100,
+            total_profit_rate=((total_asset_amount - total_invest_amount) / total_invest_amount) * 100
+            if total_invest_amount > 0
+            else 0.0,
             total_profit_amount=total_asset_amount - total_invest_amount,
             total_dividend_amount=total_dividend_amount,
         )
 
     @staticmethod
-    def validate_assets(assets: list[Asset]) -> Optional["StockAssetResponse"]:
+    def validate_assets(assets: list[Asset]) -> Optional["AssetStockResponse"]:
         if len(assets) == 0:
-            return StockAssetResponse(
+            return AssetStockResponse(
                 stock_assets=[],
                 total_asset_amount=0.0,
                 total_invest_amount=0.0,

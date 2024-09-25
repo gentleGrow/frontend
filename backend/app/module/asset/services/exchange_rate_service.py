@@ -1,28 +1,28 @@
 from redis.asyncio import Redis
-from app.module.asset.model import Asset
+
 from app.module.asset.constant import CURRENCY_PAIRS
 from app.module.asset.enum import CurrencyType
+from app.module.asset.model import Asset
 from app.module.asset.redis_repository import RedisExchangeRateRepository
 
 
 class ExchangeRateService:
     @staticmethod
-    def get_won_exchange_rate(asset:Asset, exchange_rate_map: dict[str, float]) -> float:
+    def get_won_exchange_rate(asset: Asset, exchange_rate_map: dict[str, float]) -> float:
         source_country = asset.asset_stock.stock.country.upper().strip()
         source_currency = CurrencyType[source_country]
         if source_currency == CurrencyType.KOREA:
             return 1.0
         return float(exchange_rate_map.get(f"{source_currency}_{CurrencyType.KOREA}", 0.0))
-    
+
     @staticmethod
-    def get_dollar_exchange_rate(asset:Asset, exchange_rate_map: dict[str, float]) -> float:
+    def get_dollar_exchange_rate(asset: Asset, exchange_rate_map: dict[str, float]) -> float:
         source_country = asset.asset_stock.stock.country.upper().strip()
         source_currency = CurrencyType[source_country]
         if source_currency == CurrencyType.USA:
             return 1.0
         return float(exchange_rate_map.get(f"{source_currency}_{CurrencyType.USA}", 0.0))
-    
-    
+
     @staticmethod
     async def get_exchange_rate_map(redis_client: Redis) -> dict[str, float]:
         result = {}

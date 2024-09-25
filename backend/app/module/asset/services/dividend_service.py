@@ -117,6 +117,10 @@ class DividendService:
         total_dividend_amount = 0.0
 
         for asset in assets:
-            total_dividend_amount += dividend_map.get(asset.asset_stock.stock.code, 0.0) * asset.asset_stock.quantity * ExchangeRateService.get_won_exchange_rate(asset, exchange_rate_map)
+            total_dividend_amount += (
+                dividend_map.get(asset.asset_stock.stock.code, 0.0)
+                * asset.asset_stock.quantity
+                * ExchangeRateService.get_won_exchange_rate(asset, exchange_rate_map)
+            )
 
         return total_dividend_amount

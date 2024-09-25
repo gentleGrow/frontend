@@ -24,7 +24,7 @@ class StockRepository:
         return result.scalars().all()
 
     @staticmethod
-    async def get_by_code(session: AsyncSession, stock_code: str) -> Stock:
+    async def get_by_code(session: AsyncSession, stock_code: str) -> Stock | None:
         result = await session.execute(select(Stock).where(Stock.code == stock_code))
         return result.scalar_one_or_none()
 
