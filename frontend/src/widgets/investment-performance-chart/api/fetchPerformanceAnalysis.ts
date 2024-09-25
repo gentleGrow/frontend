@@ -1,6 +1,5 @@
 import { LineChartData, SERVICE_SERVER_URL } from "@/shared";
 export interface PerformanceAnalysisData {
-  dailyPerformanceData: LineChartData;
   fiveDayPerformanceData: LineChartData;
   monthlyPerformanceData: LineChartData;
   threeMonthPerformanceData: LineChartData;
@@ -57,7 +56,6 @@ const fetchPerformanceAnalysis = async (): Promise<PerformanceAnalysisData> => {
         oneYearResponse.json(),
       ]);
     return {
-      dailyPerformanceData: fiveDays as LineChartData,
       fiveDayPerformanceData: fiveDays as LineChartData,
       monthlyPerformanceData: oneMonths as LineChartData,
       threeMonthPerformanceData: threeMonths as LineChartData,
@@ -67,12 +65,6 @@ const fetchPerformanceAnalysis = async (): Promise<PerformanceAnalysisData> => {
   } catch (error) {
     console.error(error);
     return {
-      dailyPerformanceData: {
-        xAxises: [],
-        values1: { values: [], name: "" },
-        values2: { values: [], name: "" },
-        unit: "",
-      },
       fiveDayPerformanceData: {
         xAxises: [],
         values1: { values: [], name: "" },

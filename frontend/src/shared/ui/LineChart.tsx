@@ -6,7 +6,7 @@ export default function LineChart({ data }) {
   const chartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (chartRef.current) {
+    if (chartRef.current && data) {
       const chartInstance = echarts.init(chartRef.current);
 
       const setOption = () => {
