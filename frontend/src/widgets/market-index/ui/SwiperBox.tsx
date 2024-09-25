@@ -12,8 +12,13 @@ export default function SwiperBox({ items }: { items: any[] }) {
       autoplay={{
         delay: 0,
         stopOnLastSlide: false,
-        pauseOnMouseEnter: false,
+        pauseOnMouseEnter: true,
         disableOnInteraction: false,
+      }}
+      freeMode={{
+        enabled: true,
+        momentum: true,
+        momentumRatio: 1,
       }}
       loop={true}
       speed={5000}
