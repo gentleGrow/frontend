@@ -5,21 +5,17 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.module.asset.enum import AccountType, AssetType, InvestmentBankType, PurchaseCurrencyType, StockAsset
-from app.module.asset.model import Asset, AssetStock, Dividend, Stock, StockDaily, AssetField
+from app.module.asset.model import Asset, AssetField, AssetStock, Dividend, Stock, StockDaily
 from app.module.auth.constant import DUMMY_NAME, DUMMY_USER_ID
 from app.module.auth.enum import ProviderEnum, UserRoleEnum
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
-from app.module.asset.repository.asset_field_repository import AssetFieldRepository
 
 
 @pytest.fixture(scope="function")
-async def setup_asset_field(session: AsyncSession, setup_user , setup_stock):
+async def setup_asset_field(session: AsyncSession, setup_user, setup_stock):
     fields_to_disable = ["stock_volume", "purchase_currency_type", "purchase_price", "purchase_amount"]
     field_preference = [field for field in [field.value for field in StockAsset] if field not in fields_to_disable]
-    asset_field = AssetField(
-        user_id=DUMMY_USER_ID,
-        field_preference=field_preference  
-    )
+    asset_field = AssetField(user_id=DUMMY_USER_ID, field_preference=field_preference)
 
     session.add(asset_field)
     await session.commit()
@@ -203,6 +199,6 @@ async def setup_all(
     setup_user,
     setup_stock,
     setup_stock_daily,
-    setup_asset
+    setup_asset,
 ):
     pass

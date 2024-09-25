@@ -190,3 +190,5 @@ COUNTRY_TRANSLATIONS = {
     "유로존": Country.EUROZONE,
     "한국": Country.KOREA,
 }
+
+RequiredAssetField = ["id", "buy_date", "purchase_currency_type", "quantity", "stock_name"]

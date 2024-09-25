@@ -11,12 +11,11 @@ from app.module.asset.constant import (
     STOCK_CODES,
     STOCK_QUANTITIES,
 )
-from app.module.asset.enum import AssetType
+from app.module.asset.enum import AssetType, StockAsset
 from app.module.asset.model import Asset, AssetField, AssetStock
 from app.module.asset.repository.asset_field_repository import AssetFieldRepository
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.stock_repository import StockRepository
-from app.module.asset.enum import StockAsset
 from app.module.auth.constant import ADMIN_USER_ID, DUMMY_USER_ID
 from app.module.auth.enum import ProviderEnum, UserRoleEnum
 from app.module.auth.model import User
@@ -122,10 +121,7 @@ async def create_asset_field(session: AsyncSession):
     fields_to_disable = ["stock_volume", "purchase_currency_type", "purchase_price", "purchase_amount"]
     field_preference = [field for field in [field.value for field in StockAsset] if field not in fields_to_disable]
 
-    asset_field = AssetField(
-        user_id=DUMMY_USER_ID,
-        field_preference=field_preference 
-    )
+    asset_field = AssetField(user_id=DUMMY_USER_ID, field_preference=field_preference)
 
     await AssetFieldRepository.save(session, asset_field)
 

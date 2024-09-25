@@ -1,41 +1,36 @@
+from datetime import date
+
 import pytest
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.module.asset.schema import AssetStockPostRequest
-from app.module.asset.enum import AssetType, PurchaseCurrencyType, StockAsset
-from app.module.asset.model import Asset, Stock
+
+from app.module.asset.enum import AccountType, AssetType, InvestmentBankType, PurchaseCurrencyType, StockAsset
+from app.module.asset.model import Asset
 from app.module.asset.repository.asset_repository import AssetRepository
+from app.module.asset.schema import AssetStockPostRequest
 from app.module.asset.services.asset_stock_service import AssetStockService
 from app.module.asset.services.dividend_service import DividendService
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
 from app.module.asset.services.stock_daily_service import StockDailyService
 from app.module.asset.services.stock_service import StockService
 from app.module.auth.constant import DUMMY_USER_ID
-from app.module.asset.enum import PurchaseCurrencyType, InvestmentBankType, AccountType
-from datetime import date
 
 
 class TestAssetStockService:
-    async def test_save_asset_stock_by_post(
-        self,
-        session: AsyncSession,
-        setup_stock,
-        setup_stock_daily,
-        setup_user
-    ):
+    async def test_save_asset_stock_by_post(self, session: AsyncSession, setup_stock, setup_stock_daily, setup_user):
         # Given
         stock_id = 1
-        
+
         request_data = AssetStockPostRequest(
             buy_date=date(2024, 8, 13),
             purchase_currency_type=PurchaseCurrencyType.USA,
             quantity=10,
-            stock_code="AAPL", 
+            stock_code="AAPL",
             account_type=AccountType.ISA,
             investment_bank=InvestmentBankType.KB,
             purchase_price=500.0,
         )
-            
+
         # When
         await AssetStockService.save_asset_stock_by_post(session, request_data, stock_id, DUMMY_USER_ID)
         saved_assets = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
@@ -43,8 +38,7 @@ class TestAssetStockService:
         # Then
         assert len(saved_assets) == 1
         assert saved_assets[0].asset_stock.stock_id == stock_id
-    
-    
+
     async def test_get_total_investment_amount(
         self, session: AsyncSession, redis_client: Redis, setup_asset, setup_exchange_rate, setup_stock_daily
     ):
@@ -129,7 +123,7 @@ class TestAssetStockService:
         setup_stock,
         setup_stock_daily,
         setup_user,
-        setup_asset_field
+        setup_asset_field,
     ):
         # Given
         assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
@@ -162,11 +156,14 @@ class TestAssetStockService:
         stock_asset_aapl = next(asset for asset in stock_assets if asset[StockAsset.STOCK_CODE.value] == "AAPL")
         assert stock_asset_aapl[StockAsset.STOCK_NAME.value] == "Apple Inc."
         assert stock_asset_aapl[StockAsset.CURRENT_PRICE.value] == 220.0 * expected_exchange_rate_aapl
-        assert stock_asset_aapl[StockAsset.DIVIDEND.value] == 1.6 * stock_asset_aapl[StockAsset.QUANTITY.value] * expected_exchange_rate_aapl
+        assert (
+            stock_asset_aapl[StockAsset.DIVIDEND.value]
+            == 1.6 * stock_asset_aapl[StockAsset.QUANTITY.value] * expected_exchange_rate_aapl
+        )
         assert stock_asset_aapl[StockAsset.PROFIT_RATE.value] == pytest.approx(
             ((220.0 * expected_exchange_rate_aapl - 500.0) / 500.0) * 100
         )
-        assert stock_asset_aapl.get(StockAsset.PURCHASE_PRICE.value) == None
+        assert stock_asset_aapl.get(StockAsset.PURCHASE_PRICE.value) is None
 
         stock_asset_tsla = next(asset for asset in stock_assets if asset[StockAsset.STOCK_CODE.value] == "TSLA")
         expected_exchange_rate_tsla: float = (
@@ -176,10 +173,12 @@ class TestAssetStockService:
         )
         assert stock_asset_tsla[StockAsset.STOCK_NAME.value] == "Tesla Inc."
         assert stock_asset_tsla[StockAsset.CURRENT_PRICE.value] == 230.0 * expected_exchange_rate_tsla
-        assert stock_asset_tsla[StockAsset.DIVIDEND.value] == 0.9 * stock_asset_tsla[StockAsset.QUANTITY.value] * expected_exchange_rate_tsla
+        assert (
+            stock_asset_tsla[StockAsset.DIVIDEND.value]
+            == 0.9 * stock_asset_tsla[StockAsset.QUANTITY.value] * expected_exchange_rate_tsla
+        )
 
         stock_asset_samsung = next(asset for asset in stock_assets if asset[StockAsset.STOCK_CODE.value] == "005930")
         assert stock_asset_samsung[StockAsset.STOCK_NAME.value] == "삼성전자"
         assert stock_asset_samsung[StockAsset.CURRENT_PRICE.value] == 70000.0
         assert stock_asset_samsung[StockAsset.DIVIDEND.value] == 105.0
-

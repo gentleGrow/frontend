@@ -1,17 +1,69 @@
 import pytest
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from fastapi import HTTPException
 from app.module.asset.enum import AssetType
 from app.module.asset.model import Asset
 from app.module.asset.repository.asset_repository import AssetRepository
-from app.module.asset.schema import AssetStockResponse
+from app.module.asset.schema import AssetStockResponse, UpdateAssetFieldRequest
 from app.module.asset.services.asset_stock_service import AssetStockService
 from app.module.asset.services.dividend_service import DividendService
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
 from app.module.asset.services.stock_daily_service import StockDailyService
 from app.module.asset.services.stock_service import StockService
 from app.module.auth.constant import DUMMY_USER_ID
+
+
+
+class TestUpdateAssetFieldRequest:
+    def test_validate_request_data_missing_required_fields(self):
+        # Given
+        request_data = UpdateAssetFieldRequest(root=["stock_name", "quantity"])
+        
+        # When
+        try:
+            UpdateAssetFieldRequest.validate_request_data(request_data)
+            validation_passed = True
+        except HTTPException as e:
+            validation_passed = False
+            error_detail = e.detail
+        
+        # Then
+        assert validation_passed is False
+        assert "필수 필드가 누락되었습니다" in error_detail
+        assert "['id', 'buy_date', 'purchase_currency_type']" in error_detail
+    
+    
+    def test_validate_request_data_success(self):
+        # Given
+        valid_request_data = UpdateAssetFieldRequest(root=["id", "buy_date", "purchase_currency_type", "quantity", "stock_name"])
+        
+        # When
+        try:
+            UpdateAssetFieldRequest.validate_request_data(valid_request_data)
+            validation_passed = True
+        except HTTPException:
+            validation_passed = False
+        
+        # Then
+        assert validation_passed is True
+        
+    def test_validate_request_data_fail(self):
+        # Given
+        invalid_request_data = UpdateAssetFieldRequest(root=["id", "invalid_field", "quantity"])
+        
+        # When
+        try:
+            UpdateAssetFieldRequest.validate_request_data(invalid_request_data)
+            validation_passed = True
+        except HTTPException as e:
+            validation_passed = False
+            error_detail = e.detail
+        
+        # Then
+        assert validation_passed is False
+        assert "'invalid_field'은 올바른 필드가 아닙니다." in error_detail
+        
 
 
 class TestAssetStockResponse:
@@ -53,7 +105,7 @@ class TestAssetStockResponse:
         setup_exchange_rate,
         setup_realtime_stock_price,
         setup_stock_daily,
-        setup_asset_field
+        setup_asset_field,
     ):
         # Given
         assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)

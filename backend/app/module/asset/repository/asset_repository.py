@@ -81,7 +81,6 @@ class AssetRepository:
         )
         return result.scalars().all()
 
-
     @staticmethod
     async def get_asset_by_id(session: AsyncSession, asset_id: int) -> Asset | None:
         result = await session.execute(select(Asset).where(Asset.id == asset_id))
