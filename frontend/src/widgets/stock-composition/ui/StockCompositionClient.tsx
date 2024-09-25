@@ -16,7 +16,7 @@ export default function StockCompositionClient({
   const [currentData, setCurrentData] = useState<any[]>(compositionData);
 
   return (
-    <>
+    <div>
       <div className="mt-[16px] flex w-full except-mobile:absolute except-mobile:right-[16px] except-mobile:top-[12px] except-mobile:mt-0 except-mobile:w-[148px]">
         <SegmentedButtonGroup>
           <SegmentedButton onClick={() => setCurrentData(compositionData)}>
@@ -30,6 +30,6 @@ export default function StockCompositionClient({
       <div className="mt-[48px] mobile:mt-[20px]">
         <DonutChart chartName="종목 구성" data={currentData} />
       </div>
-    </>
+    </div>
   );
 }
