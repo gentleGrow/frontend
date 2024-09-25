@@ -17,11 +17,11 @@ export default function Home() {
       <DailyInvestmentTip />
       <MarketIndex />
       <Summary />
-      <div className="flex w-full space-x-[16px]">
-        <div className="w-5/12">
+      <div className="flex w-full space-x-[16px] mobile:flex-col mobile:space-x-0 mobile:space-y-[16px]">
+        <div className="w-5/12 mobile:w-full">
           <StockComposition />
         </div>
-        <div className="w-7/12">
+        <div className="w-7/12 mobile:w-full">
           <InvestmentPerformanceChart />
         </div>
       </div>

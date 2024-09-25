@@ -35,12 +35,14 @@ export default function DonutChart({
         const containerWidth =
           chartRef.current?.offsetWidth || window.innerWidth;
 
-        const maxRadius = 128;
-        const minRadius = 0;
+        // 동적 반지름 계산: containerWidth에 비례하여 도넛 크기를 조절
+        const maxRadius = 128; // 최대 반지름 (px)
+        const minRadius = 54; // 최소 반지름 (px)
 
+        // 동적 반지름 설정, containerWidth에 따라 조절
         const dynamicRadius = Math.max(
           minRadius,
-          Math.min((containerWidth - 56) / 4, maxRadius),
+          Math.min(containerWidth / 4, maxRadius),
         );
 
         const seriesOuterRadius = isMobile
@@ -69,8 +71,7 @@ export default function DonutChart({
         } else if (isMobile) {
           maxNameLength = Math.floor((containerWidth - 64 - 70) / 5);
         } else {
-          maxNameLength =
-            containerWidth < 390 ? 10 * (containerWidth / 390) : 10;
+          maxNameLength = 10;
         }
 
         const option = {
@@ -159,23 +160,15 @@ export default function DonutChart({
                       : 84
                     : isMobile
                       ? window.innerWidth - 64 - 70
-                      : containerWidth < 390
-                        ? 84 * (containerWidth / 390)
-                        : 84,
+                      : 84,
                   align: "left",
                 },
                 space: {
-                  width:
-                    !isMobile && !isPortfolio && containerWidth < 390
-                      ? 24 * (containerWidth / 390)
-                      : 24,
+                  width: 24,
                 },
                 percent: {
                   align: "right",
-                  width:
-                    !isMobile && !isPortfolio && containerWidth < 390
-                      ? 20 * (containerWidth / 390)
-                      : 20,
+                  width: 20,
                   fontWeight: "bold",
                 },
               },
@@ -223,7 +216,7 @@ export default function DonutChart({
           setOption();
           chartInstance.resize();
           setWindowWidth(window.innerWidth);
-        }, 100);
+        }, 100); // 리사이즈 이벤트를 조금 지연시킴
       };
 
       window.addEventListener("resize", handleResize);
