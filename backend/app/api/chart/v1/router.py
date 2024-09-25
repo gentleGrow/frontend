@@ -24,13 +24,13 @@ from app.module.auth.repository import UserRepository
 from app.module.auth.schema import AccessToken
 from app.module.chart.constant import RICH_PICK_SECOND, RICHPICKKEY, RICHPICKNAMEKEY, TIP_TODAY_ID_REDIS_KEY
 from app.module.chart.enum import CompositionType, EstimateDividendType, IntervalType
-from app.module.chart.redis_repository import (  # RedisRichPortfolioRepository,
+from app.module.chart.redis_repository import (
     RedisMarketIndiceRepository,
     RedisRichPickRepository,
     RedisTipRepository,
 )
 from app.module.chart.repository import TipRepository
-from app.module.chart.schema import (  # RichPortfolioResponse,; RichPortfolioValue,
+from app.module.chart.schema import (
     ChartTipResponse,
     CompositionResponse,
     CompositionResponseValue,
@@ -45,33 +45,35 @@ from app.module.chart.schema import (  # RichPortfolioResponse,; RichPortfolioVa
     PerformanceAnalysisResponse,
     RichPickResponse,
     RichPickValue,
+    RichPortfolioResponse,
+    RichPortfolioValue,
     SummaryResponse,
 )
 from app.module.chart.service.composition_service import CompositionService
 from app.module.chart.service.performance_analysis_service import PerformanceAnalysis
 from database.dependency import get_mysql_session_router, get_redis_pool
+from app.module.chart.service.rich_portfolio_service import RichPortfolioService
+
 
 chart_router = APIRouter(prefix="/v1")
 
 
-# @chart_router.get("/rich-portfolio", summary="부자들의 포트폴리오", response_model=RichPortfolioResponse)
-# async def get_rich_portfolio(redis_client: Redis = Depends(get_redis_pool)) -> RichPortfolioResponse:
-#     rich_people = [person.value for person in RicePeople]
-#     rich_portfolios: list[str] = await RedisRichPortfolioRepository.gets(redis_client, rich_people)
+@chart_router.get("/rich-portfolio", summary="부자들의 포트폴리오", response_model=RichPortfolioResponse)
+async def get_rich_portfolio(redis_client: Redis = Depends(get_redis_pool)) -> RichPortfolioResponse:
+    rich_portfolio_map:dict = await RichPortfolioService.get_rich_porfolio_map(redis_client)
+    
+    response_data = [
+        RichPortfolioValue(name=person, stock=portfolio)
+        for person, portfolio in rich_portfolio_map.items()
+    ]
 
-#     response_data = [
-#         RichPortfolioValue(name=person, stock=json.loads(portfolio_raw))
-#         for person, portfolio_raw in zip(rich_people, rich_portfolios)
-#     ]
-
-#     return RichPortfolioResponse(response_data)
+    return RichPortfolioResponse(response_data)
 
 
 @chart_router.get("/rich-pick", summary="부자들이 선택한 종목 TOP10", response_model=RichPickResponse)
 async def get_rich_pick(
     session: AsyncSession = Depends(get_mysql_session_router), redis_client: Redis = Depends(get_redis_pool)
 ) -> RichPickResponse:
-
     # [수정]!!!!!!!!! N+1 문제 !!!!!!!!!!!!
     top_10_stocks_raw: str = await RedisRichPickRepository.get(redis_client, RICHPICKKEY)
     stock_name_map_raw: str = await RedisRichPickRepository.get(redis_client, RICHPICKNAMEKEY)
@@ -583,7 +585,9 @@ async def get_summary(
     )
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
     stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
-    current_stock_price_map = await StockService.get_current_stock_price_by_code(redis_client, stock_daily_map, stock_codes)
+    current_stock_price_map = await StockService.get_current_stock_price_by_code(
+        redis_client, stock_daily_map, stock_codes
+    )
 
     not_found_stock_codes: list[str] = StockService.check_not_found_stock(
         stock_daily_map, current_stock_price_map, assets
@@ -637,7 +641,9 @@ async def get_sample_summary(
     )
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
     stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
-    current_stock_price_map = await StockService.get_current_stock_price_by_code(redis_client, stock_daily_map, stock_codes)
+    current_stock_price_map = await StockService.get_current_stock_price_by_code(
+        redis_client, stock_daily_map, stock_codes
+    )
 
     not_found_stock_codes: list[str] = StockService.check_not_found_stock(
         stock_daily_map, current_stock_price_map, assets

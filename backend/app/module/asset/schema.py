@@ -23,7 +23,8 @@ class AssetStockPostRequest(BaseModel):
 
 class UpdateAssetFieldRequest(RootModel[list[str]]):
     class Config:
-        json_schema_extra = {"example": [
+        json_schema_extra = {
+            "example": [
                 "id",
                 "buy_date",
                 "purchase_currency_type",
@@ -41,7 +42,7 @@ class UpdateAssetFieldRequest(RootModel[list[str]]):
                 "purchase_amount",
                 "purchase_price",
                 "stock_name",
-                "stock_volume"
+                "stock_volume",
             ]
         }
 
