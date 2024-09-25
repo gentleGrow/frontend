@@ -14,7 +14,7 @@ class RedisRichPortfolioRepository:
     @staticmethod
     async def save(redis_client: Redis, key: str, data: str, expire_time: int) -> None:
         await redis_client.set(key, data, ex=expire_time)
-
+        
 
 class RedisRichPickRepository:
     @staticmethod
