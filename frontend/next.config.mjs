@@ -1,4 +1,5 @@
 import { createVanillaExtractPlugin } from "@vanilla-extract/next-plugin";
+import path from "path";
 
 const withVanillaExtract = createVanillaExtractPlugin();
 
@@ -15,7 +16,7 @@ const nextConfig = {
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      "@": path.resolve(__dirname, "src"), // @를 src 폴더로 매핑
+      "@": path.resolve(process.cwd(), "src"), // @를 src 폴더로 매핑
     };
     return config;
   },
