@@ -1,14 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-from icecream import ic
+
 from app.common.auth.security import verify_jwt_token
 from app.common.schema.common_schema import DeleteResponse, PostResponse, PutResponse
 from app.module.asset.enum import AccountType, AssetType, InvestmentBankType
-from app.module.asset.model import Asset, Stock, AssetField
+from app.module.asset.model import Asset, AssetField, Stock
+from app.module.asset.repository.asset_field_repository import AssetFieldRepository
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.stock_repository import StockRepository
 from app.module.asset.schema import (
+    AssetFieldResponse,
     AssetStockPostRequest,
     AssetStockPutRequest,
     AssetStockResponse,
@@ -16,9 +18,7 @@ from app.module.asset.schema import (
     StockListResponse,
     StockListValue,
     UpdateAssetFieldRequest,
-    AssetFieldResponse
 )
-from app.module.asset.repository.asset_field_repository import AssetFieldRepository
 from app.module.asset.services.asset_field_service import AssetFieldService
 from app.module.asset.services.asset_service import AssetService
 from app.module.asset.services.asset_stock_service import AssetStockService
@@ -34,29 +34,29 @@ from database.dependency import get_mysql_session_router, get_redis_pool
 asset_stock_router = APIRouter(prefix="/v1")
 
 
-
 @asset_stock_router.get("/asset-field", summary="자산 필드를 반환합니다.", response_model=AssetFieldResponse)
 async def get_asset_field(
     session: AsyncSession = Depends(get_mysql_session_router),
     token: AccessToken = Depends(verify_jwt_token),
 ) -> AssetFieldResponse:
-    asset_field:list[str] = await AssetFieldService.get_asset_field(session, token.get('user'))
+    asset_field: list[str] = await AssetFieldService.get_asset_field(session, token.get("user"))
     return AssetFieldResponse(asset_field)
-
 
 
 @asset_stock_router.put("/asset-field", summary="자산 필드를 변경합니다.", response_model=PutResponse)
 async def update_asset_field(
-    request_data:UpdateAssetFieldRequest,
+    request_data: UpdateAssetFieldRequest,
     session: AsyncSession = Depends(get_mysql_session_router),
     token: AccessToken = Depends(verify_jwt_token),
 ) -> PutResponse:
     UpdateAssetFieldRequest.validate_request_data(request_data)
-    
-    asset_field = await AssetFieldRepository.get(session, token.get('user'))
-    await AssetFieldRepository.update(session, AssetField(id=asset_field.id, user_id=token.get('user'), field_preference=request_data.root))
+
+    asset_field = await AssetFieldRepository.get(session, token.get("user"))
+    await AssetFieldRepository.update(
+        session, AssetField(id=asset_field.id, user_id=token.get("user"), field_preference=request_data.root)
+    )
     return PutResponse(status_code=status.HTTP_200_OK, content="자산관리 필드를 성공적으로 수정 하였습니다.")
-    
+
 
 @asset_stock_router.get("/bank-accounts", summary="증권사와 계좌 리스트를 반환합니다.", response_model=BankAccountResponse)
 async def get_bank_account_list() -> BankAccountResponse:
@@ -136,7 +136,7 @@ async def get_asset_stock(
     stock_assets: list[dict] = await AssetStockService.get_stock_assets(
         session, token.get("user"), assets, stock_daily_map, current_stock_price_map, dividend_map, exchange_rate_map
     )
-    
+
     total_asset_amount = AssetStockService.get_total_asset_amount(assets, current_stock_price_map, exchange_rate_map)
     total_invest_amount = AssetStockService.get_total_investment_amount(assets, stock_daily_map, exchange_rate_map)
     total_dividend_amount = DividendService.get_total_dividend(assets, dividend_map, exchange_rate_map)

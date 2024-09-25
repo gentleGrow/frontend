@@ -18,5 +18,5 @@ class AssetFieldRepository:
 
     @staticmethod
     async def update(session: AsyncSession, asset_field: AssetField) -> None:
-        await session.merge(asset_field) 
+        await session.merge(asset_field)
         await session.commit()

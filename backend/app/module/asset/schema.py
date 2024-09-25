@@ -1,11 +1,12 @@
 from datetime import date
 from typing import Optional
 
-from pydantic import BaseModel, Field, RootModel
 from fastapi import HTTPException, status
+from pydantic import BaseModel, Field, RootModel
+
+from app.module.asset.constant import RequiredAssetField
 from app.module.asset.enum import AccountType, InvestmentBankType, PurchaseCurrencyType, StockAsset
 from app.module.asset.model import Asset
-from app.module.asset.constant import RequiredAssetField
 
 
 class AssetStockPostRequest(BaseModel):
@@ -18,31 +19,45 @@ class AssetStockPostRequest(BaseModel):
         None, description="증권사", example=f"{InvestmentBankType.TOSS} (Optional)"
     )
     purchase_price: float | None = Field(None, description="매입가", example=f"{62000} (Optional)")
-    
-    
+
+
 class UpdateAssetFieldRequest(RootModel[list[str]]):
     class Config:
-        json_schema_extra = {
-            "example": ["id", "buy_date", "stock_code", "quantity", "purchase_currency_type"]
+        json_schema_extra = {"example": [
+                "id",
+                "buy_date",
+                "purchase_currency_type",
+                "quantity",
+                "stock_code",
+                "account_type",
+                "current_price",
+                "dividend",
+                "highest_price",
+                "investment_bank",
+                "lowest_price",
+                "opening_price",
+                "profit_rate",
+                "profit_amount",
+                "purchase_amount",
+                "purchase_price",
+                "stock_name",
+                "stock_volume"
+            ]
         }
-    
+
     @staticmethod
-    def validate_request_data(request_data:"UpdateAssetFieldRequest"):
+    def validate_request_data(request_data: "UpdateAssetFieldRequest"):
         for field in request_data.root:
             if field not in StockAsset._value2member_map_:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"'{field}'은 올바른 필드가 아닙니다. 다음의 필드 중 선택해주세요. {list(StockAsset._value2member_map_)}"
+                    detail=f"'{field}'은 올바른 필드가 아닙니다. 다음의 필드 중 선택해주세요. {list(StockAsset._value2member_map_)}",
                 )
-                
+
         missing_fields = [field for field in RequiredAssetField if field not in request_data.root]
         if missing_fields:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"필수 필드가 누락되었습니다: {missing_fields}"
-            )
-        
-        
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"필수 필드가 누락되었습니다: {missing_fields}")
+
 
 class AssetStockPutRequest(BaseModel):
     id: int = Field(..., description="자산 고유 값")
@@ -57,7 +72,6 @@ class AssetStockPutRequest(BaseModel):
 
 class AssetFieldResponse(RootModel[list[str]]):
     pass
-
 
 
 class BankAccountResponse(BaseModel):
