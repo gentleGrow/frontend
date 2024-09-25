@@ -46,10 +46,13 @@ export default function StockTable({ stocks }: { stocks: any[] }) {
         </TableBody>
       </Table>
       {stocks.length < 6 && (
-        <div
-          className={`h-[1px] w-full bg-gray-20`}
-          style={{ marginBottom: `${blackSpace}px` }}
-        />
+        <>
+          <div className={`h-[1px] w-full bg-gray-20`} />
+          <div
+            className={`rounded-xl bg-white`}
+            style={{ height: `${blackSpace}px` }}
+          />
+        </>
       )}
     </>
   );

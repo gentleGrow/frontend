@@ -118,7 +118,7 @@ export default function EstimateDividend() {
   );
   return (
     <div
-      className={`relative ${selectedTab === "모두" ? "h-[388px]" : "h-full"} w-full rounded-xl border p-[16px] ${selectedTab === "모두" ? "mobile:h-[500px]" : "h-full"} mobile:border-none`}
+      className={`relative ${selectedTab === "모두" ? "h-[388px]" : "h-full"} w-full rounded-xl border bg-white p-[16px] ${selectedTab === "모두" ? "mobile:h-[500px]" : "h-full"} mobile:border-none`}
     >
       <h2 className="text-heading-2">예상 배당액</h2>
       <div className="mt-[16px] flex w-full justify-between except-mobile:absolute except-mobile:right-[16px] except-mobile:top-[12px] except-mobile:mt-0">
