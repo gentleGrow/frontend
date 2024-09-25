@@ -5,7 +5,7 @@ from datetime import date, datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-from icecream import ic
+
 from app.common.auth.security import verify_jwt_token
 from app.data.investing.sources.enum import RicePeople
 from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
@@ -386,11 +386,11 @@ async def get_my_stock(
 
     my_stock_list = [
         MyStockResponseValue(
-            name=stock_asset.stock_name,
-            current_price=stock_asset.current_price,
-            profit_rate=stock_asset.profit_rate,
-            profit_amount=stock_asset.profit_amount,
-            quantity=stock_asset.quantity,
+            name=stock_asset["stock_name"],
+            current_price=stock_asset["current_price"],
+            profit_rate=stock_asset["profit_rate"],
+            profit_amount=stock_asset["profit_amount"],
+            quantity=stock_asset["quantity"],
         )
         for stock_asset in stock_assets
     ]
@@ -483,7 +483,7 @@ async def get_composition(
     stock_codes = [asset.asset_stock.stock.code for asset in assets]
     lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, stock_codes)
     lastest_stock_daily_map = {daily.code: daily for daily in lastest_stock_dailies}
-    current_stock_price_map = await StockService.get_current_stock_price(
+    current_stock_price_map = await StockService.get_current_stock_price_by_code(
         redis_client, lastest_stock_daily_map, stock_codes
     )
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
@@ -583,7 +583,7 @@ async def get_summary(
     )
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
     stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
-    current_stock_price_map = await StockService.get_current_stock_price(redis_client, stock_daily_map, stock_codes)
+    current_stock_price_map = await StockService.get_current_stock_price_by_code(redis_client, stock_daily_map, stock_codes)
 
     not_found_stock_codes: list[str] = StockService.check_not_found_stock(
         stock_daily_map, current_stock_price_map, assets
@@ -637,7 +637,7 @@ async def get_sample_summary(
     )
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
     stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
-    current_stock_price_map = await StockService.get_current_stock_price(redis_client, stock_daily_map, stock_codes)
+    current_stock_price_map = await StockService.get_current_stock_price_by_code(redis_client, stock_daily_map, stock_codes)
 
     not_found_stock_codes: list[str] = StockService.check_not_found_stock(
         stock_daily_map, current_stock_price_map, assets

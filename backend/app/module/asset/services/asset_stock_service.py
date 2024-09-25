@@ -1,13 +1,14 @@
 from datetime import date, datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.module.asset.enum import AssetType, CurrencyType, PurchaseCurrencyType, StockAsset
 from app.module.asset.model import Asset, AssetStock, StockDaily
 from app.module.asset.repository.asset_field_repository import AssetFieldRepository
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.schema import AssetStockPostRequest
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
-from icecream import ic
+
 
 class AssetStockService:
     @staticmethod
@@ -152,7 +153,7 @@ class AssetStockService:
                 StockAsset.STOCK_NAME.value: asset.asset_stock.stock.name,
                 StockAsset.STOCK_VOLUME.value: stock_daily.trade_volume if stock_daily.trade_volume else None,
             }
-            
+
             stock_asset_data_filter = {
                 field: value for field, value in stock_asset_data.items() if field in asset_field.field_preference
             }
@@ -173,7 +174,7 @@ class AssetStockService:
             stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.asset_stock.purchase_date), None)
             if stock_daily is None:
                 continue
-                
+
             invest_price = (
                 asset.asset_stock.purchase_price * ExchangeRateService.get_won_exchange_rate(asset, exchange_rate_map)
                 if asset.asset_stock.purchase_currency_type == PurchaseCurrencyType.USA

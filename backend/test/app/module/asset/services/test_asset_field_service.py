@@ -1,17 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.module.asset.model import AssetField
-from app.module.asset.repository.asset_field_repository import AssetFieldRepository
+
 from app.module.asset.enum import StockAsset
-from app.module.auth.constant import DUMMY_USER_ID
 from app.module.asset.services.asset_field_service import AssetFieldService
-from icecream import ic
+from app.module.auth.constant import DUMMY_USER_ID
+
 
 class TestAssetFieldService:
-    async def test_get_asset_field_exists(
-        self,
-        session: AsyncSession,
-        setup_asset_field 
-    ):
+    async def test_get_asset_field_exists(self, session: AsyncSession, setup_asset_field):
         # Given
         setup_asset_field
 
@@ -22,19 +17,14 @@ class TestAssetFieldService:
 
         # Then
         assert result == expected_fields
-        
-        
-    async def test_get_asset_field_create_new(
-        self,
-        session: AsyncSession,
-        setup_user 
-    ):
+
+    async def test_get_asset_field_create_new(self, session: AsyncSession, setup_user):
         # Given
         new_user_id = 2
 
         # When
         result = await AssetFieldService.get_asset_field(session, new_user_id)
-        
+
         # Then
         expected_fields = [field.value for field in StockAsset]
         assert result == expected_fields
