@@ -12,6 +12,13 @@ const nextConfig = {
       },
     ];
   },
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "@": path.resolve(__dirname, "src"), // @를 src 폴더로 매핑
+    };
+    return config;
+  },
 };
 
 export default withVanillaExtract(nextConfig);
