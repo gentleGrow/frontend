@@ -1,6 +1,5 @@
 import asyncio
 
-from icecream import ic
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 

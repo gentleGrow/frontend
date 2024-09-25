@@ -1,5 +1,6 @@
 import asyncio
 
+from icecream import ic
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.module.asset.constant import (
@@ -10,8 +11,9 @@ from app.module.asset.constant import (
     STOCK_CODES,
     STOCK_QUANTITIES,
 )
-from app.module.asset.enum import AssetType
-from app.module.asset.model import Asset, AssetStock
+from app.module.asset.enum import AssetType, StockAsset
+from app.module.asset.model import Asset, AssetField, AssetStock
+from app.module.asset.repository.asset_field_repository import AssetFieldRepository
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.stock_repository import StockRepository
 from app.module.auth.constant import ADMIN_USER_ID, DUMMY_USER_ID
@@ -49,7 +51,7 @@ async def create_initial_users(session: AsyncSession):
 
         await UserRepository.create(session, dummy_user)
 
-    print("[create_initial_users] 성공적으로 admin과 더미 유저를 생성 했습니다.")
+    ic("[create_initial_users] 성공적으로 admin과 더미 유저를 생성 했습니다.")
 
     return True
 
@@ -57,7 +59,7 @@ async def create_initial_users(session: AsyncSession):
 async def create_dummy_assets(session: AsyncSession):
     assets_exist = await AssetRepository.get_assets(session, DUMMY_USER_ID)
     if assets_exist:
-        print("이미 dummy assets을 저장하였습니다.")
+        ic("이미 dummy assets을 저장하였습니다.")
         return
 
     stock_list = await StockRepository.get_by_codes(session, STOCK_CODES)
@@ -89,7 +91,7 @@ async def create_dummy_assets(session: AsyncSession):
         assets.append(asset)
 
     await AssetRepository.save_assets(session, assets)
-    print("[create_dummy_assets] 더미 유저에 assets을 성공적으로 생성 했습니다.")
+    ic("[create_dummy_assets] 더미 유저에 assets을 성공적으로 생성 했습니다.")
 
 
 async def create_investment_tip(session: AsyncSession):
@@ -107,7 +109,21 @@ async def create_investment_tip(session: AsyncSession):
     ]
 
     await TipRepository.save_invest_tips(session, investment_tips)
-    print("[create_investment_tip] investment_tips를 성공적으로 생성 했습니다.")
+    ic("[create_investment_tip] investment_tips를 성공적으로 생성 했습니다.")
+
+
+async def create_asset_field(session: AsyncSession):
+    asset_field = await AssetFieldRepository.get(session, DUMMY_USER_ID)
+    if asset_field:
+        ic("이미 asset_field를 저장하였습니다.")
+        return
+
+    fields_to_disable = ["stock_volume", "purchase_currency_type", "purchase_price", "purchase_amount"]
+    field_preference = [field for field in [field.value for field in StockAsset] if field not in fields_to_disable]
+
+    asset_field = AssetField(user_id=DUMMY_USER_ID, field_preference=field_preference)
+
+    await AssetFieldRepository.save(session, asset_field)
 
 
 async def main():
@@ -115,17 +131,22 @@ async def main():
         try:
             await create_initial_users(session)
         except Exception as err:
-            print(f"유저 생성 중 에러가 생겼습니다. {err=}")
+            ic(f"유저 생성 중 에러가 생겼습니다. {err=}")
 
         try:
             await create_dummy_assets(session)
         except Exception as err:
-            print(f"dummy asset 생성 중 에러가 생겼습니다. {err=}")
+            ic(f"dummy asset 생성 중 에러가 생겼습니다. {err=}")
 
         try:
             await create_investment_tip(session)
         except Exception as err:
-            print(f"investment tip 생성 중 에러가 생겼습니다. {err=}")
+            ic(f"investment tip 생성 중 에러가 생겼습니다. {err=}")
+
+        try:
+            await create_asset_field(session)
+        except Exception as err:
+            ic(f"asset_field 생성 중 에러가 생겼습니다. {err=}")
 
 
 if __name__ == "__main__":

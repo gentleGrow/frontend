@@ -6,12 +6,12 @@ from app.module.auth.constant import DUMMY_USER_ID
 
 
 class TestAssetRepository:
-    async def test_get_eager(self, db_session: AsyncSession, setup_asset):
+    async def test_get_eager(self, session: AsyncSession, setup_asset):
         # Given
         setup_asset
 
         # When
-        assets = await AssetRepository.get_eager(db_session, user_id=DUMMY_USER_ID, asset_type=AssetType.STOCK)
+        assets = await AssetRepository.get_eager(session, user_id=DUMMY_USER_ID, asset_type=AssetType.STOCK)
 
         # Then
         asset_1, asset_2 = assets[0], assets[1]

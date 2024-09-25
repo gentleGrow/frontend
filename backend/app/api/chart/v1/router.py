@@ -5,22 +5,16 @@ from datetime import date, datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from icecream import ic
 from app.common.auth.security import verify_jwt_token
 from app.data.investing.sources.enum import RicePeople
 from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
-from app.module.asset.enum import AssetType, BaseCurrency, CurrencyType, MarketIndex
+from app.module.asset.enum import AssetType, CurrencyType, MarketIndex
 from app.module.asset.model import Asset, Dividend, StockDaily
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.dividend_repository import DividendRepository
 from app.module.asset.repository.stock_daily_repository import StockDailyRepository
-from app.module.asset.schema import MarketIndexData, StockAsset
-from app.module.asset.service import (
-    check_not_found_stock,
-    get_current_stock_price,
-    get_total_asset_amount,
-    get_total_investment_amount,
-)
+from app.module.asset.schema import MarketIndexData
 from app.module.asset.services.asset_stock_service import AssetStockService
 from app.module.asset.services.dividend_service import DividendService
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
@@ -130,11 +124,11 @@ async def get_rich_pick(
 
 
 @chart_router.get(
-    "/dummy/estimate-dividend",
+    "/sample/estimate-dividend",
     summary="더미 예상 배당액",
     response_model=EstimateDividendEveryResponse | EstimateDividendTypeResponse,
 )
-async def get_dummy_estimate_dividend(
+async def get_sample_estimate_dividend(
     category: EstimateDividendType = Query(EstimateDividendType.EVERY, description="every는 모두, type은 종목 별 입니다."),
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
@@ -199,11 +193,7 @@ async def get_estimate_dividend(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> EstimateDividendEveryResponse | EstimateDividendTypeResponse:
-    user_id = token.get("user")
-    if user_id is None:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
-
-    assets: list[Asset] = await AssetRepository.get_eager(session, user_id, AssetType.STOCK)
+    assets: list[Asset] = await AssetRepository.get_eager(session, token.get("user"), AssetType.STOCK)
     if len(assets) == 0:
         if category == EstimateDividendType.EVERY:
             return EstimateDividendEveryResponse(estimate_dividend_list=[])
@@ -254,8 +244,8 @@ async def get_estimate_dividend(
         return EstimateDividendTypeResponse(estimate_dividend_list)
 
 
-@chart_router.get("/dummy/performance-analysis", summary="더미 투자 성과 분석", response_model=PerformanceAnalysisResponse)
-async def get_dummy_performance_analysis(
+@chart_router.get("/sample/performance-analysis", summary="더미 투자 성과 분석", response_model=PerformanceAnalysisResponse)
+async def get_sample_performance_analysis(
     interval: IntervalType = Query(IntervalType.ONEMONTH, description="기간 별, 투자 성관 분석 데이터가 제공 됩니다."),
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
@@ -315,10 +305,6 @@ async def get_performance_analysis(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> PerformanceAnalysisResponse:
-    user_id = token.get("user")
-    if user_id is None:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
-
     current_datetime = datetime.now()
 
     start_datetime = current_datetime - interval.get_timedelta()
@@ -373,11 +359,7 @@ async def get_my_stock(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> MyStockResponse:
-    user_id = token.get("user")
-    if user_id is None:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
-
-    assets: list[Asset] = await AssetRepository.get_eager(session, user_id, AssetType.STOCK)
+    assets: list[Asset] = await AssetRepository.get_eager(session, token.get("user"), AssetType.STOCK)
     if len(assets) == 0:
         return MyStockResponse(my_stock_list=[])
 
@@ -398,8 +380,8 @@ async def get_my_stock(
     )
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
-    stock_assets: list[StockAsset] = AssetStockService.get_stock_assets(
-        assets, stock_daily_map, current_stock_price_map, dividend_map, BaseCurrency.WON, exchange_rate_map
+    stock_assets: list[dict] = await AssetStockService.get_stock_assets(
+        session, token.get("user"), assets, stock_daily_map, current_stock_price_map, dividend_map, exchange_rate_map
     )
 
     my_stock_list = [
@@ -416,8 +398,8 @@ async def get_my_stock(
     return MyStockResponse(my_stock_list=my_stock_list)
 
 
-@chart_router.get("/dummy/my-stock", summary="내 보유 주식", response_model=MyStockResponse)
-async def get_dummy_my_stock(
+@chart_router.get("/sample/my-stock", summary="내 보유 주식", response_model=MyStockResponse)
+async def get_sample_my_stock(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> MyStockResponse:
@@ -437,22 +419,22 @@ async def get_dummy_my_stock(
     lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, stock_codes)
     lastest_stock_daily_map = {daily.code: daily for daily in lastest_stock_dailies}
     stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
-    current_stock_price_map = await StockService.get_current_stock_price(
+    current_stock_price_map = await StockService.get_current_stock_price_by_code(
         redis_client, lastest_stock_daily_map, stock_codes
     )
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
-    stock_assets: list[StockAsset] = AssetStockService.get_stock_assets(
-        assets, stock_daily_map, current_stock_price_map, dividend_map, BaseCurrency.WON, exchange_rate_map
+    stock_assets: list[dict] = await AssetStockService.get_stock_assets(
+        session, DUMMY_USER_ID, assets, stock_daily_map, current_stock_price_map, dividend_map, exchange_rate_map
     )
 
     my_stock_list = [
         MyStockResponseValue(
-            name=stock_asset.stock_name,
-            current_price=stock_asset.current_price,
-            profit_rate=stock_asset.profit_rate,
-            profit_amount=stock_asset.profit_amount,
-            quantity=stock_asset.quantity,
+            name=stock_asset["stock_name"],
+            current_price=stock_asset["current_price"],
+            profit_rate=stock_asset["profit_rate"],
+            profit_amount=stock_asset["profit_amount"],
+            quantity=stock_asset["quantity"],
         )
         for stock_asset in stock_assets
     ]
@@ -464,7 +446,6 @@ async def get_dummy_my_stock(
 async def get_market_index(
     redis_client: Redis = Depends(get_redis_pool),
 ) -> MarketIndiceResponse:
-
     market_index_keys = [market_index.value for market_index in MarketIndex]
     market_index_values_str = await RedisMarketIndiceRepository.gets(redis_client, market_index_keys)
 
@@ -493,11 +474,7 @@ async def get_composition(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> CompositionResponse:
-    user_id = token.get("user")
-    if user_id is None:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
-
-    assets: list[Asset] = await AssetRepository.get_eager(session, user_id, AssetType.STOCK)
+    assets: list[Asset] = await AssetRepository.get_eager(session, token.get("user"), AssetType.STOCK)
     if len(assets) == 0:
         return CompositionResponse(
             composition=[CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)]
@@ -539,8 +516,8 @@ async def get_composition(
         return CompositionResponse(composition=composition_data)
 
 
-@chart_router.get("/dummy/composition", summary="종목 구성", response_model=CompositionResponse)
-async def get_dummy_composition(
+@chart_router.get("/sample/composition", summary="종목 구성", response_model=CompositionResponse)
+async def get_sample_composition(
     type: CompositionType = Query(CompositionType.COMPOSITION, description="composition은 종목 별, account는 계좌 별 입니다."),
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
@@ -554,7 +531,7 @@ async def get_dummy_composition(
     stock_codes = [asset.asset_stock.stock.code for asset in assets]
     lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, stock_codes)
     lastest_stock_daily_map = {daily.code: daily for daily in lastest_stock_dailies}
-    current_stock_price_map = await StockService.get_current_stock_price(
+    current_stock_price_map = await StockService.get_current_stock_price_by_code(
         redis_client, lastest_stock_daily_map, stock_codes
     )
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
@@ -593,11 +570,7 @@ async def get_summary(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> SummaryResponse:
-    user_id = token.get("user")
-    if user_id is None:
-        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 id를 찾지 못하였습니다.")
-
-    assets: list[Asset] = await AssetRepository.get_eager(session, int(user_id), AssetType.STOCK)
+    assets: list[Asset] = await AssetRepository.get_eager(session, token.get("user"), AssetType.STOCK)
     if len(assets) == 0:
         return SummaryResponse(
             today_review_rate=0.0, total_asset_amount=0, total_investment_amount=0, profit_amount=0, profit_rate=0.0
@@ -610,16 +583,18 @@ async def get_summary(
     )
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
     stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
-    current_stock_price_map = await get_current_stock_price(redis_client, stock_daily_map, stock_codes)
+    current_stock_price_map = await StockService.get_current_stock_price(redis_client, stock_daily_map, stock_codes)
 
-    not_found_stock_codes: list[str] = check_not_found_stock(stock_daily_map, current_stock_price_map, assets)
+    not_found_stock_codes: list[str] = StockService.check_not_found_stock(
+        stock_daily_map, current_stock_price_map, assets
+    )
     if not_found_stock_codes:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail={"not_found_stock_codes": not_found_stock_codes}
         )
 
-    total_asset_amount = get_total_asset_amount(assets, current_stock_price_map, exchange_rate_map)
-    total_investment_amount = get_total_investment_amount(assets, stock_daily_map, exchange_rate_map)
+    total_asset_amount = AssetStockService.get_total_asset_amount(assets, current_stock_price_map, exchange_rate_map)
+    total_investment_amount = AssetStockService.get_total_investment_amount(assets, stock_daily_map, exchange_rate_map)
 
     profit_amount = total_asset_amount - total_investment_amount
     profit_rate = (total_asset_amount - total_investment_amount) / total_asset_amount * 100
@@ -630,7 +605,9 @@ async def get_summary(
     if len(assets_30days) == 0:
         today_review_rate = 100.0
     else:
-        total_asset_amount_30days = get_total_asset_amount(assets_30days, current_stock_price_map, exchange_rate_map)
+        total_asset_amount_30days = AssetStockService.get_total_asset_amount(
+            assets_30days, current_stock_price_map, exchange_rate_map
+        )
         today_review_rate = (total_asset_amount - total_asset_amount_30days) / total_asset_amount * 100
 
     return SummaryResponse(
@@ -642,8 +619,8 @@ async def get_summary(
     )
 
 
-@chart_router.get("/dummy/summary", summary="오늘의 리뷰, 나의 총자산, 나의 투자 금액, 수익금", response_model=SummaryResponse)
-async def get_dummy_summary(
+@chart_router.get("/sample/summary", summary="오늘의 리뷰, 나의 총자산, 나의 투자 금액, 수익금", response_model=SummaryResponse)
+async def get_sample_summary(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> SummaryResponse:
@@ -660,16 +637,18 @@ async def get_dummy_summary(
     )
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
     stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
-    current_stock_price_map = await get_current_stock_price(redis_client, stock_daily_map, stock_codes)
+    current_stock_price_map = await StockService.get_current_stock_price(redis_client, stock_daily_map, stock_codes)
 
-    not_found_stock_codes: list[str] = check_not_found_stock(stock_daily_map, current_stock_price_map, assets)
+    not_found_stock_codes: list[str] = StockService.check_not_found_stock(
+        stock_daily_map, current_stock_price_map, assets
+    )
     if not_found_stock_codes:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail={"not_found_stock_codes": not_found_stock_codes}
         )
 
-    total_asset_amount = get_total_asset_amount(assets, current_stock_price_map, exchange_rate_map)
-    total_investment_amount = get_total_investment_amount(assets, stock_daily_map, exchange_rate_map)
+    total_asset_amount = AssetStockService.get_total_asset_amount(assets, current_stock_price_map, exchange_rate_map)
+    total_investment_amount = AssetStockService.get_total_investment_amount(assets, stock_daily_map, exchange_rate_map)
 
     profit_amount = total_asset_amount - total_investment_amount
     profit_rate = (total_asset_amount - total_investment_amount) / total_asset_amount * 100
@@ -680,7 +659,9 @@ async def get_dummy_summary(
     if len(assets_30days) == 0:
         today_review_rate = 100.0
     else:
-        total_asset_amount_30days = get_total_asset_amount(assets_30days, current_stock_price_map, exchange_rate_map)
+        total_asset_amount_30days = AssetStockService.get_total_asset_amount(
+            assets_30days, current_stock_price_map, exchange_rate_map
+        )
         today_review_rate = (total_asset_amount - total_asset_amount_30days) / total_asset_amount * 100
 
     return SummaryResponse(

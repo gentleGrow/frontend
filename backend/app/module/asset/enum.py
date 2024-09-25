@@ -1,6 +1,27 @@
 from enum import StrEnum
 
 
+class StockAsset(StrEnum):
+    ID = "id"
+    BUY_DATE = "buy_date"
+    PURCHASE_CURRENCY_TYPE = "purchase_currency_type"
+    QUANTITY = "quantity"
+    STOCK_CODE = "stock_code"
+    ACCOUNT_TYPE = "account_type"
+    CURRENT_PRICE = "current_price"
+    DIVIDEND = "dividend"
+    HIGHEST_PRICE = "highest_price"
+    INVESTMENT_BANK = "investment_bank"
+    LOWEST_PRICE = "lowest_price"
+    OPENING_PRICE = "opening_price"
+    PROFIT_RATE = "profit_rate"
+    PROFIT_AMOUNT = "profit_amount"
+    PURCHASE_AMOUNT = "purchase_amount"
+    PURCHASE_PRICE = "purchase_price"
+    STOCK_NAME = "stock_name"
+    STOCK_VOLUME = "stock_volume"
+
+
 class BaseCurrency(StrEnum):
     WON = "won"
     DOLLAR = "dollar"

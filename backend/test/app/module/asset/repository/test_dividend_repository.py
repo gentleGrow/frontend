@@ -6,12 +6,12 @@ from app.module.asset.repository.dividend_repository import DividendRepository
 
 
 class TestDividendRepository:
-    async def test_get_dividends_recent(self, db_session: AsyncSession, setup_dividend):
+    async def test_get_dividends_recent(self, session: AsyncSession, setup_dividend):
         # Given
         stock_codes = ["AAPL", "TSLA"]
 
         # When
-        recent_dividends = await DividendRepository.get_dividends_recent(db_session, stock_codes)
+        recent_dividends = await DividendRepository.get_dividends_recent(session, stock_codes)
 
         # Then
         assert len(recent_dividends) == 2

@@ -1,4 +1,5 @@
 from sqlalchemy import (
+    JSON,
     BigInteger,
     Column,
     Date,
@@ -16,6 +17,14 @@ from sqlalchemy.orm import relationship
 from app.common.mixin.timestamp import TimestampMixin
 from app.module.asset.enum import AccountType, AssetType, InvestmentBankType, PurchaseCurrencyType
 from database.config import MySQLBase
+
+
+class AssetField(TimestampMixin, MySQLBase):
+    __tablename__ = "asset_field"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    user_id = Column(BigInteger, ForeignKey("user.id"), nullable=False, unique=True)
+    field_preference = Column(JSON, nullable=False, default=list)
 
 
 class Dividend(TimestampMixin, MySQLBase):
@@ -40,7 +49,7 @@ class AssetStock(TimestampMixin, MySQLBase):
     purchase_date = Column(Date, nullable=False, info={"description": "구매일자"})
     purchase_price = Column(Float, nullable=True, info={"description": "매입가"})
     quantity = Column(Integer, nullable=False, info={"description": "구매수량"})
-    
+
     stock_id = Column(BigInteger, ForeignKey("stock.id"), primary_key=True)
     asset_id = Column(BigInteger, ForeignKey("asset.id"), primary_key=True)
     asset = relationship("Asset", back_populates="asset_stock", uselist=False, overlaps="stock,asset", lazy="selectin")

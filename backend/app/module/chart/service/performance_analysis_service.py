@@ -105,7 +105,7 @@ class PerformanceAnalysis:
         latest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, stock_codes)
         latest_stock_daily_map = {daily.code: daily for daily in latest_stock_dailies}
 
-        current_stock_price_map = await StockService.get_current_stock_price(
+        current_stock_price_map = await StockService.get_current_stock_price_by_code(
             redis_client, latest_stock_daily_map, stock_codes
         )
         exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
@@ -150,6 +150,8 @@ class PerformanceAnalysis:
         )
 
         current_kospi_price_raw = await RedisMarketIndiceRepository.get(redis_client, MarketIndex.KOSPI)
+        if current_kospi_price_raw is None:
+            return {}
         current_kospi_price_json = json.loads(current_kospi_price_raw)
         current_kospi_price = float(current_kospi_price_json["current_value"])
 
