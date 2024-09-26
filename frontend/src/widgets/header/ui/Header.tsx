@@ -1,13 +1,12 @@
 import LogoLink from "./LogoLink";
 import Menus from "./Menu";
-import Notification from "./Notification";
 import Profile from "./Profile";
 
 export default function Header() {
   return (
-    <header className="flex h-[64px] w-full items-center justify-around">
+    <header className="flex h-[64px] w-full items-center justify-between px-[16px]">
       <div className="flex">
-        <div className="mr-[120px]">
+        <div className="mr-[120px] mobile:hidden">
           <LogoLink />
         </div>
         <Menus />
