@@ -24,11 +24,7 @@ from app.module.auth.repository import UserRepository
 from app.module.auth.schema import AccessToken
 from app.module.chart.constant import RICH_PICK_SECOND, RICHPICKKEY, RICHPICKNAMEKEY, TIP_TODAY_ID_REDIS_KEY
 from app.module.chart.enum import CompositionType, EstimateDividendType, IntervalType
-from app.module.chart.redis_repository import (
-    RedisMarketIndiceRepository,
-    RedisRichPickRepository,
-    RedisTipRepository,
-)
+from app.module.chart.redis_repository import RedisMarketIndiceRepository, RedisRichPickRepository, RedisTipRepository
 from app.module.chart.repository import TipRepository
 from app.module.chart.schema import (
     ChartTipResponse,
@@ -51,20 +47,18 @@ from app.module.chart.schema import (
 )
 from app.module.chart.service.composition_service import CompositionService
 from app.module.chart.service.performance_analysis_service import PerformanceAnalysis
-from database.dependency import get_mysql_session_router, get_redis_pool
 from app.module.chart.service.rich_portfolio_service import RichPortfolioService
-
+from database.dependency import get_mysql_session_router, get_redis_pool
 
 chart_router = APIRouter(prefix="/v1")
 
 
 @chart_router.get("/rich-portfolio", summary="부자들의 포트폴리오", response_model=RichPortfolioResponse)
 async def get_rich_portfolio(redis_client: Redis = Depends(get_redis_pool)) -> RichPortfolioResponse:
-    rich_portfolio_map:dict = await RichPortfolioService.get_rich_porfolio_map(redis_client)
-    
+    rich_portfolio_map: dict = await RichPortfolioService.get_rich_porfolio_map(redis_client)
+
     response_data = [
-        RichPortfolioValue(name=person, stock=portfolio)
-        for person, portfolio in rich_portfolio_map.items()
+        RichPortfolioValue(name=person, stock=portfolio) for person, portfolio in rich_portfolio_map.items()
     ]
 
     return RichPortfolioResponse(response_data)

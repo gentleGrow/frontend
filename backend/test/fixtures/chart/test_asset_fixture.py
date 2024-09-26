@@ -1,7 +1,10 @@
+import json
+
 import pytest
 from redis.asyncio import Redis
-import json
+
 from app.data.investing.sources.enum import RicePeople
+
 
 @pytest.fixture
 async def setup_rich_portfolio(redis_client: Redis):
@@ -13,9 +16,9 @@ async def setup_rich_portfolio(redis_client: Redis):
         {"MSFT": "10.2%", "FB": "9.8%"},
         {"AAPL": "16.5%", "GOOGL": "14.8%"},
         {"SPY": "24.3%", "GLD": "17.6%"},
-        {"V": "22.1%", "PEP": "18.7%"}
+        {"V": "22.1%", "PEP": "18.7%"},
     ]
-    
-    await redis_client.mset({rich:json.dumps(portfolio) for rich, portfolio in zip(rich_people, rich_portfolio)})
+
+    await redis_client.mset({rich: json.dumps(portfolio) for rich, portfolio in zip(rich_people, rich_portfolio)})
     yield rich_portfolio
     await redis_client.flushall()
