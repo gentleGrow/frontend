@@ -1,4 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.module.asset.constant import ASSET_FIELD
 from app.module.asset.model import AssetField
 from app.module.asset.repository.asset_field_repository import AssetFieldRepository

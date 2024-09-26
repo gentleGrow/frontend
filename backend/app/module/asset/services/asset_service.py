@@ -15,12 +15,24 @@ class AssetService:
     async def save_asset_by_put(
         session: AsyncSession, request_data: AssetStockPutRequest, asset: Asset, stock_id: int
     ) -> None:
-        asset.asset_stock.account_type = request_data.account_type
-        asset.asset_stock.investment_bank = request_data.investment_bank
-        asset.asset_stock.purchase_currency_type = request_data.purchase_currency_type
-        asset.asset_stock.purchase_date = request_data.buy_date
-        asset.asset_stock.purchase_price = request_data.purchase_price
-        asset.asset_stock.quantity = request_data.quantity
+        if request_data.account_type is not None:
+            asset.asset_stock.account_type = request_data.account_type
+
+        if request_data.investment_bank is not None:
+            asset.asset_stock.investment_bank = request_data.investment_bank
+
+        if request_data.purchase_currency_type is not None:
+            asset.asset_stock.purchase_currency_type = request_data.purchase_currency_type
+
+        if request_data.buy_date is not None:
+            asset.asset_stock.purchase_date = request_data.buy_date
+
+        if request_data.purchase_price is not None:
+            asset.asset_stock.purchase_price = request_data.purchase_price
+
+        if request_data.quantity is not None:
+            asset.asset_stock.quantity = request_data.quantity
+
         asset.asset_stock.stock_id = stock_id
 
         await AssetRepository.save(session, asset)

@@ -3,8 +3,8 @@ from typing import Optional
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel, Field, RootModel
-from app.module.asset.constant import ASSET_FIELD
-from app.module.asset.constant import REQUIRED_ASSET_FIELD
+
+from app.module.asset.constant import ASSET_FIELD, REQUIRED_ASSET_FIELD
 from app.module.asset.enum import AccountType, InvestmentBankType, PurchaseCurrencyType
 from app.module.asset.model import Asset
 
@@ -59,10 +59,10 @@ class UpdateAssetFieldRequest(RootModel[list[str]]):
 
 class AssetStockPutRequest(BaseModel):
     id: int = Field(..., description="자산 고유 값")
-    buy_date: date = Field(..., description="구매일자")
-    purchase_currency_type: PurchaseCurrencyType = Field(..., description="매입 통화")
-    quantity: int = Field(..., description="수량")
-    stock_code: str = Field(..., description="종목 코드", examples=["AAPL"])
+    buy_date: date | None = Field(None, description="구매일자", example="2024-08-12 (Optional)")
+    purchase_currency_type: PurchaseCurrencyType | None = Field(None, description="매입 통화", example="KRW/USD (Optional)")
+    quantity: int | None = Field(None, description="수량", example="1 (Optional)")
+    stock_code: str | None = Field(None, description="종목 코드", example="AAPL (Optional)")
     account_type: AccountType | None = Field(None, description="계좌 종류", example=f"{AccountType.ISA} (Optional)")
     investment_bank: str | None = Field(None, description="증권사", example=f"{InvestmentBankType.TOSS} (Optional)")
     purchase_price: float | None = Field(None, description="매입가", example=f"{62000} (Optional)")

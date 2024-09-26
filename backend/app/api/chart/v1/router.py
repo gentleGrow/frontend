@@ -22,7 +22,13 @@ from app.module.asset.services.stock_service import StockService
 from app.module.auth.constant import DUMMY_USER_ID
 from app.module.auth.repository import UserRepository
 from app.module.auth.schema import AccessToken
-from app.module.chart.constant import RICH_PICK_SECOND, REDIS_RICH_PICK_KEY, REDIS_RICH_PICK_NAME_KEY, TIP_TODAY_ID_REDIS_KEY, DEFAULT_TIP
+from app.module.chart.constant import (
+    DEFAULT_TIP,
+    REDIS_RICH_PICK_KEY,
+    REDIS_RICH_PICK_NAME_KEY,
+    RICH_PICK_SECOND,
+    TIP_TODAY_ID_REDIS_KEY,
+)
 from app.module.chart.enum import CompositionType, EstimateDividendType, IntervalType
 from app.module.chart.redis_repository import RedisMarketIndiceRepository, RedisRichPickRepository, RedisTipRepository
 from app.module.chart.repository import TipRepository
@@ -87,8 +93,12 @@ async def get_rich_pick(
         top_10_stocks: list[str] = [
             stock[0] for stock in sorted(stock_count.items(), key=lambda x: x[1], reverse=True)[:10]
         ]
-        await RedisRichPickRepository.save(redis_client, REDIS_RICH_PICK_KEY, json.dumps(top_10_stocks), RICH_PICK_SECOND)
-        await RedisRichPickRepository.save(redis_client, REDIS_RICH_PICK_NAME_KEY, json.dumps(stock_name_map), RICH_PICK_SECOND)
+        await RedisRichPickRepository.save(
+            redis_client, REDIS_RICH_PICK_KEY, json.dumps(top_10_stocks), RICH_PICK_SECOND
+        )
+        await RedisRichPickRepository.save(
+            redis_client, REDIS_RICH_PICK_NAME_KEY, json.dumps(stock_name_map), RICH_PICK_SECOND
+        )
     else:
         # mypy if-else 내부에 중복 네이밍 무시
         top_10_stocks: list[str] = json.loads(top_10_stocks_raw)  # type: ignore

@@ -1,11 +1,12 @@
+from app.module.chart.constant import INVESTMENT_TIP
 from app.module.chart.repository import TipRepository
-from app.module.chart.constant import DEFAULT_TIP, INVESTMENT_TIP
+
 
 class TestTipRespository:
     async def test_get_valid_tip(self, session, setup_tip):
         # Given
-        valid_tip_id = 1 
-        
+        valid_tip_id = 1
+
         # When
         retrieved_tip = await TipRepository.get(session, valid_tip_id)
 

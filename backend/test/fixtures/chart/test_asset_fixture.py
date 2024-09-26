@@ -1,8 +1,9 @@
 import json
-from sqlalchemy.dialects.mysql import insert
+
 import pytest
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.data.investing.sources.enum import RicePeople
 from app.module.chart.constant import INVESTMENT_TIP
 from app.module.chart.repository import TipRepository
@@ -11,7 +12,7 @@ from app.module.chart.repository import TipRepository
 @pytest.fixture(scope="function")
 async def setup_tip(session: AsyncSession):
     await TipRepository.save_invest_tips(session, INVESTMENT_TIP)
-    
+
 
 @pytest.fixture
 async def setup_rich_portfolio(redis_client: Redis):

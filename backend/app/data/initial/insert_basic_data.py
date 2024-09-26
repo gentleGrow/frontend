@@ -2,12 +2,13 @@ import asyncio
 
 from icecream import ic
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.module.asset.constant import ASSET_FIELD
+
 from app.module.asset.constant import (
     ACCOUNT_TYPES,
+    ASSET_FIELD,
     INVESTMENT_BANKS,
-    PURCHASE_DATES,
     PURCHASE_CURRENCY_TYPES,
+    PURCHASE_DATES,
     STOCK_CODES,
     STOCK_QUANTITIES,
 )
@@ -20,8 +21,8 @@ from app.module.auth.constant import ADMIN_USER_ID, DUMMY_USER_ID
 from app.module.auth.enum import ProviderEnum, UserRoleEnum
 from app.module.auth.model import User
 from app.module.auth.repository import UserRepository
-from app.module.chart.repository import TipRepository
 from app.module.chart.constant import INVESTMENT_TIP
+from app.module.chart.repository import TipRepository
 from database.dependency import get_mysql_session
 
 

@@ -14,7 +14,6 @@ from app.module.asset.services.stock_daily_service import StockDailyService
 from app.module.asset.services.stock_service import StockService
 from app.module.auth.constant import DUMMY_USER_ID
 
-from icecream import ic
 
 class TestUpdateAssetFieldRequest:
     def test_validate_request_data_missing_required_fields(self):
@@ -36,9 +35,7 @@ class TestUpdateAssetFieldRequest:
 
     def test_validate_request_data_success(self):
         # Given
-        valid_request_data = UpdateAssetFieldRequest(
-            root=["buy_date", "quantity", "stock_name"]
-        )
+        valid_request_data = UpdateAssetFieldRequest(root=["buy_date", "quantity", "stock_name"])
 
         # When
         try:

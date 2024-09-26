@@ -13,6 +13,7 @@ class TipRepository:
         return result.scalar_one_or_none()
 
     staticmethod
+
     async def save_invest_tips(session: AsyncSession, tips: list[dict]) -> None:
         insert_stmt = insert(InvestTip).values(tips)
 
