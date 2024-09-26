@@ -3,9 +3,9 @@ from typing import Optional
 
 from fastapi import HTTPException, status
 from pydantic import BaseModel, Field, RootModel
-
-from app.module.asset.constant import RequiredAssetField
-from app.module.asset.enum import AccountType, InvestmentBankType, PurchaseCurrencyType, StockAsset
+from app.module.asset.constant import ASSET_FIELD
+from app.module.asset.constant import REQUIRED_ASSET_FIELD
+from app.module.asset.enum import AccountType, InvestmentBankType, PurchaseCurrencyType
 from app.module.asset.model import Asset
 
 
@@ -25,11 +25,8 @@ class UpdateAssetFieldRequest(RootModel[list[str]]):
     class Config:
         json_schema_extra = {
             "example": [
-                "id",
                 "buy_date",
-                "purchase_currency_type",
                 "quantity",
-                "stock_code",
                 "account_type",
                 "current_price",
                 "dividend",
@@ -49,13 +46,13 @@ class UpdateAssetFieldRequest(RootModel[list[str]]):
     @staticmethod
     def validate_request_data(request_data: "UpdateAssetFieldRequest"):
         for field in request_data.root:
-            if field not in StockAsset._value2member_map_:
+            if field not in ASSET_FIELD:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"'{field}'은 올바른 필드가 아닙니다. 다음의 필드 중 선택해주세요. {list(StockAsset._value2member_map_)}",
+                    detail=f"'{field}'은 올바른 필드가 아닙니다. 다음의 필드 중 선택해주세요. {ASSET_FIELD}",
                 )
 
-        missing_fields = [field for field in RequiredAssetField if field not in request_data.root]
+        missing_fields = [field for field in REQUIRED_ASSET_FIELD if field not in request_data.root]
         if missing_fields:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"필수 필드가 누락되었습니다: {missing_fields}")
 

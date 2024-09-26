@@ -9,6 +9,26 @@ from app.module.asset.enum import (
     PurchaseCurrencyType,
 )
 
+ASSET_FIELD = [
+    "buy_date",
+    "quantity",
+    "account_type",
+    "current_price",
+    "dividend",
+    "highest_price",
+    "investment_bank",
+    "lowest_price",
+    "opening_price",
+    "profit_rate",
+    "profit_amount",
+    "purchase_amount",
+    "purchase_price",
+    "stock_name",
+    "stock_volume"
+]
+
+
+
 KOSPI = "KOSPI"
 
 # STOCK_CODES = ["005930", "000660", "051910", "035720", "AAPL", "MSFT", "AMZN", "GOOGL", "TSLA", "META", "NVDA"]
@@ -55,7 +75,7 @@ ACCOUNT_TYPES = [
     AccountType.REGULAR.value,
 ]
 
-PURCHASECURRENCYTYPES = [
+PURCHASE_CURRENCY_TYPES = [
     PurchaseCurrencyType.USA.value,
     PurchaseCurrencyType.KOREA.value,
     PurchaseCurrencyType.KOREA.value,
@@ -191,4 +211,4 @@ COUNTRY_TRANSLATIONS = {
     "한국": Country.KOREA,
 }
 
-RequiredAssetField = ["id", "buy_date", "purchase_currency_type", "quantity", "stock_name"]
+REQUIRED_ASSET_FIELD = ["buy_date", "quantity", "stock_name"]

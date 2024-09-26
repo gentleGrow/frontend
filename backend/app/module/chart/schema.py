@@ -4,8 +4,8 @@ from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
 from app.module.asset.enum import MarketIndex
 
 
-class ChartTipResponse(BaseModel):
-    today_tip: str = Field(..., description="오늘의 투자 tip")
+class ChartTipResponse(RootModel[str]):
+    pass
 
 
 class SummaryResponse(BaseModel):

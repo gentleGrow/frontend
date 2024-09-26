@@ -14,6 +14,7 @@ from app.module.asset.services.stock_daily_service import StockDailyService
 from app.module.asset.services.stock_service import StockService
 from app.module.auth.constant import DUMMY_USER_ID
 
+from icecream import ic
 
 class TestUpdateAssetFieldRequest:
     def test_validate_request_data_missing_required_fields(self):
@@ -31,12 +32,12 @@ class TestUpdateAssetFieldRequest:
         # Then
         assert validation_passed is False
         assert "필수 필드가 누락되었습니다" in error_detail
-        assert "['id', 'buy_date', 'purchase_currency_type']" in error_detail
+        assert "['buy_date']" in error_detail
 
     def test_validate_request_data_success(self):
         # Given
         valid_request_data = UpdateAssetFieldRequest(
-            root=["id", "buy_date", "purchase_currency_type", "quantity", "stock_name"]
+            root=["buy_date", "quantity", "stock_name"]
         )
 
         # When
@@ -51,7 +52,7 @@ class TestUpdateAssetFieldRequest:
 
     def test_validate_request_data_fail(self):
         # Given
-        invalid_request_data = UpdateAssetFieldRequest(root=["id", "invalid_field", "quantity"])
+        invalid_request_data = UpdateAssetFieldRequest(root=["invalid_field", "quantity"])
 
         # When
         try:

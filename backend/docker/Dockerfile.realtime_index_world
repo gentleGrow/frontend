@@ -41,7 +41,7 @@ RUN apt-get install -y chromium-driver && \
     chromedriver --version || echo "chromedriver not found or installation failed."
 
 RUN pip install poetry && \
-    pip install peewee==3.17.5
+    pip install peewee==3.17.6
 
 COPY pyproject.toml poetry.lock /app/
 
