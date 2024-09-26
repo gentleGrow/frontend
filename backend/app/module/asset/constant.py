@@ -24,9 +24,8 @@ ASSET_FIELD = [
     "purchase_amount",
     "purchase_price",
     "stock_name",
-    "stock_volume"
+    "stock_volume",
 ]
-
 
 
 KOSPI = "KOSPI"

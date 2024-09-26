@@ -1,4 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.module.asset.constant import ASSET_FIELD
 from app.module.asset.services.asset_field_service import AssetFieldService
 from app.module.auth.constant import DUMMY_USER_ID
