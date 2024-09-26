@@ -13,6 +13,12 @@ const config: Config = {
           min: "841px",
           max: "1280px",
         },
+        "mobile-545": {
+          max: "545px",
+        },
+        "except-mobile-545": {
+          min: "546px",
+        },
         "except-mobile": {
           min: "840px",
         },
