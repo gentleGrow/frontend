@@ -17,5 +17,5 @@ class RichPortfolioService:
         return {
             person: json.loads(portfolio)
             for person, portfolio in zip(rich_people, rich_portfolios)
-            if person and portfolio 
+            if person and portfolio
         }
