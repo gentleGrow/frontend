@@ -7,4 +7,5 @@ from test.fixtures.asset.test_asset_fixture import (  # noqa: F401 test fixture 
     setup_stock,
     setup_stock_daily,
     setup_user,
+    setup_asset_stock_field
 )

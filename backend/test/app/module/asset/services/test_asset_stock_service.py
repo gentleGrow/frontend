@@ -3,6 +3,7 @@ from datetime import date
 import pytest
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
+from icecream import ic
 
 from app.module.asset.enum import AccountType, AssetType, InvestmentBankType, PurchaseCurrencyType, StockAsset
 from app.module.asset.model import Asset
@@ -112,6 +113,7 @@ class TestAssetStockService:
 
         assert total_asset_amount == pytest.approx(expected_total_asset_amount)
 
+
     async def test_get_stock_assets(
         self,
         session: AsyncSession,
@@ -123,7 +125,7 @@ class TestAssetStockService:
         setup_stock,
         setup_stock_daily,
         setup_user,
-        setup_asset_field,
+        setup_asset_stock_field,
     ):
         # Given
         assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
@@ -152,8 +154,10 @@ class TestAssetStockService:
             if assets[0].asset_stock.purchase_currency_type == PurchaseCurrencyType.USA
             else ExchangeRateService.get_won_exchange_rate(assets[0], exchange_rate_map)
         )
-
+        
         stock_asset_aapl = next(asset for asset in stock_assets if asset[StockAsset.STOCK_CODE.value] == "AAPL")
+        
+        
         assert stock_asset_aapl[StockAsset.STOCK_NAME.value] == "Apple Inc."
         assert stock_asset_aapl[StockAsset.CURRENT_PRICE.value] == 220.0 * expected_exchange_rate_aapl
         assert (
