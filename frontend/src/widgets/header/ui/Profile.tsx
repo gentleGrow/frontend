@@ -2,7 +2,6 @@
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -48,7 +47,6 @@ export default function Profile() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>아이디</DropdownMenuLabel>
-
         <DropdownMenuSeparator />
         <LoginMenuItem />
       </DropdownMenuContent>

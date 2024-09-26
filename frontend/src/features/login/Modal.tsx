@@ -6,7 +6,7 @@ import NaverLoginButton from "./NaverLoginButton";
 
 export default function Modal() {
   return (
-    <div className="relative flex w-full items-center justify-center rounded-2xl bg-white px-[36px] py-[64px] mobile:fixed mobile:left-1/2 mobile:top-1/2 mobile:h-[562px] mobile:max-w-[474px] mobile:-translate-x-1/2 mobile:-translate-y-1/2">
+    <div className="fixed left-1/2 top-1/2 flex w-full -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-2xl bg-white px-[36px] py-[64px] mobile:fixed mobile:left-1/2 mobile:top-1/2 mobile:h-[562px] mobile:max-w-[474px] mobile:-translate-x-1/2 mobile:-translate-y-1/2">
       <div className="flex h-full flex-col items-center justify-between except-mobile:mt-[120px] except-mobile:space-y-[135px]">
         <div className="space-y-[16px] text-center">
           <Heading fontSize="2xl">시작하기</Heading>
