@@ -123,7 +123,7 @@ class TestAssetStockService:
         setup_stock,
         setup_stock_daily,
         setup_user,
-        setup_asset_field,
+        setup_asset_stock_field,
     ):
         # Given
         assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
@@ -154,6 +154,7 @@ class TestAssetStockService:
         )
 
         stock_asset_aapl = next(asset for asset in stock_assets if asset[StockAsset.STOCK_CODE.value] == "AAPL")
+
         assert stock_asset_aapl[StockAsset.STOCK_NAME.value] == "Apple Inc."
         assert stock_asset_aapl[StockAsset.CURRENT_PRICE.value] == 220.0 * expected_exchange_rate_aapl
         assert (

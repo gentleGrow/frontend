@@ -158,7 +158,7 @@ async def create_asset_stock(
     return PostResponse(status_code=status.HTTP_201_CREATED, content="주식 자산 성공적으로 등록 했습니다.")
 
 
-@asset_stock_router.put("/assetstock", summary="주식 자산을 수정합니다.", response_model=PutResponse)
+@asset_stock_router.patch("/assetstock", summary="주식 자산을 수정합니다.", response_model=PutResponse)
 async def update_asset_stock(
     request_data: AssetStockPutRequest,
     token: AccessToken = Depends(verify_jwt_token),
@@ -168,11 +168,7 @@ async def update_asset_stock(
     if asset is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{request_data.id} id에 해당하는 자산을 찾지 못 했습니다.")
 
-    stock = await StockRepository.get_by_code(session, request_data.stock_code)
-    if stock is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"{request_data.stock_code}를 찾지 못 했습니다.")
-
-    await AssetService.save_asset_by_put(session, request_data, asset, stock.id)
+    await AssetService.save_asset_by_put(session, request_data, asset, request_data.id)
     return PutResponse(status_code=status.HTTP_200_OK, content="주식 자산을 성공적으로 수정 하였습니다.")
 
 

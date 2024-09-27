@@ -22,15 +22,17 @@ from app.module.asset.services.stock_service import StockService
 from app.module.auth.constant import DUMMY_USER_ID
 from app.module.auth.repository import UserRepository
 from app.module.auth.schema import AccessToken
-from app.module.chart.constant import RICH_PICK_SECOND, RICHPICKKEY, RICHPICKNAMEKEY, TIP_TODAY_ID_REDIS_KEY
-from app.module.chart.enum import CompositionType, EstimateDividendType, IntervalType
-from app.module.chart.redis_repository import (  # RedisRichPortfolioRepository,
-    RedisMarketIndiceRepository,
-    RedisRichPickRepository,
-    RedisTipRepository,
+from app.module.chart.constant import (
+    DEFAULT_TIP,
+    REDIS_RICH_PICK_KEY,
+    REDIS_RICH_PICK_NAME_KEY,
+    RICH_PICK_SECOND,
+    TIP_TODAY_ID_REDIS_KEY,
 )
+from app.module.chart.enum import CompositionType, EstimateDividendType, IntervalType
+from app.module.chart.redis_repository import RedisMarketIndiceRepository, RedisRichPickRepository, RedisTipRepository
 from app.module.chart.repository import TipRepository
-from app.module.chart.schema import (  # RichPortfolioResponse,; RichPortfolioValue,
+from app.module.chart.schema import (
     ChartTipResponse,
     CompositionResponse,
     CompositionResponseValue,
@@ -45,36 +47,36 @@ from app.module.chart.schema import (  # RichPortfolioResponse,; RichPortfolioVa
     PerformanceAnalysisResponse,
     RichPickResponse,
     RichPickValue,
+    RichPortfolioResponse,
+    RichPortfolioValue,
     SummaryResponse,
 )
 from app.module.chart.service.composition_service import CompositionService
 from app.module.chart.service.performance_analysis_service import PerformanceAnalysis
+from app.module.chart.service.rich_portfolio_service import RichPortfolioService
 from database.dependency import get_mysql_session_router, get_redis_pool
 
 chart_router = APIRouter(prefix="/v1")
 
 
-# @chart_router.get("/rich-portfolio", summary="부자들의 포트폴리오", response_model=RichPortfolioResponse)
-# async def get_rich_portfolio(redis_client: Redis = Depends(get_redis_pool)) -> RichPortfolioResponse:
-#     rich_people = [person.value for person in RicePeople]
-#     rich_portfolios: list[str] = await RedisRichPortfolioRepository.gets(redis_client, rich_people)
+@chart_router.get("/rich-portfolio", summary="부자들의 포트폴리오", response_model=RichPortfolioResponse)
+async def get_rich_portfolio(redis_client: Redis = Depends(get_redis_pool)) -> RichPortfolioResponse:
+    rich_portfolio_map: dict = await RichPortfolioService.get_rich_porfolio_map(redis_client)
 
-#     response_data = [
-#         RichPortfolioValue(name=person, stock=json.loads(portfolio_raw))
-#         for person, portfolio_raw in zip(rich_people, rich_portfolios)
-#     ]
+    response_data = [
+        RichPortfolioValue(name=person, stock=portfolio) for person, portfolio in rich_portfolio_map.items()
+    ]
 
-#     return RichPortfolioResponse(response_data)
+    return RichPortfolioResponse(response_data)
 
 
 @chart_router.get("/rich-pick", summary="부자들이 선택한 종목 TOP10", response_model=RichPickResponse)
 async def get_rich_pick(
     session: AsyncSession = Depends(get_mysql_session_router), redis_client: Redis = Depends(get_redis_pool)
 ) -> RichPickResponse:
-
     # [수정]!!!!!!!!! N+1 문제 !!!!!!!!!!!!
-    top_10_stocks_raw: str = await RedisRichPickRepository.get(redis_client, RICHPICKKEY)
-    stock_name_map_raw: str = await RedisRichPickRepository.get(redis_client, RICHPICKNAMEKEY)
+    top_10_stocks_raw: str = await RedisRichPickRepository.get(redis_client, REDIS_RICH_PICK_KEY)
+    stock_name_map_raw: str = await RedisRichPickRepository.get(redis_client, REDIS_RICH_PICK_NAME_KEY)
     if top_10_stocks_raw is None or stock_name_map_raw is None:
         stock_count = {}
         stock_name_map: dict[str, str] = {}
@@ -91,8 +93,12 @@ async def get_rich_pick(
         top_10_stocks: list[str] = [
             stock[0] for stock in sorted(stock_count.items(), key=lambda x: x[1], reverse=True)[:10]
         ]
-        await RedisRichPickRepository.save(redis_client, RICHPICKKEY, json.dumps(top_10_stocks), RICH_PICK_SECOND)
-        await RedisRichPickRepository.save(redis_client, RICHPICKNAMEKEY, json.dumps(stock_name_map), RICH_PICK_SECOND)
+        await RedisRichPickRepository.save(
+            redis_client, REDIS_RICH_PICK_KEY, json.dumps(top_10_stocks), RICH_PICK_SECOND
+        )
+        await RedisRichPickRepository.save(
+            redis_client, REDIS_RICH_PICK_NAME_KEY, json.dumps(stock_name_map), RICH_PICK_SECOND
+        )
     else:
         # mypy if-else 내부에 중복 네이밍 무시
         top_10_stocks: list[str] = json.loads(top_10_stocks_raw)  # type: ignore
@@ -442,31 +448,6 @@ async def get_sample_my_stock(
     return MyStockResponse(my_stock_list=my_stock_list)
 
 
-@chart_router.get("/indice", summary="현재 시장 지수", response_model=MarketIndiceResponse)
-async def get_market_index(
-    redis_client: Redis = Depends(get_redis_pool),
-) -> MarketIndiceResponse:
-    market_index_keys = [market_index.value for market_index in MarketIndex]
-    market_index_values_str = await RedisMarketIndiceRepository.gets(redis_client, market_index_keys)
-
-    market_index_values: list[MarketIndexData] = [
-        MarketIndexData(**json.loads(value)) if value is not None else None for value in market_index_values_str
-    ]
-
-    market_index_pairs = [
-        MarketIndiceResponseValue(
-            name=market_index_value.name,
-            name_kr=MARKET_INDEX_KR_MAPPING.get(market_index_value.name, "N/A"),
-            current_value=float(market_index_value.current_value),
-            change_percent=float(market_index_value.change_percent),
-        )
-        for market_index_value in market_index_values
-        if market_index_value is not None
-    ]
-
-    return MarketIndiceResponse(market_indices=market_index_pairs)
-
-
 @chart_router.get("/composition", summary="종목 구성", response_model=CompositionResponse)
 async def get_composition(
     token: AccessToken = Depends(verify_jwt_token),
@@ -583,7 +564,9 @@ async def get_summary(
     )
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
     stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
-    current_stock_price_map = await StockService.get_current_stock_price_by_code(redis_client, stock_daily_map, stock_codes)
+    current_stock_price_map = await StockService.get_current_stock_price_by_code(
+        redis_client, stock_daily_map, stock_codes
+    )
 
     not_found_stock_codes: list[str] = StockService.check_not_found_stock(
         stock_daily_map, current_stock_price_map, assets
@@ -637,7 +620,9 @@ async def get_sample_summary(
     )
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
     stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
-    current_stock_price_map = await StockService.get_current_stock_price_by_code(redis_client, stock_daily_map, stock_codes)
+    current_stock_price_map = await StockService.get_current_stock_price_by_code(
+        redis_client, stock_daily_map, stock_codes
+    )
 
     not_found_stock_codes: list[str] = StockService.check_not_found_stock(
         stock_daily_map, current_stock_price_map, assets
@@ -681,11 +666,36 @@ async def get_today_tip(
     today_tip_id = await RedisTipRepository.get(redis_client, TIP_TODAY_ID_REDIS_KEY)
 
     if today_tip_id is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="오늘의 팁 id가 캐싱되어 있지 않습니다.")
+        return ChartTipResponse(DEFAULT_TIP)
 
     invest_tip = await TipRepository.get(session, int(today_tip_id))
 
     if invest_tip is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="오늘의 팁 데이터가 존재하지 않습니다.")
+        return ChartTipResponse(DEFAULT_TIP)
 
-    return ChartTipResponse(today_tip=invest_tip.tip)
+    return ChartTipResponse(invest_tip.tip)
+
+
+@chart_router.get("/indice", summary="현재 시장 지수", response_model=MarketIndiceResponse)
+async def get_market_index(
+    redis_client: Redis = Depends(get_redis_pool),
+) -> MarketIndiceResponse:
+    market_index_keys = [market_index.value for market_index in MarketIndex]
+    market_index_values_str = await RedisMarketIndiceRepository.gets(redis_client, market_index_keys)
+
+    market_index_values: list[MarketIndexData] = [
+        MarketIndexData(**json.loads(value)) if value is not None else None for value in market_index_values_str
+    ]
+
+    market_index_pairs = [
+        MarketIndiceResponseValue(
+            name=market_index_value.name,
+            name_kr=MARKET_INDEX_KR_MAPPING.get(market_index_value.name, "N/A"),
+            current_value=float(market_index_value.current_value),
+            change_percent=float(market_index_value.change_percent),
+        )
+        for market_index_value in market_index_values
+        if market_index_value is not None
+    ]
+
+    return MarketIndiceResponse(market_indices=market_index_pairs)

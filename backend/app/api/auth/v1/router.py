@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.module.auth.constant import REDIS_JWT_REFRESH_EXPIRE_TIME_SECOND
+from app.module.auth.constant import REDIS_JWT_REFRESH_EXPIRE_TIME_SECOND, SESSION_SPECIAL_KEY
 from app.module.auth.enum import ProviderEnum
 from app.module.auth.jwt import JWTBuilder
 from app.module.auth.model import User
@@ -60,8 +60,9 @@ async def naver_login(
     access_token = JWTBuilder.generate_access_token(user.id, social_id)
     refresh_token = JWTBuilder.generate_refresh_token(user.id, social_id)
 
-    user_string_id = str(user.id)
-    await RedisSessionRepository.save(redis_client, user_string_id, refresh_token, REDIS_JWT_REFRESH_EXPIRE_TIME_SECOND)
+    await RedisSessionRepository.save(
+        redis_client, f"{social_id}_{SESSION_SPECIAL_KEY}", refresh_token, REDIS_JWT_REFRESH_EXPIRE_TIME_SECOND
+    )
 
     return TokenResponse(access_token=access_token, refresh_token=refresh_token)
 
@@ -104,8 +105,9 @@ async def kakao_login(
     access_token = JWTBuilder.generate_access_token(user.id, social_id)
     refresh_token = JWTBuilder.generate_refresh_token(user.id, social_id)
 
-    user_string_id = str(user.id)
-    await RedisSessionRepository.save(redis_client, user_string_id, refresh_token, REDIS_JWT_REFRESH_EXPIRE_TIME_SECOND)
+    await RedisSessionRepository.save(
+        redis_client, f"{social_id}_{SESSION_SPECIAL_KEY}", refresh_token, REDIS_JWT_REFRESH_EXPIRE_TIME_SECOND
+    )
 
     return TokenResponse(access_token=access_token, refresh_token=refresh_token)
 
@@ -144,7 +146,9 @@ async def google_login(
     access_token = JWTBuilder.generate_access_token(user.id, social_id)
     refresh_token = JWTBuilder.generate_refresh_token(user.id, social_id)
 
-    await RedisSessionRepository.save(redis_client, social_id, refresh_token, REDIS_JWT_REFRESH_EXPIRE_TIME_SECOND)
+    await RedisSessionRepository.save(
+        redis_client, f"{social_id}_{SESSION_SPECIAL_KEY}", refresh_token, REDIS_JWT_REFRESH_EXPIRE_TIME_SECOND
+    )
 
     return TokenResponse(access_token=access_token, refresh_token=refresh_token)
 
@@ -167,7 +171,7 @@ async def refresh_access_token(
     if social_id is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="refresh token안에 유저 정보가 들어있지 않습니다.")
 
-    stored_refresh_token = await RedisSessionRepository.get(redis_client, social_id)
+    stored_refresh_token = await RedisSessionRepository.get(redis_client, f"{social_id}_{SESSION_SPECIAL_KEY}")
 
     if stored_refresh_token is None:
         raise HTTPException(

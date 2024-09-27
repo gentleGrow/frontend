@@ -5,13 +5,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.module.asset.constant import (
     ACCOUNT_TYPES,
+    ASSET_FIELD,
     INVESTMENT_BANKS,
+    PURCHASE_CURRENCY_TYPES,
     PURCHASE_DATES,
-    PURCHASECURRENCYTYPES,
     STOCK_CODES,
     STOCK_QUANTITIES,
 )
-from app.module.asset.enum import AssetType, StockAsset
+from app.module.asset.enum import AssetType
 from app.module.asset.model import Asset, AssetField, AssetStock
 from app.module.asset.repository.asset_field_repository import AssetFieldRepository
 from app.module.asset.repository.asset_repository import AssetRepository
@@ -20,6 +21,7 @@ from app.module.auth.constant import ADMIN_USER_ID, DUMMY_USER_ID
 from app.module.auth.enum import ProviderEnum, UserRoleEnum
 from app.module.auth.model import User
 from app.module.auth.repository import UserRepository
+from app.module.chart.constant import INVESTMENT_TIP
 from app.module.chart.repository import TipRepository
 from database.dependency import get_mysql_session
 
@@ -80,7 +82,7 @@ async def create_dummy_assets(session: AsyncSession):
         AssetStock(
             purchase_price=None,
             purchase_date=PURCHASE_DATES[i],
-            purchase_currency_type=PURCHASECURRENCYTYPES[i],
+            purchase_currency_type=PURCHASE_CURRENCY_TYPES[i],
             quantity=STOCK_QUANTITIES[i],
             investment_bank=INVESTMENT_BANKS[i],
             account_type=ACCOUNT_TYPES[i],
@@ -95,20 +97,7 @@ async def create_dummy_assets(session: AsyncSession):
 
 
 async def create_investment_tip(session: AsyncSession):
-    investment_tips = [
-        {"id": 1, "tip": "초보 투자자는 분산 투자를 고려하세요."},
-        {"id": 2, "tip": "장기적인 투자 목표를 설정하세요."},
-        {"id": 3, "tip": "리스크를 관리하기 위해 포트폴리오를 다양화하세요."},
-        {"id": 4, "tip": "시장 변동에 대해 과민반응하지 마세요."},
-        {"id": 5, "tip": "투자 결정을 내리기 전에 충분한 조사를 하세요."},
-        {"id": 6, "tip": "수익률에 집착하지 말고 꾸준히 투자하세요."},
-        {"id": 7, "tip": "시장을 예측하려고 하지 마세요."},
-        {"id": 8, "tip": "전문가의 조언을 경청하되, 스스로 결정하세요."},
-        {"id": 9, "tip": "장기적으로 안정적인 자산에 투자하세요."},
-        {"id": 10, "tip": "자신의 리스크 허용 범위를 이해하세요."},
-    ]
-
-    await TipRepository.save_invest_tips(session, investment_tips)
+    await TipRepository.save_invest_tips(session, INVESTMENT_TIP)
     ic("[create_investment_tip] investment_tips를 성공적으로 생성 했습니다.")
 
 
@@ -118,8 +107,8 @@ async def create_asset_field(session: AsyncSession):
         ic("이미 asset_field를 저장하였습니다.")
         return
 
-    fields_to_disable = ["stock_volume", "purchase_currency_type", "purchase_price", "purchase_amount"]
-    field_preference = [field for field in [field.value for field in StockAsset] if field not in fields_to_disable]
+    fields_to_disable = ["stock_volume", "purchase_price", "purchase_amount"]
+    field_preference = [field for field in ASSET_FIELD if field not in fields_to_disable]
 
     asset_field = AssetField(user_id=DUMMY_USER_ID, field_preference=field_preference)
 
