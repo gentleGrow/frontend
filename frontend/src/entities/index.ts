@@ -1,1 +1,3 @@
-export { default as getUser } from "./user/utils/getUser";
+export { default as useUser } from "./user/hooks/useUser";
+export { default as logout } from "./user/actions/logout";
+export { AuthContext } from "./user/contexts/AuthContext";

@@ -2,11 +2,9 @@
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import LoginMenuItem from "./LoginMenuItem";
+import DropdownMenus from "./DropdownMenus";
 
 export default function Profile() {
   return (
@@ -45,10 +43,8 @@ export default function Profile() {
           </svg>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>아이디</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <LoginMenuItem />
+      <DropdownMenuContent align="end" className="p-[16px]">
+        <DropdownMenus />
       </DropdownMenuContent>
     </DropdownMenu>
   );
