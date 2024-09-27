@@ -18,10 +18,10 @@ class StockService:
     def check_not_found_stock(
         stock_daily_map: dict[tuple[str, date], StockDaily],
         current_stock_daily_map: dict[str, float] | dict[str, None],
-        dummy_assets: list[Asset],
+        assets: list[Asset],
     ) -> list[str]:
         result = []
-        for asset in dummy_assets:
+        for asset in assets:
             stock_daily = stock_daily_map.get((asset.asset_stock.stock.code, asset.asset_stock.purchase_date))
             current_stock_daily = current_stock_daily_map.get(asset.asset_stock.stock.code)
             if stock_daily is None or current_stock_daily is None:

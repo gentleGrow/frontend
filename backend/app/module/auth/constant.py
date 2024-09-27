@@ -7,4 +7,4 @@ REDIS_JWT_REFRESH_EXPIRE_TIME_SECOND = 60 * 60 * 24
 # JWT_ACCESS_TIME_MINUTE = 60
 # JWT_REFRESH_TIME_MINUTE = 60 * 24
 JWT_ACCESS_TIME_MINUTE = 60 * 24 * 30  # 수정!!!!!!!!!!!!!!!!!!!!!!!!!
-JWT_REFRESH_TIME_MINUTE = 60 * 24 * 30  # 수정!!!!!!!!!!!!!!!!!!!!!!!!!
+JWT_REFRESH_TIME_MINUTE = 60 * 24 * 31  # 수정!!!!!!!!!!!!!!!!!!!!!!!!!

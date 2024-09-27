@@ -159,9 +159,10 @@ class AssetStockService:
             }
             stock_asset_data_filter[StockAsset.ID.value] = stock_asset_data[StockAsset.ID.value]
             stock_asset_data_filter[StockAsset.STOCK_CODE.value] = stock_asset_data[StockAsset.STOCK_CODE.value]
-            stock_asset_data_filter[StockAsset.PURCHASE_CURRENCY_TYPE.value] = stock_asset_data[StockAsset.PURCHASE_CURRENCY_TYPE.value]
-            
-            
+            stock_asset_data_filter[StockAsset.PURCHASE_CURRENCY_TYPE.value] = stock_asset_data[
+                StockAsset.PURCHASE_CURRENCY_TYPE.value
+            ]
+
             stock_assets.append(stock_asset_data_filter)
 
         return stock_assets
