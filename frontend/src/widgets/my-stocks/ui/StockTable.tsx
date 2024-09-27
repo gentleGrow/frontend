@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table";
 
 export default function StockTable({ stocks }: { stocks: any[] }) {
-  const blackSpace = (6 - stocks.length) * 48;
+  const blackSpace = (6 - stocks.length) * 48 - 4;
   return (
     <>
       <Table className="min-w-[612px] text-body-2">
@@ -23,7 +23,7 @@ export default function StockTable({ stocks }: { stocks: any[] }) {
         </TableHeader>
         <TableBody>
           {stocks.map((stock, i) => (
-            <TableRow key={i} className="border-none">
+            <TableRow key={i} className="h-[48px] border-none">
               <TableCell className="w-[160px]">{stock.name}</TableCell>
 
               <TableCell className="w-[120px] text-right">

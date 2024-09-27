@@ -25,13 +25,17 @@ export default function Home() {
           <InvestmentPerformanceChart />
         </div>
       </div>
+      <div className="flex space-x-[16px]">
+        <div className="w-1/2">
+          <EstimateDividend />
+        </div>
+        <div className="w-1/2">
+          <MyStocks />
+        </div>
+      </div>
       <Top10SelectedByRichPerson />
 
-      <MyStocks />
-
-      <div className="pt-12">
-        <EstimateDividend />
-      </div>
+      <div className="pt-12"></div>
       <RichPortfolio />
       <ExplorePortfolio />
     </div>

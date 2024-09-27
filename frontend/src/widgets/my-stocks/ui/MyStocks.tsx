@@ -33,8 +33,8 @@ const stocks = [
 
 export default function MyStocks() {
   return (
-    <div className="rounded-xl border border-gray-20 bg-white mobile:border-none">
-      <div className="flex items-center justify-between p-[16px]">
+    <div className="h-[388px] rounded-xl border border-gray-20 bg-white mobile:border-none">
+      <div className="flex items-center justify-between px-[16px] pb-[12px] pt-[16px]">
         <h3 className="text-heading-2">내 보유주식</h3>
         <SeeMoreButton href={"/"} />
       </div>
