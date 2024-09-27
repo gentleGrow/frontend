@@ -33,11 +33,11 @@ export default function Home() {
           <MyStocks />
         </div>
       </div>
-      <div className="flex space-x-[16px]">
-        <div className="w-4/12">
+      <div className="flex space-x-[16px] mobile:flex-col mobile:space-x-0 mobile:space-y-[16px]">
+        <div className="w-4/12 mobile:w-full">
           <Top10SelectedByRichPerson />
         </div>
-        <div className="w-8/12 space-y-[16px]">
+        <div className="w-8/12 space-y-[16px] mobile:w-full">
           <RichPortfolio />
           <ExplorePortfolio />
         </div>

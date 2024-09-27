@@ -27,7 +27,9 @@ export default function Top10SelectedByRichPersonItem({
           height={28}
           alt={stock.name}
         />
-        <p className="block max-w-[108px] truncate text-body-2">{stock.name}</p>
+        <p className="block max-w-[94ch] truncate text-body-2 except-mobile:max-w-[108ch]">
+          {stock.name}
+        </p>
       </div>
 
       <div className="flex items-center space-x-[12px] overflow-hidden">
