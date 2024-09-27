@@ -45,7 +45,7 @@ export default function DonutChart({
 
         const seriesOuterRadius = isMobile
           ? isPortfolio
-            ? 54
+            ? 52
             : dynamicRadius
           : dynamicRadius;
         const seriesInnerRadius = seriesOuterRadius / 2;
@@ -89,10 +89,11 @@ export default function DonutChart({
 
           tooltip: {
             trigger: "item",
+            confine: true,
             formatter: (params: any) => {
-              return `<span style="font-size:12px; line-height:18px; color:#2A2D31"> ${
+              return `<span style="font-size:12px; line-height:18px; color:#2A2D31; word-break: break-all;white-space: pre-wrap;"> ${
                 params.name
-              } · <span style="font-weight:bold">${params.percent}</span>%<br/><span style="font-weight:bold">₩${params.value.toLocaleString(
+              } · <span style="font-weight:bold; word-break: break-all;white-space: pre-wrap;">${params.percent}</span>%<br/><span style="font-weight:bold; word-break: break-all;white-space: pre-wrap;">₩${params.value.toLocaleString(
                 "ko-KR",
               )}원</span></span>`;
             },
@@ -128,7 +129,7 @@ export default function DonutChart({
             right: isMobile || isPortfolio ? 0 : undefined,
             top: isMobile ? "bottom" : "middle",
             data: legendData,
-            padding: isMobile || isPortfolio ? [0, 10] : [0, 0],
+            padding: isMobile || isPortfolio ? [0, 0] : [0, 0],
             formatter: (name: string) => {
               const item = data.find((i) => i.name === name);
               const percent = item
@@ -155,7 +156,7 @@ export default function DonutChart({
                 name: {
                   width: isPortfolio
                     ? containerWidth > 60
-                      ? containerWidth - 60
+                      ? containerWidth - 38
                       : 84
                     : isMobile
                       ? window.innerWidth - 64 - 70
@@ -193,6 +194,7 @@ export default function DonutChart({
                 : [leftMargin + seriesOuterRadius, "50%"],
               left: "0",
               right: "0",
+              top: isPortfolio ? -12 : 0,
               avoidLabelOverlap: true,
               itemStyle: {
                 borderColor: "#fff",
@@ -235,7 +237,7 @@ export default function DonutChart({
     }
   }, [data, windowWidth, isPortfolio]);
 
-  const chartHeight = isPortfolio ? 128 + 2 * 25 : 276 + data.length * 25;
+  const chartHeight = isPortfolio ? 128 + 2 * 25 - 25 : 276 + data.length * 25;
   const maxHeight = isPortfolio
     ? chartHeight
     : windowWidth > 840
