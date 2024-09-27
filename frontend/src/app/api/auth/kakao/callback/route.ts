@@ -63,6 +63,7 @@ export async function GET(req: NextRequest) {
     }
 
     const jwtData = await jwtResponse.json();
+    console.log(jwtData);
     setCookieForJWT(jwtData.access_token, jwtData.refresh_token);
 
     const redirectUrl = new URL("/", requestUrl);
