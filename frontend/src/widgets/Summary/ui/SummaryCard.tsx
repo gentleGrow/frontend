@@ -11,17 +11,17 @@ interface SummaryCardProps {
 
 export default function SummaryCard({ title, amount, rate }: SummaryCardProps) {
   return (
-    <div className="min-w-[246px] flex-1">
+    <div className="w-1/4">
       <Card title={title} height="100px">
         <div className="flex items-center">
           {amount && title !== "오늘의 review" ? (
             <PriceDisplay price={amount} />
           ) : (
             <div className="flex items-center space-x-[8px]">
-              <p className="text-[20px] font-bold leading-[24px]">
+              <p className="except-web:text-[20px] [1400px]:bg-red text-[1.42vw] font-bold leading-[24px]">
                 지난 달 보다
               </p>
-              <span className="text-[28px] font-bold leading-[33.6px] text-alert">
+              <span className="except-web:text-[28px] text-[2vw] font-bold leading-[33.6px] text-alert">
                 {amount?.toFixed(2)}%
               </span>
             </div>
