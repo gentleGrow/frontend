@@ -1,11 +1,12 @@
 import json
 from collections import defaultdict
 from datetime import date, datetime, timedelta
-
+from icecream import ic
+from app.module.chart.service.summary_service import SummaryService
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from app.module.asset.services.stock_daily_service import StockDailyService
 from app.common.auth.security import verify_jwt_token
 from app.data.investing.sources.enum import RicePeople
 from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
@@ -50,6 +51,7 @@ from app.module.chart.schema import (
     RichPortfolioResponse,
     RichPortfolioValue,
     SummaryResponse,
+    ProfitDetail
 )
 from app.module.chart.service.composition_service import CompositionService
 from app.module.chart.service.performance_analysis_service import PerformanceAnalysis
@@ -551,54 +553,41 @@ async def get_summary(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> SummaryResponse:
-    assets: list[Asset] = await AssetRepository.get_eager(session, token.get("user"), AssetType.STOCK)
+    assets: list[Asset] = await AssetRepository.get_eager(session, token.get('user'), AssetType.STOCK)
     if len(assets) == 0:
         return SummaryResponse(
             today_review_rate=0.0, total_asset_amount=0, total_investment_amount=0, profit_amount=0, profit_rate=0.0
         )
 
-    stock_code_date_pairs = [(asset.asset_stock.stock.code, asset.asset_stock.purchase_date) for asset in assets]
-    stock_codes = [asset.asset_stock.stock.code for asset in assets]
-    stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies_by_code_and_date(
-        session, stock_code_date_pairs
+    stock_daily_map:dict[tuple[str, date], StockDaily] = await StockDailyService.get_map_range(session, assets)
+    latest_stock_daily_map:dict[str, StockDaily] = await StockDailyService.get_latest_map(session, assets)
+    current_stock_price_map:dict[str, float] = await StockService.get_current_stock_price_by_code(
+        redis_client, latest_stock_daily_map, [asset.asset_stock.stock.code for asset in assets]
     )
-    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
-    stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
-    current_stock_price_map = await StockService.get_current_stock_price_by_code(
-        redis_client, stock_daily_map, stock_codes
-    )
+    exchange_rate_map:dict[str, float] = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
     not_found_stock_codes: list[str] = StockService.check_not_found_stock(
         stock_daily_map, current_stock_price_map, assets
     )
     if not_found_stock_codes:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail={"not_found_stock_codes": not_found_stock_codes}
+            status_code=status.HTTP_404_NOT_FOUND, detail={"다음의 주식 코드를 찾지 못 했습니다.": not_found_stock_codes}
         )
 
-    total_asset_amount = AssetStockService.get_total_asset_amount(assets, current_stock_price_map, exchange_rate_map)
-    total_investment_amount = AssetStockService.get_total_investment_amount(assets, stock_daily_map, exchange_rate_map)
-
-    profit_amount = total_asset_amount - total_investment_amount
-    profit_rate = (total_asset_amount - total_investment_amount) / total_asset_amount * 100
-
-    thirty_days_ago = datetime.now().date() - timedelta(days=30)
-    assets_30days = [asset for asset in assets if asset.asset_stock.purchase_date <= thirty_days_ago]
-
-    if len(assets_30days) == 0:
-        today_review_rate = 100.0
-    else:
-        total_asset_amount_30days = AssetStockService.get_total_asset_amount(
-            assets_30days, current_stock_price_map, exchange_rate_map
-        )
-        today_review_rate = (total_asset_amount - total_asset_amount_30days) / total_asset_amount * 100
+    total_asset_amount:float = AssetStockService.get_total_asset_amount(assets, current_stock_price_map, exchange_rate_map)
+    total_investment_amount:float = AssetStockService.get_total_investment_amount(assets, stock_daily_map, exchange_rate_map)
+    today_review_rate:float = SummaryService.get_today_review_rate(assets, total_asset_amount, current_stock_price_map, exchange_rate_map)
 
     return SummaryResponse(
         today_review_rate=today_review_rate,
-        total_asset_amount=int(total_asset_amount),
-        total_investment_amount=int(total_investment_amount),
-        profit_amount=int(profit_amount),
-        profit_rate=profit_rate,
+        total_asset_amount=total_asset_amount,
+        total_investment_amount=total_investment_amount,
+        profit=ProfitDetail(
+            profit_amount=total_asset_amount - total_investment_amount,
+            profit_rate=(total_asset_amount - total_investment_amount) / total_asset_amount * 100 
+            if total_investment_amount > 0.0 and total_asset_amount > 0.0  
+            else 0.0
+        )
     )
 
 
@@ -613,48 +602,35 @@ async def get_sample_summary(
             today_review_rate=0.0, total_asset_amount=0, total_investment_amount=0, profit_amount=0, profit_rate=0.0
         )
 
-    stock_code_date_pairs = [(asset.asset_stock.stock.code, asset.asset_stock.purchase_date) for asset in assets]
-    stock_codes = [asset.asset_stock.stock.code for asset in assets]
-    stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies_by_code_and_date(
-        session, stock_code_date_pairs
+    stock_daily_map:dict[tuple[str, date], StockDaily] = await StockDailyService.get_map_range(session, assets)
+    latest_stock_daily_map:dict[str, StockDaily] = await StockDailyService.get_latest_map(session, assets)
+    current_stock_price_map:dict[str, float] = await StockService.get_current_stock_price_by_code(
+        redis_client, latest_stock_daily_map, [asset.asset_stock.stock.code for asset in assets]
     )
-    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
-    stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
-    current_stock_price_map = await StockService.get_current_stock_price_by_code(
-        redis_client, stock_daily_map, stock_codes
-    )
+    exchange_rate_map:dict[str, float] = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
     not_found_stock_codes: list[str] = StockService.check_not_found_stock(
         stock_daily_map, current_stock_price_map, assets
     )
     if not_found_stock_codes:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail={"not_found_stock_codes": not_found_stock_codes}
+            status_code=status.HTTP_404_NOT_FOUND, detail={"다음의 주식 코드를 찾지 못 했습니다.": not_found_stock_codes}
         )
 
-    total_asset_amount = AssetStockService.get_total_asset_amount(assets, current_stock_price_map, exchange_rate_map)
-    total_investment_amount = AssetStockService.get_total_investment_amount(assets, stock_daily_map, exchange_rate_map)
-
-    profit_amount = total_asset_amount - total_investment_amount
-    profit_rate = (total_asset_amount - total_investment_amount) / total_asset_amount * 100
-
-    thirty_days_ago = datetime.now().date() - timedelta(days=30)
-    assets_30days = [asset for asset in assets if asset.asset_stock.purchase_date <= thirty_days_ago]
-
-    if len(assets_30days) == 0:
-        today_review_rate = 100.0
-    else:
-        total_asset_amount_30days = AssetStockService.get_total_asset_amount(
-            assets_30days, current_stock_price_map, exchange_rate_map
-        )
-        today_review_rate = (total_asset_amount - total_asset_amount_30days) / total_asset_amount * 100
+    total_asset_amount:float = AssetStockService.get_total_asset_amount(assets, current_stock_price_map, exchange_rate_map)
+    total_investment_amount:float = AssetStockService.get_total_investment_amount(assets, stock_daily_map, exchange_rate_map)
+    today_review_rate:float = SummaryService.get_today_review_rate(assets, total_asset_amount, current_stock_price_map, exchange_rate_map)
 
     return SummaryResponse(
         today_review_rate=today_review_rate,
-        total_asset_amount=int(total_asset_amount),
-        total_investment_amount=int(total_investment_amount),
-        profit_amount=int(profit_amount),
-        profit_rate=profit_rate,
+        total_asset_amount=total_asset_amount,
+        total_investment_amount=total_investment_amount,
+        profit=ProfitDetail(
+            profit_amount=total_asset_amount - total_investment_amount,
+            profit_rate=(total_asset_amount - total_investment_amount) / total_asset_amount * 100 
+            if total_investment_amount > 0.0 and total_asset_amount > 0.0  
+            else 0.0
+        )
     )
 
 

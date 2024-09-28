@@ -12,6 +12,23 @@ from app.module.asset.services.exchange_rate_service import ExchangeRateService
 
 class AssetStockService:
     @staticmethod
+    def get_total_asset_amount(
+        assets: list[Asset],
+        current_stock_price_map: dict[str, float],
+        exchange_rate_map: dict[str, float],
+    ) -> float:
+        result = 0.0
+
+        for asset in assets:
+            result += (
+                current_stock_price_map.get(asset.asset_stock.stock.code)
+                * asset.asset_stock.quantity
+                * ExchangeRateService.get_won_exchange_rate(asset, exchange_rate_map)
+            )
+        return result
+    
+    
+    @staticmethod
     async def save_asset_stock_by_post(
         session: AsyncSession, request_data: AssetStockPostRequest, stock_id: int, user_id: int
     ) -> None:
@@ -56,22 +73,6 @@ class AssetStockService:
             )
             current_price *= won_exchange_rate
             result += current_price * asset.asset_stock.quantity
-        return result
-
-    @staticmethod
-    def get_total_asset_amount(
-        assets: list[Asset],
-        current_stock_price_map: dict[str, float],
-        exchange_rate_map: dict[str, float],
-    ) -> float:
-        result = 0.0
-
-        for asset in assets:
-            result += (
-                current_stock_price_map.get(asset.asset_stock.stock.code)
-                * asset.asset_stock.quantity
-                * ExchangeRateService.get_won_exchange_rate(asset, exchange_rate_map)
-            )
         return result
 
     @staticmethod
