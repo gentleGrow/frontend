@@ -6,9 +6,6 @@ const config: Config = {
   theme: {
     extend: {
       screens: {
-        "except-web": {
-          min: "1400px",
-        },
         mobile: {
           max: "840px",
         },
@@ -25,9 +22,11 @@ const config: Config = {
         "except-mobile": {
           min: "840px",
         },
-
         "except-tablet": {
           min: "1280px",
+        },
+        "except-web": {
+          min: "1400px",
         },
       },
       colors: {

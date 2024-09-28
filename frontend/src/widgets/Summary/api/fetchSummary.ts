@@ -4,8 +4,8 @@ export interface Summary {
   total_asset_amount: number;
   total_investment_amount: number;
   profit: {
-    amount: number;
-    rate: number;
+    profit_amount: number;
+    profit_rate: number;
   };
 }
 
@@ -25,8 +25,8 @@ const fetchSummary = async (): Promise<Summary> => {
       total_asset_amount: 0,
       total_investment_amount: 0,
       profit: {
-        amount: 0,
-        rate: 0,
+        profit_amount: 0,
+        profit_rate: 0,
       },
     };
   }
