@@ -3,9 +3,12 @@ export interface Summary {
   today_review_rate: number;
   total_asset_amount: number;
   total_investment_amount: number;
-  profit_amount: number;
-  profit_rate: number;
+  profit: {
+    amount: number;
+    rate: number;
+  };
 }
+
 const fetchSummary = async (): Promise<Summary> => {
   try {
     const response = await fetch(
@@ -21,8 +24,10 @@ const fetchSummary = async (): Promise<Summary> => {
       today_review_rate: 0,
       total_asset_amount: 0,
       total_investment_amount: 0,
-      profit_amount: 0,
-      profit_rate: 0,
+      profit: {
+        amount: 0,
+        rate: 0,
+      },
     };
   }
 };
