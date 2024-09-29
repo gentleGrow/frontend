@@ -18,7 +18,7 @@ export default function BarChart({ chartData }: { chartData: BarChartData }) {
       tooltip: {
         trigger: "item",
         formatter: function (params) {
-          return `${(params.value * 10000).toLocaleString("ko-kr")}원`;
+          return `${Number((params.value * 10000).toFixed(0)).toLocaleString("ko-kr")}원`;
         },
         position: function (point, params, dom, rect, size) {
           if (rect) {

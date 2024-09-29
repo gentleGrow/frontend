@@ -7,17 +7,14 @@ import { checkHasAccessToken } from "@/entities";
 export default async function EstimateDividend() {
   const hasAccessToken = await checkHasAccessToken();
 
-  const estimatedDividendAll: BarChartData = (
-    hasAccessToken
-      ? await fetchEstimateDividend("every")
-      : await fetchDummyEstimateDividend("every")
-  ) as BarChartData;
-
-  const estimatedDividendByStock: DonutChartData[] = (
-    hasAccessToken
-      ? await fetchEstimateDividend("type")
-      : await fetchDummyEstimateDividend("type")
-  ) as DonutChartData[];
+  const [estimatedDividendAll, estimatedDividendByStock] = await Promise.all([
+    (hasAccessToken
+      ? fetchEstimateDividend("every")
+      : fetchDummyEstimateDividend("every")) as Promise<BarChartData>,
+    (hasAccessToken
+      ? fetchEstimateDividend("type")
+      : fetchDummyEstimateDividend("type")) as Promise<DonutChartData[]>,
+  ]);
 
   return (
     <EstimateDividendClient

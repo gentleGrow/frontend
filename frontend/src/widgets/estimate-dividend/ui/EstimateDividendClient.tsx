@@ -25,7 +25,7 @@ export default function EstimateDividendClient({
   );
   return (
     <div
-      className={`relative ${selectedTab === "모두" ? "h-[388px]" : "h-full"} w-full rounded-xl border border-gray-20 bg-white p-[16px] ${selectedTab === "모두" ? "mobile:h-[500px]" : "h-full"} mobile:border-none`}
+      className={`relative ${selectedTab === "모두" ? "h-[390px]" : "h-full"} w-full rounded-xl border border-gray-20 bg-white p-[16px] ${selectedTab === "모두" ? "mobile:h-[500px]" : "h-full"} mobile:border-none`}
     >
       <h2 className="text-heading-2">예상 배당액</h2>
       <div className="mt-[16px] flex w-full justify-between except-mobile:absolute except-mobile:right-[16px] except-mobile:top-[12px] except-mobile:mt-0">
@@ -61,9 +61,11 @@ export default function EstimateDividendClient({
             </p>
             <p className="text-[28px] font-bold leading-[33.61px]">
               ₩
-              {(
-                estimatedDividendAll[barChartNavItems[currentNavItemIndex]]
-                  .total * 10000
+              {Number(
+                (
+                  estimatedDividendAll[barChartNavItems[currentNavItemIndex]]
+                    .total * 10000
+                ).toFixed(0),
               ).toLocaleString("ko-KR")}
             </p>
           </div>

@@ -6,11 +6,12 @@ import { checkHasAccessToken } from "@/entities";
 
 export default async function MyStocks() {
   const hasAccessToken = await checkHasAccessToken();
-  const stocks = hasAccessToken
+  const data = hasAccessToken
     ? await fetchMyStocks()
     : await fetchDummyMyStocks();
+  const stocks = data.slice(0, 6);
   return (
-    <div className="h-[388px] rounded-xl border border-gray-20 bg-white mobile:border-none">
+    <div className="h-[390px] rounded-xl border border-gray-20 bg-white mobile:border-none">
       <div className="flex items-center justify-between px-[16px] pb-[12px] pt-[16px]">
         <h3 className="text-heading-2">내 보유주식</h3>
         <SeeMoreButton href={"/asset-management/sheet"} />

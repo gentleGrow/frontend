@@ -6,6 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import React from "react";
 
 export default function StockTable({ stocks }: { stocks: any[] }) {
   const blackSpace = (6 - stocks.length) * 48 - 4;
@@ -29,16 +30,24 @@ export default function StockTable({ stocks }: { stocks: any[] }) {
               </TableCell>
 
               <TableCell className="max-w-[151px] truncate text-right">
-                ₩{stock.current_price.toLocaleString("ko-KR")}
+                ₩
+                {Number(stock.current_price.toFixed(0)).toLocaleString("ko-KR")}
               </TableCell>
               <TableCell
                 className={`max-w-[151px] truncate text-right ${stock.profit_rate < 0 && "text-decrease"} ${stock.profit_rate > 0 && "text-alert"}`}
               >
                 {stock.profit_rate > 0 && "+"}
-                {stock.profit_rate}%
+                {Number(stock.profit_rate.toFixed(2)).toLocaleString("ko-kr")}%
               </TableCell>
               <TableCell className="max-w-[151px] truncate text-right">
-                ₩{stock.profit_amount.toLocaleString("ko-KR")}
+                {stock.profit_amount < 0 && "-"}₩
+                {stock.profit_amount < 0
+                  ? Number(
+                      (stock.profit_amount * -1).toFixed(0),
+                    ).toLocaleString("ko-KR")
+                  : Number(stock.profit_amount.toFixed(0)).toLocaleString(
+                      "ko-KR",
+                    )}
               </TableCell>
               <TableCell className="max-w-[90px] truncate text-right">
                 {stock.quantity.toLocaleString()}
