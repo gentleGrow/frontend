@@ -1,20 +1,11 @@
 import { BarChartData, DonutChartData, SERVICE_SERVER_URL } from "@/shared";
-import { ACCESS_TOKEN } from "@/shared/constants/cookie";
-import { cookies } from "next/headers";
 
-const fetchEstimateDividend = async (
+const fetchDummyEstimateDividend = async (
   category: "every" | "type" = "every",
 ): Promise<BarChartData | DonutChartData[]> => {
   try {
     const response = await fetch(
-      `${SERVICE_SERVER_URL}/api/chart/v1/estimate-dividend?category=${category}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + cookies().get(ACCESS_TOKEN),
-        },
-      },
+      `${SERVICE_SERVER_URL}/api/chart/v1/sample/estimate-dividend?category=${category}`,
     );
     if (!response.ok) {
       throw new Error(`${response.status}: ${await response.json()}`);
@@ -28,4 +19,4 @@ const fetchEstimateDividend = async (
   }
 };
 
-export default fetchEstimateDividend;
+export default fetchDummyEstimateDividend;

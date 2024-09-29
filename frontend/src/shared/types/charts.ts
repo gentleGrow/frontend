@@ -20,4 +20,5 @@ export interface BarChartData {
   xAxises: string[];
   data: number[];
   unit: string;
+  total?: number;
 }

@@ -47,7 +47,7 @@ export default function InvestmentPerformanceChartClient({
           <PercentWithTitle title="내 수익률" percent={30.12} />
           <PercentWithTitle title="시장 수익률 대비" percent={8.57} />
         </div>
-        <LineChart data={currentData} />
+        <LineChart data={currentData} type={currentPerformanceDataKey} />
       </div>
     </div>
   );
