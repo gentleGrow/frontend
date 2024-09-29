@@ -1,24 +1,24 @@
 from collections import defaultdict
 from datetime import date, datetime, time, timedelta
-from icecream import ic
+from math import floor
+
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.module.asset.services.stock_daily_service import StockDailyService
+
 from app.module.asset.enum import AssetType, MarketIndex
-from app.module.asset.model import MarketIndexDaily, StockDaily, StockMinutely, MarketIndexMinutely
+from app.module.asset.model import MarketIndexDaily, MarketIndexMinutely, StockDaily, StockMinutely
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.market_index_daily_repository import MarketIndexDailyRepository
 from app.module.asset.repository.market_index_minutely_repository import MarketIndexMinutelyRepository
 from app.module.asset.repository.stock_daily_repository import StockDailyRepository
 from app.module.asset.repository.stock_minutely_repository import StockMinutelyRepository
+from app.module.asset.schema import MarketIndexData
 from app.module.asset.services.asset_stock_service import AssetStockService
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
+from app.module.asset.services.stock_daily_service import StockDailyService
 from app.module.asset.services.stock_service import StockService
 from app.module.chart.enum import IntervalType
 from app.module.chart.redis_repository import RedisMarketIndiceRepository
-from app.module.asset.schema import MarketIndexData
-from math import floor
-
 
 
 class PerformanceAnalysis:
@@ -34,10 +34,10 @@ class PerformanceAnalysis:
         market_data: list[MarketIndexDaily] = await MarketIndexDailyRepository.get_by_range(
             session, (adjusted_start_date, end_date), MarketIndex.KOSPI
         )
-        
-        current_kospi:MarketIndexData = await RedisMarketIndiceRepository.get(redis_client, MarketIndex.KOSPI)
+
+        current_kospi: MarketIndexData = await RedisMarketIndiceRepository.get(redis_client, MarketIndex.KOSPI)
         current_kospi_price = float(current_kospi["current_value"]) if current_kospi else 1.0
-        
+
         result = {}
         current_profit = 0.0
         current_date = adjusted_start_date
@@ -52,10 +52,9 @@ class PerformanceAnalysis:
             if current_date > start_date:
                 result[current_date] = current_profit
             current_date += timedelta(days=1)
-        
+
         return result
-    
-    
+
     @staticmethod
     async def get_user_analysis(
         session: AsyncSession,
@@ -69,11 +68,14 @@ class PerformanceAnalysis:
             session, user_id, AssetType.STOCK, (interval_start, interval_end)
         )
 
-        stock_daily_map:dict[tuple[str, date], StockDaily] = await StockDailyService.get_map_range(session, assets, )
-        latest_stock_daily_map:dict[str, StockDaily] = await StockDailyService.get_latest_map(session, assets)
+        stock_daily_map: dict[tuple[str, date], StockDaily] = await StockDailyService.get_map_range(
+            session,
+            assets,
+        )
+        latest_stock_daily_map: dict[str, StockDaily] = await StockDailyService.get_latest_map(session, assets)
         current_stock_price_map = await StockService.get_current_stock_price_by_code(
-                redis_client, latest_stock_daily_map, [asset.asset_stock.stock.code for asset in assets]
-            )
+            redis_client, latest_stock_daily_map, [asset.asset_stock.stock.code for asset in assets]
+        )
         exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
         assets_by_date = defaultdict(list)
@@ -96,15 +98,22 @@ class PerformanceAnalysis:
                 total_invest_amount = AssetStockService.get_total_investment_amount(
                     cumulative_assets, stock_daily_map, exchange_rate_map
                 )
-                current_profit = ((total_asset_amount - total_invest_amount) / total_invest_amount) * 100 if total_invest_amount > 0.0 and total_asset_amount > 0.0 else 0.0
-                result[market_date] = ((total_asset_amount - total_invest_amount) / total_invest_amount) * 100 if total_invest_amount > 0.0 and total_asset_amount > 0.0 else 0.0
+                current_profit = (
+                    ((total_asset_amount - total_invest_amount) / total_invest_amount) * 100
+                    if total_invest_amount > 0.0 and total_asset_amount > 0.0
+                    else 0.0
+                )
+                result[market_date] = (
+                    ((total_asset_amount - total_invest_amount) / total_invest_amount) * 100
+                    if total_invest_amount > 0.0 and total_asset_amount > 0.0
+                    else 0.0
+                )
             else:
                 result[market_date] = current_profit
-            
-        return result
-    
-    from datetime import timedelta
 
+        return result
+
+    from datetime import timedelta
 
     @staticmethod
     async def get_user_analysis_short(
@@ -183,29 +192,29 @@ class PerformanceAnalysis:
         current_kospi_price = float(current_kospi["current_value"]) if current_kospi else 1.0
 
         result = {}
-        
+
         market_data_by_datetime = {market_index.datetime: market_index for market_index in market_data}
-                
+
         interval_minutes = interval.get_interval()
-        
+
         minutes_offset = interval_start.minute % interval_minutes
-        
+
         if minutes_offset != 0:
             adjusted_minutes = floor(interval_start.minute / interval_minutes) * interval_minutes
             interval_start = interval_start.replace(minute=adjusted_minutes, second=0, microsecond=0)
-        
+
         current_datetime = interval_start
 
         current_profit = 0.0
 
         while current_datetime <= interval_end:
             naive_current_datetime = current_datetime.replace(tzinfo=None)
-            
+
             if naive_current_datetime in market_data_by_datetime:
                 market_index = market_data_by_datetime[naive_current_datetime]
                 current_profit = ((current_kospi_price - market_index.current_price) / market_index.current_price) * 100
 
             result[naive_current_datetime] = current_profit
-            current_datetime += timedelta(minutes=interval_minutes)  
+            current_datetime += timedelta(minutes=interval_minutes)
 
         return result
