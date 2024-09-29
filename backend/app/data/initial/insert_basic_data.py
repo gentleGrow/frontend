@@ -17,7 +17,7 @@ from app.module.asset.model import Asset, AssetField, AssetStock
 from app.module.asset.repository.asset_field_repository import AssetFieldRepository
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.stock_repository import StockRepository
-from app.module.auth.constant import ADMIN_USER_ID, DUMMY_USER_ID, TEST_USER_NAMES
+from app.module.auth.constant import ADMIN_USER_ID, DUMMY_USER_ID
 from app.module.auth.enum import ProviderEnum, UserRoleEnum
 from app.module.auth.model import User
 from app.module.auth.repository import UserRepository
@@ -113,8 +113,8 @@ async def create_asset_field(session: AsyncSession):
     asset_field = AssetField(user_id=DUMMY_USER_ID, field_preference=field_preference)
 
     await AssetFieldRepository.save(session, asset_field)
-    
-    
+
+
 async def create_portfolio_example(session: AsyncSession):
     pass
 

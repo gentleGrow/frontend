@@ -1,15 +1,17 @@
 import json
-from datetime import datetime
-from app.module.asset.model import MarketIndexDaily, MarketIndexMinutely
+from datetime import date, datetime
+
 import pytest
 from redis.asyncio import Redis
-from datetime import date
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.module.asset.schema import MarketIndexData
+
 from app.data.investing.sources.enum import RicePeople
+from app.module.asset.enum import Country, MarketIndex
+from app.module.asset.model import MarketIndexDaily, MarketIndexMinutely
+from app.module.asset.schema import MarketIndexData
 from app.module.chart.constant import INVESTMENT_TIP
 from app.module.chart.repository import TipRepository
-from app.module.asset.enum import Country, MarketIndex
+
 
 @pytest.fixture(scope="function")
 async def setup_tip(session: AsyncSession):
@@ -45,7 +47,7 @@ async def setup_market_index_daily(session: AsyncSession):
         low_price=2990.0,
         volume=1000000,
     )
-    
+
     market_index_2 = MarketIndexDaily(
         name=MarketIndex.KOSPI,
         date=date(2024, 8, 11),
@@ -59,6 +61,7 @@ async def setup_market_index_daily(session: AsyncSession):
     session.add_all([market_index_1, market_index_2])
     await session.commit()
 
+
 @pytest.fixture(scope="function")
 async def setup_market_index_minutely(session: AsyncSession):
     market_index_1 = MarketIndexMinutely(
@@ -66,13 +69,13 @@ async def setup_market_index_minutely(session: AsyncSession):
         datetime=datetime(2024, 9, 24, 21, 30),
         current_price=3100.0,
     )
-    
+
     market_index_2 = MarketIndexMinutely(
         name=MarketIndex.KOSPI,
         datetime=datetime(2024, 9, 24, 22, 30),
         current_price=3150.0,
     )
-    
+
     session.add_all([market_index_1, market_index_2])
     await session.commit()
 
@@ -89,8 +92,7 @@ async def setup_current_index(redis_client: Redis):
     )
 
     kospi_index_json = kospi_index.model_dump_json()
-    
+
     await redis_client.set(MarketIndex.KOSPI, kospi_index_json)
     yield kospi_index_json
     await redis_client.flushall()
-

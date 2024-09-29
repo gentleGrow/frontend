@@ -1,12 +1,13 @@
 import json
 from collections import defaultdict
 from datetime import date, datetime
-from app.common.util.time import get_now_datetime
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-from icecream import ic
+
 from app.common.auth.security import verify_jwt_token
+from app.common.util.time import get_now_datetime
 from app.data.investing.sources.enum import RicePeople
 from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
 from app.module.asset.enum import AssetType, CurrencyType, MarketIndex
@@ -272,8 +273,8 @@ async def get_sample_performance_analysis(
         sorted_dates = sorted(market_analysis_result.keys())
 
         return PerformanceAnalysisResponse(
-            xAxises=[date.strftime("%Y.%m.%d") for date in sorted_dates],
-            dates=[date.strftime("%m.%d") for date in sorted_dates],
+            xAxises=[date.strftime("%m.%d") for date in sorted_dates],
+            dates=[date.strftime("%Y.%m.%d") for date in sorted_dates],
             values1={"values": [user_analysis_result[date] for date in sorted_dates], "name": "내 수익률"},
             values2={"values": [market_analysis_result[date] for date in sorted_dates], "name": "코스피"},
             unit="%",
@@ -291,14 +292,20 @@ async def get_sample_performance_analysis(
             interval,
             market_analysis_result_short,
         )
-        
+
         sorted_datetimes = sorted(market_analysis_result_short.keys())
 
         return PerformanceAnalysisResponse(
-            xAxises=[datetime.strftime("%Y.%m.%d:%H:%M") for datetime in sorted_datetimes],
-            dates=[datetime.strftime("%m.%d") for datetime in sorted_datetimes],
-            values1={"values": [user_analysis_result_short[datetime] for datetime in sorted_datetimes], "name": "내 수익률"},
-            values2={"values": [market_analysis_result_short[datetime] for datetime in sorted_datetimes], "name": "코스피"},
+            xAxises=[datetime.strftime("%m.%d") for datetime in sorted_datetimes],
+            dates=[datetime.strftime("%Y.%m.%d:%H:%M") for datetime in sorted_datetimes],
+            values1={
+                "values": [user_analysis_result_short[datetime] for datetime in sorted_datetimes],
+                "name": "내 수익률",
+            },
+            values2={
+                "values": [market_analysis_result_short[datetime] for datetime in sorted_datetimes],
+                "name": "코스피",
+            },
             unit="%",
         )
     else:
@@ -308,13 +315,12 @@ async def get_sample_performance_analysis(
         user_analysis_result: dict[date, float] = await PerformanceAnalysis.get_user_analysis(
             session, redis_client, start_datetime, end_datetime, DUMMY_USER_ID, market_analysis_result
         )
-        
-        
+
         sorted_dates = sorted(market_analysis_result.keys())
 
         return PerformanceAnalysisResponse.get_performance_analysis_response(
-                market_analysis_result, user_analysis_result
-            )
+            market_analysis_result, user_analysis_result
+        )
 
 
 @chart_router.get("/performance-analysis", summary="투자 성과 분석", response_model=PerformanceAnalysisResponse)
@@ -332,13 +338,13 @@ async def get_performance_analysis(
             session, redis_client, start_datetime, end_datetime
         )
         user_analysis_result: dict[date, float] = await PerformanceAnalysis.get_user_analysis(
-            session, redis_client, start_datetime, end_datetime, token.get('user'), market_analysis_result
+            session, redis_client, start_datetime, end_datetime, token.get("user"), market_analysis_result
         )
         sorted_dates = sorted(market_analysis_result.keys())
 
         return PerformanceAnalysisResponse(
-            xAxises=[date.strftime("%Y.%m.%d") for date in sorted_dates],
-            dates=[date.strftime("%m.%d") for date in sorted_dates],
+            xAxises=[date.strftime("%m.%d") for date in sorted_dates],
+            dates=[date.strftime("%Y.%m.%d") for date in sorted_dates],
             values1={"values": [user_analysis_result[date] for date in sorted_dates], "name": "내 수익률"},
             values2={"values": [market_analysis_result[date] for date in sorted_dates], "name": "코스피"},
             unit="%",
@@ -352,18 +358,24 @@ async def get_performance_analysis(
             redis_client,
             start_datetime,
             end_datetime,
-            token.get('user'),
+            token.get("user"),
             interval,
             market_analysis_result_short,
         )
-        
+
         sorted_datetimes = sorted(market_analysis_result_short.keys())
 
         return PerformanceAnalysisResponse(
-            xAxises=[datetime.strftime("%Y.%m.%d:%H:%M") for datetime in sorted_datetimes],
-            dates=[datetime.strftime("%m.%d") for datetime in sorted_datetimes],
-            values1={"values": [user_analysis_result_short[datetime] for datetime in sorted_datetimes], "name": "내 수익률"},
-            values2={"values": [market_analysis_result_short[datetime] for datetime in sorted_datetimes], "name": "코스피"},
+            xAxises=[datetime.strftime("%m.%d") for datetime in sorted_datetimes],
+            dates=[datetime.strftime("%Y.%m.%d:%H:%M") for datetime in sorted_datetimes],
+            values1={
+                "values": [user_analysis_result_short[datetime] for datetime in sorted_datetimes],
+                "name": "내 수익률",
+            },
+            values2={
+                "values": [market_analysis_result_short[datetime] for datetime in sorted_datetimes],
+                "name": "코스피",
+            },
             unit="%",
         )
     else:
@@ -371,15 +383,14 @@ async def get_performance_analysis(
             session, redis_client, start_datetime, end_datetime
         )
         user_analysis_result: dict[date, float] = await PerformanceAnalysis.get_user_analysis(
-            session, redis_client, start_datetime, end_datetime, token.get('user'), market_analysis_result
+            session, redis_client, start_datetime, end_datetime, token.get("user"), market_analysis_result
         )
-        
-        
+
         sorted_dates = sorted(market_analysis_result.keys())
 
         return PerformanceAnalysisResponse.get_performance_analysis_response(
-                market_analysis_result, user_analysis_result
-            )
+            market_analysis_result, user_analysis_result
+        )
 
 
 @chart_router.get("/my-stock", summary="내 보유 주식", response_model=MyStockResponse)

@@ -1,7 +1,8 @@
 from datetime import date
-from collections import defaultdict
 from statistics import mean
+
 from app.module.chart.schema import PerformanceAnalysisResponse
+
 
 class TestPerformanceAnalysisResponse:
     def test_get_performance_analysis_response(self):
@@ -16,7 +17,7 @@ class TestPerformanceAnalysisResponse:
             date(2025, 1, 1): 15.0,
             date(2025, 1, 2): 17.0,
         }
-        
+
         user_analysis_result = {
             date(2024, 7, 1): 3.0,
             date(2024, 7, 2): 6.0,
@@ -37,7 +38,7 @@ class TestPerformanceAnalysisResponse:
         expected_xAxises = ["24.07", "08", "09", "25.01"]
         expected_values1 = [mean([3.0, 6.0]), mean([9.0, 11.0]), mean([7.0, 5.0]), mean([14.0, 16.0])]
         expected_values2 = [mean([5.0, 7.0]), mean([10.0, 12.0]), mean([8.0, 6.0]), mean([15.0, 17.0])]
-        
+
         assert response.xAxises == expected_xAxises
         assert response.values1["values"] == expected_values1
         assert response.values2["values"] == expected_values2
