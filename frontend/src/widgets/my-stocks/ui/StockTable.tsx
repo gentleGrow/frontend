@@ -29,16 +29,16 @@ export default function StockTable({ stocks }: { stocks: any[] }) {
               </TableCell>
 
               <TableCell className="max-w-[151px] truncate text-right">
-                ₩{stock.currentPrice.toLocaleString("ko-KR")}
+                ₩{stock.current_price.toLocaleString("ko-KR")}
               </TableCell>
               <TableCell
-                className={`max-w-[151px] truncate text-right ${stock.profitRate < 0 && "text-decrease"} ${stock.profitRate > 0 && "text-alert"}`}
+                className={`max-w-[151px] truncate text-right ${stock.profit_rate < 0 && "text-decrease"} ${stock.profit_rate > 0 && "text-alert"}`}
               >
-                {stock.profitRate > 0 && "+"}
-                {stock.profitRate}%
+                {stock.profit_rate > 0 && "+"}
+                {stock.profit_rate}%
               </TableCell>
               <TableCell className="max-w-[151px] truncate text-right">
-                ₩{stock.profitAmount.toLocaleString("ko-KR")}
+                ₩{stock.profit_amount.toLocaleString("ko-KR")}
               </TableCell>
               <TableCell className="max-w-[90px] truncate text-right">
                 {stock.quantity.toLocaleString()}

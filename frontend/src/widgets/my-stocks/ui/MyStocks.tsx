@@ -1,37 +1,19 @@
+import { FRONT_SERVER_URL } from "@/shared";
 import SeeMoreButton from "./SeeMoreButton";
 import StockTable from "./StockTable";
-const stocks = [
-  {
-    name: "삼성전자",
-    currentPrice: 86700,
-    profitRate: 5.31,
-    profitAmount: 48873,
-    quantity: 10,
-  },
-  {
-    name: "바이두",
-    currentPrice: 21700,
-    profitRate: 7.12,
-    profitAmount: 3100,
-    quantity: 1,
-  },
-  {
-    name: "Apple",
-    currentPrice: 17100,
-    profitRate: 0,
-    profitAmount: 10800,
-    quantity: 2000,
-  },
-  {
-    name: "에코프로",
-    currentPrice: 12041,
-    profitRate: -5.31,
-    profitAmount: 1590,
-    quantity: 3,
-  },
-];
+import fetchMyStocks from "../api/fetchMyStocks";
+import fetchDummyMyStocks from "../api/fetchDummyMyStocks";
 
-export default function MyStocks() {
+export default async function MyStocks() {
+  const hasAccessToken = await fetch(
+    `${FRONT_SERVER_URL}/api/user/has-access-token`,
+    { method: "POST" },
+  )
+    .then((res) => res.json())
+    .then((data) => data.hasAccessToken);
+  const stocks = hasAccessToken
+    ? await fetchMyStocks()
+    : await fetchDummyMyStocks();
   return (
     <div className="h-[388px] rounded-xl border border-gray-20 bg-white mobile:border-none">
       <div className="flex items-center justify-between px-[16px] pb-[12px] pt-[16px]">

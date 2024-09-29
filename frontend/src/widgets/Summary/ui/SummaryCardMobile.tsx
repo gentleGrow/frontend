@@ -4,14 +4,14 @@ export default function SummaryCardMobile({
   totalAmount,
   reviewRate,
   investmentAmount,
-  profitAmount,
-  profitRate,
+  profit_amount,
+  profit_rate,
 }: {
   totalAmount: number;
   reviewRate: number;
   investmentAmount: number;
-  profitAmount: number;
-  profitRate: number;
+  profit_amount: number;
+  profit_rate: number;
 }) {
   return (
     <div className="bg-white p-[16px]">
@@ -41,9 +41,9 @@ export default function SummaryCardMobile({
           <div className="flex justify-between">
             <p className="text-[14px] font-medium text-gray-80">수익금</p>
             <div className="flex items-center space-x-[8px]">
-              <IncDecRate rate={profitRate} />
+              <IncDecRate rate={profit_rate} />
               <p className="text-[16px] font-bold">
-                ₩{Number(profitAmount.toFixed(0)).toLocaleString("ko-kr")}
+                ₩{Number(profit_amount.toFixed(0)).toLocaleString("ko-kr")}
               </p>
             </div>
           </div>

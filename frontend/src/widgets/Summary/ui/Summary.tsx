@@ -26,8 +26,8 @@ export default async function Summary() {
           totalAmount={summary.total_asset_amount}
           reviewRate={summary.today_review_rate}
           investmentAmount={summary.total_investment_amount}
-          profitAmount={summary.profit.profit_amount}
-          profitRate={summary.profit.profit_rate}
+          profit_amount={summary.profit.profit_amount}
+          profit_rate={summary.profit.profit_rate}
         />
       </div>
     </>
