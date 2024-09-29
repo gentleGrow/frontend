@@ -1,5 +1,6 @@
 from redis.asyncio import Redis
-
+import json
+from app.module.asset.schema import MarketIndexData
 
 class RedisRichPortfolioRepository:
     @staticmethod
@@ -38,8 +39,10 @@ class RedisTipRepository:
 
 class RedisMarketIndiceRepository:
     @staticmethod
-    async def get(redis_client: Redis, key: str) -> str | None:
-        return await redis_client.get(key)
+    async def get(redis_client: Redis, key: str) -> MarketIndexData | None:
+        current_kospi_price_raw =  await redis_client.get(key)
+        return json.loads(current_kospi_price_raw) if current_kospi_price_raw else None
+
 
     @staticmethod
     async def gets(redis_client: Redis, keys: list[str]) -> list[str]:

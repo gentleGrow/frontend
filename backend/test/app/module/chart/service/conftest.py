@@ -1,5 +1,5 @@
-from test.fixtures.chart.test_asset_fixture import setup_rich_portfolio  # noqa: F401 > relationship 설정시 필요합니다.
 from test.fixtures.asset.test_asset_fixture import (  # noqa: F401 > relationship 설정시 필요합니다.
+    setup_all,
     setup_asset,
     setup_asset_field,
     setup_dividend,
@@ -8,5 +8,11 @@ from test.fixtures.asset.test_asset_fixture import (  # noqa: F401 > relationshi
     setup_stock,
     setup_stock_daily,
     setup_user,
-    setup_all
+)
+from test.fixtures.chart.test_asset_fixture import ( # noqa: F401 > relationship 설정시 필요합니다.
+    setup_rich_portfolio,
+    setup_market_index_minutely,
+    setup_market_index_daily,
+    setup_current_index,
+    setup_tip
 )

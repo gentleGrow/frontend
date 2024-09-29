@@ -1,12 +1,11 @@
 import json
 from collections import defaultdict
-from datetime import date, datetime, timedelta
-from icecream import ic
-from app.module.chart.service.summary_service import SummaryService
+from datetime import date, datetime
+from app.common.util.time import get_now_datetime
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.module.asset.services.stock_daily_service import StockDailyService
+from icecream import ic
 from app.common.auth.security import verify_jwt_token
 from app.data.investing.sources.enum import RicePeople
 from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
@@ -19,6 +18,7 @@ from app.module.asset.schema import MarketIndexData
 from app.module.asset.services.asset_stock_service import AssetStockService
 from app.module.asset.services.dividend_service import DividendService
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
+from app.module.asset.services.stock_daily_service import StockDailyService
 from app.module.asset.services.stock_service import StockService
 from app.module.auth.constant import DUMMY_USER_ID
 from app.module.auth.repository import UserRepository
@@ -46,16 +46,17 @@ from app.module.chart.schema import (
     MyStockResponse,
     MyStockResponseValue,
     PerformanceAnalysisResponse,
+    ProfitDetail,
     RichPickResponse,
     RichPickValue,
     RichPortfolioResponse,
     RichPortfolioValue,
     SummaryResponse,
-    ProfitDetail
 )
 from app.module.chart.service.composition_service import CompositionService
 from app.module.chart.service.performance_analysis_service import PerformanceAnalysis
 from app.module.chart.service.rich_portfolio_service import RichPortfolioService
+from app.module.chart.service.summary_service import SummaryService
 from database.dependency import get_mysql_session_router, get_redis_pool
 
 chart_router = APIRouter(prefix="/v1")
@@ -185,7 +186,7 @@ async def get_sample_estimate_dividend(
             assets, exchange_rate_map, recent_dividend_map
         )
         estimate_dividend_list = [
-            EstimateDividendTypeValue(code=stock_code, amount=amount, composition_rate=composition_rate)
+            EstimateDividendTypeValue(code=stock_code, current_amount=amount, percent_rate=composition_rate)
             for stock_code, amount, composition_rate in total_type_dividends
         ]
 
@@ -245,7 +246,7 @@ async def get_estimate_dividend(
             assets, exchange_rate_map, recent_dividend_map
         )
         estimate_dividend_list = [
-            EstimateDividendTypeValue(code=stock_code, amount=amount, composition_rate=composition_rate)
+            EstimateDividendTypeValue(code=stock_code, current_amount=amount, percent_rate=composition_rate)
             for stock_code, amount, composition_rate in total_type_dividends
         ]
 
@@ -258,52 +259,62 @@ async def get_sample_performance_analysis(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> PerformanceAnalysisResponse:
-    current_datetime = datetime.now()
+    end_datetime = get_now_datetime()
+    start_datetime = end_datetime - interval.get_timedelta()
 
-    start_datetime = current_datetime - interval.get_timedelta()
-
-    if interval in [IntervalType.ONEMONTH, IntervalType.THREEMONTH, IntervalType.SIXMONTH, IntervalType.ONEYEAR]:
+    if interval is IntervalType.ONEMONTH:
         market_analysis_result: dict[date, float] = await PerformanceAnalysis.get_market_analysis(
-            session, redis_client, start_datetime, current_datetime
+            session, redis_client, start_datetime, end_datetime
         )
         user_analysis_result: dict[date, float] = await PerformanceAnalysis.get_user_analysis(
-            session, redis_client, start_datetime, current_datetime, DUMMY_USER_ID, market_analysis_result
+            session, redis_client, start_datetime, end_datetime, DUMMY_USER_ID, market_analysis_result
         )
         sorted_dates = sorted(market_analysis_result.keys())
-        xAxises = [date.strftime("%Y.%m.%d") for date in sorted_dates]
-        user_analysis_profit = [user_analysis_result[date] for date in sorted_dates]
-        market_analysis_profit = [market_analysis_result[date] for date in sorted_dates]
 
         return PerformanceAnalysisResponse(
-            xAxises=xAxises,
-            values1={"values": user_analysis_profit, "name": "내 수익률"},
-            values2={"values": market_analysis_profit, "name": "코스피"},
+            xAxises=[date.strftime("%Y.%m.%d") for date in sorted_dates],
+            dates=[date.strftime("%m.%d") for date in sorted_dates],
+            values1={"values": [user_analysis_result[date] for date in sorted_dates], "name": "내 수익률"},
+            values2={"values": [market_analysis_result[date] for date in sorted_dates], "name": "코스피"},
             unit="%",
         )
-    else:
+    elif interval in IntervalType.FIVEDAY:
         market_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_market_analysis_short(
-            session, redis_client, start_datetime, current_datetime, interval
+            session, redis_client, start_datetime, end_datetime, interval
         )
         user_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_user_analysis_short(
             session,
             redis_client,
             start_datetime,
-            current_datetime,
+            end_datetime,
             DUMMY_USER_ID,
             interval,
             market_analysis_result_short,
         )
+        
         sorted_datetimes = sorted(market_analysis_result_short.keys())
-        xAxises_short = [datetime.strftime("%Y.%m.%d:%H:%M") for datetime in sorted_datetimes]
-        user_analysis_profit_short = [user_analysis_result_short[datetime] for datetime in sorted_datetimes]
-        market_analysis_profit_short = [market_analysis_result_short[datetime] for datetime in sorted_datetimes]
 
         return PerformanceAnalysisResponse(
-            xAxises=xAxises_short,
-            values1={"values": user_analysis_profit_short, "name": "내 수익률"},
-            values2={"values": market_analysis_profit_short, "name": "코스피"},
+            xAxises=[datetime.strftime("%Y.%m.%d:%H:%M") for datetime in sorted_datetimes],
+            dates=[datetime.strftime("%m.%d") for datetime in sorted_datetimes],
+            values1={"values": [user_analysis_result_short[datetime] for datetime in sorted_datetimes], "name": "내 수익률"},
+            values2={"values": [market_analysis_result_short[datetime] for datetime in sorted_datetimes], "name": "코스피"},
             unit="%",
         )
+    else:
+        market_analysis_result: dict[date, float] = await PerformanceAnalysis.get_market_analysis(
+            session, redis_client, start_datetime, end_datetime
+        )
+        user_analysis_result: dict[date, float] = await PerformanceAnalysis.get_user_analysis(
+            session, redis_client, start_datetime, end_datetime, DUMMY_USER_ID, market_analysis_result
+        )
+        
+        
+        sorted_dates = sorted(market_analysis_result.keys())
+
+        return PerformanceAnalysisResponse.get_performance_analysis_response(
+                market_analysis_result, user_analysis_result
+            )
 
 
 @chart_router.get("/performance-analysis", summary="투자 성과 분석", response_model=PerformanceAnalysisResponse)
@@ -313,52 +324,62 @@ async def get_performance_analysis(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> PerformanceAnalysisResponse:
-    current_datetime = datetime.now()
+    end_datetime = get_now_datetime()
+    start_datetime = end_datetime - interval.get_timedelta()
 
-    start_datetime = current_datetime - interval.get_timedelta()
-
-    if interval in [IntervalType.ONEMONTH, IntervalType.THREEMONTH, IntervalType.SIXMONTH, IntervalType.ONEYEAR]:
+    if interval is IntervalType.ONEMONTH:
         market_analysis_result: dict[date, float] = await PerformanceAnalysis.get_market_analysis(
-            session, redis_client, start_datetime, current_datetime
+            session, redis_client, start_datetime, end_datetime
         )
         user_analysis_result: dict[date, float] = await PerformanceAnalysis.get_user_analysis(
-            session, redis_client, start_datetime, current_datetime, DUMMY_USER_ID, market_analysis_result
+            session, redis_client, start_datetime, end_datetime, token.get('user'), market_analysis_result
         )
         sorted_dates = sorted(market_analysis_result.keys())
-        xAxises = [date.strftime("%Y.%m.%d") for date in sorted_dates]
-        user_analysis_profit = [user_analysis_result[date] for date in sorted_dates]
-        market_analysis_profit = [market_analysis_result[date] for date in sorted_dates]
 
         return PerformanceAnalysisResponse(
-            xAxises=xAxises,
-            values1={"values": user_analysis_profit, "name": "내 수익률"},
-            values2={"values": market_analysis_profit, "name": "코스피"},
+            xAxises=[date.strftime("%Y.%m.%d") for date in sorted_dates],
+            dates=[date.strftime("%m.%d") for date in sorted_dates],
+            values1={"values": [user_analysis_result[date] for date in sorted_dates], "name": "내 수익률"},
+            values2={"values": [market_analysis_result[date] for date in sorted_dates], "name": "코스피"},
             unit="%",
         )
-    else:
+    elif interval in IntervalType.FIVEDAY:
         market_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_market_analysis_short(
-            session, redis_client, start_datetime, current_datetime, interval
+            session, redis_client, start_datetime, end_datetime, interval
         )
         user_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_user_analysis_short(
             session,
             redis_client,
             start_datetime,
-            current_datetime,
-            DUMMY_USER_ID,
+            end_datetime,
+            token.get('user'),
             interval,
             market_analysis_result_short,
         )
+        
         sorted_datetimes = sorted(market_analysis_result_short.keys())
-        xAxises_short = [datetime.strftime("%Y.%m.%d:%H:%M") for datetime in sorted_datetimes]
-        user_analysis_profit_short = [user_analysis_result_short[datetime] for datetime in sorted_datetimes]
-        market_analysis_profit_short = [market_analysis_result_short[datetime] for datetime in sorted_datetimes]
 
         return PerformanceAnalysisResponse(
-            xAxises=xAxises_short,
-            values1={"values": user_analysis_profit_short, "name": "내 수익률"},
-            values2={"values": market_analysis_profit_short, "name": "코스피"},
+            xAxises=[datetime.strftime("%Y.%m.%d:%H:%M") for datetime in sorted_datetimes],
+            dates=[datetime.strftime("%m.%d") for datetime in sorted_datetimes],
+            values1={"values": [user_analysis_result_short[datetime] for datetime in sorted_datetimes], "name": "내 수익률"},
+            values2={"values": [market_analysis_result_short[datetime] for datetime in sorted_datetimes], "name": "코스피"},
             unit="%",
         )
+    else:
+        market_analysis_result: dict[date, float] = await PerformanceAnalysis.get_market_analysis(
+            session, redis_client, start_datetime, end_datetime
+        )
+        user_analysis_result: dict[date, float] = await PerformanceAnalysis.get_user_analysis(
+            session, redis_client, start_datetime, end_datetime, token.get('user'), market_analysis_result
+        )
+        
+        
+        sorted_dates = sorted(market_analysis_result.keys())
+
+        return PerformanceAnalysisResponse.get_performance_analysis_response(
+                market_analysis_result, user_analysis_result
+            )
 
 
 @chart_router.get("/my-stock", summary="내 보유 주식", response_model=MyStockResponse)
@@ -553,18 +574,18 @@ async def get_summary(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> SummaryResponse:
-    assets: list[Asset] = await AssetRepository.get_eager(session, token.get('user'), AssetType.STOCK)
+    assets: list[Asset] = await AssetRepository.get_eager(session, token.get("user"), AssetType.STOCK)
     if len(assets) == 0:
         return SummaryResponse(
             today_review_rate=0.0, total_asset_amount=0, total_investment_amount=0, profit_amount=0, profit_rate=0.0
         )
 
-    stock_daily_map:dict[tuple[str, date], StockDaily] = await StockDailyService.get_map_range(session, assets)
-    latest_stock_daily_map:dict[str, StockDaily] = await StockDailyService.get_latest_map(session, assets)
-    current_stock_price_map:dict[str, float] = await StockService.get_current_stock_price_by_code(
+    stock_daily_map: dict[tuple[str, date], StockDaily] = await StockDailyService.get_map_range(session, assets)
+    latest_stock_daily_map: dict[str, StockDaily] = await StockDailyService.get_latest_map(session, assets)
+    current_stock_price_map: dict[str, float] = await StockService.get_current_stock_price_by_code(
         redis_client, latest_stock_daily_map, [asset.asset_stock.stock.code for asset in assets]
     )
-    exchange_rate_map:dict[str, float] = await ExchangeRateService.get_exchange_rate_map(redis_client)
+    exchange_rate_map: dict[str, float] = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
     not_found_stock_codes: list[str] = StockService.check_not_found_stock(
         stock_daily_map, current_stock_price_map, assets
@@ -574,9 +595,15 @@ async def get_summary(
             status_code=status.HTTP_404_NOT_FOUND, detail={"다음의 주식 코드를 찾지 못 했습니다.": not_found_stock_codes}
         )
 
-    total_asset_amount:float = AssetStockService.get_total_asset_amount(assets, current_stock_price_map, exchange_rate_map)
-    total_investment_amount:float = AssetStockService.get_total_investment_amount(assets, stock_daily_map, exchange_rate_map)
-    today_review_rate:float = SummaryService.get_today_review_rate(assets, total_asset_amount, current_stock_price_map, exchange_rate_map)
+    total_asset_amount: float = AssetStockService.get_total_asset_amount(
+        assets, current_stock_price_map, exchange_rate_map
+    )
+    total_investment_amount: float = AssetStockService.get_total_investment_amount(
+        assets, stock_daily_map, exchange_rate_map
+    )
+    today_review_rate: float = SummaryService.get_today_review_rate(
+        assets, total_asset_amount, current_stock_price_map, exchange_rate_map
+    )
 
     return SummaryResponse(
         today_review_rate=today_review_rate,
@@ -584,10 +611,10 @@ async def get_summary(
         total_investment_amount=total_investment_amount,
         profit=ProfitDetail(
             profit_amount=total_asset_amount - total_investment_amount,
-            profit_rate=(total_asset_amount - total_investment_amount) / total_asset_amount * 100 
-            if total_investment_amount > 0.0 and total_asset_amount > 0.0  
-            else 0.0
-        )
+            profit_rate=(total_asset_amount - total_investment_amount) / total_asset_amount * 100
+            if total_investment_amount > 0.0 and total_asset_amount > 0.0
+            else 0.0,
+        ),
     )
 
 
@@ -602,12 +629,12 @@ async def get_sample_summary(
             today_review_rate=0.0, total_asset_amount=0, total_investment_amount=0, profit_amount=0, profit_rate=0.0
         )
 
-    stock_daily_map:dict[tuple[str, date], StockDaily] = await StockDailyService.get_map_range(session, assets)
-    latest_stock_daily_map:dict[str, StockDaily] = await StockDailyService.get_latest_map(session, assets)
-    current_stock_price_map:dict[str, float] = await StockService.get_current_stock_price_by_code(
+    stock_daily_map: dict[tuple[str, date], StockDaily] = await StockDailyService.get_map_range(session, assets)
+    latest_stock_daily_map: dict[str, StockDaily] = await StockDailyService.get_latest_map(session, assets)
+    current_stock_price_map: dict[str, float] = await StockService.get_current_stock_price_by_code(
         redis_client, latest_stock_daily_map, [asset.asset_stock.stock.code for asset in assets]
     )
-    exchange_rate_map:dict[str, float] = await ExchangeRateService.get_exchange_rate_map(redis_client)
+    exchange_rate_map: dict[str, float] = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
     not_found_stock_codes: list[str] = StockService.check_not_found_stock(
         stock_daily_map, current_stock_price_map, assets
@@ -617,9 +644,15 @@ async def get_sample_summary(
             status_code=status.HTTP_404_NOT_FOUND, detail={"다음의 주식 코드를 찾지 못 했습니다.": not_found_stock_codes}
         )
 
-    total_asset_amount:float = AssetStockService.get_total_asset_amount(assets, current_stock_price_map, exchange_rate_map)
-    total_investment_amount:float = AssetStockService.get_total_investment_amount(assets, stock_daily_map, exchange_rate_map)
-    today_review_rate:float = SummaryService.get_today_review_rate(assets, total_asset_amount, current_stock_price_map, exchange_rate_map)
+    total_asset_amount: float = AssetStockService.get_total_asset_amount(
+        assets, current_stock_price_map, exchange_rate_map
+    )
+    total_investment_amount: float = AssetStockService.get_total_investment_amount(
+        assets, stock_daily_map, exchange_rate_map
+    )
+    today_review_rate: float = SummaryService.get_today_review_rate(
+        assets, total_asset_amount, current_stock_price_map, exchange_rate_map
+    )
 
     return SummaryResponse(
         today_review_rate=today_review_rate,
@@ -627,10 +660,10 @@ async def get_sample_summary(
         total_investment_amount=total_investment_amount,
         profit=ProfitDetail(
             profit_amount=total_asset_amount - total_investment_amount,
-            profit_rate=(total_asset_amount - total_investment_amount) / total_asset_amount * 100 
-            if total_investment_amount > 0.0 and total_asset_amount > 0.0  
-            else 0.0
-        )
+            profit_rate=(total_asset_amount - total_investment_amount) / total_asset_amount * 100
+            if total_investment_amount > 0.0 and total_asset_amount > 0.0
+            else 0.0,
+        ),
     )
 
 

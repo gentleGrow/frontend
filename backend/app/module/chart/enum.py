@@ -23,13 +23,13 @@ class IntervalType(StrEnum):
         if self == IntervalType.FIVEDAY:
             return timedelta(hours=5 * 24)
         elif self == IntervalType.ONEMONTH:
-            return timedelta(days=30)
+            return timedelta(days=(7 * 4) + 1)
         elif self == IntervalType.THREEMONTH:
-            return timedelta(days=90)
+            return timedelta(days=30 * 3)
         elif self == IntervalType.SIXMONTH:
-            return timedelta(days=180)
+            return timedelta(days=30 * 6)
         elif self == IntervalType.ONEYEAR:
-            return timedelta(days=360)
+            return timedelta(days=30 * 12)
         return timedelta(days=30)
 
     def get_interval(self) -> int:
