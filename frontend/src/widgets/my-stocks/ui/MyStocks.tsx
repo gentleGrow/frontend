@@ -1,16 +1,11 @@
-import { FRONT_SERVER_URL } from "@/shared";
 import SeeMoreButton from "./SeeMoreButton";
 import StockTable from "./StockTable";
 import fetchMyStocks from "../api/fetchMyStocks";
 import fetchDummyMyStocks from "../api/fetchDummyMyStocks";
+import { checkHasAccessToken } from "@/entities";
 
 export default async function MyStocks() {
-  const hasAccessToken = await fetch(
-    `${FRONT_SERVER_URL}/api/user/has-access-token`,
-    { method: "POST" },
-  )
-    .then((res) => res.json())
-    .then((data) => data.hasAccessToken);
+  const hasAccessToken = await checkHasAccessToken();
   const stocks = hasAccessToken
     ? await fetchMyStocks()
     : await fetchDummyMyStocks();

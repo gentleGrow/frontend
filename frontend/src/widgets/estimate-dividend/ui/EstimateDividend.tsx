@@ -1,17 +1,11 @@
-import { BarChartData, DonutChartData, FRONT_SERVER_URL } from "@/shared";
+import { BarChartData, DonutChartData } from "@/shared";
 import fetchDummyEstimateDividend from "../api/fetchDummyEstimateDividend";
 import EstimateDividendClient from "./EstimateDividendClient";
 import fetchEstimateDividend from "../api/fetchEstimateDividend";
+import { checkHasAccessToken } from "@/entities";
 
 export default async function EstimateDividend() {
-  const hasAccessToken = await fetch(
-    `${FRONT_SERVER_URL}/api/user/has-access-token`,
-    {
-      method: "POST",
-    },
-  )
-    .then((res) => res.json())
-    .then((data) => data.hasAccessToken);
+  const hasAccessToken = await checkHasAccessToken();
 
   const estimatedDividendAll: BarChartData = (
     hasAccessToken
