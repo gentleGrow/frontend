@@ -1,12 +1,11 @@
-import json
 from collections import defaultdict
-from datetime import date, datetime, time
-
+from datetime import date, datetime, time, timedelta
+from icecream import ic
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from app.module.asset.services.stock_daily_service import StockDailyService
 from app.module.asset.enum import AssetType, MarketIndex
-from app.module.asset.model import MarketIndexDaily, StockDaily, StockMinutely
+from app.module.asset.model import MarketIndexDaily, StockDaily, StockMinutely, MarketIndexMinutely
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.market_index_daily_repository import MarketIndexDailyRepository
 from app.module.asset.repository.market_index_minutely_repository import MarketIndexMinutelyRepository
@@ -17,9 +16,96 @@ from app.module.asset.services.exchange_rate_service import ExchangeRateService
 from app.module.asset.services.stock_service import StockService
 from app.module.chart.enum import IntervalType
 from app.module.chart.redis_repository import RedisMarketIndiceRepository
+from app.module.asset.schema import MarketIndexData
+from math import floor
+
 
 
 class PerformanceAnalysis:
+    @staticmethod
+    async def get_market_analysis(
+        session: AsyncSession, redis_client: Redis, interval_start: datetime, interval_end: datetime
+    ) -> dict[date, float]:
+        start_date = interval_start.date()
+        end_date = interval_end.date()
+
+        adjusted_start_date = start_date - timedelta(days=7)
+
+        market_data: list[MarketIndexDaily] = await MarketIndexDailyRepository.get_by_range(
+            session, (adjusted_start_date, end_date), MarketIndex.KOSPI
+        )
+        
+        current_kospi:MarketIndexData = await RedisMarketIndiceRepository.get(redis_client, MarketIndex.KOSPI)
+        current_kospi_price = float(current_kospi["current_value"]) if current_kospi else 1.0
+        
+        result = {}
+        current_profit = 0.0
+        current_date = adjusted_start_date
+
+        market_data_by_date = {market_index.date: market_index for market_index in market_data}
+
+        while current_date <= end_date:
+            if current_date in market_data_by_date:
+                market_index = market_data_by_date[current_date]
+                current_profit = ((current_kospi_price - market_index.close_price) / market_index.close_price) * 100
+
+            if current_date > start_date:
+                result[current_date] = current_profit
+            current_date += timedelta(days=1)
+        
+        return result
+    
+    
+    @staticmethod
+    async def get_user_analysis(
+        session: AsyncSession,
+        redis_client: Redis,
+        interval_start: date,
+        interval_end: date,
+        user_id: int,
+        market_analysis_result: dict[date, float],
+    ) -> dict[date, float]:
+        assets = await AssetRepository.get_eager_by_range(
+            session, user_id, AssetType.STOCK, (interval_start, interval_end)
+        )
+
+        stock_daily_map:dict[tuple[str, date], StockDaily] = await StockDailyService.get_map_range(session, assets, )
+        latest_stock_daily_map:dict[str, StockDaily] = await StockDailyService.get_latest_map(session, assets)
+        current_stock_price_map = await StockService.get_current_stock_price_by_code(
+                redis_client, latest_stock_daily_map, [asset.asset_stock.stock.code for asset in assets]
+            )
+        exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
+
+        assets_by_date = defaultdict(list)
+        for asset in assets:
+            assets_by_date[asset.asset_stock.purchase_date].append(asset)
+
+        cumulative_assets = []
+        result = {}
+
+        current_profit = 0.0
+
+        for market_date in sorted(market_analysis_result):
+            if market_date in assets_by_date:
+                assets_for_date = assets_by_date[market_date]
+                cumulative_assets.extend(assets_for_date)
+
+                total_asset_amount = AssetStockService.get_total_asset_amount(
+                    cumulative_assets, current_stock_price_map, exchange_rate_map
+                )
+                total_invest_amount = AssetStockService.get_total_investment_amount(
+                    cumulative_assets, stock_daily_map, exchange_rate_map
+                )
+                current_profit = ((total_asset_amount - total_invest_amount) / total_invest_amount) * 100 if total_invest_amount > 0.0 and total_asset_amount > 0.0 else 0.0
+                result[market_date] = ((total_asset_amount - total_invest_amount) / total_invest_amount) * 100 if total_invest_amount > 0.0 and total_asset_amount > 0.0 else 0.0
+            else:
+                result[market_date] = current_profit
+            
+        return result
+    
+    from datetime import timedelta
+
+
     @staticmethod
     async def get_user_analysis_short(
         session: AsyncSession,
@@ -82,62 +168,6 @@ class PerformanceAnalysis:
         return result
 
     @staticmethod
-    async def get_user_analysis(
-        session: AsyncSession,
-        redis_client: Redis,
-        interval_start: date,
-        interval_end: date,
-        user_id: int,
-        market_analysis_result: dict[date, float],
-    ) -> dict[date, float]:
-        assets = await AssetRepository.get_eager_by_range(
-            session, user_id, AssetType.STOCK, (interval_start, interval_end)
-        )
-
-        stock_codes = [asset.asset_stock.stock.code for asset in assets]
-        stock_code_date_pairs = [(asset.asset_stock.stock.code, asset.asset_stock.purchase_date) for asset in assets]
-
-        stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies_by_code_and_date(
-            session, stock_code_date_pairs
-        )
-        stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
-
-        latest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, stock_codes)
-        latest_stock_daily_map = {daily.code: daily for daily in latest_stock_dailies}
-
-        current_stock_price_map = await StockService.get_current_stock_price_by_code(
-            redis_client, latest_stock_daily_map, stock_codes
-        )
-        exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
-
-        assets_by_date = defaultdict(list)
-        for asset in assets:
-            assets_by_date[asset.asset_stock.purchase_date].append(asset)
-
-        cumulative_assets = []
-        result = {}
-
-        for market_date in sorted(market_analysis_result):
-            if market_date in assets_by_date:
-                assets_for_date = assets_by_date[market_date]
-                cumulative_assets.extend(assets_for_date)
-
-            total_asset_amount = AssetStockService.get_total_asset_amount(
-                cumulative_assets, current_stock_price_map, exchange_rate_map
-            )
-            total_invest_amount = AssetStockService.get_total_investment_amount(
-                cumulative_assets, stock_daily_map, exchange_rate_map
-            )
-
-            total_profit_rate = 0.0
-            if total_invest_amount > 0:
-                total_profit_rate = ((total_asset_amount - total_invest_amount) / total_invest_amount) * 100
-
-            result[market_date] = total_profit_rate
-
-        return result
-
-    @staticmethod
     async def get_market_analysis_short(
         session: AsyncSession,
         redis_client: Redis,
@@ -145,41 +175,37 @@ class PerformanceAnalysis:
         interval_end: datetime,
         interval: IntervalType,
     ) -> dict[datetime, float]:
-        market_data: list[MarketIndexDaily] = await MarketIndexMinutelyRepository.get_by_range_interval_minute(
+        market_data: list[MarketIndexMinutely] = await MarketIndexMinutelyRepository.get_by_range_interval_minute(
             session, (interval_start, interval_end), MarketIndex.KOSPI, interval.get_interval()
         )
 
-        current_kospi_price_raw = await RedisMarketIndiceRepository.get(redis_client, MarketIndex.KOSPI)
-        if current_kospi_price_raw is None:
-            return {}
-        current_kospi_price_json = json.loads(current_kospi_price_raw)
-        current_kospi_price = float(current_kospi_price_json["current_value"])
+        current_kospi: MarketIndexData = await RedisMarketIndiceRepository.get(redis_client, MarketIndex.KOSPI)
+        current_kospi_price = float(current_kospi["current_value"]) if current_kospi else 1.0
 
         result = {}
+        
+        market_data_by_datetime = {market_index.datetime: market_index for market_index in market_data}
+                
+        interval_minutes = interval.get_interval()
+        
+        minutes_offset = interval_start.minute % interval_minutes
+        
+        if minutes_offset != 0:
+            adjusted_minutes = floor(interval_start.minute / interval_minutes) * interval_minutes
+            interval_start = interval_start.replace(minute=adjusted_minutes, second=0, microsecond=0)
+        
+        current_datetime = interval_start
 
-        for market_index in market_data:
-            profit = ((current_kospi_price - market_index.current_price) / market_index.current_price) * 100
+        current_profit = 0.0
 
-            result[market_index.datetime] = profit
+        while current_datetime <= interval_end:
+            naive_current_datetime = current_datetime.replace(tzinfo=None)
+            
+            if naive_current_datetime in market_data_by_datetime:
+                market_index = market_data_by_datetime[naive_current_datetime]
+                current_profit = ((current_kospi_price - market_index.current_price) / market_index.current_price) * 100
 
-        return result
-
-    @staticmethod
-    async def get_market_analysis(
-        session: AsyncSession, redis_client: Redis, interval_start: date, interval_end: date
-    ) -> dict[date, float]:
-        market_data: list[MarketIndexDaily] = await MarketIndexDailyRepository.get_by_range(
-            session, (interval_start, interval_end), MarketIndex.KOSPI
-        )
-
-        current_kospi_price_raw = await RedisMarketIndiceRepository.get(redis_client, MarketIndex.KOSPI)
-        current_kospi_price_json = json.loads(current_kospi_price_raw)
-        current_kospi_price = float(current_kospi_price_json["current_value"])
-
-        result = {}
-
-        for market_index in market_data:
-            profit = ((current_kospi_price - market_index.close_price) / market_index.close_price) * 100
-            result[market_index.date] = profit
+            result[naive_current_datetime] = current_profit
+            current_datetime += timedelta(minutes=interval_minutes)  
 
         return result

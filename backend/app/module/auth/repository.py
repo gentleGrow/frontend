@@ -30,3 +30,9 @@ class UserRepository:
         select_instance = select(User).where(User.nickname == user_name)
         result = await session.execute(select_instance)
         return result.scalars().first()
+
+    @staticmethod
+    async def get_by_names(session: AsyncSession, user_names: list[str]) -> list[User]:
+        select_instance = select(User).where(User.nickname.in_(user_names))
+        result = await session.execute(select_instance)
+        return result.scalars().all()

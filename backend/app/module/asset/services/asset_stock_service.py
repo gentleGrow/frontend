@@ -26,8 +26,7 @@ class AssetStockService:
                 * ExchangeRateService.get_won_exchange_rate(asset, exchange_rate_map)
             )
         return result
-    
-    
+
     @staticmethod
     async def save_asset_stock_by_post(
         session: AsyncSession, request_data: AssetStockPostRequest, stock_id: int, user_id: int

@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field, RootModel
-
+from datetime import date, datetime
+from collections import defaultdict
+from statistics import mean
 from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
 from app.module.asset.enum import MarketIndex
 
@@ -11,6 +13,7 @@ class ChartTipResponse(RootModel[str]):
 class ProfitDetail(BaseModel):
     profit_amount: float = Field(..., description="수익금")
     profit_rate: float = Field(..., description="수익률")
+
 
 class SummaryResponse(BaseModel):
     today_review_rate: float = Field(..., description="오늘의 review")
@@ -42,9 +45,54 @@ class CompositionResponse(BaseModel):
 
 class PerformanceAnalysisResponse(BaseModel):
     xAxises: list[str]
+    dates:list[str]
     values1: dict
     values2: dict
     unit: str
+
+    @staticmethod
+    def get_performance_analysis_response(
+        market_analysis_result: dict[date, float], user_analysis_result: dict[date, float]
+    ) -> "PerformanceAnalysisResponse":
+        market_analysis_monthly = defaultdict(list)
+        user_analysis_monthly = defaultdict(list)
+
+        for d, value in market_analysis_result.items():
+            year_month = d.strftime("%Y.%m")
+            market_analysis_monthly[year_month].append(value)
+        
+        for d, value in user_analysis_result.items():
+            year_month = d.strftime("%Y.%m")
+            user_analysis_monthly[year_month].append(value)
+
+        sorted_dates = sorted(market_analysis_monthly.keys())  
+
+        averaged_market_analysis = [mean(market_analysis_monthly[year_month]) for year_month in sorted_dates]
+        averaged_user_analysis = [mean(user_analysis_monthly[year_month]) for year_month in sorted_dates]
+
+        formatted_dates = []
+        previous_year = None
+
+        for d in sorted_dates:
+            current_date = datetime.strptime(d, "%Y.%m")
+            current_year = current_date.strftime("%y")
+            current_month = current_date.strftime("%m")
+
+            if current_year != previous_year:
+                formatted_dates.append(f"{current_year}.{current_month}")
+                previous_year = current_year
+            else:
+                formatted_dates.append(current_month)
+
+        return PerformanceAnalysisResponse(
+            xAxises=formatted_dates,  
+            dates=[date.split(".")[1] for date in sorted_dates], 
+            values1={"values": averaged_user_analysis, "name": "내 수익률"},
+            values2={"values": averaged_market_analysis, "name": "코스피"},
+            unit="%",
+        )
+
+    
 
 
 class EstimateDividendEveryValue(BaseModel):
@@ -60,8 +108,8 @@ class EstimateDividendEveryResponse(RootModel[dict[str, EstimateDividendEveryVal
 
 class EstimateDividendTypeValue(BaseModel):
     code: str
-    amount: float
-    composition_rate: float
+    current_amount: float
+    percent_rate: float
 
 
 class EstimateDividendTypeResponse(RootModel[list[EstimateDividendTypeValue]]):
