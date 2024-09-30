@@ -113,8 +113,6 @@ class PerformanceAnalysis:
 
         return result
 
-    from datetime import timedelta
-
     @staticmethod
     async def get_user_analysis_short(
         session: AsyncSession,

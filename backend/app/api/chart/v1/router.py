@@ -1,11 +1,11 @@
 import json
 from collections import defaultdict
 from datetime import date, datetime
-
+from icecream import ic
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from app.module.chart.facade.dividend_facade import DividendFacade
 from app.common.auth.security import verify_jwt_token
 from app.common.util.time import get_now_datetime
 from app.data.investing.sources.enum import RicePeople
@@ -145,53 +145,25 @@ async def get_sample_estimate_dividend(
 ) -> EstimateDividendEveryResponse | EstimateDividendTypeResponse:
     assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
     if len(assets) == 0:
-        if category == EstimateDividendType.EVERY:
-            return EstimateDividendEveryResponse(estimate_dividend_list=[])
-        else:
-            return EstimateDividendTypeResponse(estimate_dividend_list=[])
+        return EstimateDividendEveryResponse(estimate_dividend_list=[]) if category == EstimateDividendType.EVERY else EstimateDividendTypeResponse(estimate_dividend_list=[])
 
-    stock_codes = [asset.asset_stock.stock.code for asset in assets]
-    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
-    dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
-    dividend_map = {f"{dividend.stock_code}_{dividend.date}": dividend.dividend for dividend in dividends}
-
-    recent_dividends: list[Dividend] = await DividendRepository.get_dividends_recent(session, stock_codes)
-    recent_dividend_map = {dividend.stock_code: dividend.dividend for dividend in recent_dividends}
+    exchange_rate_map:dict[str, float] = await ExchangeRateService.get_exchange_rate_map(redis_client)
+    dividend_map:dict[tuple[str,date],float] = await DividendService.get_dividend_map(session, assets)
+    recent_dividend_map:dict[str, float] = await DividendService.get_recent_map(session, assets)
 
     if category == EstimateDividendType.EVERY:
-        total_dividends = DividendService.get_total_estimate_dividend(assets, exchange_rate_map, dividend_map)
-        dividend_by_year_month: dict[int, dict[int, float]] = defaultdict(lambda: defaultdict(float))
-
-        for date_str, dividend_amount in total_dividends.items():
-            dividend_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-            year = dividend_date.year
-            month = dividend_date.month
-
-            dividend_by_year_month[year][month] += dividend_amount
-
-        response_data = {}
-
-        for year, months in dividend_by_year_month.items():
-            xAxises = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"]
-
-            data = [months.get(month, 0.0) for month in range(1, 13)]
-            total = sum(data)
-
-            response_data[str(year)] = EstimateDividendEveryValue(xAxises=xAxises, data=data, unit="만원", total=total)
-
-        sorted_response_data = dict(sorted(response_data.items(), key=lambda item: int(item[0])))
-
-        return EstimateDividendEveryResponse(sorted_response_data)
+        total_dividends:dict[date, float] = DividendFacade.get_full_month_estimate_dividend(assets, exchange_rate_map, dividend_map)
+        response_data = DividendService.process_dividends_by_year_month(total_dividends)
+        return EstimateDividendEveryResponse(response_data)
     else:
-        total_type_dividends: list[tuple[str, float, float]] = await DividendService.get_composition(
+        total_type_dividends: list[tuple[str, float, float]] = await DividendFacade.get_composition(
             assets, exchange_rate_map, recent_dividend_map
         )
-        estimate_dividend_list = [
-            EstimateDividendTypeValue(code=stock_code, current_amount=amount, percent_rate=composition_rate)
-            for stock_code, amount, composition_rate in total_type_dividends
-        ]
 
-        return EstimateDividendTypeResponse(estimate_dividend_list)
+        return EstimateDividendTypeResponse([
+            EstimateDividendTypeValue(name=stock_code, current_amount=amount, percent_rate=composition_rate)
+            for stock_code, amount, composition_rate in total_type_dividends
+        ])
 
 
 @chart_router.get(
@@ -213,7 +185,7 @@ async def get_estimate_dividend(
     stock_codes = [asset.asset_stock.stock.code for asset in assets]
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
     dividends: list[Dividend] = await DividendRepository.get_dividends(session, stock_codes)
-    dividend_map = {f"{dividend.stock_code}_{dividend.date}": dividend.dividend for dividend in dividends}
+    dividend_map:dict[str, float] = {f"{dividend.stock_code}_{dividend.date}": dividend.dividend for dividend in dividends}
 
     recent_dividends: list[Dividend] = await DividendRepository.get_dividends_recent(session, stock_codes)
     recent_dividend_map = {dividend.stock_code: dividend.dividend for dividend in recent_dividends}
