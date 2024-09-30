@@ -1,11 +1,14 @@
 from collections import defaultdict
 from datetime import date, timedelta
+
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.module.chart.schema import EstimateDividendEveryValue
+
+from app.module.asset.constant import MONTHS
 from app.module.asset.model import Asset, Dividend
 from app.module.asset.repository.dividend_repository import DividendRepository
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
-from app.module.asset.constant import MONTHS
+from app.module.chart.schema import EstimateDividendEveryValue
+
 
 class DividendService:
     @staticmethod
@@ -20,16 +23,10 @@ class DividendService:
             data = [months.get(month, 0.0) for month in range(1, 13)]
             total = sum(data)
 
-            response_data[str(year)] = EstimateDividendEveryValue(
-                xAxises=MONTHS, 
-                data=data, 
-                unit="만원", 
-                total=total
-            )
+            response_data[str(year)] = EstimateDividendEveryValue(xAxises=MONTHS, data=data, unit="만원", total=total)
 
         return dict(sorted(response_data.items(), key=lambda item: int(item[0])))
-    
-    
+
     @staticmethod
     def get_last_year_dividends(
         asset: Asset,
@@ -40,7 +37,7 @@ class DividendService:
         result: defaultdict[date, float] = defaultdict(float)
         last_year = last_dividend_date.year - 1
         last_year_dividend_date = last_dividend_date.replace(year=last_year) + timedelta(days=1)
-        
+
         for (dividend_code, dividend_date), dividend_amount in dividend_map.items():
             if (
                 dividend_code == asset.asset_stock.stock.code
@@ -52,25 +49,23 @@ class DividendService:
                 result[new_dividend_date] += dividend_kr
 
         return result
-    
+
     @staticmethod
     def get_asset_total_dividend(
-        won_exchange_rate:float,
-        dividend_map:dict[tuple[str,date],float],
-        asset:Asset
+        won_exchange_rate: float, dividend_map: dict[tuple[str, date], float], asset: Asset
     ) -> tuple[defaultdict[date, float], date | None]:
         result: defaultdict[date, float] = defaultdict(float)
-        last_dividend_date:date|None = None
-        
+        last_dividend_date: date | None = None
+
         for code_date_key, dividend_amount in dividend_map.items():
             dividend_code, dividend_date = code_date_key
             if dividend_code == asset.asset_stock.stock.code and dividend_date >= asset.asset_stock.purchase_date:
                 dividend_kr = dividend_amount * won_exchange_rate * asset.asset_stock.quantity
                 result[dividend_date] += dividend_kr
                 last_dividend_date = dividend_date
-                
+
         return result, last_dividend_date
-    
+
     @staticmethod
     async def get_dividend_map(session: AsyncSession, assets: list[Asset]) -> dict[tuple[str, date], float]:
         stock_codes = [asset.asset_stock.stock.code for asset in assets]
@@ -79,20 +74,19 @@ class DividendService:
         return {
             (dividend.stock_code, dividend.date): dividend.dividend
             for dividend in dividends
-            if isinstance(dividend.date, date) and str(dividend.date) != '0000-00-00' 
+            if isinstance(dividend.date, date) and str(dividend.date) != "0000-00-00"
         }
-    
+
     @staticmethod
     async def get_recent_map(session: AsyncSession, assets: list[Asset]) -> dict[str, float]:
         stock_codes = [asset.asset_stock.stock.code for asset in assets]
         dividends: list[Dividend] = await DividendRepository.get_dividends_recent(session, stock_codes)
-        
+
         return {
             dividend.stock_code: dividend.dividend
             for dividend in dividends
-            if isinstance(dividend.date, date) and str(dividend.date) != '0000-00-00'
+            if isinstance(dividend.date, date) and str(dividend.date) != "0000-00-00"
         }
-
 
     @staticmethod
     def get_total_dividend(
