@@ -23,6 +23,9 @@ export default function EstimateDividendClient({
   const [currentNavItemIndex, setCurrentNavItemIndex] = useState<number>(
     barChartNavItems.length - 1,
   );
+  if (barChartNavItems.length === 0 || estimatedDividendByStock.length === 0) {
+    return <div>No data available</div>;
+  }
   return (
     <div
       className={`relative ${selectedTab === "모두" ? "h-[390px]" : "h-full"} w-full rounded-xl border border-gray-20 bg-white p-[16px] ${selectedTab === "모두" ? "mobile:h-[500px]" : "h-full"} mobile:border-none`}

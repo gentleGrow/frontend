@@ -5,6 +5,7 @@ export interface LineChartValuesData {
 
 export interface LineChartData {
   xAxises: string[];
+  dates: string[];
   values1: LineChartValuesData;
   values2: LineChartValuesData;
   unit: string;
