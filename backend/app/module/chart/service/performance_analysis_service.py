@@ -4,7 +4,7 @@ from math import floor
 
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-from icecream import ic
+
 from app.module.asset.enum import AssetType, MarketIndex
 from app.module.asset.model import MarketIndexDaily, MarketIndexMinutely, StockDaily, StockMinutely
 from app.module.asset.repository.asset_repository import AssetRepository
@@ -182,8 +182,7 @@ class PerformanceAnalysis:
         interval_end: datetime,
         interval: IntervalType,
     ) -> dict[datetime, float]:
-        
-        
+
         market_data: list[MarketIndexMinutely] = await MarketIndexMinutelyRepository.get_by_range_interval_minute(
             session, (interval_start, interval_end), MarketIndex.KOSPI, interval.get_interval()
         )

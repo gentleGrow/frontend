@@ -1,5 +1,4 @@
 import json
-from icecream import ic
 from datetime import date, datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -40,7 +39,6 @@ from app.module.chart.schema import (
     CompositionResponse,
     CompositionResponseValue,
     EstimateDividendEveryResponse,
-    EstimateDividendEveryValue,
     EstimateDividendTypeResponse,
     EstimateDividendTypeValue,
     MarketIndiceResponse,
@@ -68,70 +66,9 @@ chart_router = APIRouter(prefix="/v1")
 async def get_rich_portfolio(redis_client: Redis = Depends(get_redis_pool)) -> RichPortfolioResponse:
     rich_portfolio_map: dict = await RichPortfolioService.get_rich_porfolio_map(redis_client)
 
-    response_data = [
+    return RichPortfolioResponse([
         RichPortfolioValue(name=person, stock=portfolio) for person, portfolio in rich_portfolio_map.items()
-    ]
-
-    return RichPortfolioResponse(response_data)
-
-
-@chart_router.get("/rich-pick", summary="부자들이 선택한 종목 TOP10", response_model=RichPickResponse)
-async def get_rich_pick(
-    session: AsyncSession = Depends(get_mysql_session_router), redis_client: Redis = Depends(get_redis_pool)
-) -> RichPickResponse:
-    # [수정]!!!!!!!!! N+1 문제 !!!!!!!!!!!!
-    top_10_stocks_raw: str = await RedisRichPickRepository.get(redis_client, REDIS_RICH_PICK_KEY)
-    stock_name_map_raw: str = await RedisRichPickRepository.get(redis_client, REDIS_RICH_PICK_NAME_KEY)
-    if top_10_stocks_raw is None or stock_name_map_raw is None:
-        stock_count = {}
-        stock_name_map: dict[str, str] = {}
-        for person in RicePeople:
-            user = await UserRepository.get_by_name(session, person)
-            eager_assets = await AssetRepository.get_eager(session, user.id, AssetType.STOCK)
-            for asset in eager_assets:
-                stock_code = asset.asset_stock.stock.code
-                if stock_code not in stock_count:
-                    stock_count[stock_code] = 1
-                else:
-                    stock_count[stock_code] += 1
-                stock_name_map[stock_code] = asset.asset_stock.stock.name
-        top_10_stocks: list[str] = [
-            stock[0] for stock in sorted(stock_count.items(), key=lambda x: x[1], reverse=True)[:10]
-        ]
-        await RedisRichPickRepository.save(
-            redis_client, REDIS_RICH_PICK_KEY, json.dumps(top_10_stocks), RICH_PICK_SECOND
-        )
-        await RedisRichPickRepository.save(
-            redis_client, REDIS_RICH_PICK_NAME_KEY, json.dumps(stock_name_map), RICH_PICK_SECOND
-        )
-    else:
-        # mypy if-else 내부에 중복 네이밍 무시
-        top_10_stocks: list[str] = json.loads(top_10_stocks_raw)  # type: ignore
-        stock_name_map: dict[str, str] = json.loads(stock_name_map_raw)  # type: ignore
-
-    lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, top_10_stocks)
-    lastest_stock_daily_map = {daily.code: daily for daily in lastest_stock_dailies}
-    current_stock_price_map: dict[str, float] = await StockService.get_current_stock_price_by_code(
-        redis_client, lastest_stock_daily_map, top_10_stocks
-    )
-    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
-    stock_daily_profit: dict[str, float] = StockService.get_daily_profit(
-        lastest_stock_daily_map, current_stock_price_map, top_10_stocks
-    )
-    won_exchange_rate = ExchangeRateService.get_exchange_rate(CurrencyType.USA, CurrencyType.KOREA, exchange_rate_map)
-
-    stock_korea_price = {stock_code: price * won_exchange_rate for stock_code, price in current_stock_price_map.items()}
-
-    response_data = [
-        RichPickValue(
-            name=stock_name_map.get(stock_code),
-            price=stock_korea_price[stock_code],
-            rate=stock_daily_profit[stock_code],
-        )
-        for stock_code in top_10_stocks
-    ]
-
-    return RichPickResponse(response_data)
+    ])
 
 
 @chart_router.get(
@@ -184,7 +121,7 @@ async def get_estimate_dividend(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> EstimateDividendEveryResponse | EstimateDividendTypeResponse:
-    assets: list[Asset] = await AssetRepository.get_eager(session, token.get('user'), AssetType.STOCK)
+    assets: list[Asset] = await AssetRepository.get_eager(session, token.get("user"), AssetType.STOCK)
     if len(assets) == 0:
         return (
             EstimateDividendEveryResponse(estimate_dividend_list=[])
@@ -242,7 +179,7 @@ async def get_sample_performance_analysis(
         )
     elif interval in IntervalType.FIVEDAY:
         end_datetime = end_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
-        start_datetime = end_datetime - timedelta(days=5)
+        start_datetime = end_datetime - timedelta(days=4)
         market_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_market_analysis_short(
             session, redis_client, start_datetime, end_datetime, interval
         )
@@ -313,6 +250,8 @@ async def get_performance_analysis(
             unit="%",
         )
     elif interval in IntervalType.FIVEDAY:
+        end_datetime = end_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
+        start_datetime = end_datetime - timedelta(days=4)
         market_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_market_analysis_short(
             session, redis_client, start_datetime, end_datetime, interval
         )
@@ -354,6 +293,15 @@ async def get_performance_analysis(
         return PerformanceAnalysisResponse.get_performance_analysis_response(
             market_analysis_result, user_analysis_result
         )
+
+
+
+
+
+###### 테스트 커버리지 미작업 ###### ###### ###### ###### ###### ###### ###### ###### ###### ###### ###### ###### 
+
+
+
 
 
 @chart_router.get("/my-stock", summary="내 보유 주식", response_model=MyStockResponse)
@@ -682,3 +630,62 @@ async def get_market_index(
     ]
 
     return MarketIndiceResponse(market_indices=market_index_pairs)
+
+
+@chart_router.get("/rich-pick", summary="부자들이 선택한 종목 TOP10", response_model=RichPickResponse)
+async def get_rich_pick(
+    session: AsyncSession = Depends(get_mysql_session_router), redis_client: Redis = Depends(get_redis_pool)
+) -> RichPickResponse:
+    # [수정]!!!!!!!!! N+1 문제 !!!!!!!!!!!!
+    top_10_stocks_raw: str = await RedisRichPickRepository.get(redis_client, REDIS_RICH_PICK_KEY)
+    stock_name_map_raw: str = await RedisRichPickRepository.get(redis_client, REDIS_RICH_PICK_NAME_KEY)
+    if top_10_stocks_raw is None or stock_name_map_raw is None:
+        stock_count = {}
+        stock_name_map: dict[str, str] = {}
+        for person in RicePeople:
+            user = await UserRepository.get_by_name(session, person)
+            eager_assets = await AssetRepository.get_eager(session, user.id, AssetType.STOCK)
+            for asset in eager_assets:
+                stock_code = asset.asset_stock.stock.code
+                if stock_code not in stock_count:
+                    stock_count[stock_code] = 1
+                else:
+                    stock_count[stock_code] += 1
+                stock_name_map[stock_code] = asset.asset_stock.stock.name
+        top_10_stocks: list[str] = [
+            stock[0] for stock in sorted(stock_count.items(), key=lambda x: x[1], reverse=True)[:10]
+        ]
+        await RedisRichPickRepository.save(
+            redis_client, REDIS_RICH_PICK_KEY, json.dumps(top_10_stocks), RICH_PICK_SECOND
+        )
+        await RedisRichPickRepository.save(
+            redis_client, REDIS_RICH_PICK_NAME_KEY, json.dumps(stock_name_map), RICH_PICK_SECOND
+        )
+    else:
+        # mypy if-else 내부에 중복 네이밍 무시
+        top_10_stocks: list[str] = json.loads(top_10_stocks_raw)  # type: ignore
+        stock_name_map: dict[str, str] = json.loads(stock_name_map_raw)  # type: ignore
+
+    lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, top_10_stocks)
+    lastest_stock_daily_map = {daily.code: daily for daily in lastest_stock_dailies}
+    current_stock_price_map: dict[str, float] = await StockService.get_current_stock_price_by_code(
+        redis_client, lastest_stock_daily_map, top_10_stocks
+    )
+    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
+    stock_daily_profit: dict[str, float] = StockService.get_daily_profit(
+        lastest_stock_daily_map, current_stock_price_map, top_10_stocks
+    )
+    won_exchange_rate = ExchangeRateService.get_exchange_rate(CurrencyType.USA, CurrencyType.KOREA, exchange_rate_map)
+
+    stock_korea_price = {stock_code: price * won_exchange_rate for stock_code, price in current_stock_price_map.items()}
+
+    response_data = [
+        RichPickValue(
+            name=stock_name_map.get(stock_code),
+            price=stock_korea_price[stock_code],
+            rate=stock_daily_profit[stock_code],
+        )
+        for stock_code in top_10_stocks
+    ]
+
+    return RichPickResponse(response_data)
