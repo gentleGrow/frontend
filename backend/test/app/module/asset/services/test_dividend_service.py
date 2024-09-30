@@ -1,25 +1,22 @@
+from collections import defaultdict
+from datetime import date
+
 from pytest import approx
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from datetime import date
+
 from app.module.asset.enum import AssetType
-from app.module.asset.model import Asset
+from app.module.asset.model import Asset, AssetStock, Stock
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.services.dividend_service import DividendService
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
 from app.module.auth.constant import DUMMY_USER_ID
-from collections import defaultdict
-from app.module.asset.model import Stock, AssetStock
 from app.module.chart.schema import EstimateDividendEveryValue
-from icecream import ic
 
 
 class TestDividendService:
-    def test_process_dividends_by_year_month(
-        self,
-        setup_all
-    ):
+    def test_process_dividends_by_year_month(self, setup_all):
         # Given
         total_dividends = {
             date(2024, 1, 15): 100.0,
@@ -54,13 +51,8 @@ class TestDividendService:
             assert result[year].data == approx(expected_result[year].data)
             assert result[year].unit == expected_result[year].unit
             assert result[year].total == approx(expected_result[year].total)
-    
-    
-    async def test_get_last_year_dividends(
-        self, 
-        setup_all,           
-        session: AsyncSession 
-    ):
+
+    async def test_get_last_year_dividends(self, setup_all, session: AsyncSession):
         # Given
         assets = await AssetRepository.get_assets(session, DUMMY_USER_ID)
         asset = assets[0]
@@ -68,7 +60,7 @@ class TestDividendService:
         dividend_map = {
             ("AAPL", date(2024, 8, 13)): 1.5,
             ("AAPL", date(2024, 8, 14)): 1.6,
-            ("AAPL", date(2023, 8, 13)): 1.4, 
+            ("AAPL", date(2023, 8, 13)): 1.4,
             ("AAPL", date(2023, 11, 14)): 1.5,
         }
         won_exchange_rate = 1300.0
@@ -79,36 +71,33 @@ class TestDividendService:
             asset=asset,
             dividend_map=dividend_map,
             won_exchange_rate=won_exchange_rate,
-            last_dividend_date=last_dividend_date
+            last_dividend_date=last_dividend_date,
         )
 
         # Then
-        expected_result = defaultdict(float, {
-            date(2024, 11, 14): 1.5 * 1300 * asset.asset_stock.quantity,
-        })
+        expected_result = defaultdict(
+            float,
+            {
+                date(2024, 11, 14): 1.5 * 1300 * asset.asset_stock.quantity,
+            },
+        )
 
         for key in expected_result:
             assert result[key] == approx(expected_result[key])
-    
+
     def test_get_asset_total_dividend(
         self,
-        setup_all, 
+        setup_all,
     ):
         # Given
-        asset = Asset(
-            asset_stock=AssetStock(
-                purchase_date=date(2024, 8, 13),
-                stock=Stock(code="AAPL"),
-                quantity=10
-            )
-        )
-        
-        won_exchange_rate = 1300.0  
+        asset = Asset(asset_stock=AssetStock(purchase_date=date(2024, 8, 13), stock=Stock(code="AAPL"), quantity=10))
+
+        won_exchange_rate = 1300.0
 
         dividend_map = {
             ("AAPL", date(2024, 8, 13)): 1.5,
             ("AAPL", date(2024, 8, 14)): 1.6,
-            ("TSLA", date(2024, 8, 14)): 0.9,  
+            ("TSLA", date(2024, 8, 14)): 0.9,
         }
 
         # When
@@ -126,12 +115,8 @@ class TestDividendService:
 
         assert result == expected_result
         assert last_dividend_date == expected_last_dividend_date
-    
-    async def test_get_dividend_map(
-        self,
-        session: AsyncSession,
-        setup_all
-    ):
+
+    async def test_get_dividend_map(self, session: AsyncSession, setup_all):
         # Given
         assets = await session.execute(select(Asset).filter(Asset.user_id == DUMMY_USER_ID))
         assets = assets.scalars().all()
@@ -148,9 +133,9 @@ class TestDividendService:
             ("005930", date(2024, 8, 13)): 100.0,
             ("005930", date(2024, 8, 14)): 105.0,
         }
-        
+
         assert dividend_map == expected_dividend_map
-    
+
     async def test_get_recent_map(self, session: AsyncSession, setup_dividend, setup_asset):
         # Given
         assets = await session.execute(select(Asset).filter(Asset.user_id == DUMMY_USER_ID))
