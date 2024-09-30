@@ -89,8 +89,8 @@ class PerformanceAnalysisResponse(BaseModel):
                 formatted_xAxises.append(current_month)
 
         return PerformanceAnalysisResponse(
-            xAxises=formatted_xAxises, 
-            dates=formatted_year_months, 
+            xAxises=formatted_xAxises,
+            dates=formatted_year_months,
             values1={"values": averaged_user_analysis, "name": "내 수익률"},
             values2={"values": averaged_market_analysis, "name": "코스피"},
             unit="%",
@@ -109,7 +109,7 @@ class EstimateDividendEveryResponse(RootModel[dict[str, EstimateDividendEveryVal
 
 
 class EstimateDividendTypeValue(BaseModel):
-    code: str
+    name: str
     current_amount: float
     percent_rate: float
 
