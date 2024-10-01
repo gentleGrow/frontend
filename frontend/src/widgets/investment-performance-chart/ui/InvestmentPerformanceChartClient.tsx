@@ -42,7 +42,7 @@ export default function InvestmentPerformanceChartClient({
           </SegmentedButtonGroup>
         </div>
       </div>
-      <div className="flex h-full items-center mobile:flex-col except-mobile:justify-between">
+      <div className="flex items-center mobile:flex-col except-mobile:justify-between">
         <div className="space-y-[32px] mobile:mt-[24px] mobile:flex mobile:w-full mobile:space-x-[16px] mobile:space-y-0">
           <PercentWithTitle title="내 수익률" percent={30.12} />
           <PercentWithTitle title="시장 수익률 대비" percent={8.57} />

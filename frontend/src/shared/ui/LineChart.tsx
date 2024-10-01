@@ -82,10 +82,10 @@ export default function LineChart({
               interval:
                 type === "fiveDayPerformanceData"
                   ? isSmallScreen
-                    ? 119
+                    ? 95
                     : 47
                   : type === "monthlyPerformanceData"
-                    ? 6
+                    ? 13
                     : "auto",
             },
             axisTick: {
@@ -100,8 +100,8 @@ export default function LineChart({
             },
           },
           grid: {
-            left: isSmallScreen ? "5%" : "0",
-            right: isSmallScreen ? "5%" : "3%",
+            left: isSmallScreen ? "15px" : "0",
+            right: isSmallScreen ? "15px" : "15px",
             bottom: 32,
             containLabel: true,
           },
@@ -180,7 +180,7 @@ export default function LineChart({
   return (
     <div
       ref={chartRef}
-      className="h-[328px] w-full pb-[16px] mobile:px-[16px]"
+      className="h-[328px] w-full pb-[16px] mobile:pr-[16px]"
     />
   );
 }
