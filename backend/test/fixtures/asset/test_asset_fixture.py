@@ -1,9 +1,10 @@
 from datetime import date
-
+from app.module.asset.enum import MarketIndex
 import pytest
 from redis.asyncio import Redis
+import json
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from app.module.asset.model import MarketIndexDaily
 from app.module.asset.constant import ASSET_FIELD
 from app.module.asset.enum import AccountType, AssetType, InvestmentBankType, PurchaseCurrencyType, StockAsset
 from app.module.asset.model import Asset, AssetField, AssetStock, Dividend, Stock, StockDaily
@@ -30,6 +31,18 @@ async def setup_asset_field(session: AsyncSession, setup_user, setup_stock):
 
     session.add(asset_field)
     await session.commit()
+
+@pytest.fixture(scope="function")
+async def setup_current_market_index(redis_client: Redis):
+    market_index_data = {
+        "market_type": MarketIndex.KOSPI.value,
+        "current_value": "3250.0",
+        "previous_value": "3200.0"
+    }
+    
+    await redis_client.set(f"{MarketIndex.KOSPI}", json.dumps(market_index_data))
+    yield market_index_data
+    await redis_client.flushall()
 
 
 @pytest.fixture(scope="function")
@@ -199,11 +212,49 @@ async def setup_asset(session: AsyncSession, setup_user, setup_stock):
     asset3 = Asset(asset_type=AssetType.STOCK.value, user_id=DUMMY_USER_ID, asset_stock=asset_stock3)
     session.add_all([asset1, asset2, asset3])
     await session.commit()
+    
+    
+@pytest.fixture(scope="function")
+async def setup_market_index_daily(session: AsyncSession):
+    market_index_daily1 = MarketIndexDaily(
+        name=MarketIndex.KOSPI,
+        date=date(2024, 8, 13),
+        close_price=3200.0,
+        open_price=3150.0,
+        high_price=3250.0,
+        low_price=3100.0,
+        volume=1500000,
+    )
+    
+    market_index_daily2 = MarketIndexDaily(
+        name=MarketIndex.KOSPI,
+        date=date(2024, 8, 14),
+        close_price=3250.0,
+        open_price=3200.0,
+        high_price=3300.0,
+        low_price=3150.0,
+        volume=1600000,
+    )
+
+    market_index_daily3 = MarketIndexDaily(
+        name=MarketIndex.KOSPI,
+        date=date(2024, 8, 15),
+        close_price=3300.0,
+        open_price=3250.0,
+        high_price=3350.0,
+        low_price=3200.0,
+        volume=1700000,
+    )
+
+    session.add_all([market_index_daily1, market_index_daily2, market_index_daily3])
+    await session.commit()
+
 
 
 @pytest.fixture(scope="function")
 async def setup_all(
     setup_asset_field,
+    setup_current_market_index,
     setup_realtime_stock_price,
     setup_exchange_rate,
     setup_dividend,
@@ -211,5 +262,6 @@ async def setup_all(
     setup_stock,
     setup_stock_daily,
     setup_asset,
+    setup_market_index_daily
 ):
     pass

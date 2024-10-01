@@ -4,23 +4,23 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.module.chart.enum import IntervalType
-from app.module.chart.service.performance_analysis_service import PerformanceAnalysis
+from app.module.chart.facade.performance_analysis_facade import PerformanceAnalysisFacade
 
 
-class TestPerformanceAnalysis:
+class TestPerformanceAnalysisFacade:
     async def test_get_market_analysis(
         self, session: AsyncSession, redis_client: Redis, setup_current_index, setup_market_index_daily
     ):
         # Given
-        interval_start = datetime(2024, 8, 10)
-        interval_end = datetime(2024, 8, 11)
+        interval_start = date(2024, 8, 10)
+        interval_end = date(2024, 8, 11)
 
         # When
-        result = await PerformanceAnalysis.get_market_analysis(
+        result = await PerformanceAnalysisFacade.get_market_analysis(
             session=session,
             redis_client=redis_client,
-            interval_start=interval_start,
-            interval_end=interval_end,
+            start_date=interval_start,
+            end_date=interval_end,
         )
 
         # Then
@@ -39,7 +39,7 @@ class TestPerformanceAnalysis:
         interval_minutes = IntervalType.FIVEDAY
 
         # When
-        result = await PerformanceAnalysis.get_market_analysis_short(
+        result = await PerformanceAnalysisFacade.get_market_analysis_short(
             session=session,
             redis_client=redis_client,
             interval_start=interval_start,
