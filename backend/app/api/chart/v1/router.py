@@ -53,8 +53,8 @@ from app.module.chart.schema import (
     RichPortfolioValue,
     SummaryResponse,
 )
-from app.module.chart.service.composition_service import CompositionService
-from app.module.chart.service.performance_analysis_service import PerformanceAnalysis
+from app.module.chart.facade.composition_facade import CompositionFacade
+from app.module.chart.facade.performance_analysis_facade import PerformanceAnalysisFacade
 from app.module.chart.service.rich_portfolio_service import RichPortfolioService
 from app.module.chart.service.summary_service import SummaryService
 from database.dependency import get_mysql_session_router, get_redis_pool
@@ -66,9 +66,9 @@ chart_router = APIRouter(prefix="/v1")
 async def get_rich_portfolio(redis_client: Redis = Depends(get_redis_pool)) -> RichPortfolioResponse:
     rich_portfolio_map: dict = await RichPortfolioService.get_rich_porfolio_map(redis_client)
 
-    return RichPortfolioResponse([
-        RichPortfolioValue(name=person, stock=portfolio) for person, portfolio in rich_portfolio_map.items()
-    ])
+    return RichPortfolioResponse(
+        [RichPortfolioValue(name=person, stock=portfolio) for person, portfolio in rich_portfolio_map.items()]
+    )
 
 
 @chart_router.get(
@@ -158,15 +158,13 @@ async def get_sample_performance_analysis(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> PerformanceAnalysisResponse:
-    end_datetime = get_now_datetime()
-    start_datetime = end_datetime - interval.get_timedelta()
-
     if interval is IntervalType.ONEMONTH:
-        market_analysis_result: dict[date, float] = await PerformanceAnalysis.get_market_analysis(
-            session, redis_client, start_datetime, end_datetime
+        start_date, end_date = interval.get_start_end_time()
+        market_analysis_result: dict[date, float] = await PerformanceAnalysisFacade.get_market_analysis(
+            session, redis_client, start_date, end_date
         )
-        user_analysis_result: dict[date, float] = await PerformanceAnalysis.get_user_analysis(
-            session, redis_client, start_datetime, end_datetime, DUMMY_USER_ID, market_analysis_result
+        user_analysis_result: dict[date, float] = await PerformanceAnalysisFacade.get_user_analysis(
+            session, redis_client, start_date, end_date, DUMMY_USER_ID, market_analysis_result
         )
         sorted_dates = sorted(market_analysis_result.keys())
 
@@ -178,12 +176,12 @@ async def get_sample_performance_analysis(
             unit="%",
         )
     elif interval in IntervalType.FIVEDAY:
-        end_datetime = end_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
-        start_datetime = end_datetime - timedelta(days=4)
-        market_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_market_analysis_short(
+        start_datetime, end_datetime = interval.get_start_end_time()
+    
+        market_analysis_result_short: dict[datetime, float] = await PerformanceAnalysisFacade.get_market_analysis_short(
             session, redis_client, start_datetime, end_datetime, interval
         )
-        user_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_user_analysis_short(
+        user_analysis_result_short: dict[datetime, float] = await PerformanceAnalysisFacade.get_user_analysis_short(
             session,
             redis_client,
             start_datetime,
@@ -209,14 +207,13 @@ async def get_sample_performance_analysis(
             unit="%",
         )
     else:
-        market_analysis_result: dict[date, float] = await PerformanceAnalysis.get_market_analysis(
-            session, redis_client, start_datetime, end_datetime
+        start_date, end_date = interval.get_start_end_time()
+        market_analysis_result: dict[date, float] = await PerformanceAnalysisFacade.get_market_analysis(
+            session, redis_client, start_date, end_date
         )
-        user_analysis_result: dict[date, float] = await PerformanceAnalysis.get_user_analysis(
-            session, redis_client, start_datetime, end_datetime, DUMMY_USER_ID, market_analysis_result
+        user_analysis_result: dict[date, float] = await PerformanceAnalysisFacade.get_user_analysis(
+            session, redis_client, start_date, end_date, DUMMY_USER_ID, market_analysis_result
         )
-
-        sorted_dates = sorted(market_analysis_result.keys())
 
         return PerformanceAnalysisResponse.get_performance_analysis_response(
             market_analysis_result, user_analysis_result
@@ -230,15 +227,13 @@ async def get_performance_analysis(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> PerformanceAnalysisResponse:
-    end_datetime = get_now_datetime()
-    start_datetime = end_datetime - interval.get_timedelta()
-
     if interval is IntervalType.ONEMONTH:
-        market_analysis_result: dict[date, float] = await PerformanceAnalysis.get_market_analysis(
-            session, redis_client, start_datetime, end_datetime
+        start_date, end_date = interval.get_start_end_time()
+        market_analysis_result: dict[date, float] = await PerformanceAnalysisFacade.get_market_analysis(
+            session, redis_client, start_date, end_date
         )
-        user_analysis_result: dict[date, float] = await PerformanceAnalysis.get_user_analysis(
-            session, redis_client, start_datetime, end_datetime, token.get("user"), market_analysis_result
+        user_analysis_result: dict[date, float] = await PerformanceAnalysisFacade.get_user_analysis(
+            session, redis_client, start_date, end_date, token.get('user'), market_analysis_result
         )
         sorted_dates = sorted(market_analysis_result.keys())
 
@@ -250,17 +245,17 @@ async def get_performance_analysis(
             unit="%",
         )
     elif interval in IntervalType.FIVEDAY:
-        end_datetime = end_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
-        start_datetime = end_datetime - timedelta(days=4)
-        market_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_market_analysis_short(
+        start_datetime, end_datetime = interval.get_start_end_time()
+    
+        market_analysis_result_short: dict[datetime, float] = await PerformanceAnalysisFacade.get_market_analysis_short(
             session, redis_client, start_datetime, end_datetime, interval
         )
-        user_analysis_result_short: dict[datetime, float] = await PerformanceAnalysis.get_user_analysis_short(
+        user_analysis_result_short: dict[datetime, float] = await PerformanceAnalysisFacade.get_user_analysis_short(
             session,
             redis_client,
             start_datetime,
             end_datetime,
-            token.get("user"),
+            token.get('user'),
             interval,
             market_analysis_result_short,
         )
@@ -269,7 +264,7 @@ async def get_performance_analysis(
 
         return PerformanceAnalysisResponse(
             xAxises=[datetime.strftime("%m.%d") for datetime in sorted_datetimes],
-            dates=[datetime.strftime("%Y.%m.%d:%H:%M") for datetime in sorted_datetimes],
+            dates=[datetime.strftime("%Y.%m.%d %H:%M") for datetime in sorted_datetimes],
             values1={
                 "values": [user_analysis_result_short[datetime] for datetime in sorted_datetimes],
                 "name": "내 수익률",
@@ -281,26 +276,102 @@ async def get_performance_analysis(
             unit="%",
         )
     else:
-        market_analysis_result: dict[date, float] = await PerformanceAnalysis.get_market_analysis(
-            session, redis_client, start_datetime, end_datetime
+        start_date, end_date = interval.get_start_end_time()
+        market_analysis_result: dict[date, float] = await PerformanceAnalysisFacade.get_market_analysis(
+            session, redis_client, start_date, end_date
         )
-        user_analysis_result: dict[date, float] = await PerformanceAnalysis.get_user_analysis(
-            session, redis_client, start_datetime, end_datetime, token.get("user"), market_analysis_result
+        user_analysis_result: dict[date, float] = await PerformanceAnalysisFacade.get_user_analysis(
+            session, redis_client, start_date, end_date, token.get('user'), market_analysis_result
         )
-
-        sorted_dates = sorted(market_analysis_result.keys())
 
         return PerformanceAnalysisResponse.get_performance_analysis_response(
             market_analysis_result, user_analysis_result
         )
+        
+
+@chart_router.get("/sample/composition", summary="종목 구성", response_model=CompositionResponse)
+async def get_sample_composition(
+    type: CompositionType = Query(CompositionType.COMPOSITION, description="composition은 종목 별, account는 계좌 별 입니다."),
+    session: AsyncSession = Depends(get_mysql_session_router),
+    redis_client: Redis = Depends(get_redis_pool),
+) -> CompositionResponse:
+    assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
+    if len(assets) == 0:
+        return CompositionResponse(
+            composition=[CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)]
+        )
+
+    lastest_stock_daily_map = await StockDailyService.get_latest_map(session, assets)    
+    current_stock_price_map = await StockService.get_current_stock_price_by_code(
+        redis_client, lastest_stock_daily_map, [asset.asset_stock.stock.code for asset in assets]
+    )
+    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
+
+    if type is CompositionType.COMPOSITION:
+        stock_composition_data = CompositionFacade.get_asset_stock_composition(
+            assets, current_stock_price_map, exchange_rate_map
+        )
+        return CompositionResponse([
+            CompositionResponseValue(
+                name=item["name"], percent_rate=item["percent_rate"], current_amount=item["current_amount"]
+            )
+            for item in stock_composition_data
+        ])
+    else:
+        account_composition_data = CompositionFacade.get_asset_stock_account(
+            assets, current_stock_price_map, exchange_rate_map
+        )
+
+        return CompositionResponse([
+            CompositionResponseValue(
+                name=item["name"], percent_rate=item["percent_rate"], current_amount=item["current_amount"]
+            )
+            for item in account_composition_data
+        ])
 
 
+@chart_router.get("/composition", summary="종목 구성", response_model=CompositionResponse)
+async def get_composition(
+    token: AccessToken = Depends(verify_jwt_token),
+    type: CompositionType = Query(CompositionType.COMPOSITION, description="composition은 종목 별, account는 계좌 별 입니다."),
+    session: AsyncSession = Depends(get_mysql_session_router),
+    redis_client: Redis = Depends(get_redis_pool),
+) -> CompositionResponse:
+    assets: list[Asset] = await AssetRepository.get_eager(session, token.get('user'), AssetType.STOCK)
+    if len(assets) == 0:
+        return CompositionResponse(
+            composition=[CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)]
+        )
 
+    lastest_stock_daily_map = await StockDailyService.get_latest_map(session, assets)    
+    current_stock_price_map = await StockService.get_current_stock_price_by_code(
+        redis_client, lastest_stock_daily_map, [asset.asset_stock.stock.code for asset in assets]
+    )
+    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
+    if type is CompositionType.COMPOSITION:
+        stock_composition_data = CompositionFacade.get_asset_stock_composition(
+            assets, current_stock_price_map, exchange_rate_map
+        )
+        return CompositionResponse([
+            CompositionResponseValue(
+                name=item["name"], percent_rate=item["percent_rate"], current_amount=item["current_amount"]
+            )
+            for item in stock_composition_data
+        ])
+    else:
+        account_composition_data = CompositionFacade.get_asset_stock_account(
+            assets, current_stock_price_map, exchange_rate_map
+        )
 
-###### 테스트 커버리지 미작업 ###### ###### ###### ###### ###### ###### ###### ###### ###### ###### ###### ###### 
-
-
+        return CompositionResponse([
+            CompositionResponseValue(
+                name=item["name"], percent_rate=item["percent_rate"], current_amount=item["current_amount"]
+            )
+            for item in account_composition_data
+        ])
+        
+#########################################################################################################################################
 
 
 
@@ -391,103 +462,6 @@ async def get_sample_my_stock(
     ]
 
     return MyStockResponse(my_stock_list=my_stock_list)
-
-
-@chart_router.get("/composition", summary="종목 구성", response_model=CompositionResponse)
-async def get_composition(
-    token: AccessToken = Depends(verify_jwt_token),
-    type: CompositionType = Query(CompositionType.COMPOSITION, description="composition은 종목 별, account는 계좌 별 입니다."),
-    session: AsyncSession = Depends(get_mysql_session_router),
-    redis_client: Redis = Depends(get_redis_pool),
-) -> CompositionResponse:
-    assets: list[Asset] = await AssetRepository.get_eager(session, token.get("user"), AssetType.STOCK)
-    if len(assets) == 0:
-        return CompositionResponse(
-            composition=[CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)]
-        )
-
-    stock_codes = [asset.asset_stock.stock.code for asset in assets]
-    lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, stock_codes)
-    lastest_stock_daily_map = {daily.code: daily for daily in lastest_stock_dailies}
-    current_stock_price_map = await StockService.get_current_stock_price_by_code(
-        redis_client, lastest_stock_daily_map, stock_codes
-    )
-    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
-
-    if type is CompositionType.COMPOSITION:
-        stock_composition_data = CompositionService.get_asset_stock_composition(
-            assets, current_stock_price_map, exchange_rate_map
-        )
-
-        composition_data = [
-            CompositionResponseValue(
-                name=item["name"], percent_rate=item["percent_rate"], current_amount=item["current_amount"]
-            )
-            for item in stock_composition_data
-        ]
-
-        return CompositionResponse(composition=composition_data)
-    else:
-        account_composition_data = CompositionService.get_asset_stock_account(
-            assets, current_stock_price_map, exchange_rate_map
-        )
-
-        composition_data = [
-            CompositionResponseValue(
-                name=item["name"], percent_rate=item["percent_rate"], current_amount=item["current_amount"]
-            )
-            for item in account_composition_data
-        ]
-
-        return CompositionResponse(composition=composition_data)
-
-
-@chart_router.get("/sample/composition", summary="종목 구성", response_model=CompositionResponse)
-async def get_sample_composition(
-    type: CompositionType = Query(CompositionType.COMPOSITION, description="composition은 종목 별, account는 계좌 별 입니다."),
-    session: AsyncSession = Depends(get_mysql_session_router),
-    redis_client: Redis = Depends(get_redis_pool),
-) -> CompositionResponse:
-    assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
-    if len(assets) == 0:
-        return CompositionResponse(
-            composition=[CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)]
-        )
-
-    stock_codes = [asset.asset_stock.stock.code for asset in assets]
-    lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, stock_codes)
-    lastest_stock_daily_map = {daily.code: daily for daily in lastest_stock_dailies}
-    current_stock_price_map = await StockService.get_current_stock_price_by_code(
-        redis_client, lastest_stock_daily_map, stock_codes
-    )
-    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
-
-    if type is CompositionType.COMPOSITION:
-        stock_composition_data = CompositionService.get_asset_stock_composition(
-            assets, current_stock_price_map, exchange_rate_map
-        )
-
-        composition_data = [
-            CompositionResponseValue(
-                name=item["name"], percent_rate=item["percent_rate"], current_amount=item["current_amount"]
-            )
-            for item in stock_composition_data
-        ]
-
-        return CompositionResponse(composition=composition_data)
-    else:
-        account_composition_data = CompositionService.get_asset_stock_account(
-            assets, current_stock_price_map, exchange_rate_map
-        )
-
-        composition_data = [
-            CompositionResponseValue(
-                name=item["name"], percent_rate=item["percent_rate"], current_amount=item["current_amount"]
-            )
-            for item in account_composition_data
-        ]
-
-        return CompositionResponse(composition=composition_data)
 
 
 @chart_router.get("/summary", summary="오늘의 리뷰, 나의 총자산, 나의 투자 금액, 수익금", response_model=SummaryResponse)

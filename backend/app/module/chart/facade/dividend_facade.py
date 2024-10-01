@@ -30,11 +30,15 @@ class DividendFacade:
             total_dividend[asset.asset_stock.stock.code] += dividend * won_exchange_rate * asset.asset_stock.quantity
             total_dividend_sum += dividend * won_exchange_rate * asset.asset_stock.quantity
 
-        return [
-            (stock_code, dividend, (dividend / total_dividend_sum) * 100 if total_dividend_sum > 0 else 0.0)
-            for stock_code, dividend in total_dividend.items()
-            if dividend > 0
-        ]
+        return sorted(
+            [
+                (stock_code, dividend, (dividend / total_dividend_sum) * 100 if total_dividend_sum > 0 else 0.0)
+                for stock_code, dividend in total_dividend.items()
+                if dividend > 0
+            ],
+            key=lambda x: x[1], 
+            reverse=True 
+        )
 
     @staticmethod
     def get_full_month_estimate_dividend(

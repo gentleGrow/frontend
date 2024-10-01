@@ -41,8 +41,8 @@ class CompositionResponseValue(BaseModel):
     current_amount: float = Field(..., description="현재가")
 
 
-class CompositionResponse(BaseModel):
-    composition: list[CompositionResponseValue]
+class CompositionResponse(RootModel[list[CompositionResponseValue]]):
+    pass
 
 
 class PerformanceAnalysisResponse(BaseModel):

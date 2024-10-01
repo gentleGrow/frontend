@@ -3,6 +3,10 @@ import time
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+def get_now_date():
+    seoul_tz = ZoneInfo("Asia/Seoul")
+    now_in_seoul = datetime.now(seoul_tz)
+    return now_in_seoul.date()
 
 def get_now_datetime():
     seoul_tz = ZoneInfo("Asia/Seoul")

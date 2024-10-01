@@ -7,4 +7,6 @@ from test.fixtures.asset.test_asset_fixture import (  # noqa: F401 > relationshi
     setup_stock,
     setup_stock_daily,
     setup_user,
+    setup_current_market_index,
+    setup_market_index_daily
 )

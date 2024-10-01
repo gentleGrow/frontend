@@ -1,6 +1,7 @@
-from datetime import timedelta
+from datetime import timedelta, date, datetime
 from enum import StrEnum
-
+from app.common.util.time import get_now_datetime, get_now_date
+from dateutil.relativedelta import relativedelta
 
 class EstimateDividendType(StrEnum):
     EVERY = "every"
@@ -19,28 +20,33 @@ class IntervalType(StrEnum):
     SIXMONTH = "6month"
     ONEYEAR = "1year"
 
-    def get_timedelta(self) -> timedelta:
+    def get_start_end_time(self) -> tuple[date|datetime, date|datetime]:
         if self == IntervalType.FIVEDAY:
-            return timedelta(hours=5 * 24)
+            end_datetime = get_now_datetime().replace(hour=0, minute=0, second=0, microsecond=0)
+            return end_datetime - timedelta(days=4), end_datetime
         elif self == IntervalType.ONEMONTH:
-            return timedelta(days=(7 * 4) + 1)
+            end_date = get_now_date()
+            return end_date - timedelta(days=(7 * 4) + 1), end_date
         elif self == IntervalType.THREEMONTH:
-            return timedelta(days=30 * 3)
+            end_date = get_now_date()
+            return end_date - relativedelta(months=2), end_date
         elif self == IntervalType.SIXMONTH:
-            return timedelta(days=30 * 6)
+            end_date = get_now_date()
+            return end_date - relativedelta(months=5), end_date
         elif self == IntervalType.ONEYEAR:
-            return timedelta(days=30 * 12)
-        return timedelta(days=30)
+            end_date = get_now_date()
+            return end_date - relativedelta(months=11), end_date
+        return 
 
     def get_interval(self) -> int:
         if self == IntervalType.FIVEDAY:
             return 30
         elif self == IntervalType.ONEMONTH:
-            return 1
+            return 60 * 24 * 30
         elif self == IntervalType.THREEMONTH:
-            return 1
+            return 60 * 24 * 30
         elif self == IntervalType.SIXMONTH:
-            return 1
+            return 60 * 24 * 30
         elif self == IntervalType.ONEYEAR:
-            return 1
+            return 60 * 24 * 30
         return 1
