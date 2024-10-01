@@ -85,8 +85,22 @@ export default function LineChart({
                     ? 95
                     : 47
                   : type === "monthlyPerformanceData"
-                    ? 13
-                    : "auto",
+                    ? isSmallScreen
+                      ? 13
+                      : 6
+                    : type === "threeMonthPerformanceData"
+                      ? isSmallScreen
+                        ? 1
+                        : 0
+                      : type === "sixMonthPerformanceData"
+                        ? isSmallScreen
+                          ? 1.5
+                          : 0
+                        : type === "yearlyPerformanceData"
+                          ? isSmallScreen
+                            ? 2
+                            : 0
+                          : "auto",
             },
             axisTick: {
               show: false,

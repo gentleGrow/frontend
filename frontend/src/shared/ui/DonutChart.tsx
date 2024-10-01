@@ -21,7 +21,7 @@ export default function DonutChart({
     if (chartRef.current) {
       const chartInstance = echarts.init(chartRef.current);
 
-      const totalCurrentAmount = data.reduce(
+      const totalCurrentAmount = data?.reduce(
         (sum, item) => sum + item.current_amount,
         0,
       );
@@ -59,8 +59,8 @@ export default function DonutChart({
         );
 
         const legendData = isPortfolio
-          ? data.slice(0, 2).map((item) => item.name)
-          : data.map((item) => item.name);
+          ? data?.slice(0, 2).map((item) => item.name)
+          : data?.map((item) => item.name);
 
         let maxNameLength;
         if (isPortfolio) {
@@ -131,7 +131,7 @@ export default function DonutChart({
             data: legendData,
             padding: isMobile || isPortfolio ? [0, 0] : [0, 0],
             formatter: (name: string) => {
-              const item = data.find((i) => i.name === name);
+              const item = data?.find((i) => i.name === name);
               const percent = item
                 ? (item.current_amount / totalCurrentAmount) * 100
                 : 0;
@@ -207,7 +207,7 @@ export default function DonutChart({
               labelLine: {
                 show: false,
               },
-              data: data.map((item) => ({
+              data: data?.map((item) => ({
                 value: item.current_amount,
                 name: item.name,
               })),
@@ -237,7 +237,7 @@ export default function DonutChart({
     }
   }, [data, windowWidth, isPortfolio]);
 
-  const chartHeight = isPortfolio ? 128 + 2 * 25 - 25 : 276 + data.length * 25;
+  const chartHeight = isPortfolio ? 128 + 2 * 25 - 25 : 276 + data?.length * 25;
   const maxHeight = isPortfolio
     ? chartHeight
     : windowWidth > 840

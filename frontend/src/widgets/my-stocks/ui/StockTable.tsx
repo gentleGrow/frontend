@@ -19,27 +19,29 @@ export default function StockTable({ stocks }: { stocks: any[] }) {
             <TableHead className="max-w-[151px] text-right">현재가</TableHead>
             <TableHead className="max-w-[120px] text-right">수익률</TableHead>
             <TableHead className="max-w-[151px] text-right">수익금</TableHead>
-            <TableHead className="max-w-[90px] text-right">수량</TableHead>
+            <TableHead className="min-w-[58px] max-w-[90px] text-right">
+              수량
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {stocks.map((stock, i) => (
             <TableRow key={i} className="h-[48px] border-none">
-              <TableCell className="max-w-[160px] truncate">
+              <TableCell className="max-w-[73px] truncate">
                 {stock.name}
               </TableCell>
 
-              <TableCell className="max-w-[151px] truncate text-right">
+              <TableCell className="max-w-[73px] truncate text-right">
                 ₩
                 {Number(stock.current_price.toFixed(0)).toLocaleString("ko-KR")}
               </TableCell>
               <TableCell
-                className={`max-w-[151px] truncate text-right ${stock.profit_rate < 0 && "text-decrease"} ${stock.profit_rate > 0 && "text-alert"}`}
+                className={`max-w-[73px] truncate text-right ${stock.profit_rate < 0 && "text-decrease"} ${stock.profit_rate > 0 && "text-alert"}`}
               >
                 {stock.profit_rate > 0 && "+"}
                 {Number(stock.profit_rate.toFixed(2)).toLocaleString("ko-kr")}%
               </TableCell>
-              <TableCell className="max-w-[151px] truncate text-right">
+              <TableCell className="max-w-[73px] truncate text-right">
                 {stock.profit_amount < 0 && "-"}₩
                 {stock.profit_amount < 0
                   ? Number(
@@ -49,7 +51,7 @@ export default function StockTable({ stocks }: { stocks: any[] }) {
                       "ko-KR",
                     )}
               </TableCell>
-              <TableCell className="max-w-[90px] truncate text-right">
+              <TableCell className="max-w-[58px] truncate text-right">
                 {stock.quantity.toLocaleString()}
               </TableCell>
             </TableRow>

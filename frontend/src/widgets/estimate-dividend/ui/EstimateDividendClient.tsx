@@ -28,7 +28,7 @@ export default function EstimateDividendClient({
   }
   return (
     <div
-      className={`relative ${selectedTab === "모두" ? "h-[390px]" : "h-full"} w-full rounded-xl border border-gray-20 bg-white p-[16px] ${selectedTab === "모두" ? "mobile:h-[500px]" : "h-full"} mobile:border-none`}
+      className={`relative ${selectedTab === "모두" ? "h-[390px]" : "h-full"} w-full rounded-xl border border-gray-20 bg-white p-[16px] mobile:rounded-none ${selectedTab === "모두" ? "mobile:h-[500px]" : "h-full"} mobile:border-none`}
     >
       <h2 className="text-heading-2">예상 배당액</h2>
       <div className="mt-[16px] flex w-full justify-between except-mobile:absolute except-mobile:right-[16px] except-mobile:top-[12px] except-mobile:mt-0">
@@ -87,7 +87,7 @@ export default function EstimateDividendClient({
             }}
           />
         ) : (
-          <div className="py-[41px]">
+          <div className="pt-[41px]">
             <DonutChart
               chartName="예상 배당액"
               data={estimatedDividendByStock}

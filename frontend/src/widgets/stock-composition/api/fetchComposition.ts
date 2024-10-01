@@ -19,9 +19,8 @@ const fetchComposition = async (
     if (!response.ok) {
       throw new Error(`${response.status}: ${await response.json()}`);
     }
-    const composition = await response.json().then((data) => data.composition);
 
-    return composition;
+    return response.json();
   } catch (error) {
     console.error(error);
     return [];
