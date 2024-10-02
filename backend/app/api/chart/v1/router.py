@@ -4,7 +4,7 @@ from datetime import date, datetime
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-from icecream import ic
+
 from app.common.auth.security import verify_jwt_token
 from app.data.investing.sources.enum import RicePeople
 from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
@@ -52,6 +52,7 @@ from app.module.chart.schema import (
     RichPickValue,
     RichPortfolioResponse,
     RichPortfolioValue,
+    EstimateDividendEveryValue,
     SummaryResponse,
 )
 from app.module.chart.service.rich_portfolio_service import RichPortfolioService
@@ -123,9 +124,18 @@ async def get_estimate_dividend(
     assets: list[Asset] = await AssetRepository.get_eager(session, int(token.get("user")), AssetType.STOCK)
     if len(assets) == 0:
         return (
-            EstimateDividendEveryResponse({})
+            EstimateDividendEveryResponse({str(date.today().year):EstimateDividendEveryValue(
+                xAxises=[],
+                data=[],
+                unit="",
+                total=0.0
+            )})
             if category == EstimateDividendType.EVERY
-            else EstimateDividendTypeResponse([])
+            else EstimateDividendTypeResponse([EstimateDividendTypeValue(
+                name='',
+                current_amount=0.0,
+                percent_rate=0.0
+            )])
         )
 
     exchange_rate_map: dict[str, float] = await ExchangeRateService.get_exchange_rate_map(redis_client)
@@ -215,7 +225,7 @@ async def get_sample_performance_analysis(
         )
 
         return PerformanceAnalysisResponse.get_performance_analysis_response(
-            market_analysis_result, user_analysis_result
+            market_analysis_result, user_analysis_result, interval
         )
 
 
@@ -284,7 +294,7 @@ async def get_performance_analysis(
         )
 
         return PerformanceAnalysisResponse.get_performance_analysis_response(
-            market_analysis_result, user_analysis_result
+            market_analysis_result, user_analysis_result, interval
         )
 
 
@@ -297,7 +307,7 @@ async def get_sample_composition(
     assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
     if len(assets) == 0:
         return CompositionResponse(
-            composition=[CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)]
+            [CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)]
         )
 
     lastest_stock_daily_map = await StockDailyService.get_latest_map(session, assets)
@@ -343,7 +353,7 @@ async def get_composition(
     assets: list[Asset] = await AssetRepository.get_eager(session, token.get("user"), AssetType.STOCK)
     if len(assets) == 0:
         return CompositionResponse(
-            composition=[CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)]
+            [CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)]
         )
 
     lastest_stock_daily_map = await StockDailyService.get_latest_map(session, assets)
@@ -480,7 +490,7 @@ async def get_summary(
     assets: list[Asset] = await AssetRepository.get_eager(session, token.get("user"), AssetType.STOCK)
     if len(assets) == 0:
         return SummaryResponse(
-            today_review_rate=0.0, total_asset_amount=0, total_investment_amount=0, profit_amount=0, profit_rate=0.0
+            today_review_rate=0.0, total_asset_amount=0, total_investment_amount=0, profit=ProfitDetail(profit_amount=0.0, profit_rate=0.0)
         )
 
     stock_daily_map: dict[tuple[str, date], StockDaily] = await StockDailyService.get_map_range(session, assets)

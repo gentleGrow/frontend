@@ -3,7 +3,7 @@ from datetime import date, datetime
 from statistics import mean
 
 from pydantic import BaseModel, Field, RootModel
-
+from app.module.chart.enum import IntervalType
 from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
 from app.module.asset.enum import MarketIndex
 
@@ -54,7 +54,7 @@ class PerformanceAnalysisResponse(BaseModel):
 
     @staticmethod
     def get_performance_analysis_response(
-        market_analysis_result: dict[date, float], user_analysis_result: dict[date, float]
+        market_analysis_result: dict[date, float], user_analysis_result: dict[date, float], interval: IntervalType
     ) -> "PerformanceAnalysisResponse":
         market_analysis_monthly = defaultdict(list)
         user_analysis_monthly = defaultdict(list)
@@ -72,21 +72,22 @@ class PerformanceAnalysisResponse(BaseModel):
         averaged_market_analysis = [mean(market_analysis_monthly[year_month]) for year_month in sorted_dates]
         averaged_user_analysis = [mean(user_analysis_monthly[year_month]) for year_month in sorted_dates]
 
-        formatted_year_months = [datetime.strptime(d, "%Y.%m").strftime("%y.%m") for d in sorted_dates]
+        formatted_year_months = [datetime.strptime(d, "%Y.%m").strftime("%Y.%m") for d in sorted_dates] 
+        formatted_xAxises = [datetime.strptime(d, "%Y.%m").strftime("%y.%m") for d in sorted_dates] 
 
-        formatted_xAxises = []
-        previous_year = None
+        if interval == IntervalType.ONEYEAR:
+            formatted_xAxises = []
+            previous_year = None
+            for d in sorted_dates:
+                current_date = datetime.strptime(d, "%Y.%m")
+                current_year = current_date.strftime("%y")
+                current_month = current_date.strftime("%m")
 
-        for d in sorted_dates:
-            current_date = datetime.strptime(d, "%Y.%m")
-            current_year = current_date.strftime("%y")
-            current_month = current_date.strftime("%m")
-
-            if current_year != previous_year:
-                formatted_xAxises.append(f"{current_year}.{current_month}")
-                previous_year = current_year
-            else:
-                formatted_xAxises.append(current_month)
+                if current_year != previous_year:
+                    formatted_xAxises.append(f"{current_year}.{current_month}")
+                    previous_year = current_year
+                else:
+                    formatted_xAxises.append(current_month)
 
         return PerformanceAnalysisResponse(
             xAxises=formatted_xAxises,
@@ -95,6 +96,9 @@ class PerformanceAnalysisResponse(BaseModel):
             values2={"values": averaged_market_analysis, "name": "코스피"},
             unit="%",
         )
+
+
+
 
 
 class EstimateDividendEveryValue(BaseModel):

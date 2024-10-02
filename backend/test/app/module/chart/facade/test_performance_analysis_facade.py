@@ -9,7 +9,7 @@ from app.module.chart.facade.performance_analysis_facade import PerformanceAnaly
 
 class TestPerformanceAnalysisFacade:
     async def test_get_market_analysis(
-        self, session: AsyncSession, redis_client: Redis, setup_current_index, setup_market_index_daily
+        self, session: AsyncSession, redis_client: Redis, setup_current_index, setup_all
     ):
         # Given
         interval_start = date(2024, 8, 10)
@@ -25,7 +25,7 @@ class TestPerformanceAnalysisFacade:
 
         # Then
         expected_result = {
-            date(2024, 8, 11): ((3200.0 - 3150.0) / 3150.0) * 100,
+            date(2024, 8, 11): ((3250.0 - 3150.0) / 3150.0) * 100,
         }
 
         assert result == expected_result

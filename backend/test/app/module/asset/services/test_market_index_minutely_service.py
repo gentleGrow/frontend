@@ -1,16 +1,15 @@
 from datetime import datetime, timedelta
+
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.module.asset.enum import MarketIndex
-from app.module.chart.enum import IntervalType
-from app.module.asset.services.market_index_minutely_service import MarketIndexMinutelyService
 from app.module.asset.model import MarketIndexMinutely
+from app.module.asset.services.market_index_minutely_service import MarketIndexMinutelyService
+from app.module.chart.enum import IntervalType
+
 
 class TestMarketIndexMinutelyService:
-    async def test_get_index_range_interval_map(
-        self,
-        session: AsyncSession,
-        setup_all
-    ):
+    async def test_get_index_range_interval_map(self, session: AsyncSession, setup_all):
         # Given
         market_type = MarketIndex.KOSPI
         interval = IntervalType.FIVEDAY
@@ -23,7 +22,7 @@ class TestMarketIndexMinutelyService:
         )
 
         # Then
-        assert all(isinstance(value, MarketIndexMinutely) for value in result.values())  
+        assert all(isinstance(value, MarketIndexMinutely) for value in result.values())
 
         times = list(result.keys())
         for i in range(1, len(times)):
