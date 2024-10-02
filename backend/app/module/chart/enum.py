@@ -1,7 +1,10 @@
-from datetime import timedelta, date, datetime
+from datetime import date, datetime, timedelta
 from enum import StrEnum
-from app.common.util.time import get_now_datetime, get_now_date
+
 from dateutil.relativedelta import relativedelta
+
+from app.common.util.time import get_now_date, get_now_datetime
+
 
 class EstimateDividendType(StrEnum):
     EVERY = "every"
@@ -20,7 +23,7 @@ class IntervalType(StrEnum):
     SIXMONTH = "6month"
     ONEYEAR = "1year"
 
-    def get_start_end_time(self) -> tuple[date|datetime, date|datetime]:
+    def get_start_end_time(self) -> tuple[date | datetime, date | datetime]:
         if self == IntervalType.FIVEDAY:
             end_datetime = get_now_datetime().replace(hour=0, minute=0, second=0, microsecond=0)
             return end_datetime - timedelta(days=4), end_datetime
@@ -36,7 +39,7 @@ class IntervalType(StrEnum):
         elif self == IntervalType.ONEYEAR:
             end_date = get_now_date()
             return end_date - relativedelta(months=11), end_date
-        return 
+        return
 
     def get_interval(self) -> int:
         if self == IntervalType.FIVEDAY:

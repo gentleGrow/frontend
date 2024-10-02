@@ -1,13 +1,20 @@
-from datetime import date
-from app.module.asset.enum import MarketIndex
+import json
+from datetime import date, datetime, timedelta
+
 import pytest
 from redis.asyncio import Redis
-import json
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.module.asset.model import MarketIndexDaily
+
 from app.module.asset.constant import ASSET_FIELD
-from app.module.asset.enum import AccountType, AssetType, InvestmentBankType, PurchaseCurrencyType, StockAsset
-from app.module.asset.model import Asset, AssetField, AssetStock, Dividend, Stock, StockDaily
+from app.module.asset.enum import (
+    AccountType,
+    AssetType,
+    InvestmentBankType,
+    MarketIndex,
+    PurchaseCurrencyType,
+    StockAsset,
+)
+from app.module.asset.model import Asset, AssetField, AssetStock, Dividend, MarketIndexDaily, Stock, StockDaily, MarketIndexMinutely
 from app.module.auth.constant import DUMMY_NAME, DUMMY_USER_ID
 from app.module.auth.enum import ProviderEnum, UserRoleEnum
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
@@ -32,14 +39,11 @@ async def setup_asset_field(session: AsyncSession, setup_user, setup_stock):
     session.add(asset_field)
     await session.commit()
 
+
 @pytest.fixture(scope="function")
 async def setup_current_market_index(redis_client: Redis):
-    market_index_data = {
-        "market_type": MarketIndex.KOSPI.value,
-        "current_value": "3250.0",
-        "previous_value": "3200.0"
-    }
-    
+    market_index_data = {"market_type": MarketIndex.KOSPI.value, "current_value": "3250.0", "previous_value": "3200.0"}
+
     await redis_client.set(f"{MarketIndex.KOSPI}", json.dumps(market_index_data))
     yield market_index_data
     await redis_client.flushall()
@@ -212,8 +216,8 @@ async def setup_asset(session: AsyncSession, setup_user, setup_stock):
     asset3 = Asset(asset_type=AssetType.STOCK.value, user_id=DUMMY_USER_ID, asset_stock=asset_stock3)
     session.add_all([asset1, asset2, asset3])
     await session.commit()
-    
-    
+
+
 @pytest.fixture(scope="function")
 async def setup_market_index_daily(session: AsyncSession):
     market_index_daily1 = MarketIndexDaily(
@@ -225,7 +229,7 @@ async def setup_market_index_daily(session: AsyncSession):
         low_price=3100.0,
         volume=1500000,
     )
-    
+
     market_index_daily2 = MarketIndexDaily(
         name=MarketIndex.KOSPI,
         date=date(2024, 8, 14),
@@ -250,6 +254,23 @@ async def setup_market_index_daily(session: AsyncSession):
     await session.commit()
 
 
+@pytest.fixture(scope="function")
+async def setup_market_index_minutely_data(session: AsyncSession):
+    market_type = MarketIndex.KOSPI
+    end_date = datetime(2024, 8, 15, 23, 59)
+    start_date = end_date - timedelta(days=4)
+
+    mock_data = [
+        MarketIndexMinutely(
+            name=market_type.value,
+            datetime=start_date + timedelta(minutes=i),
+            current_price=3000.0 + i
+        )
+        for i in range(0, 60 * 24 * 5, 30) 
+    ]
+
+    session.add_all(mock_data)
+    await session.commit()
 
 @pytest.fixture(scope="function")
 async def setup_all(
@@ -262,6 +283,7 @@ async def setup_all(
     setup_stock,
     setup_stock_daily,
     setup_asset,
-    setup_market_index_daily
+    setup_market_index_daily,
+    setup_market_index_minutely_data
 ):
     pass
