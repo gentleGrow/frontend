@@ -14,7 +14,16 @@ from app.module.asset.enum import (
     PurchaseCurrencyType,
     StockAsset,
 )
-from app.module.asset.model import Asset, AssetField, AssetStock, Dividend, MarketIndexDaily, Stock, StockDaily, MarketIndexMinutely
+from app.module.asset.model import (
+    Asset,
+    AssetField,
+    AssetStock,
+    Dividend,
+    MarketIndexDaily,
+    MarketIndexMinutely,
+    Stock,
+    StockDaily,
+)
 from app.module.auth.constant import DUMMY_NAME, DUMMY_USER_ID
 from app.module.auth.enum import ProviderEnum, UserRoleEnum
 from app.module.auth.model import User  # noqa: F401 > relationship 설정시 필요합니다.
@@ -222,6 +231,26 @@ async def setup_asset(session: AsyncSession, setup_user, setup_stock):
 async def setup_market_index_daily(session: AsyncSession):
     market_index_daily1 = MarketIndexDaily(
         name=MarketIndex.KOSPI,
+        date=date(2024, 8, 10),
+        open_price=3000.0,
+        close_price=3100.0,
+        high_price=3200.0,
+        low_price=2990.0,
+        volume=1000000,
+    )
+
+    market_index_daily2 = MarketIndexDaily(
+        name=MarketIndex.KOSPI,
+        date=date(2024, 8, 11),
+        open_price=3100.0,
+        close_price=3150.0,
+        high_price=3250.0,
+        low_price=3080.0,
+        volume=1200000,
+    )
+
+    market_index_daily3 = MarketIndexDaily(
+        name=MarketIndex.KOSPI,
         date=date(2024, 8, 13),
         close_price=3200.0,
         open_price=3150.0,
@@ -230,7 +259,7 @@ async def setup_market_index_daily(session: AsyncSession):
         volume=1500000,
     )
 
-    market_index_daily2 = MarketIndexDaily(
+    market_index_daily4 = MarketIndexDaily(
         name=MarketIndex.KOSPI,
         date=date(2024, 8, 14),
         close_price=3250.0,
@@ -240,7 +269,7 @@ async def setup_market_index_daily(session: AsyncSession):
         volume=1600000,
     )
 
-    market_index_daily3 = MarketIndexDaily(
+    market_index_daily5 = MarketIndexDaily(
         name=MarketIndex.KOSPI,
         date=date(2024, 8, 15),
         close_price=3300.0,
@@ -250,7 +279,9 @@ async def setup_market_index_daily(session: AsyncSession):
         volume=1700000,
     )
 
-    session.add_all([market_index_daily1, market_index_daily2, market_index_daily3])
+    session.add_all(
+        [market_index_daily1, market_index_daily2, market_index_daily3, market_index_daily4, market_index_daily5]
+    )
     await session.commit()
 
 
@@ -262,15 +293,14 @@ async def setup_market_index_minutely_data(session: AsyncSession):
 
     mock_data = [
         MarketIndexMinutely(
-            name=market_type.value,
-            datetime=start_date + timedelta(minutes=i),
-            current_price=3000.0 + i
+            name=market_type.value, datetime=start_date + timedelta(minutes=i), current_price=3000.0 + i
         )
-        for i in range(0, 60 * 24 * 5, 30) 
+        for i in range(0, 60 * 24 * 5, 30)
     ]
 
     session.add_all(mock_data)
     await session.commit()
+
 
 @pytest.fixture(scope="function")
 async def setup_all(
@@ -284,6 +314,6 @@ async def setup_all(
     setup_stock_daily,
     setup_asset,
     setup_market_index_daily,
-    setup_market_index_minutely_data
+    setup_market_index_minutely_data,
 ):
     pass

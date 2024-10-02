@@ -4,16 +4,16 @@ from math import floor
 
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.module.asset.services.market_index_minutely_service import MarketIndexMinutelyService
+
 from app.module.asset.enum import AssetType, MarketIndex
 from app.module.asset.model import MarketIndexMinutely, StockDaily, StockMinutely
 from app.module.asset.repository.asset_repository import AssetRepository
-from app.module.asset.repository.market_index_minutely_repository import MarketIndexMinutelyRepository
 from app.module.asset.repository.stock_minutely_repository import StockMinutelyRepository
 from app.module.asset.services.asset_stock_service import AssetStockService
 from app.module.asset.services.current_index_service import CurrentIndexService
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
 from app.module.asset.services.market_index_daily_service import MarketIndexDailyService
+from app.module.asset.services.market_index_minutely_service import MarketIndexMinutelyService
 from app.module.asset.services.stock_daily_service import StockDailyService
 from app.module.asset.services.stock_service import StockService
 from app.module.chart.enum import IntervalType
@@ -29,7 +29,6 @@ class PerformanceAnalysisFacade:
             session, (adjusted_start_date, end_date), MarketIndex.KOSPI
         )
         current_kospi_price = await CurrentIndexService.get_current_index_price(redis_client, MarketIndex.KOSPI)
-
         result = {}
         current_profit = 0.0
         current_date = adjusted_start_date
@@ -169,7 +168,11 @@ class PerformanceAnalysisFacade:
         interval_end: datetime,
         interval: IntervalType,
     ) -> dict[datetime, float]:
-        market_index_minutely_map:dict[datetime, MarketIndexMinutely] = await MarketIndexMinutelyService.get_index_range_interval_map(session, MarketIndex.KOSPI, (interval_start, interval_end), interval)
+        market_index_minutely_map: dict[
+            datetime, MarketIndexMinutely
+        ] = await MarketIndexMinutelyService.get_index_range_interval_map(
+            session, MarketIndex.KOSPI, (interval_start, interval_end), interval
+        )
         current_kospi_price = await CurrentIndexService.get_current_index_price(redis_client, MarketIndex.KOSPI)
 
         result = {}
