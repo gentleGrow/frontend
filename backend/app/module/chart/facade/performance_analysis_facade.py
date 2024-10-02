@@ -4,22 +4,19 @@ from math import floor
 
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from app.module.asset.services.market_index_minutely_service import MarketIndexMinutelyService
 from app.module.asset.enum import AssetType, MarketIndex
 from app.module.asset.model import MarketIndexMinutely, StockDaily, StockMinutely
 from app.module.asset.repository.asset_repository import AssetRepository
 from app.module.asset.repository.market_index_minutely_repository import MarketIndexMinutelyRepository
 from app.module.asset.repository.stock_minutely_repository import StockMinutelyRepository
-from app.module.asset.schema import MarketIndexData
 from app.module.asset.services.asset_stock_service import AssetStockService
+from app.module.asset.services.current_index_service import CurrentIndexService
 from app.module.asset.services.exchange_rate_service import ExchangeRateService
+from app.module.asset.services.market_index_daily_service import MarketIndexDailyService
 from app.module.asset.services.stock_daily_service import StockDailyService
 from app.module.asset.services.stock_service import StockService
 from app.module.chart.enum import IntervalType
-from app.module.chart.redis_repository import RedisMarketIndiceRepository
-from app.module.asset.services.market_index_daily_service import MarketIndexDailyService
-from app.module.asset.services.current_index_service import CurrentIndexService
-
 
 
 class PerformanceAnalysisFacade:
@@ -28,7 +25,9 @@ class PerformanceAnalysisFacade:
         session: AsyncSession, redis_client: Redis, start_date: date, end_date: date
     ) -> dict[date, float]:
         adjusted_start_date = start_date - timedelta(days=7)
-        market_index_date_map = await MarketIndexDailyService.get_market_index_date_map(session, (adjusted_start_date, end_date), MarketIndex.KOSPI)
+        market_index_date_map = await MarketIndexDailyService.get_market_index_date_map(
+            session, (adjusted_start_date, end_date), MarketIndex.KOSPI
+        )
         current_kospi_price = await CurrentIndexService.get_current_index_price(redis_client, MarketIndex.KOSPI)
 
         result = {}
@@ -118,11 +117,14 @@ class PerformanceAnalysisFacade:
             session, user_id, AssetType.STOCK, (interval_start, interval_end)
         )
 
-        stock_daily_map = await StockDailyService.get_map_range(session, assets)        
+        stock_daily_map = await StockDailyService.get_map_range(session, assets)
         exchange_rate_map: dict[str, float] = await ExchangeRateService.get_exchange_rate_map(redis_client)
 
         interval_data: list[StockMinutely] = await StockMinutelyRepository.get_by_range_interval_minute(
-            session, (interval_start, interval_end), [asset.asset_stock.stock.code for asset in assets], interval.get_interval()
+            session,
+            (interval_start, interval_end),
+            [asset.asset_stock.stock.code for asset in assets],
+            interval.get_interval(),
         )
 
         stock_interval_date_price_map = {
@@ -167,17 +169,10 @@ class PerformanceAnalysisFacade:
         interval_end: datetime,
         interval: IntervalType,
     ) -> dict[datetime, float]:
-
-        market_data: list[MarketIndexMinutely] = await MarketIndexMinutelyRepository.get_by_range_interval_minute(
-            session, (interval_start, interval_end), MarketIndex.KOSPI, interval.get_interval()
-        )
-
+        market_index_minutely_map:dict[datetime, MarketIndexMinutely] = await MarketIndexMinutelyService.get_index_range_interval_map(session, MarketIndex.KOSPI, (interval_start, interval_end), interval)
         current_kospi_price = await CurrentIndexService.get_current_index_price(redis_client, MarketIndex.KOSPI)
 
         result = {}
-
-        market_data_by_datetime = {market_index.datetime: market_index for market_index in market_data}
-
 
         minutes_offset = interval_start.minute % interval.get_interval()
 
@@ -192,8 +187,8 @@ class PerformanceAnalysisFacade:
         while current_datetime <= interval_end:
             naive_current_datetime = current_datetime.replace(tzinfo=None)
 
-            if naive_current_datetime in market_data_by_datetime:
-                market_index = market_data_by_datetime[naive_current_datetime]
+            if naive_current_datetime in market_index_minutely_map:
+                market_index = market_index_minutely_map[naive_current_datetime]
                 current_profit = ((current_kospi_price - market_index.current_price) / market_index.current_price) * 100
 
             result[naive_current_datetime] = current_profit
