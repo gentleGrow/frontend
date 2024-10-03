@@ -3,9 +3,10 @@ from datetime import date, datetime
 from statistics import mean
 
 from pydantic import BaseModel, Field, RootModel
-from app.module.chart.enum import IntervalType
+
 from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
 from app.module.asset.enum import MarketIndex
+from app.module.chart.enum import IntervalType
 
 
 class ChartTipResponse(RootModel[str]):
@@ -31,8 +32,8 @@ class MarketIndiceResponseValue(BaseModel):
     change_percent: float = Field(..., description="1일 기준 변동성")
 
 
-class MarketIndiceResponse(BaseModel):
-    market_indices: list[MarketIndiceResponseValue]
+class MarketIndiceResponse(RootModel[list[MarketIndiceResponseValue]]):
+    pass
 
 
 class CompositionResponseValue(BaseModel):
@@ -72,14 +73,14 @@ class PerformanceAnalysisResponse(BaseModel):
         averaged_market_analysis = [mean(market_analysis_monthly[year_month]) for year_month in sorted_dates]
         averaged_user_analysis = [mean(user_analysis_monthly[year_month]) for year_month in sorted_dates]
 
-        formatted_year_months = [datetime.strptime(d, "%Y.%m").strftime("%Y.%m") for d in sorted_dates] 
-        formatted_xAxises = [datetime.strptime(d, "%Y.%m").strftime("%y.%m") for d in sorted_dates] 
+        formatted_year_months = [datetime.strptime(d, "%Y.%m").strftime("%Y.%m") for d in sorted_dates]
+        formatted_xAxises = [datetime.strptime(d, "%Y.%m").strftime("%y.%m") for d in sorted_dates]
 
         if interval == IntervalType.ONEYEAR:
             formatted_xAxises = []
             previous_year = None
-            for d in sorted_dates:
-                current_date = datetime.strptime(d, "%Y.%m")
+            for sort_date in sorted_dates:
+                current_date = datetime.strptime(sort_date, "%Y.%m")
                 current_year = current_date.strftime("%y")
                 current_month = current_date.strftime("%m")
 
@@ -96,9 +97,6 @@ class PerformanceAnalysisResponse(BaseModel):
             values2={"values": averaged_market_analysis, "name": "코스피"},
             unit="%",
         )
-
-
-
 
 
 class EstimateDividendEveryValue(BaseModel):
@@ -130,8 +128,8 @@ class MyStockResponseValue(BaseModel):
     quantity: int
 
 
-class MyStockResponse(BaseModel):
-    my_stock_list: list[MyStockResponseValue]
+class MyStockResponse(RootModel[list[MyStockResponseValue]]):
+    pass
 
 
 class RichPickValue(BaseModel):
