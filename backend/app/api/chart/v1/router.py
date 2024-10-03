@@ -9,9 +9,8 @@ from app.common.auth.security import verify_jwt_token
 from app.data.investing.sources.enum import RicePeople
 from app.module.asset.constant import MARKET_INDEX_KR_MAPPING
 from app.module.asset.enum import AssetType, CurrencyType, MarketIndex
-from app.module.asset.model import Asset, Dividend, StockDaily
+from app.module.asset.model import Asset, StockDaily
 from app.module.asset.repository.asset_repository import AssetRepository
-from app.module.asset.repository.dividend_repository import DividendRepository
 from app.module.asset.repository.stock_daily_repository import StockDailyRepository
 from app.module.asset.schema import MarketIndexData
 from app.module.asset.services.asset_stock_service import AssetStockService
@@ -379,6 +378,7 @@ async def get_composition(
             ]
         )
 
+
 @chart_router.get("/sample/my-stock", summary="내 보유 주식", response_model=MyStockResponse)
 async def get_sample_my_stock(
     session: AsyncSession = Depends(get_mysql_session_router),
@@ -386,13 +386,9 @@ async def get_sample_my_stock(
 ) -> MyStockResponse:
     assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
     if len(assets) == 0:
-        return MyStockResponse([MyStockResponseValue(
-            name="",
-            current_price=0.0,
-            profit_rate=0.0,
-            profit_amount=0.0,
-            quantity=0
-        )])
+        return MyStockResponse(
+            [MyStockResponseValue(name="", current_price=0.0, profit_rate=0.0, profit_amount=0.0, quantity=0)]
+        )
 
     stock_daily_map = await StockDailyService.get_map_range(session, assets)
     dividend_map = await DividendService.get_dividend_map(session, assets)
@@ -405,16 +401,18 @@ async def get_sample_my_stock(
         session, DUMMY_USER_ID, assets, stock_daily_map, current_stock_price_map, dividend_map, exchange_rate_map
     )
 
-    return MyStockResponse([
-        MyStockResponseValue(
-            name=stock_asset["stock_name"],
-            current_price=stock_asset["current_price"],
-            profit_rate=stock_asset["profit_rate"],
-            profit_amount=stock_asset["profit_amount"],
-            quantity=stock_asset["quantity"],
-        )
-        for stock_asset in stock_assets
-    ])
+    return MyStockResponse(
+        [
+            MyStockResponseValue(
+                name=stock_asset["stock_name"],
+                current_price=stock_asset["current_price"],
+                profit_rate=stock_asset["profit_rate"],
+                profit_amount=stock_asset["profit_amount"],
+                quantity=stock_asset["quantity"],
+            )
+            for stock_asset in stock_assets
+        ]
+    )
 
 
 @chart_router.get("/my-stock", summary="내 보유 주식", response_model=MyStockResponse)
@@ -423,15 +421,11 @@ async def get_my_stock(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> MyStockResponse:
-    assets: list[Asset] = await AssetRepository.get_eager(session, token.get('user'), AssetType.STOCK)
+    assets: list[Asset] = await AssetRepository.get_eager(session, token.get("user"), AssetType.STOCK)
     if len(assets) == 0:
-        return MyStockResponse([MyStockResponseValue(
-            name="",
-            current_price=0.0,
-            profit_rate=0.0,
-            profit_amount=0.0,
-            quantity=0
-        )])
+        return MyStockResponse(
+            [MyStockResponseValue(name="", current_price=0.0, profit_rate=0.0, profit_amount=0.0, quantity=0)]
+        )
 
     stock_daily_map = await StockDailyService.get_map_range(session, assets)
     dividend_map = await DividendService.get_dividend_map(session, assets)
@@ -441,23 +435,24 @@ async def get_my_stock(
     )
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
     stock_assets: list[dict] = await AssetStockService.get_stock_assets(
-        session, token.get('user'), assets, stock_daily_map, current_stock_price_map, dividend_map, exchange_rate_map
+        session, token.get("user"), assets, stock_daily_map, current_stock_price_map, dividend_map, exchange_rate_map
     )
 
-    return MyStockResponse([
-        MyStockResponseValue(
-            name=stock_asset["stock_name"],
-            current_price=stock_asset["current_price"],
-            profit_rate=stock_asset["profit_rate"],
-            profit_amount=stock_asset["profit_amount"],
-            quantity=stock_asset["quantity"],
-        )
-        for stock_asset in stock_assets
-    ])
+    return MyStockResponse(
+        [
+            MyStockResponseValue(
+                name=stock_asset["stock_name"],
+                current_price=stock_asset["current_price"],
+                profit_rate=stock_asset["profit_rate"],
+                profit_amount=stock_asset["profit_amount"],
+                quantity=stock_asset["quantity"],
+            )
+            for stock_asset in stock_assets
+        ]
+    )
 
 
 #########################################################################################################################################
-
 
 
 @chart_router.get("/summary", summary="오늘의 리뷰, 나의 총자산, 나의 투자 금액, 수익금", response_model=SummaryResponse)
@@ -591,7 +586,7 @@ async def get_market_index(
         MarketIndexData(**json.loads(value)) if value is not None else None for value in market_index_values_str
     ]
 
-    market_index_pairs = [
+    return MarketIndiceResponse([
         MarketIndiceResponseValue(
             name=market_index_value.name,
             name_kr=MARKET_INDEX_KR_MAPPING.get(market_index_value.name, "N/A"),
@@ -600,9 +595,7 @@ async def get_market_index(
         )
         for market_index_value in market_index_values
         if market_index_value is not None
-    ]
-
-    return MarketIndiceResponse(market_indices=market_index_pairs)
+    ])
 
 
 @chart_router.get("/rich-pick", summary="부자들이 선택한 종목 TOP10", response_model=RichPickResponse)
@@ -652,13 +645,11 @@ async def get_rich_pick(
 
     stock_korea_price = {stock_code: price * won_exchange_rate for stock_code, price in current_stock_price_map.items()}
 
-    response_data = [
+    return RichPickResponse([
         RichPickValue(
             name=stock_name_map.get(stock_code),
             price=stock_korea_price[stock_code],
             rate=stock_daily_profit[stock_code],
         )
         for stock_code in top_10_stocks
-    ]
-
-    return RichPickResponse(response_data)
+    ])

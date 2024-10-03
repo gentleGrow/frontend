@@ -32,8 +32,8 @@ class MarketIndiceResponseValue(BaseModel):
     change_percent: float = Field(..., description="1일 기준 변동성")
 
 
-class MarketIndiceResponse(BaseModel):
-    market_indices: list[MarketIndiceResponseValue]
+class MarketIndiceResponse(RootModel[list[MarketIndiceResponseValue]]):
+    pass
 
 
 class CompositionResponseValue(BaseModel):
@@ -72,15 +72,15 @@ class PerformanceAnalysisResponse(BaseModel):
 
         averaged_market_analysis = [mean(market_analysis_monthly[year_month]) for year_month in sorted_dates]
         averaged_user_analysis = [mean(user_analysis_monthly[year_month]) for year_month in sorted_dates]
-        
+
         formatted_year_months = [datetime.strptime(d, "%Y.%m").strftime("%Y.%m") for d in sorted_dates]
         formatted_xAxises = [datetime.strptime(d, "%Y.%m").strftime("%y.%m") for d in sorted_dates]
 
         if interval == IntervalType.ONEYEAR:
             formatted_xAxises = []
             previous_year = None
-            for date in sorted_dates:
-                current_date = datetime.strptime(date, "%Y.%m")
+            for sort_date in sorted_dates:
+                current_date = datetime.strptime(sort_date, "%Y.%m")
                 current_year = current_date.strftime("%y")
                 current_month = current_date.strftime("%m")
 
