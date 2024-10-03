@@ -70,30 +70,35 @@ const fetchPerformanceAnalysis = async (): Promise<PerformanceAnalysisData> => {
         values1: { values: [], name: "" },
         values2: { values: [], name: "" },
         unit: "",
+        dates: [],
       },
       monthlyPerformanceData: {
         xAxises: [],
         values1: { values: [], name: "" },
         values2: { values: [], name: "" },
         unit: "",
+        dates: [],
       },
       threeMonthPerformanceData: {
         xAxises: [],
         values1: { values: [], name: "" },
         values2: { values: [], name: "" },
         unit: "",
+        dates: [],
       },
       sixMonthPerformanceData: {
         xAxises: [],
         values1: { values: [], name: "" },
         values2: { values: [], name: "" },
         unit: "",
+        dates: [],
       },
       yearlyPerformanceData: {
         xAxises: [],
         values1: { values: [], name: "" },
         values2: { values: [], name: "" },
         unit: "",
+        dates: [],
       },
     };
   }
