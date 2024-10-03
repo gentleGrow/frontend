@@ -1,10 +1,10 @@
 import StockCompositionClient from "./StockCompositionClient";
 import fetchComposition from "../api/fetchComposition";
 import fetchDummyComposition from "../api/fetchDummyComposition";
-import { checkHasAccessToken } from "@/entities";
+import { cookies } from "next/headers";
 
 export default async function StockComposition() {
-  const hasAccessToken = await checkHasAccessToken();
+  const hasAccessToken = cookies().get("accessToken") ? true : false;
   const [compositionData, accountData] = hasAccessToken
     ? await Promise.all([
         fetchComposition("composition"),

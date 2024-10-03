@@ -6,7 +6,6 @@ import { NextResponse } from "next/server";
 export function POST() {
   try {
     const cookieStore = cookies();
-    cookieStore.get(ACCESS_TOKEN)?.value;
     const decoded = jwt.decode(
       cookieStore.get(ACCESS_TOKEN)?.value as string,
     ) as JwtPayload;

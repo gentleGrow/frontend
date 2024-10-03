@@ -11,15 +11,6 @@ export default function AuthProvider({
 }) {
   const [user, setUser] = useState<User | null>(null);
 
-  // const login = () => {
-  //   setUser({
-  //     isLoggedIn: true,
-  //     email: "dsa",
-  //     nickname: "dsa",
-  //     userId: "1",
-  //   });
-  // };
-
   const logout = () => {
     setUser(null);
     logoutUser();

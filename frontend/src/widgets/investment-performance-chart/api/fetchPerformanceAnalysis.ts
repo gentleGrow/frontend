@@ -17,7 +17,6 @@ const fetchPerformanceAnalysis = async (): Promise<PerformanceAnalysisData> => {
     ] = await Promise.all([
       fetch(
         `${SERVICE_SERVER_URL}/api/chart/v1/sample/performance-analysis?interval=5day`,
-        { cache: "no-store" },
       ),
       fetch(
         `${SERVICE_SERVER_URL}/api/chart/v1/sample/performance-analysis?interval=1month`,

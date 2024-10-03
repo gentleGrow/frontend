@@ -5,7 +5,6 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const refreshToken = req.cookies.get(REFRESH_TOKEN)?.value;
-    console.log(refreshToken);
     if (!refreshToken) {
       return NextResponse.json(
         { error: "리프레시 토큰이 존재하지 않습니다." },

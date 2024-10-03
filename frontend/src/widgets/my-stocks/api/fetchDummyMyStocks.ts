@@ -9,9 +9,7 @@ const fetchDummyMyStocks = async (): Promise<MyStock[]> => {
     if (!response.ok) {
       throw new Error(`${response.status}: ${await response.json()}`);
     }
-    const myStocks = await response.json().then((data) => data.my_stock_list);
-
-    return myStocks;
+    return response.json();
   } catch (error) {
     console.error(error);
     return [];

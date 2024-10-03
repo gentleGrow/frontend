@@ -1,3 +1,4 @@
+import React from "react";
 import fetchIndexes from "../api/fetchIndexes";
 import MarketIndexItem from "./MarketIndexItem";
 import SwiperBox from "./SwiperBox";

@@ -12,12 +12,12 @@ const fetchComposition = async (
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + cookies().get(ACCESS_TOKEN),
+          Authorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
         },
       },
     );
     if (!response.ok) {
-      throw new Error(`${response.status}: ${await response.json()}`);
+      throw new Error(`${response.status}: ${await response.text()}`);
     }
 
     return response.json();

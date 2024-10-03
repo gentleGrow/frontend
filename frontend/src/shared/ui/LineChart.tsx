@@ -94,11 +94,11 @@ export default function LineChart({
                         : 0
                       : type === "sixMonthPerformanceData"
                         ? isSmallScreen
-                          ? 1.5
+                          ? 4
                           : 0
                         : type === "yearlyPerformanceData"
                           ? isSmallScreen
-                            ? 2
+                            ? 10
                             : 0
                           : "auto",
             },

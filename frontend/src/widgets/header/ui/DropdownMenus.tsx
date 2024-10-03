@@ -6,11 +6,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useUser } from "@/entities";
 import { LoginDialog } from "@/features";
+import React from "react";
 export default function DropdownMenus() {
   const { user, logout } = useUser();
   return (
     <>
-      <DropdownMenuLabel className="flex shrink-0 items-center justify-between space-x-[8px]">
+      <DropdownMenuLabel
+        className={`${user?.isLoggedIn ? "flex" : "hidden"} shrink-0 items-center justify-between space-x-[8px]`}
+      >
         <div>
           <svg
             width="24"
@@ -45,7 +48,7 @@ export default function DropdownMenus() {
           <p className="text-body-3">{user?.nickname}</p>
         </div>
       </DropdownMenuLabel>
-      <DropdownMenuSeparator />
+      <DropdownMenuSeparator hidden={user?.isLoggedIn ? false : true} />
       {user?.isLoggedIn ? (
         <DropdownMenuItem onClick={() => logout()}>로그아웃</DropdownMenuItem>
       ) : (

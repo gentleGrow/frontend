@@ -11,8 +11,7 @@ const fetchIndexes = async (): Promise<Indexes[]> => {
     if (!response.ok) {
       throw new Error(`${response.status}: ${await response.json()}`);
     }
-    const indexes = await response.json().then((data) => data.market_indices);
-    return indexes;
+    return await response.json();
   } catch (error) {
     console.error(error);
     return [];

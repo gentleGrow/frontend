@@ -12,8 +12,8 @@ export default function LoginDialog() {
       <DialogTrigger className="relative flex w-full cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-5 focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
         로그인
       </DialogTrigger>
-      <DialogContent className="mobile-545:min-w-full mobile-545:h-full p-0 px-[40px]">
-        <div className="mobile-545:pt-[150px] mobile-545:pb-[72px] except-mobile-545:space-y-[135px] except-mobile-545:py-[64px] flex h-full flex-col items-center justify-between">
+      <DialogContent className="p-0 px-[40px] mobile-545:h-full mobile-545:min-w-full">
+        <div className="flex h-full flex-col items-center justify-between mobile-545:pb-[72px] mobile-545:pt-[150px] except-mobile-545:space-y-[135px] except-mobile-545:py-[64px]">
           <div className="space-y-[16px] text-center">
             <h1 className="text-heading-1">시작하기</h1>
             <p className="inline-block max-w-[394px] text-[16px] font-medium leading-[24px]">

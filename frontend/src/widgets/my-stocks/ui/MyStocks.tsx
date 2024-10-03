@@ -2,13 +2,14 @@ import SeeMoreButton from "./SeeMoreButton";
 import StockTable from "./StockTable";
 import fetchMyStocks from "../api/fetchMyStocks";
 import fetchDummyMyStocks from "../api/fetchDummyMyStocks";
-import { checkHasAccessToken } from "@/entities";
+import { cookies } from "next/headers";
 
 export default async function MyStocks() {
-  const hasAccessToken = await checkHasAccessToken();
+  const hasAccessToken = cookies().get("accessToken") ? true : false;
   const data = hasAccessToken
     ? await fetchMyStocks()
     : await fetchDummyMyStocks();
+
   const stocks = data.slice(0, 6);
   return (
     <div className="h-[390px] rounded-xl border border-gray-20 bg-white mobile:rounded-none mobile:border-none">

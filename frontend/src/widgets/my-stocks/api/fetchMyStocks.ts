@@ -18,16 +18,15 @@ const fetchMyStocks = async (): Promise<MyStock[]> => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + cookies().get(ACCESS_TOKEN),
+          Authorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
         },
       },
     );
     if (!response.ok) {
       throw new Error(`${response.status}: ${await response.json()}`);
     }
-    const myStocks = await response.json().then((data) => data.my_stock_list);
 
-    return myStocks;
+    return response.json();
   } catch (error) {
     console.error(error);
     return [];
