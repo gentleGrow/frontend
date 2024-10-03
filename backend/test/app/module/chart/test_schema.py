@@ -1,6 +1,7 @@
 from datetime import date
 from statistics import mean
 
+from app.module.chart.enum import IntervalType
 from app.module.chart.schema import PerformanceAnalysisResponse
 
 
@@ -31,7 +32,7 @@ class TestPerformanceAnalysisResponse:
 
         # When
         response = PerformanceAnalysisResponse.get_performance_analysis_response(
-            market_analysis_result, user_analysis_result
+            market_analysis_result, user_analysis_result, IntervalType.ONEYEAR
         )
 
         # Then

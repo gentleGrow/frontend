@@ -40,6 +40,7 @@ from app.module.chart.schema import (
     CompositionResponse,
     CompositionResponseValue,
     EstimateDividendEveryResponse,
+    EstimateDividendEveryValue,
     EstimateDividendTypeResponse,
     EstimateDividendTypeValue,
     MarketIndiceResponse,
@@ -52,7 +53,6 @@ from app.module.chart.schema import (
     RichPickValue,
     RichPortfolioResponse,
     RichPortfolioValue,
-    EstimateDividendEveryValue,
     SummaryResponse,
 )
 from app.module.chart.service.rich_portfolio_service import RichPortfolioService
@@ -124,18 +124,13 @@ async def get_estimate_dividend(
     assets: list[Asset] = await AssetRepository.get_eager(session, int(token.get("user")), AssetType.STOCK)
     if len(assets) == 0:
         return (
-            EstimateDividendEveryResponse({str(date.today().year):EstimateDividendEveryValue(
-                xAxises=[],
-                data=[],
-                unit="",
-                total=0.0
-            )})
+            EstimateDividendEveryResponse(
+                {str(date.today().year): EstimateDividendEveryValue(xAxises=[], data=[], unit="", total=0.0)}
+            )
             if category == EstimateDividendType.EVERY
-            else EstimateDividendTypeResponse([EstimateDividendTypeValue(
-                name='',
-                current_amount=0.0,
-                percent_rate=0.0
-            )])
+            else EstimateDividendTypeResponse(
+                [EstimateDividendTypeValue(name="", current_amount=0.0, percent_rate=0.0)]
+            )
         )
 
     exchange_rate_map: dict[str, float] = await ExchangeRateService.get_exchange_rate_map(redis_client)
@@ -306,9 +301,7 @@ async def get_sample_composition(
 ) -> CompositionResponse:
     assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
     if len(assets) == 0:
-        return CompositionResponse(
-            [CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)]
-        )
+        return CompositionResponse([CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)])
 
     lastest_stock_daily_map = await StockDailyService.get_latest_map(session, assets)
     current_stock_price_map = await StockService.get_current_stock_price_by_code(
@@ -352,9 +345,7 @@ async def get_composition(
 ) -> CompositionResponse:
     assets: list[Asset] = await AssetRepository.get_eager(session, token.get("user"), AssetType.STOCK)
     if len(assets) == 0:
-        return CompositionResponse(
-            [CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)]
-        )
+        return CompositionResponse([CompositionResponseValue(name="자산 없음", percent_rate=0.0, current_amount=0.0)])
 
     lastest_stock_daily_map = await StockDailyService.get_latest_map(session, assets)
     current_stock_price_map = await StockService.get_current_stock_price_by_code(
@@ -388,8 +379,42 @@ async def get_composition(
             ]
         )
 
+@chart_router.get("/sample/my-stock", summary="내 보유 주식", response_model=MyStockResponse)
+async def get_sample_my_stock(
+    session: AsyncSession = Depends(get_mysql_session_router),
+    redis_client: Redis = Depends(get_redis_pool),
+) -> MyStockResponse:
+    assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
+    if len(assets) == 0:
+        return MyStockResponse([MyStockResponseValue(
+            name="",
+            current_price=0.0,
+            profit_rate=0.0,
+            profit_amount=0.0,
+            quantity=0
+        )])
 
-#########################################################################################################################################
+    stock_daily_map = await StockDailyService.get_map_range(session, assets)
+    dividend_map = await DividendService.get_dividend_map(session, assets)
+    lastest_stock_daily_map = await StockDailyService.get_latest_map(session, assets)
+    current_stock_price_map = await StockService.get_current_stock_price_by_code(
+        redis_client, lastest_stock_daily_map, [asset.asset_stock.stock.code for asset in assets]
+    )
+    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
+    stock_assets: list[dict] = await AssetStockService.get_stock_assets(
+        session, DUMMY_USER_ID, assets, stock_daily_map, current_stock_price_map, dividend_map, exchange_rate_map
+    )
+
+    return MyStockResponse([
+        MyStockResponseValue(
+            name=stock_asset["stock_name"],
+            current_price=stock_asset["current_price"],
+            profit_rate=stock_asset["profit_rate"],
+            profit_amount=stock_asset["profit_amount"],
+            quantity=stock_asset["quantity"],
+        )
+        for stock_asset in stock_assets
+    ])
 
 
 @chart_router.get("/my-stock", summary="내 보유 주식", response_model=MyStockResponse)
@@ -398,76 +423,28 @@ async def get_my_stock(
     session: AsyncSession = Depends(get_mysql_session_router),
     redis_client: Redis = Depends(get_redis_pool),
 ) -> MyStockResponse:
-    assets: list[Asset] = await AssetRepository.get_eager(session, token.get("user"), AssetType.STOCK)
+    assets: list[Asset] = await AssetRepository.get_eager(session, token.get('user'), AssetType.STOCK)
     if len(assets) == 0:
-        return MyStockResponse(my_stock_list=[])
+        return MyStockResponse([MyStockResponseValue(
+            name="",
+            current_price=0.0,
+            profit_rate=0.0,
+            profit_amount=0.0,
+            quantity=0
+        )])
 
-    stock_codes = [asset.asset_stock.stock.code for asset in assets]
-
-    stock_code_date_pairs = [(asset.asset_stock.stock.code, asset.asset_stock.purchase_date) for asset in assets]
-    stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies_by_code_and_date(
-        session, stock_code_date_pairs
-    )
-    dividends: list[Dividend] = await DividendRepository.get_dividends_recent(session, stock_codes)
-
-    dividend_map = {dividend.stock_code: dividend.dividend for dividend in dividends}
-    lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, stock_codes)
-    lastest_stock_daily_map = {daily.code: daily for daily in lastest_stock_dailies}
-    stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
-    current_stock_price_map = await StockService.get_current_stock_price(
-        redis_client, lastest_stock_daily_map, stock_codes
-    )
-    exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
-
-    stock_assets: list[dict] = await AssetStockService.get_stock_assets(
-        session, token.get("user"), assets, stock_daily_map, current_stock_price_map, dividend_map, exchange_rate_map
-    )
-
-    my_stock_list = [
-        MyStockResponseValue(
-            name=stock_asset["stock_name"],
-            current_price=stock_asset["current_price"],
-            profit_rate=stock_asset["profit_rate"],
-            profit_amount=stock_asset["profit_amount"],
-            quantity=stock_asset["quantity"],
-        )
-        for stock_asset in stock_assets
-    ]
-
-    return MyStockResponse(my_stock_list=my_stock_list)
-
-
-@chart_router.get("/sample/my-stock", summary="내 보유 주식", response_model=MyStockResponse)
-async def get_sample_my_stock(
-    session: AsyncSession = Depends(get_mysql_session_router),
-    redis_client: Redis = Depends(get_redis_pool),
-) -> MyStockResponse:
-    assets: list[Asset] = await AssetRepository.get_eager(session, DUMMY_USER_ID, AssetType.STOCK)
-    if len(assets) == 0:
-        return MyStockResponse(my_stock_list=[])
-
-    stock_codes = [asset.asset_stock.stock.code for asset in assets]
-
-    stock_code_date_pairs = [(asset.asset_stock.stock.code, asset.asset_stock.purchase_date) for asset in assets]
-    stock_dailies: list[StockDaily] = await StockDailyRepository.get_stock_dailies_by_code_and_date(
-        session, stock_code_date_pairs
-    )
-    dividends: list[Dividend] = await DividendRepository.get_dividends_recent(session, stock_codes)
-
-    dividend_map = {dividend.stock_code: dividend.dividend for dividend in dividends}
-    lastest_stock_dailies: list[StockDaily] = await StockDailyRepository.get_latest(session, stock_codes)
-    lastest_stock_daily_map = {daily.code: daily for daily in lastest_stock_dailies}
-    stock_daily_map = {(daily.code, daily.date): daily for daily in stock_dailies}
+    stock_daily_map = await StockDailyService.get_map_range(session, assets)
+    dividend_map = await DividendService.get_dividend_map(session, assets)
+    lastest_stock_daily_map = await StockDailyService.get_latest_map(session, assets)
     current_stock_price_map = await StockService.get_current_stock_price_by_code(
-        redis_client, lastest_stock_daily_map, stock_codes
+        redis_client, lastest_stock_daily_map, [asset.asset_stock.stock.code for asset in assets]
     )
     exchange_rate_map = await ExchangeRateService.get_exchange_rate_map(redis_client)
-
     stock_assets: list[dict] = await AssetStockService.get_stock_assets(
-        session, DUMMY_USER_ID, assets, stock_daily_map, current_stock_price_map, dividend_map, exchange_rate_map
+        session, token.get('user'), assets, stock_daily_map, current_stock_price_map, dividend_map, exchange_rate_map
     )
 
-    my_stock_list = [
+    return MyStockResponse([
         MyStockResponseValue(
             name=stock_asset["stock_name"],
             current_price=stock_asset["current_price"],
@@ -476,9 +453,11 @@ async def get_sample_my_stock(
             quantity=stock_asset["quantity"],
         )
         for stock_asset in stock_assets
-    ]
+    ])
 
-    return MyStockResponse(my_stock_list=my_stock_list)
+
+#########################################################################################################################################
+
 
 
 @chart_router.get("/summary", summary="오늘의 리뷰, 나의 총자산, 나의 투자 금액, 수익금", response_model=SummaryResponse)
@@ -490,7 +469,10 @@ async def get_summary(
     assets: list[Asset] = await AssetRepository.get_eager(session, token.get("user"), AssetType.STOCK)
     if len(assets) == 0:
         return SummaryResponse(
-            today_review_rate=0.0, total_asset_amount=0, total_investment_amount=0, profit=ProfitDetail(profit_amount=0.0, profit_rate=0.0)
+            today_review_rate=0.0,
+            total_asset_amount=0,
+            total_investment_amount=0,
+            profit=ProfitDetail(profit_amount=0.0, profit_rate=0.0),
         )
 
     stock_daily_map: dict[tuple[str, date], StockDaily] = await StockDailyService.get_map_range(session, assets)
