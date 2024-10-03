@@ -2,6 +2,7 @@ import {
   DailyInvestmentTip,
   EstimateDividend,
   ExplorePortfolio,
+  HomeGuestAccessGuideButton,
   InvestmentPerformanceChart,
   MarketIndex,
   MyStocks,
@@ -42,6 +43,7 @@ export default function Home() {
           <ExplorePortfolio />
         </div>
       </div>
+      <HomeGuestAccessGuideButton />
     </div>
   );
 }

@@ -5,10 +5,12 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useUser } from "@/entities";
-import { LoginDialog } from "@/features";
+import { loginModalAtom } from "@/features";
+import { useSetAtom } from "jotai";
 import React from "react";
 export default function DropdownMenus() {
   const { user, logout } = useUser();
+  const setIsOpenLoginModal = useSetAtom(loginModalAtom);
   return (
     <>
       <DropdownMenuLabel
@@ -52,8 +54,12 @@ export default function DropdownMenus() {
       {user?.isLoggedIn ? (
         <DropdownMenuItem onClick={() => logout()}>로그아웃</DropdownMenuItem>
       ) : (
-        <DropdownMenuItem asChild>
-          <LoginDialog />
+        <DropdownMenuItem
+          onClick={() => {
+            setIsOpenLoginModal(true);
+          }}
+        >
+          로그인
         </DropdownMenuItem>
       )}
     </>

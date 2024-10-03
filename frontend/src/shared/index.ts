@@ -30,3 +30,4 @@ export {
 export { default as PortfolioItem } from "./ui/PortfolioItem";
 export { default as PortfolioCarousel } from "./ui/PortfolioCarousel";
 export { getAccessToken, getRefreshToken } from "./utils/jwt-cookie";
+export { default as FloatingButton } from "./ui/FloatingButton";

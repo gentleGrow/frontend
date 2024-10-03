@@ -12,3 +12,4 @@ export { default as EstimateDividend } from "./estimate-dividend/ui/EstimateDivi
 export { default as ExplorePortfolio } from "./explore-portfolio/ui/ExplorePortfolio";
 export { default as RichPortfolio } from "./rich-portfolios/ui/RichPortfolio";
 export { default as Summary } from "./Summary/ui/Summary";
+export { default as HomeGuestAccessGuideButton } from "./HomeGuestAccessGuide/ui/HomeGuestAccessGuideButton";

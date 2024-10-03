@@ -10890,6 +10890,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jotai@npm:^2.10.0":
+  version: 2.10.0
+  resolution: "jotai@npm:2.10.0"
+  peerDependencies:
+    "@types/react": ">=17.0.0"
+    react: ">=17.0.0"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    react:
+      optional: true
+  checksum: 10c0/81c619c1a82444bff50220dab1e2c10960f41922d46c9227004f6dd34db3a615ad596b277657c21d5935c50918936f04ffa858e494e1caf18e4ed60560e183d9
+  languageName: node
+  linkType: hard
+
 "js-base64@npm:^2.4.9":
   version: 2.6.4
   resolution: "js-base64@npm:2.6.4"
@@ -12052,6 +12067,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:4.6.2"
     eslint-plugin-storybook: "npm:^0.8.0"
     google-auth-library: "npm:^9.13.0"
+    jotai: "npm:^2.10.0"
     jsonwebtoken: "npm:^9.0.2"
     lucide-react: "npm:^0.438.0"
     next: "npm:14.2.5"
@@ -12071,7 +12087,6 @@ __metadata:
     tailwindcss-animate: "npm:^1.0.7"
     typescript: "npm:5.5.4"
     webpack: "npm:^5.94.0"
-    zustand: "npm:^4.5.4"
   languageName: unknown
   linkType: soft
 
@@ -16107,15 +16122,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:1.2.0":
-  version: 1.2.0
-  resolution: "use-sync-external-store@npm:1.2.0"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/ac4814e5592524f242921157e791b022efe36e451fe0d4fd4d204322d5433a4fc300d63b0ade5185f8e0735ded044c70bcf6d2352db0f74d097a238cebd2da02
-  languageName: node
-  linkType: hard
-
 "util-deprecate@npm:^1.0.1, util-deprecate@npm:^1.0.2, util-deprecate@npm:~1.0.1":
   version: 1.0.2
   resolution: "util-deprecate@npm:1.0.2"
@@ -16688,25 +16694,5 @@ __metadata:
   dependencies:
     tslib: "npm:2.3.0"
   checksum: 10c0/f7c5a1739dfec60b9bead0d0657c47868391b1009cc82a603f9dbf247fa625df28dcdb3e7b2e18404657e2c987f95e0e1bb5613519c2d823854f3dda44e2ee96
-  languageName: node
-  linkType: hard
-
-"zustand@npm:^4.5.4":
-  version: 4.5.4
-  resolution: "zustand@npm:4.5.4"
-  dependencies:
-    use-sync-external-store: "npm:1.2.0"
-  peerDependencies:
-    "@types/react": ">=16.8"
-    immer: ">=9.0.6"
-    react: ">=16.8"
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-    immer:
-      optional: true
-    react:
-      optional: true
-  checksum: 10c0/479af491ffa1f1eb2c38b3ba25dc4e14339e8b35a60033d3f6c165b22f8be8163f7e1370015ded9c6e28548cd25af84a73fb40b5fad0bd7882d16ddd5ed613c6
   languageName: node
   linkType: hard

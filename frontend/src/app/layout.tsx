@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/widgets";
 import AuthProvider from "./AuthProvider";
+import JotaiProvider from "./JotaiProvider";
+import { LoginDialog } from "@/features";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,12 +21,15 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={inter.className}>
-        <AuthProvider>
-          <div className="relative min-h-svh text-body-1">
-            <Header />
-            {children}
-          </div>
-        </AuthProvider>
+        <JotaiProvider>
+          <AuthProvider>
+            <div className="relative min-h-svh text-body-1">
+              <Header />
+              {children}
+              <LoginDialog />
+            </div>
+          </AuthProvider>
+        </JotaiProvider>
       </body>
     </html>
   );
