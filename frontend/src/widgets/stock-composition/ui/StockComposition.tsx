@@ -14,7 +14,7 @@ export default async function StockComposition() {
         fetchDummyComposition("composition"),
         fetchDummyComposition("account"),
       ]);
-
+  console.log(compositionData);
   return (
     <div className="relative w-full rounded-xl border border-gray-20 bg-white p-[16px] mobile:rounded-none mobile:border-none except-mobile:h-[388px]">
       <h2 className="text-heading-2">종목 구성</h2>

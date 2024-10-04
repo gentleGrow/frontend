@@ -1,6 +1,4 @@
 import { SERVICE_SERVER_URL } from "@/shared";
-import { ACCESS_TOKEN } from "@/shared/constants/cookie";
-import { cookies } from "next/headers";
 export interface Summary {
   today_review_rate: number;
   total_asset_amount: number;
@@ -11,15 +9,11 @@ export interface Summary {
   };
 }
 
-const fetchSummary = async (): Promise<Summary> => {
+const fetchSampleSummary = async (): Promise<Summary> => {
   try {
-    const response = await fetch(`${SERVICE_SERVER_URL}/api/chart/v1/summary`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
-      },
-    });
+    const response = await fetch(
+      `${SERVICE_SERVER_URL}/api/chart/v1/sample/summary`,
+    );
     if (!response.ok) {
       throw new Error(`${response.status}: ${await response.json()}`);
     }
@@ -38,4 +32,4 @@ const fetchSummary = async (): Promise<Summary> => {
   }
 };
 
-export default fetchSummary;
+export default fetchSampleSummary;

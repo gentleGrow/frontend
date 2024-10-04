@@ -1,4 +1,6 @@
 import { LineChartData, SERVICE_SERVER_URL } from "@/shared";
+import { ACCESS_TOKEN } from "@/shared/constants/cookie";
+import { cookies } from "next/headers";
 export interface PerformanceAnalysisData {
   fiveDayPerformanceData: LineChartData;
   monthlyPerformanceData: LineChartData;
@@ -16,19 +18,54 @@ const fetchPerformanceAnalysis = async (): Promise<PerformanceAnalysisData> => {
       oneYearResponse,
     ] = await Promise.all([
       fetch(
-        `${SERVICE_SERVER_URL}/api/chart/v1/sample/performance-analysis?interval=5day`,
+        `${SERVICE_SERVER_URL}/api/chart/v1/performance-analysis?interval=5day`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Athorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
+          },
+        },
       ),
       fetch(
-        `${SERVICE_SERVER_URL}/api/chart/v1/sample/performance-analysis?interval=1month`,
+        `${SERVICE_SERVER_URL}/api/chart/v1/performance-analysis?interval=1month`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Athorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
+          },
+        },
       ),
       fetch(
-        `${SERVICE_SERVER_URL}/api/chart/v1/sample/performance-analysis?interval=3month`,
+        `${SERVICE_SERVER_URL}/api/chart/v1/performance-analysis?interval=3month`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Athorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
+          },
+        },
       ),
       fetch(
-        `${SERVICE_SERVER_URL}/api/chart/v1/sample/performance-analysis?interval=6month`,
+        `${SERVICE_SERVER_URL}/api/chart/v1/performance-analysis?interval=6month`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Athorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
+          },
+        },
       ),
       fetch(
-        `${SERVICE_SERVER_URL}/api/chart/v1/sample/performance-analysis?interval=1year`,
+        `${SERVICE_SERVER_URL}/api/chart/v1/performance-analysis?interval=1year`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Athorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
+          },
+        },
       ),
     ]);
 
