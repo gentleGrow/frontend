@@ -6,7 +6,7 @@ import {
   SegmentedButton,
   SegmentedButtonGroup,
 } from "@/shared";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 export default function StockCompositionClient({
   compositionData,
@@ -16,7 +16,9 @@ export default function StockCompositionClient({
   accountData: DonutChartData[];
 }) {
   const [currentData, setCurrentData] = useState<any[]>(compositionData);
-
+  useEffect(() => {
+    setCurrentData(compositionData);
+  }, [compositionData]);
   return (
     <>
       <div className="mt-[16px] flex w-full except-mobile:absolute except-mobile:right-[16px] except-mobile:top-[12px] except-mobile:mt-0 except-mobile:w-[148px]">
