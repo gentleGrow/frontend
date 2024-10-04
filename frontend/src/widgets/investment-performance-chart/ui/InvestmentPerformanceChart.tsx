@@ -9,6 +9,5 @@ export default async function InvestmentPerformanceChart() {
   const performanceData = hasAccessToken
     ? await fetchPerformanceAnalysis()
     : await fetchPerformanceSampleAnalysis();
-  console.log(performanceData);
   return <InvestmentPerformanceChartClient performanceData={performanceData} />;
 }

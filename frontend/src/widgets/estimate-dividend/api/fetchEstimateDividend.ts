@@ -1,10 +1,15 @@
-import { BarChartData, DonutChartData, SERVICE_SERVER_URL } from "@/shared";
+import {
+  BarChartData,
+  DonutChartData,
+  EstimateDividendAllData,
+  SERVICE_SERVER_URL,
+} from "@/shared";
 import { ACCESS_TOKEN } from "@/shared/constants/cookie";
 import { cookies } from "next/headers";
 
 const fetchEstimateDividend = async (
   category: "every" | "type" = "every",
-): Promise<{ [key: string]: BarChartData } | DonutChartData[]> => {
+): Promise<EstimateDividendAllData | DonutChartData[]> => {
   try {
     const response = await fetch(
       `${SERVICE_SERVER_URL}/api/chart/v1/estimate-dividend?category=${category}`,

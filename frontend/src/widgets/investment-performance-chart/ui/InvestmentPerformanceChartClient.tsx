@@ -1,6 +1,11 @@
 "use client";
 
-import { LineChart, SegmentedButton, SegmentedButtonGroup } from "@/shared";
+import {
+  LineChart,
+  NoDataMessage,
+  SegmentedButton,
+  SegmentedButtonGroup,
+} from "@/shared";
 import { useState } from "react";
 import PercentWithTitle from "./PercentWithTitle";
 import { PerformanceAnalysisData } from "../api/fetchPerformanceAnalysis";
@@ -43,11 +48,17 @@ export default function InvestmentPerformanceChartClient({
         </div>
       </div>
       <div className="flex items-center mobile:flex-col except-mobile:justify-between">
-        <div className="space-y-[32px] mobile:mt-[24px] mobile:flex mobile:w-full mobile:space-x-[16px] mobile:space-y-0">
-          <PercentWithTitle title="내 수익률" percent={30.12} />
-          <PercentWithTitle title="시장 수익률 대비" percent={8.57} />
+        <div
+          className={`space-y-[32px] mobile:mt-[24px] mobile:flex mobile:w-full mobile:space-x-[16px] mobile:space-y-0 ${currentData.xAxises.length === 0 && "hidden mobile:hidden"}`}
+        >
+          <PercentWithTitle title="내 수익률" percent={11} />
+          <PercentWithTitle title="시장 수익률 대비" percent={11} />
         </div>
-        <LineChart data={currentData} type={currentPerformanceDataKey} />
+        {currentData.xAxises.length === 0 ? (
+          <NoDataMessage />
+        ) : (
+          <LineChart data={currentData} type={currentPerformanceDataKey} />
+        )}
       </div>
     </div>
   );

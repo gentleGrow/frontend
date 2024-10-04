@@ -4,6 +4,8 @@ import {
   BarChartData,
   DonutChart,
   DonutChartData,
+  EstimateDividendAllData,
+  NoDataMessage,
   SegmentedButton,
   SegmentedButtonGroup,
 } from "@/shared";
@@ -15,7 +17,7 @@ export default function EstimateDividendClient({
   estimatedDividendAll,
   estimatedDividendByStock,
 }: {
-  estimatedDividendAll: BarChartData;
+  estimatedDividendAll: EstimateDividendAllData;
   estimatedDividendByStock: DonutChartData[];
 }) {
   const [selectedTab, setSelectedTab] = useState<string>("모두");
@@ -41,46 +43,50 @@ export default function EstimateDividendClient({
           </SegmentedButtonGroup>
         </div>
       </div>
-      {selectedTab === "모두" && (
-        <>
-          <div className="mb-[16px] mt-[20px]">
-            <ArrowNavigator
-              navItems={barChartNavItems}
-              currentNavItemIndex={currentNavItemIndex}
-              handlerPrev={() => {
-                setCurrentNavItemIndex((prev) => prev - 1);
-              }}
-              handlerNext={() => {
-                setCurrentNavItemIndex((prev) => prev + 1);
-              }}
-            />
-          </div>
-          <div className="space-y-[4px]">
-            <p className="text-body-3">
-              {barChartNavItems[currentNavItemIndex]}년 총 배당액
-            </p>
-            <p className="text-[28px] font-bold leading-[33.61px]">
-              ₩
-              {Number(
-                (
-                  estimatedDividendAll[barChartNavItems[currentNavItemIndex]]
-                    ?.total * 10000
-                ).toFixed(0),
-              ).toLocaleString("ko-KR")}
-            </p>
-          </div>
-        </>
-      )}
+      {selectedTab === "모두" &&
+        estimatedDividendAll[barChartNavItems[currentNavItemIndex]].xAxises
+          .length !== 0 && (
+          <>
+            <div className="mb-[16px] mt-[20px]">
+              <ArrowNavigator
+                navItems={barChartNavItems}
+                currentNavItemIndex={currentNavItemIndex}
+                handlerPrev={() => {
+                  setCurrentNavItemIndex((prev) => prev - 1);
+                }}
+                handlerNext={() => {
+                  setCurrentNavItemIndex((prev) => prev + 1);
+                }}
+              />
+            </div>
+            <div className="space-y-[4px]">
+              <p className="text-body-3">
+                {barChartNavItems[currentNavItemIndex]}년 총 배당액
+              </p>
+              <p className="text-[28px] font-bold leading-[33.61px]">
+                ₩
+                {Number(
+                  (
+                    (estimatedDividendAll[barChartNavItems[currentNavItemIndex]]
+                      ?.total as number) * 10000
+                  ).toFixed(0),
+                ).toLocaleString("ko-KR")}
+              </p>
+            </div>
+          </>
+        )}
 
       <div
         className={`${selectedTab === "모두" ? "h-[217px]" : "h-full"} w-full`}
       >
-        {selectedTab === "모두" ? (
+        {selectedTab === "모두" &&
+        estimatedDividendAll[barChartNavItems[currentNavItemIndex]].xAxises
+          .length !== 0 ? (
           <BarChart
             chartData={
               barChartNavItems.length > 0
                 ? {
-                    ...(({ sum, ...rest }) => rest)(
+                    ...(({ total, ...rest }) => rest)(
                       estimatedDividendAll[
                         barChartNavItems[currentNavItemIndex]
                       ],
@@ -90,11 +96,20 @@ export default function EstimateDividendClient({
             }
           />
         ) : (
+          <div className={`${selectedTab === "종목별" && "hidden"}`}>
+            <NoDataMessage />
+          </div>
+        )}
+        {selectedTab === "종목별" && estimatedDividendByStock[0].name !== "" ? (
           <div className="pt-[41px]">
             <DonutChart
               chartName="예상 배당액"
               data={estimatedDividendByStock}
             />
+          </div>
+        ) : (
+          <div className={`${selectedTab === "모두" && "hidden"}`}>
+            <NoDataMessage />
           </div>
         )}
       </div>

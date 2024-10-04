@@ -15,7 +15,7 @@ export default async function Summary() {
   const summary = hasAccessToken
     ? await fetchSummary()
     : await fetchSampleSummary();
-
+  console.log(summary);
   return (
     <>
       <div className="flex w-full mobile:hidden except-mobile:space-x-[16px]">

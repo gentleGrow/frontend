@@ -23,3 +23,7 @@ export interface BarChartData {
   unit: string;
   total?: number;
 }
+
+export interface EstimateDividendAllData {
+  [key: string]: BarChartData;
+}

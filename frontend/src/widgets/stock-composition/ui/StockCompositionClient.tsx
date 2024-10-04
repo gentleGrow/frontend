@@ -2,9 +2,11 @@
 import {
   DonutChart,
   DonutChartData,
+  NoDataMessage,
   SegmentedButton,
   SegmentedButtonGroup,
 } from "@/shared";
+import React from "react";
 import { useState } from "react";
 export default function StockCompositionClient({
   compositionData,
@@ -16,7 +18,7 @@ export default function StockCompositionClient({
   const [currentData, setCurrentData] = useState<any[]>(compositionData);
 
   return (
-    <div>
+    <>
       <div className="mt-[16px] flex w-full except-mobile:absolute except-mobile:right-[16px] except-mobile:top-[12px] except-mobile:mt-0 except-mobile:w-[148px]">
         <SegmentedButtonGroup>
           <SegmentedButton onClick={() => setCurrentData(compositionData)}>
@@ -29,11 +31,11 @@ export default function StockCompositionClient({
       </div>
       <div className="mt-[48px] mobile:mt-[20px]">
         {currentData[0].name === "자산 없음" ? (
-          <p className="">등록된 자산이 없어요.</p>
+          <NoDataMessage />
         ) : (
           <DonutChart chartName="종목 구성" data={currentData} />
         )}
       </div>
-    </div>
+    </>
   );
 }

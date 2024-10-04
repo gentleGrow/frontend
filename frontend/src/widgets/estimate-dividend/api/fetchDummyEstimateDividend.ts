@@ -1,8 +1,12 @@
-import { BarChartData, DonutChartData, SERVICE_SERVER_URL } from "@/shared";
+import {
+  DonutChartData,
+  EstimateDividendAllData,
+  SERVICE_SERVER_URL,
+} from "@/shared";
 
 const fetchDummyEstimateDividend = async (
   category: "every" | "type" = "every",
-): Promise<BarChartData | DonutChartData[]> => {
+): Promise<EstimateDividendAllData | DonutChartData[]> => {
   try {
     const response = await fetch(
       `${SERVICE_SERVER_URL}/api/chart/v1/sample/estimate-dividend?category=${category}`,
