@@ -25,7 +25,6 @@ export default function InvestmentPerformanceChartClient({
 }) {
   const [currentPerformanceDataKey, setCurrentPerformanceDataKey] =
     useState<string>("fiveDayPerformanceData");
-
   const currentData = performanceData[currentPerformanceDataKey];
   return (
     <div className="relative h-[388px] w-full rounded-xl border border-gray-20 bg-white p-[16px] mobile:h-[500px] mobile:rounded-none mobile:border-none">
@@ -51,8 +50,19 @@ export default function InvestmentPerformanceChartClient({
         <div
           className={`space-y-[32px] mobile:mt-[24px] mobile:flex mobile:w-full mobile:space-x-[16px] mobile:space-y-0 ${currentData.xAxises.length === 0 && "hidden mobile:hidden"}`}
         >
-          <PercentWithTitle title="내 수익률" percent={11} />
-          <PercentWithTitle title="시장 수익률 대비" percent={11} />
+          <PercentWithTitle
+            title="내 수익률"
+            percent={
+              performanceData[currentPerformanceDataKey]?.myReturnRate || 0
+            }
+          />
+          <PercentWithTitle
+            title="시장 수익률 대비"
+            percent={
+              performanceData[currentPerformanceDataKey]
+                ?.contrastMarketReturns || 0
+            }
+          />
         </div>
         {currentData.xAxises.length === 0 ? (
           <NoDataMessage />

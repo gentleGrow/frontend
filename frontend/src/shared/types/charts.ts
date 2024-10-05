@@ -9,6 +9,8 @@ export interface LineChartData {
   values1: LineChartValuesData;
   values2: LineChartValuesData;
   unit: string;
+  myReturnRate?: number;
+  contrastMarketReturns?: number;
 }
 
 export interface DonutChartData {
