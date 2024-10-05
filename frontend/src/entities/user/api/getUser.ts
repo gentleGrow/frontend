@@ -3,7 +3,8 @@ const getUser = async () => {
     const res = await fetch("api/user", { method: "POST" });
 
     if (!res.ok) {
-      throw new Error("로그인이 필요합니다.");
+      return null;
+      //throw new Error("로그인이 필요합니다.");
     }
     const user = await res.json();
     return user;

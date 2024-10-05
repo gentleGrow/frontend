@@ -17,13 +17,11 @@ export default function DonutChart({
 
   useEffect(() => {
     setWindowWidth(window.innerWidth);
-  }, []);
 
-  useEffect(() => {
     if (chartRef.current) {
       const chartInstance = echarts.init(chartRef.current);
 
-      const totalCurrentAmount = data.reduce(
+      const totalCurrentAmount = data?.reduce(
         (sum, item) => sum + item.current_amount,
         0,
       );
@@ -32,23 +30,37 @@ export default function DonutChart({
         const isMobile =
           isPortfolio || window.matchMedia("(max-width: 840px)").matches;
         const gap = 56;
-        const legendWidth = 174;
+        const legendWidth = isMobile ? window.innerWidth * 0.6 : 174;
 
         const containerWidth =
           chartRef.current?.offsetWidth || window.innerWidth;
 
-        const seriesOuterRadius = isPortfolio ? 54 : 128;
-        const seriesInnerRadius = isPortfolio ? 27 : 82;
+        const maxRadius = 128;
+        const minRadius = 0;
+
+        const dynamicRadius = Math.max(
+          minRadius,
+          Math.min((containerWidth - 56) / 4, maxRadius),
+        );
+
+        const seriesOuterRadius = isMobile
+          ? isPortfolio
+            ? 52
+            : dynamicRadius
+          : dynamicRadius;
+        const seriesInnerRadius = seriesOuterRadius / 2;
 
         const seriesWidth = seriesOuterRadius * 2;
-
         const totalContentWidth = seriesWidth + gap + legendWidth;
 
-        const leftMargin = (containerWidth - totalContentWidth) / 2;
+        const leftMargin = Math.max(
+          (containerWidth - totalContentWidth) / 2,
+          0,
+        );
 
         const legendData = isPortfolio
-          ? data.slice(0, 2).map((item) => item.name)
-          : data.map((item) => item.name);
+          ? data?.slice(0, 2).map((item) => item.name)
+          : data?.map((item) => item.name);
 
         let maxNameLength;
         if (isPortfolio) {
@@ -57,7 +69,8 @@ export default function DonutChart({
         } else if (isMobile) {
           maxNameLength = Math.floor((containerWidth - 64 - 70) / 5);
         } else {
-          maxNameLength = 10;
+          maxNameLength =
+            containerWidth < 390 ? 10 * (containerWidth / 390) : 10;
         }
 
         const option = {
@@ -76,10 +89,11 @@ export default function DonutChart({
 
           tooltip: {
             trigger: "item",
+            confine: true,
             formatter: (params: any) => {
-              return `<span style="font-size:12px; line-height:18px; color:#2A2D31"> ${
+              return `<span style="font-size:12px; line-height:18px; color:#2A2D31; word-break: break-all;white-space: pre-wrap;"> ${
                 params.name
-              } · <span style="font-weight:bold">${params.percent}</span>%<br/><span style="font-weight:bold">₩${params.value.toLocaleString(
+              } · <span style="font-weight:bold; word-break: break-all;white-space: pre-wrap;">${params.percent}</span>%<br/><span style="font-weight:bold; word-break: break-all;white-space: pre-wrap;">₩${params.value.toLocaleString(
                 "ko-KR",
               )}원</span></span>`;
             },
@@ -108,13 +122,16 @@ export default function DonutChart({
             itemWidth: 12,
             itemHeight: 12,
             orient: isMobile ? "horizontal" : "vertical",
-            left: isMobile || isPortfolio ? 0 : leftMargin + seriesWidth + gap,
+            left:
+              isMobile || isPortfolio
+                ? "center"
+                : leftMargin + seriesWidth + gap,
             right: isMobile || isPortfolio ? 0 : undefined,
             top: isMobile ? "bottom" : "middle",
             data: legendData,
-            padding: isMobile || isPortfolio ? [0, 10] : [0, 0],
+            padding: isMobile || isPortfolio ? [0, 0] : [0, 0],
             formatter: (name: string) => {
-              const item = data.find((i) => i.name === name);
+              const item = data?.find((i) => i.name === name);
               const percent = item
                 ? (item.current_amount / totalCurrentAmount) * 100
                 : 0;
@@ -139,19 +156,27 @@ export default function DonutChart({
                 name: {
                   width: isPortfolio
                     ? containerWidth > 60
-                      ? containerWidth - 60
+                      ? containerWidth - 38
                       : 84
                     : isMobile
                       ? window.innerWidth - 64 - 70
-                      : 84,
+                      : containerWidth < 390
+                        ? 84 * (containerWidth / 390)
+                        : 84,
                   align: "left",
                 },
                 space: {
-                  width: 24,
+                  width:
+                    !isMobile && !isPortfolio && containerWidth < 390
+                      ? 24 * (containerWidth / 390)
+                      : 24,
                 },
                 percent: {
                   align: "right",
-                  width: 20,
+                  width:
+                    !isMobile && !isPortfolio && containerWidth < 390
+                      ? 20 * (containerWidth / 390)
+                      : 20,
                   fontWeight: "bold",
                 },
               },
@@ -169,6 +194,7 @@ export default function DonutChart({
                 : [leftMargin + seriesOuterRadius, "50%"],
               left: "0",
               right: "0",
+              top: isPortfolio ? -12 : 0,
               avoidLabelOverlap: true,
               itemStyle: {
                 borderColor: "#fff",
@@ -181,7 +207,7 @@ export default function DonutChart({
               labelLine: {
                 show: false,
               },
-              data: data.map((item) => ({
+              data: data?.map((item) => ({
                 value: item.current_amount,
                 name: item.name,
               })),
@@ -195,9 +221,11 @@ export default function DonutChart({
       setOption();
 
       const handleResize = () => {
-        setOption();
-        chartInstance.resize();
-        setWindowWidth(window.innerWidth);
+        setTimeout(() => {
+          setOption();
+          chartInstance.resize();
+          setWindowWidth(window.innerWidth);
+        }, 100);
       };
 
       window.addEventListener("resize", handleResize);
@@ -209,12 +237,17 @@ export default function DonutChart({
     }
   }, [data, windowWidth, isPortfolio]);
 
-  const chartHeight = isPortfolio ? 128 + 2 * 25 : 276 + data.length * 25;
+  const chartHeight = isPortfolio ? 128 + 2 * 25 - 25 : 276 + data?.length * 25;
   const maxHeight = isPortfolio
     ? chartHeight
     : windowWidth > 840
       ? 256
       : chartHeight;
 
-  return <div ref={chartRef} style={{ height: `${maxHeight}px` }} />;
+  return (
+    <div
+      ref={chartRef}
+      style={{ height: `${maxHeight}px`, overflow: "hidden" }}
+    />
+  );
 }

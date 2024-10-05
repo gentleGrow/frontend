@@ -30,6 +30,7 @@
     "echarts": "^5.5.1",
     "embla-carousel-react": "^8.3.0",
     "google-auth-library": "^9.13.0",
+    "jotai": "^2.10.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.438.0",
     "next": "14.2.5",
@@ -39,8 +40,7 @@
     "swiper": "^11.1.11",
     "tailwind-merge": "^2.5.2",
     "tailwind-scrollbar-hide": "^1.1.7",
-    "tailwindcss-animate": "^1.0.7",
-    "zustand": "^4.5.4"
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "1.6.1",

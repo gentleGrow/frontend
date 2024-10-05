@@ -15,9 +15,9 @@ export default function Top10SelectedByRichPersonItem({
 }) {
   return (
     <div className="flex h-[52px] items-center justify-between px-[4px]">
-      <div className="flex space-x-[8px]">
+      <div className="flex items-center space-x-[8px] overflow-hidden">
         <p
-          className={`${stock.rank < 4 && "text-green-60"} flex w-[2ch] items-center justify-center`}
+          className={`${stock.rank < 4 && "text-green-60"} flex w-[2ch] shrink-0 items-center justify-center`}
         >
           {stock.rank}
         </p>
@@ -27,11 +27,13 @@ export default function Top10SelectedByRichPersonItem({
           height={28}
           alt={stock.name}
         />
-        <p className="text-body-2 flex items-center">{stock.name}</p>
+        <p className="block max-w-[94ch] truncate text-body-2 except-mobile:max-w-[108ch]">
+          {stock.name}
+        </p>
       </div>
 
-      <div className="flex space-x-[12px]">
-        <p className="text-body-3 flex items-center">
+      <div className="flex items-center space-x-[12px] overflow-hidden">
+        <p className="block items-center truncate text-body-3">
           ₩{stock.price.toLocaleString("ko-KR")}
         </p>
         <IncDecRate rate={stock.rate} />

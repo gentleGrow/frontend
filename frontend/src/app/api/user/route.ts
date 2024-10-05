@@ -6,7 +6,6 @@ import { NextResponse } from "next/server";
 export function POST() {
   try {
     const cookieStore = cookies();
-    cookieStore.get(ACCESS_TOKEN)?.value;
     const decoded = jwt.decode(
       cookieStore.get(ACCESS_TOKEN)?.value as string,
     ) as JwtPayload;
@@ -18,10 +17,7 @@ export function POST() {
       decoded?.exp &&
       (decoded.exp as number) < currentTime
     ) {
-      return NextResponse.json(
-        { error: "토큰이 만료되었습니다." },
-        { status: 401 },
-      );
+      return NextResponse.json({ error: "토큰이 만료되었습니다." });
     }
 
     return NextResponse.json(
@@ -35,9 +31,6 @@ export function POST() {
       { status: 200 },
     );
   } catch (error) {
-    return NextResponse.json(
-      { error: "액세스 토큰이 존재하지 않습니다." },
-      { status: 401 },
-    );
+    return NextResponse.json({ error: "액세스 토큰이 존재하지 않습니다." });
   }
 }

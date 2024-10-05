@@ -365,7 +365,7 @@ const data = [
 
 export default function ExplorePortfolio() {
   return (
-    <div className="relative space-y-[16px] rounded-lg p-[16px] except-mobile:border">
+    <div className="relative h-[288px] space-y-[16px] rounded-lg border-gray-20 bg-white p-[16px] except-mobile:border">
       <div className="flex justify-between">
         <h2 className="text-heading-2">포트폴리오 구경하기</h2>
       </div>

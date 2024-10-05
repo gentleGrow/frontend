@@ -245,3 +245,8 @@
 .embla__dot--selected:after {
   box-shadow: inset 0 0 0 0.2rem var(--text-body);
 }
+
+button:focus,
+a:focus {
+  outline-color: #62e59e;
+}
