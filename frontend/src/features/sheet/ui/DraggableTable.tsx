@@ -12,7 +12,7 @@ import { useTableColumns } from "./TableColumns";
 
 import CustomColumnSelector from "@/features/sheet/ui/CustomColumnSelector";
 import { Button } from "@/shared/ui/button/Button";
-import { getDummyStockAssets } from "@/features/sheet/api";
+//import { getDummyStockAssets } from "@/features/sheet/api";
 
 import {
   DndContext,
