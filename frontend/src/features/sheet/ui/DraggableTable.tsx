@@ -146,7 +146,7 @@ const DraggableTable = ({ tableData, setTableData }) => {
       isNew: true, // 새로 추가된 행임을 나타내는 플래그
     };
 
-    setData((prevData) => [...prevData, newRow]);
+    // setData((prevData) => [...prevData, newRow]);
   };
 
   return (
@@ -196,7 +196,7 @@ const DraggableTable = ({ tableData, setTableData }) => {
                       isLastRow={
                         rowIndex === table.getRowModel().rows.length - 1
                       }
-                      editData={handleEdit}
+                      //  editData={handleEdit}
                       options={options}
                     />
                   ))}
