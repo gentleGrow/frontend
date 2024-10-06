@@ -4,32 +4,36 @@ import {
   SERVICE_SERVER_URL,
   setCookieForJWT,
 } from "@/shared";
+import { th } from "date-fns/locale";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const requestUrl = new URL(req.url);
-  const authenticationCode = requestUrl.searchParams.get("code");
-  const state = requestUrl.searchParams.get("state");
-
-  if (!authenticationCode) {
-    return NextResponse.json(
-      { error: "Naver 계정 인증코드가 없습니다." },
-      { status: RESPONSE_STATUS.BAD_REQUEST },
-    );
-  }
-
-  if (
-    !process.env.NAVER_CLIENT_ID ||
-    !process.env.NAVER_CLIENT_SECRET ||
-    !process.env.NAVER_REDIRECT_URI
-  ) {
-    return NextResponse.json(
-      { error: "환경 변수 설정이 올바르지 않습니다." },
-      { status: RESPONSE_STATUS.INTERNAL_SERVER_ERROR },
-    );
-  }
 
   try {
+    const authenticationCode = requestUrl.searchParams.get("code");
+    const state = requestUrl.searchParams.get("state");
+
+    if (!authenticationCode) {
+      throw new Error("Naver 계정 인증코드가 없습니다.");
+      //  return NextResponse.json(
+      //    { error: "Naver 계정 인증코드가 없습니다." },
+      //    { status: RESPONSE_STATUS.BAD_REQUEST },
+      //  );
+    }
+
+    if (
+      !process.env.NAVER_CLIENT_ID ||
+      !process.env.NAVER_CLIENT_SECRET ||
+      !process.env.NAVER_REDIRECT_URI
+    ) {
+      throw new Error("환경 변수 설정이 올바르지 않습니다.");
+      //  return NextResponse.json(
+      //    { error: "환경 변수 설정이 올바르지 않습니다." },
+      //    { status: RESPONSE_STATUS.INTERNAL_SERVER_ERROR },
+      //  );
+    }
+
     const accessTokenResponse = await fetchWithTimeout(
       "https://nid.naver.com/oauth2.0/token",
       {
@@ -90,7 +94,7 @@ export async function GET(req: NextRequest) {
     const redirectUrl = new URL("/", requestUrl);
     return NextResponse.redirect(redirectUrl);
   } catch (error) {
-    const redirectUrl = new URL("/?login=failed");
+    const redirectUrl = new URL("/?login=failed", requestUrl);
     return NextResponse.redirect(redirectUrl);
   }
 }

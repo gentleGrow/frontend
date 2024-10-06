@@ -7,9 +7,9 @@ import setJWTCookie from "@/shared/utils/setJWTCookie";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
+  const requestUrl = new URL(req.url);
   try {
     const client = getGoogleOAuth2Client();
-    const requestUrl = new URL(req.url);
     const authenticationCode = requestUrl.searchParams.get("code");
 
     if (!authenticationCode) {
@@ -64,7 +64,7 @@ export async function GET(req: Request) {
     const redirectUrl = new URL("/", requestUrl);
     return NextResponse.redirect(redirectUrl);
   } catch (error) {
-    const redirectUrl = new URL("/?login=failed");
+    const redirectUrl = new URL("/?login=failed", requestUrl);
     return NextResponse.redirect(redirectUrl);
   }
 }

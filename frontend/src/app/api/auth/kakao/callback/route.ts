@@ -7,24 +7,26 @@ import {
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  if (!process.env.KAKAO_CLIENT_ID || !process.env.KAKAO_REDIRECT_URI) {
-    return NextResponse.json(
-      { error: "환경 변수 설정이 올바르지 않습니다." },
-      { status: RESPONSE_STATUS.INTERNAL_SERVER_ERROR },
-    );
-  }
-
   const requestUrl = new URL(req.url);
-  const authenticationCode = requestUrl.searchParams.get("code");
-
-  if (!authenticationCode) {
-    return NextResponse.json(
-      { error: "Kakao 계정 인증코드가 없습니다." },
-      { status: RESPONSE_STATUS.BAD_REQUEST },
-    );
-  }
 
   try {
+    if (!process.env.KAKAO_CLIENT_ID || !process.env.KAKAO_REDIRECT_URI) {
+      throw new Error("환경 변수 설정이 올바르지 않습니다.");
+      // return NextResponse.json(
+      //   { error: "환경 변수 설정이 올바르지 않습니다." },
+      //   { status: RESPONSE_STATUS.INTERNAL_SERVER_ERROR },
+      // );
+    }
+    const authenticationCode = requestUrl.searchParams.get("code");
+
+    if (!authenticationCode) {
+      throw new Error("Kakao 계정 인증코드가 없습니다.");
+      // return NextResponse.json(
+      //   { error: "Kakao 계정 인증코드가 없습니다." },
+      //   { status: RESPONSE_STATUS.BAD_REQUEST },
+      // );
+    }
+
     const idTokenResponse = await fetchWithTimeout(
       "https://kauth.kakao.com/oauth/token",
       {
@@ -86,7 +88,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   } catch (error) {
     console.error(error);
-    const redirectUrl = new URL("/?login=failed");
+    const redirectUrl = new URL("/?login=failed", requestUrl);
     return NextResponse.redirect(redirectUrl);
   }
 }
