@@ -32,7 +32,7 @@ export default function StockCompositionClient({
         </SegmentedButtonGroup>
       </div>
       <div className="mt-[48px] mobile:mt-[20px]">
-        {currentData[0].name === "자산 없음" ? (
+        {currentData[0]?.name === "자산 없음" || !currentData ? (
           <NoDataMessage />
         ) : (
           <DonutChart chartName="종목 구성" data={currentData} />
