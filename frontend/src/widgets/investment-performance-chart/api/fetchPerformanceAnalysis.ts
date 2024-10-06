@@ -1,4 +1,4 @@
-import { LineChartData, SERVICE_SERVER_URL } from "@/shared";
+import { fetchWithTimeout, LineChartData, SERVICE_SERVER_URL } from "@/shared";
 import { ACCESS_TOKEN } from "@/shared/constants/cookie";
 import { cookies } from "next/headers";
 export interface PerformanceAnalysisData {
@@ -17,7 +17,7 @@ const fetchPerformanceAnalysis = async (): Promise<PerformanceAnalysisData> => {
       sixMonthsResponse,
       oneYearResponse,
     ] = await Promise.all([
-      fetch(
+      fetchWithTimeout(
         `${SERVICE_SERVER_URL}/api/chart/v1/performance-analysis?interval=5day`,
         {
           method: "GET",
@@ -27,7 +27,7 @@ const fetchPerformanceAnalysis = async (): Promise<PerformanceAnalysisData> => {
           },
         },
       ),
-      fetch(
+      fetchWithTimeout(
         `${SERVICE_SERVER_URL}/api/chart/v1/performance-analysis?interval=1month`,
         {
           method: "GET",
@@ -37,7 +37,7 @@ const fetchPerformanceAnalysis = async (): Promise<PerformanceAnalysisData> => {
           },
         },
       ),
-      fetch(
+      fetchWithTimeout(
         `${SERVICE_SERVER_URL}/api/chart/v1/performance-analysis?interval=3month`,
         {
           method: "GET",
@@ -47,7 +47,7 @@ const fetchPerformanceAnalysis = async (): Promise<PerformanceAnalysisData> => {
           },
         },
       ),
-      fetch(
+      fetchWithTimeout(
         `${SERVICE_SERVER_URL}/api/chart/v1/performance-analysis?interval=6month`,
         {
           method: "GET",
@@ -57,7 +57,7 @@ const fetchPerformanceAnalysis = async (): Promise<PerformanceAnalysisData> => {
           },
         },
       ),
-      fetch(
+      fetchWithTimeout(
         `${SERVICE_SERVER_URL}/api/chart/v1/performance-analysis?interval=1year`,
         {
           method: "GET",

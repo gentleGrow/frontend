@@ -1,4 +1,4 @@
-import { SERVICE_SERVER_URL } from "@/shared";
+import { fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
 export interface Summary {
   today_review_rate: number;
   total_asset_amount: number;
@@ -11,7 +11,7 @@ export interface Summary {
 
 const fetchSampleSummary = async (): Promise<Summary> => {
   try {
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       `${SERVICE_SERVER_URL}/api/chart/v1/sample/summary`,
     );
     if (!response.ok) {

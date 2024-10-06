@@ -1,9 +1,9 @@
-import { SERVICE_SERVER_URL } from "@/shared";
+import { fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
 import { MyStock } from "./fetchMyStocks";
 
 const fetchDummyMyStocks = async (): Promise<MyStock[]> => {
   try {
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       `${SERVICE_SERVER_URL}/api/chart/v1/sample/my-stock`,
     );
     if (!response.ok) {

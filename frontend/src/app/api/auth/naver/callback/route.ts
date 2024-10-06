@@ -1,4 +1,9 @@
-import { RESPONSE_STATUS, SERVICE_SERVER_URL, setCookieForJWT } from "@/shared";
+import {
+  fetchWithTimeout,
+  RESPONSE_STATUS,
+  SERVICE_SERVER_URL,
+  setCookieForJWT,
+} from "@/shared";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -25,7 +30,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const accessTokenResponse = await fetch(
+    const accessTokenResponse = await fetchWithTimeout(
       "https://nid.naver.com/oauth2.0/token",
       {
         method: "POST",
@@ -54,11 +59,14 @@ export async function GET(req: NextRequest) {
     const accessTokenData = await accessTokenResponse.json();
     const accessToken = accessTokenData.access_token;
 
-    const jwtResponse = await fetch(`${SERVICE_SERVER_URL}/api/auth/v1/naver`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ access_token: accessToken }),
-    });
+    const jwtResponse = await fetchWithTimeout(
+      `${SERVICE_SERVER_URL}/api/auth/v1/naver`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ access_token: accessToken }),
+      },
+    );
 
     if (!jwtResponse.ok) {
       const jwtResponseErrorText = await jwtResponse.text();

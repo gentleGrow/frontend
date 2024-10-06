@@ -1,4 +1,9 @@
-import { RESPONSE_STATUS, SERVICE_SERVER_URL, setCookieForJWT } from "@/shared";
+import {
+  fetchWithTimeout,
+  RESPONSE_STATUS,
+  SERVICE_SERVER_URL,
+  setCookieForJWT,
+} from "@/shared";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -20,18 +25,21 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const idTokenResponse = await fetch("https://kauth.kakao.com/oauth/token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+    const idTokenResponse = await fetchWithTimeout(
+      "https://kauth.kakao.com/oauth/token",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          grant_type: "authorization_code",
+          client_id: process.env.KAKAO_CLIENT_ID,
+          redirect_uri: process.env.KAKAO_REDIRECT_URI,
+          code: authenticationCode,
+        }),
       },
-      body: new URLSearchParams({
-        grant_type: "authorization_code",
-        client_id: process.env.KAKAO_CLIENT_ID,
-        redirect_uri: process.env.KAKAO_REDIRECT_URI,
-        code: authenticationCode,
-      }),
-    });
+    );
 
     if (!idTokenResponse.ok) {
       const idTokenErrorBody = await idTokenResponse.json();
@@ -46,11 +54,14 @@ export async function GET(req: NextRequest) {
     const idTokenData = await idTokenResponse.json();
     const idToken = idTokenData.id_token;
 
-    const jwtResponse = await fetch(`${SERVICE_SERVER_URL}/api/auth/v1/kakao`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id_token: idToken }),
-    });
+    const jwtResponse = await fetchWithTimeout(
+      `${SERVICE_SERVER_URL}/api/auth/v1/kakao`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id_token: idToken }),
+      },
+    );
 
     if (!jwtResponse.ok) {
       const jwtResponseErrorText = await jwtResponse.text();

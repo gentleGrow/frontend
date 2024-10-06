@@ -14,8 +14,8 @@ export default function SummaryCard({ title, amount, rate }: SummaryCardProps) {
     <div className="w-1/4 mobile:w-full mobile:shrink-0">
       <Card title={title} height="100px">
         <div className="flex items-center">
-          {amount && title !== "오늘의 review" ? (
-            <PriceDisplay price={amount | 0} />
+          {title !== "오늘의 review" ? (
+            <PriceDisplay price={amount} />
           ) : (
             <div className="flex items-center space-x-[8px]">
               <p className="[1400px]:bg-red font-bold leading-[24px] except-mobile:text-[1.42vw] except-web:text-[20px]">
@@ -30,8 +30,9 @@ export default function SummaryCard({ title, amount, rate }: SummaryCardProps) {
               </span>
             </div>
           )}
-
-          {rate && <IncDecRate rate={rate} className={"ml-[16px]"} />}
+          {title === "수익금" && (
+            <IncDecRate rate={rate || 0} className={"ml-[16px]"} />
+          )}
         </div>
       </Card>
     </div>

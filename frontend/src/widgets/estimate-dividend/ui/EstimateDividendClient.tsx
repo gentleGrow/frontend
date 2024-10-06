@@ -44,7 +44,7 @@ export default function EstimateDividendClient({
         </div>
       </div>
       {selectedTab === "모두" &&
-        estimatedDividendAll[barChartNavItems[currentNavItemIndex]].xAxises
+        estimatedDividendAll[barChartNavItems[currentNavItemIndex]]?.xAxises
           .length !== 0 && (
           <>
             <div className="mb-[16px] mt-[20px]">
@@ -80,7 +80,7 @@ export default function EstimateDividendClient({
         className={`${selectedTab === "모두" ? "h-[217px]" : "h-full"} w-full`}
       >
         {selectedTab === "모두" &&
-        estimatedDividendAll[barChartNavItems[currentNavItemIndex]].xAxises
+        estimatedDividendAll[barChartNavItems[currentNavItemIndex]]?.xAxises
           .length !== 0 ? (
           <BarChart
             chartData={

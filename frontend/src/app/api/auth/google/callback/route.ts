@@ -1,4 +1,5 @@
 import {
+  fetchWithTimeout,
   getGoogleOAuth2Client,
   RESPONSE_STATUS,
   SERVICE_SERVER_URL,
@@ -31,11 +32,14 @@ export async function GET(req: Request) {
 
     let jwtResponse;
     try {
-      jwtResponse = await fetch(`${SERVICE_SERVER_URL}/api/auth/v1/google`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id_token: idToken }),
-      });
+      jwtResponse = await fetchWithTimeout(
+        `${SERVICE_SERVER_URL}/api/auth/v1/google`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id_token: idToken }),
+        },
+      );
     } catch (fetchError) {
       return NextResponse.json(
         { error: "서비스 서버와의 연결에서 문제가 발생했습니다." },

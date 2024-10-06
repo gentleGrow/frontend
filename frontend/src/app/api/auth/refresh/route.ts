@@ -1,4 +1,9 @@
-import { RESPONSE_STATUS, SERVICE_SERVER_URL, setCookieForJWT } from "@/shared";
+import {
+  fetchWithTimeout,
+  RESPONSE_STATUS,
+  SERVICE_SERVER_URL,
+  setCookieForJWT,
+} from "@/shared";
 import { REFRESH_TOKEN } from "@/shared/constants/cookie";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -11,7 +16,7 @@ export async function POST(req: NextRequest) {
         { status: RESPONSE_STATUS.BAD_REQUEST },
       );
     }
-    const refreshResponse = await fetch(
+    const refreshResponse = await fetchWithTimeout(
       `${SERVICE_SERVER_URL}/api/auth/v1/refresh`,
       {
         method: "POST",

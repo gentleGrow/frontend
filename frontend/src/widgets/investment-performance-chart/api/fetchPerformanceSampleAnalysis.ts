@@ -1,4 +1,4 @@
-import { LineChartData, SERVICE_SERVER_URL } from "@/shared";
+import { fetchWithTimeout, LineChartData, SERVICE_SERVER_URL } from "@/shared";
 export interface PerformanceAnalysisData {
   fiveDayPerformanceData: LineChartData;
   monthlyPerformanceData: LineChartData;
@@ -16,19 +16,19 @@ const fetchPerformanceSampleAnalysis =
         sixMonthsResponse,
         oneYearResponse,
       ] = await Promise.all([
-        fetch(
+        fetchWithTimeout(
           `${SERVICE_SERVER_URL}/api/chart/v1/sample/performance-analysis?interval=5day`,
         ),
-        fetch(
+        fetchWithTimeout(
           `${SERVICE_SERVER_URL}/api/chart/v1/sample/performance-analysis?interval=1month`,
         ),
-        fetch(
+        fetchWithTimeout(
           `${SERVICE_SERVER_URL}/api/chart/v1/sample/performance-analysis?interval=3month`,
         ),
-        fetch(
+        fetchWithTimeout(
           `${SERVICE_SERVER_URL}/api/chart/v1/sample/performance-analysis?interval=6month`,
         ),
-        fetch(
+        fetchWithTimeout(
           `${SERVICE_SERVER_URL}/api/chart/v1/sample/performance-analysis?interval=1year`,
         ),
       ]);
