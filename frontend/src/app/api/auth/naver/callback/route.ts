@@ -47,13 +47,16 @@ export async function GET(req: NextRequest) {
     );
 
     if (!accessTokenResponse.ok) {
-      const accessTokenErrorBody = await accessTokenResponse.json();
-      return NextResponse.json(
-        {
-          error: `Naver로부터 액세스 토큰을 가져오는 작업이 실패했습니다: ${accessTokenErrorBody.error_description || "알 수 없는 오류"}`,
-        },
-        { status: accessTokenResponse.status },
+      throw new Error(
+        `Naver로부터 액세스 토큰을 가져오는 작업이 실패했습니다.: ${await accessTokenResponse.text()}`,
       );
+      // const accessTokenErrorBody = await accessTokenResponse.json();
+      // return NextResponse.json(
+      //   {
+      //     error: `Naver로부터 액세스 토큰을 가져오는 작업이 실패했습니다: ${accessTokenErrorBody.error_description || "알 수 없는 오류"}`,
+      //   },
+      //   { status: accessTokenResponse.status },
+      // );
     }
 
     const accessTokenData = await accessTokenResponse.json();
@@ -69,13 +72,16 @@ export async function GET(req: NextRequest) {
     );
 
     if (!jwtResponse.ok) {
-      const jwtResponseErrorText = await jwtResponse.text();
-      return NextResponse.json(
-        {
-          error: `서비스 서버에서 오류가 발생했습니다.: ${jwtResponseErrorText || "알 수 없는 오류"}`,
-        },
-        { status: jwtResponse.status },
+      throw new Error(
+        `서비스 서버에서 오류가 발생했습니다.: ${await jwtResponse.text()}`,
       );
+      // const jwtResponseErrorText = await jwtResponse.text();
+      // return NextResponse.json(
+      //   {
+      //     error: `서비스 서버에서 오류가 발생했습니다.: ${jwtResponseErrorText || "알 수 없는 오류"}`,
+      //   },
+      //   { status: jwtResponse.status },
+      // );
     }
 
     const jwtData = await jwtResponse.json();
@@ -84,9 +90,7 @@ export async function GET(req: NextRequest) {
     const redirectUrl = new URL("/", requestUrl);
     return NextResponse.redirect(redirectUrl);
   } catch (error) {
-    return NextResponse.json(
-      { error: "Naver 로그인이 알 수 없는 이유로 실패했습니다." },
-      { status: RESPONSE_STATUS.INTERNAL_SERVER_ERROR },
-    );
+    const redirectUrl = new URL("/?login=failed");
+    return NextResponse.redirect(redirectUrl);
   }
 }
