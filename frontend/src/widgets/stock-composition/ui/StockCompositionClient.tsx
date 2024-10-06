@@ -19,6 +19,7 @@ export default function StockCompositionClient({
   useEffect(() => {
     setCurrentData(compositionData);
   }, [compositionData]);
+  console.log(currentData);
   return (
     <>
       <div className="mt-[16px] flex w-full except-mobile:absolute except-mobile:right-[16px] except-mobile:top-[12px] except-mobile:mt-0 except-mobile:w-[148px]">
@@ -32,7 +33,7 @@ export default function StockCompositionClient({
         </SegmentedButtonGroup>
       </div>
       <div className="mt-[48px] mobile:mt-[20px]">
-        {currentData[0]?.name === "자산 없음" || !currentData ? (
+        {currentData.length === 0 || currentData[0]?.name === "자산 없음" ? (
           <NoDataMessage />
         ) : (
           <DonutChart chartName="종목 구성" data={currentData} />

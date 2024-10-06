@@ -1,4 +1,4 @@
-import { DonutChartData, SERVICE_SERVER_URL } from "@/shared";
+import { DonutChartData, fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
 import { ACCESS_TOKEN } from "@/shared/constants/cookie";
 import { cookies } from "next/headers";
 
@@ -6,7 +6,7 @@ const fetchComposition = async (
   type: "composition" | "account" = "composition",
 ): Promise<DonutChartData[]> => {
   try {
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       `${SERVICE_SERVER_URL}/api/chart/v1/composition?type=${type}`,
       {
         method: "GET",

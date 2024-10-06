@@ -1,6 +1,8 @@
+import { fetchWithTimeout } from "@/shared";
+
 const getUser = async () => {
   try {
-    const res = await fetch("api/user", { method: "POST" });
+    const res = await fetchWithTimeout("api/user", { method: "POST" });
 
     if (!res.ok) {
       return null;
