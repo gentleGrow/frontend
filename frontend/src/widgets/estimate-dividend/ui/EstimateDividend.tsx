@@ -21,7 +21,6 @@ export default async function EstimateDividend() {
       ? fetchEstimateDividend("type")
       : fetchDummyEstimateDividend("type")) as Promise<DonutChartData[]>,
   ]);
-  console.log(estimatedDividendAll, estimatedDividendByStock);
   return (
     <EstimateDividendClient
       estimatedDividendAll={estimatedDividendAll}

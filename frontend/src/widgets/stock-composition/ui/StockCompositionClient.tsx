@@ -19,7 +19,6 @@ export default function StockCompositionClient({
   useEffect(() => {
     setCurrentData(compositionData);
   }, [compositionData]);
-  console.log(currentData);
   return (
     <>
       <div className="mt-[16px] flex w-full except-mobile:absolute except-mobile:right-[16px] except-mobile:top-[12px] except-mobile:mt-0 except-mobile:w-[148px]">
