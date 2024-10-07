@@ -23,7 +23,7 @@ const fetchPerformanceAnalysis = async (): Promise<PerformanceAnalysisData> => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Athorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
+            Authorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
           },
         },
       ),
@@ -33,7 +33,7 @@ const fetchPerformanceAnalysis = async (): Promise<PerformanceAnalysisData> => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Athorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
+            Authorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
           },
         },
       ),
@@ -43,7 +43,7 @@ const fetchPerformanceAnalysis = async (): Promise<PerformanceAnalysisData> => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Athorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
+            Authorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
           },
         },
       ),
@@ -53,7 +53,7 @@ const fetchPerformanceAnalysis = async (): Promise<PerformanceAnalysisData> => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Athorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
+            Authorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
           },
         },
       ),
@@ -63,7 +63,7 @@ const fetchPerformanceAnalysis = async (): Promise<PerformanceAnalysisData> => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Athorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
+            Authorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
           },
         },
       ),
