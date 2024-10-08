@@ -11,27 +11,25 @@ export default function Top10SelectedByRichPersonItem({
 }) {
   return (
     <div className="flex h-[52px] items-center justify-between px-[4px]">
-      <div className="flex items-center space-x-[8px] overflow-hidden">
+      <div className="flex w-fit shrink-0 items-center space-x-[8px] overflow-hidden pr-[8px]">
         <p
           className={`${rank < 4 && "text-green-60"} flex w-[2ch] shrink-0 items-center justify-center`}
         >
           {rank}
         </p>
-        <Image
-          src="/images/stock_test_logo.svg"
-          width={28}
-          height={28}
-          alt={stock.name}
-        />
-        <p className="block max-w-[94ch] truncate text-body-2 except-mobile:max-w-[108ch]">
+        <div className="relative h-[28px] w-[28px] shrink-0">
+          <Image src="/images/stock_test_logo.svg" fill alt={stock.name} />
+        </div>
+      </div>
+      <div className="flex w-full justify-between space-x-[16px] overflow-hidden pr-[12px]">
+        <p className="block w-full max-w-[128px] truncate text-body-2 except-mobile:max-w-[128px]">
           {stock.name}
         </p>
-      </div>
-
-      <div className="flex items-center space-x-[12px] overflow-hidden">
-        <p className="block items-center truncate text-body-3">
-          ₩{stock.price.toLocaleString("ko-KR")}
+        <p className="block max-w-[122px] items-center truncate text-body-3">
+          ₩{Number(stock.price.toFixed(0)).toLocaleString("ko-KR")}
         </p>
+      </div>
+      <div className="flex shrink-0 items-center overflow-hidden">
         <IncDecRate rate={stock.rate} />
       </div>
     </div>
