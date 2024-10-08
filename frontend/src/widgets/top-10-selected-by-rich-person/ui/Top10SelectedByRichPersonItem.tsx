@@ -1,25 +1,21 @@
 import { IncDecRate } from "@/shared";
 import Image from "next/image";
-
-interface Stock {
-  rank: number;
-  name: string;
-  price: number;
-  rate: number;
-}
+import { RichPick } from "../api/fetchRichPicks";
 
 export default function Top10SelectedByRichPersonItem({
   stock,
+  rank,
 }: {
-  stock: Stock;
+  stock: RichPick;
+  rank: number;
 }) {
   return (
     <div className="flex h-[52px] items-center justify-between px-[4px]">
       <div className="flex items-center space-x-[8px] overflow-hidden">
         <p
-          className={`${stock.rank < 4 && "text-green-60"} flex w-[2ch] shrink-0 items-center justify-center`}
+          className={`${rank < 4 && "text-green-60"} flex w-[2ch] shrink-0 items-center justify-center`}
         >
-          {stock.rank}
+          {rank}
         </p>
         <Image
           src="/images/stock_test_logo.svg"
