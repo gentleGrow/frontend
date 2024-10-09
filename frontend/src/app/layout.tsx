@@ -5,6 +5,7 @@ import { Header } from "@/widgets";
 import AuthProvider from "./AuthProvider";
 import JotaiProvider from "./JotaiProvider";
 import { LoginDialog } from "@/features";
+import QueryClientProvider from "@/app/QueryClientProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,11 +23,13 @@ export default function RootLayout({
       <body className={inter.className}>
         <JotaiProvider>
           <AuthProvider>
-            <div className="relative min-h-svh text-body-1">
-              <Header />
-              {children}
-              <LoginDialog />
-            </div>
+            <QueryClientProvider>
+              <div className="relative min-h-svh text-body-1">
+                <Header />
+                {children}
+                <LoginDialog />
+              </div>
+            </QueryClientProvider>
           </AuthProvider>
         </JotaiProvider>
         <footer className="mx-auto flex h-[84px] max-w-[1400px] items-center justify-between bg-gray-5 px-[20px]">
