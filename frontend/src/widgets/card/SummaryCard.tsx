@@ -1,5 +1,8 @@
+"use client";
+
 import Card from "@/shared/ui/Card";
 import PriceDisplay from "@/shared/ui/PriceDisplay";
+
 interface SummaryCardProps {
   title?: string;
   type?: string;
