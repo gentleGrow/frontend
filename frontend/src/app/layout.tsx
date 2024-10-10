@@ -24,18 +24,20 @@ export default function RootLayout({
         <JotaiProvider>
           <AuthProvider>
             <QueryClientProvider>
-              <div className="relative min-h-svh text-body-1">
-                <Header />
-                {children}
+              <div className="relative flex min-h-dvh flex-col text-body-1">
+                <div className="flex flex-1 flex-col">
+                  <Header />
+                  {children}
+                </div>
                 <LoginDialog />
+                <footer className="mx-auto flex h-[84px] w-full max-w-[1400px] items-center justify-between bg-gray-5 px-[20px]">
+                  <p>Copyrighted © insightout all rights reserved.</p>
+                  <p>email@gmail.com</p>
+                </footer>
               </div>
             </QueryClientProvider>
           </AuthProvider>
         </JotaiProvider>
-        <footer className="mx-auto flex h-[84px] max-w-[1400px] items-center justify-between bg-gray-5 px-[20px]">
-          <p>Copyrighted © insightout all rights reserved.</p>
-          <p>email@gmail.com</p>
-        </footer>
       </body>
     </html>
   );
