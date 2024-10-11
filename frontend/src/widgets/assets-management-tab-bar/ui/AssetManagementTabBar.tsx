@@ -2,17 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { navItems } from "@/widgets/assets-management-tab-bar/constants/navItems";
 
-interface TabsProps {
-  items: { href: string; label: string }[]; // 탭 항목 배열
-}
-
-const Tabs: React.FC<TabsProps> = ({ items }) => {
+const AssetManagementTabBar: React.FC = () => {
   const pathname = usePathname(); // 현재 경로 가져오기
 
   return (
     <ul className="mx-5 my-5 flex flex-row border-b-[1px] border-[#CDD4DC] except-mobile:-mx-5 except-mobile:gap-3 except-mobile:px-5">
-      {items.map(({ href, label }) => (
+      {navItems.map(({ href, label }) => (
         <Link
           key={href}
           href={href}
@@ -32,4 +29,4 @@ const Tabs: React.FC<TabsProps> = ({ items }) => {
   );
 };
 
-export default Tabs;
+export default AssetManagementTabBar;
