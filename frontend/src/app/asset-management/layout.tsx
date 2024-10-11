@@ -11,7 +11,7 @@ const AssetManagement: React.FC<{ children: React.ReactNode }> = ({
   ];
 
   return (
-    <div className="mx-auto w-full max-w-[1400px] flex-1 bg-gray-5 px-5">
+    <div className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col gap-4 bg-gray-5 except-mobile:px-5">
       <Tabs items={navItems} />
       {/* timestamp */}
       <Suspense fallback={<div>로딩중...</div>}>
