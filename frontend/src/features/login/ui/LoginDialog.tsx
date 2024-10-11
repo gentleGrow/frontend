@@ -9,14 +9,26 @@ import {
 import KakaoLoginButton from "../KakaoLoginButton";
 import NaverLoginButton from "../NaverLoginButton";
 import GoogleLoginButton from "../GoogleLoginButton";
-import useLogin from "../hooks/useLogin";
+import useMediaQuery from "../../../shared/hooks/useMediaQuery";
 import { loginModalAtom } from "../atoms/loginAtoms";
 import { useAtomValue, useSetAtom } from "jotai";
+import { useEffect } from "react";
 
 export default function LoginDialog({}: {}) {
-  const { isMobile } = useLogin();
+  const { isMobile } = useMediaQuery();
   const isOpenLoginModal = useAtomValue(loginModalAtom);
   const setIsOpenLoginModal = useSetAtom(loginModalAtom);
+
+  useEffect(() => {
+    if (isMobile && isOpenLoginModal) {
+      document.body.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isMobile, isOpenLoginModal]);
+
   return (
     <Dialog modal={!isMobile} open={isOpenLoginModal}>
       <DialogContent

@@ -14,7 +14,7 @@ import {
 
 export default function Home() {
   return (
-    <div className="mx-auto max-w-[1400px] space-y-[16px] bg-gray-5 p-[20px] mobile:p-0">
+    <div className="mx-auto w-full max-w-[1400px] space-y-[16px] bg-gray-5 p-[20px] mobile:p-0">
       <DailyInvestmentTip />
       <MarketIndex />
       <Summary />
