@@ -11,7 +11,7 @@ const Tabs: React.FC<TabsProps> = ({ items }) => {
   const pathname = usePathname(); // 현재 경로 가져오기
 
   return (
-    <ul className="my-5 flex flex-row border-b-[1px] border-[#CDD4DC] except-mobile:-mx-5 except-mobile:gap-3 except-mobile:px-5">
+    <ul className="mx-5 my-5 flex flex-row border-b-[1px] border-[#CDD4DC] except-mobile:-mx-5 except-mobile:gap-3 except-mobile:px-5">
       {items.map(({ href, label }) => (
         <Link
           key={href}
