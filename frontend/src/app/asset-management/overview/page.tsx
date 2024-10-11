@@ -6,17 +6,18 @@ import {
   StockComposition,
 } from "@/widgets";
 import { Suspense } from "react";
+import AssetsAccumulateTrend from "@/widgets/assets-accumulate-trend/ui/AssetsAccumulateTrend";
 
 const Overview = () => {
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-1 gap-4 except-mobile:grid-cols-5">
-        <div className="col-span-2">
+        <div className="except-mobile:col-span-2">
           <Suspense fallback={<div>종목 구성 로딩</div>}>
             <StockComposition />
           </Suspense>
         </div>
-        <div className="col-span-3">
+        <div className="except-mobile:col-span-3">
           <Suspense fallback={<div>투자 성과 로딩</div>}>
             <InvestmentPerformanceChart />
           </Suspense>
@@ -24,9 +25,7 @@ const Overview = () => {
       </div>
       <div className="grid-cols grid grid-cols-1 gap-4 except-mobile:grid-cols-2">
         <Suspense fallback={<div>자산 적립 추이 로딩</div>}>
-          <div title="자산 적립 추이">
-            <div>자산 적립 추이 차트 여기</div>
-          </div>
+          <AssetsAccumulateTrend />
         </Suspense>
         <Suspense fallback={<div>예산 배당액 로딩</div>}>
           <EstimateDividend />
