@@ -13,13 +13,16 @@ export default function DonutChart({
   isPortfolio?: boolean;
 }) {
   const chartRef = useRef<HTMLDivElement>(null);
+  const chartInstanceRef = useRef<echarts.ECharts | null>(null);
   const [windowWidth, setWindowWidth] = useState<number>(0);
 
   useEffect(() => {
     setWindowWidth(window.innerWidth);
 
     if (chartRef.current) {
-      const chartInstance = echarts.init(chartRef.current);
+      if (!chartInstanceRef.current) {
+        chartInstanceRef.current = echarts.init(chartRef.current);
+      }
 
       const totalCurrentAmount = data?.reduce(
         (sum, item) => sum + item.current_amount,
@@ -86,7 +89,6 @@ export default function DonutChart({
             "#AFC0FF",
             "#D8DADC",
           ],
-
           tooltip: {
             trigger: "item",
             confine: true,
@@ -215,7 +217,7 @@ export default function DonutChart({
           ],
         };
 
-        chartInstance.setOption(option);
+        chartInstanceRef.current?.setOption(option);
       };
 
       setOption();
@@ -223,7 +225,7 @@ export default function DonutChart({
       const handleResize = () => {
         setTimeout(() => {
           setOption();
-          chartInstance.resize();
+          chartInstanceRef.current?.resize();
           setWindowWidth(window.innerWidth);
         }, 100);
       };
@@ -232,7 +234,8 @@ export default function DonutChart({
 
       return () => {
         window.removeEventListener("resize", handleResize);
-        chartInstance.dispose();
+        chartInstanceRef.current?.dispose();
+        chartInstanceRef.current = null;
       };
     }
   }, [data, windowWidth, isPortfolio]);
