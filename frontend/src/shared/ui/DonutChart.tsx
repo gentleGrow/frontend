@@ -15,7 +15,7 @@ export default function DonutChart({
   const chartRef = useRef<HTMLDivElement>(null);
   const chartInstanceRef = useRef<echarts.ECharts | null>(null);
   const [windowWidth, setWindowWidth] = useState<number>(0);
-
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     setWindowWidth(window.innerWidth);
 
@@ -223,11 +223,15 @@ export default function DonutChart({
       setOption();
 
       const handleResize = () => {
-        setTimeout(() => {
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+        }
+
+        timerRef.current = setTimeout(() => {
           setOption();
           chartInstanceRef.current?.resize();
           setWindowWidth(window.innerWidth);
-        }, 100);
+        }, 300);
       };
 
       window.addEventListener("resize", handleResize);

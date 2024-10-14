@@ -4545,6 +4545,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash@npm:^4":
+  version: 4.17.10
+  resolution: "@types/lodash@npm:4.17.10"
+  checksum: 10c0/149b2b9fcc277204393423ed14df28894980c2322ec522fc23f2c6f7edef6ee8d876ee09ed4520f45d128adc0a7a6e618bb0017668349716cd99c6ef54a21621
+  languageName: node
+  linkType: hard
+
 "@types/lodash@npm:^4.14.167":
   version: 4.17.7
   resolution: "@types/lodash@npm:4.17.7"
@@ -12714,6 +12721,7 @@ __metadata:
     "@tanstack/react-table": "npm:^8.20.5"
     "@types/add": "npm:^2"
     "@types/jsonwebtoken": "npm:^9"
+    "@types/lodash": "npm:^4"
     "@types/node": "npm:^22.2.0"
     "@types/react": "npm:^18.3.5"
     "@types/react-dom": "npm:^18.3.0"
@@ -12749,6 +12757,7 @@ __metadata:
     google-auth-library: "npm:^9.13.0"
     jotai: "npm:^2.10.0"
     jsonwebtoken: "npm:^9.0.2"
+    lodash: "npm:^4.17.21"
     lucide-react: "npm:^0.438.0"
     next: "npm:14.2.5"
     node-sass: "npm:^9.0.0"
