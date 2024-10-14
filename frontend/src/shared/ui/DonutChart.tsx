@@ -16,10 +16,9 @@ export default function DonutChart({
   const chartInstanceRef = useRef<echarts.ECharts | null>(null);
   const [windowWidth, setWindowWidth] = useState<number>(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const totalCurrentAmount = data?.reduce(
-    (sum, item) => sum + item.current_amount,
-    0,
-  );
+  const totalCurrentAmount = isPortfolio
+    ? 0
+    : data?.reduce((sum, item) => sum + (item?.current_amount ?? 0), 0);
   const setOption = useCallback(() => {
     const isMobile =
       isPortfolio || window.matchMedia("(max-width: 840px)").matches;
@@ -118,9 +117,9 @@ export default function DonutChart({
         padding: isMobile || isPortfolio ? [0, 0] : [0, 0],
         formatter: (name: string) => {
           const item = data?.find((i) => i.name === name);
-          const percent = item
-            ? (item.current_amount / totalCurrentAmount) * 100
-            : 0;
+          const percent = isPortfolio
+            ? item?.percent_ratio
+            : ((item?.current_amount ?? 0) / totalCurrentAmount) * 100;
 
           const formattedName =
             name.length > maxNameLength
@@ -128,9 +127,9 @@ export default function DonutChart({
               : name;
 
           if (isPortfolio) {
-            return `{name|${formattedName}}{percent|${percent.toFixed(2)}%}`;
+            return `{name|${formattedName}}{percent|${percent?.toFixed(2)}%}`;
           } else {
-            return `{name|${formattedName}}{space|} {percent|${percent.toFixed(
+            return `{name|${formattedName}}{space|} {percent|${percent?.toFixed(
               2,
             )}%}`;
           }
@@ -192,7 +191,7 @@ export default function DonutChart({
             show: false,
           },
           data: data?.map((item) => ({
-            value: item.current_amount,
+            value: isPortfolio ? item.percent_ratio : item.current_amount,
             name: item.name,
           })),
         },

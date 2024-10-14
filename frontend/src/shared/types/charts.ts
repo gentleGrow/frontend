@@ -16,7 +16,8 @@ export interface LineChartData {
 export interface DonutChartData {
   name: string;
   percent_rate: number;
-  current_amount: number;
+  percent_ratio: number;
+  current_amount?: number;
 }
 
 export interface BarChartData {
