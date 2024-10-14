@@ -1,16 +1,12 @@
-"use client";
+import { AssetManagementDraggableTable } from "@/widgets";
+import { Suspense } from "react";
 
 const Sheet = () => {
   return (
     <div>
-      {/*<Summary summaryData={summaryData} />*/}
-      {/*<TableHeader count={count} changeCurrency={changeCurrency} />*/}
-      {/* <DraggableTable
-        tableData={tableData}
-        setTableData={setTableData}
-        fieldList={fieldList}
-        fetchData={fetchData}
-      /> */}
+      <Suspense fallback={<div>테이블 로딩</div>}>
+        <AssetManagementDraggableTable />
+      </Suspense>
     </div>
   );
 };
