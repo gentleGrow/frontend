@@ -1,4 +1,4 @@
-import { AssetManagementDraggableTable } from "@/widgets/asset-management-draggable-table";
+import { AssetManagementDraggableTable } from "@/widgets";
 import { Suspense } from "react";
 
 const Sheet = () => {

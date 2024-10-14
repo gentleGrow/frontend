@@ -2,27 +2,26 @@ import React, { memo, ReactNode } from "react";
 
 import TableCell from "./TableCell";
 import TableHeader from "./TableHeader";
-import { Cell, CellKey } from "./types/cell";
 
 import { ResizableHandle, ResizablePanel } from "@/components/ui/resizable";
 
-export interface TableColumnProps<T extends CellKey> {
-  field: CellKey[number];
-  dataset: Cell<T[number]>[];
+export interface TableColumnProps {
+  field: string;
+  dataset: any;
   headerBuilder: (key: string) => ReactNode;
-  cellBuilder: (key: string, data: number | string) => ReactNode;
+  cellBuilder: (key: string, data: any) => ReactNode;
   isLastColumn?: boolean;
   fieldWidth?: number;
 }
 
-const TableColumn = <T extends CellKey>({
+const TableColumn = <T,>({
   field,
   dataset,
   headerBuilder,
   cellBuilder,
   isLastColumn,
   fieldWidth = 10,
-}: TableColumnProps<T>) => {
+}: TableColumnProps) => {
   return (
     <ResizablePanel
       defaultSize={fieldWidth}
@@ -38,9 +37,7 @@ const TableColumn = <T extends CellKey>({
         )}
       </TableHeader>
       {dataset.map((data, idx) => (
-        <TableCell key={idx}>
-          {cellBuilder(field, data as unknown as string | number)}
-        </TableCell>
+        <TableCell key={idx}>{cellBuilder(field, data[field])}</TableCell>
       ))}
     </ResizablePanel>
   );
