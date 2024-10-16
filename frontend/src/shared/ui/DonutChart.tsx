@@ -74,6 +74,7 @@ export default function DonutChart({
         "#AFC0FF",
         "#D8DADC",
       ],
+
       tooltip: {
         trigger: "item",
         confine: true,
@@ -243,7 +244,8 @@ export default function DonutChart({
   return (
     <div
       ref={chartRef}
-      style={{ height: `${maxHeight}px`, overflow: "hidden" }}
+      style={{ height: `${maxHeight}px` }}
+      id="echartDonutCanvas"
     />
   );
 }

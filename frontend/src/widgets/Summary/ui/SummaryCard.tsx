@@ -18,7 +18,7 @@ export default function SummaryCard({ title, amount, rate }: SummaryCardProps) {
             <PriceDisplay price={amount} />
           ) : (
             <div className="flex items-center space-x-[8px]">
-              <p className="truncate text-heading-2">지난 달 보다</p>
+              <p className="truncate text-heading-4">지난 달 보다</p>
 
               <span
                 className={`text-heading-1 text-alert ${amount === 0 && "text-gray-100"} ${amount && amount > 0 && "text-alert"} ${amount && amount < 0 && "text-decrease"}`}
