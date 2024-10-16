@@ -2,11 +2,7 @@ import React, { memo } from "react";
 
 const HandleColumDisplayButton = () => {
   return (
-    <button
-      className={
-        "flex h-[44px] w-[44px] items-center justify-center border-b-2 border-b-gray-50"
-      }
-    >
+    <button className={"flex h-[44px] w-[44px] items-center justify-center"}>
       <svg
         width="16"
         height="16"

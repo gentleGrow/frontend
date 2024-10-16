@@ -5,6 +5,7 @@ import { useWindowWidth } from "@/shared/hooks/useWindowWidth";
 import { cn } from "@/lib/utils";
 import { StockAsset } from "@/widgets/asset-management-draggable-table/types/table";
 import { assetManagementMockData } from "@/widgets/asset-management-draggable-table/api/mock";
+import { useState } from "react";
 
 const filedWidth = {
   종목명: 12,
@@ -12,15 +13,17 @@ const filedWidth = {
   수익률: 8,
 };
 
-const minimumWidth = 80;
+const minimumWidth = 136;
 
 const AssetManegementDraggableTable = () => {
+  const [field, setField] = useState(assetManagementMockData.asset_fields);
+  const [fieldSize, setFieldSize] = useState(filedWidth);
+
   const windowWidth = useWindowWidth();
 
   const tableData = assetManagementMockData.stock_assets;
-  const fieldList = assetManagementMockData.asset_fields;
 
-  const isFixed = windowWidth / fieldList.length < minimumWidth * 1.5;
+  const isFixed = windowWidth / field.length < minimumWidth;
 
   const headerBuilder = (key: string) => (
     <div
@@ -34,29 +37,31 @@ const AssetManegementDraggableTable = () => {
   );
 
   return (
-    <div className={"w-full overflow-x-auto scrollbar-hide"}>
-      <Table
-        fixWidth={isFixed}
-        fields={fieldList}
-        dataset={tableData as StockAsset[]}
-        headerBuilder={headerBuilder}
-        cellBuilder={(key, data) => {
-          return (
-            <input
-              className={cn(
-                "box-border h-full w-full px-2.5 py-[12.5px] focus:outline-green-50",
-                typeof data[key] === "number" ? "text-right" : "text-start",
-              )}
-              defaultValue={String(data?.value ?? "")}
-            />
-          );
-        }}
-        fieldWidth={(key) => filedWidth[key]}
-        onFieldChane={() => {}}
-        onAddRow={() => {}}
-        onDeleteRow={() => {}}
-      />
-    </div>
+    <Table
+      fixWidth={isFixed}
+      fields={field}
+      dataset={tableData as StockAsset[]}
+      headerBuilder={headerBuilder}
+      cellBuilder={(key, data) => {
+        return (
+          <input
+            className={cn(
+              "box-border h-full w-full px-2.5 py-[12.5px] focus:outline-green-50",
+              typeof data[key] === "number" ? "text-right" : "text-start",
+            )}
+            defaultValue={String(data?.value ?? "")}
+          />
+        );
+      }}
+      fieldWidth={(key) => fieldSize[key]}
+      onFieldChane={() => {}}
+      onAddRow={() => {}}
+      onDeleteRow={() => {}}
+      onReorder={(newFields) => setField(newFields)}
+      onResize={(field, size) =>
+        setFieldSize((prev) => ({ ...prev, [field]: size }))
+      }
+    />
   );
 };
 
