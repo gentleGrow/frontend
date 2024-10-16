@@ -18,12 +18,10 @@ export default function SummaryCard({ title, amount, rate }: SummaryCardProps) {
             <PriceDisplay price={amount} />
           ) : (
             <div className="flex items-center space-x-[8px]">
-              <p className="[1400px]:bg-red font-bold leading-[24px] except-mobile:text-[1.42vw] except-web:text-[20px]">
-                지난 달 보다
-              </p>
+              <p className="truncate text-heading-2">지난 달 보다</p>
 
               <span
-                className={`font-bold leading-[33.6px] text-alert except-mobile:text-[2vw] except-web:text-[28px] ${amount === 0 && "text-gray-100"} ${amount && amount > 0 && "text-alert"} ${amount && amount < 0 && "text-decrease"}`}
+                className={`text-heading-1 text-alert ${amount === 0 && "text-gray-100"} ${amount && amount > 0 && "text-alert"} ${amount && amount < 0 && "text-decrease"}`}
               >
                 {amount && amount > 0 ? "+" : amount && amount < 0 ? "-" : ""}
                 {amount?.toFixed(2)}%
