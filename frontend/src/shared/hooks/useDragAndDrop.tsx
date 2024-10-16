@@ -159,7 +159,7 @@ export const useDragAndDrop = ({
       "top",
       `${clientY - height / 2}px`,
     );
-    draggingClone.current?.style.setProperty("zIndex", "1000");
+    draggingClone.current?.style.setProperty("z-index", "1000");
 
     id.current = e.currentTarget.id;
     onDragStart?.({
