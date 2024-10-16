@@ -8,7 +8,7 @@ const fetchTodayTip = async (): Promise<string> => {
     if (!response.ok) {
       throw new Error(`${response.status}: ${await response.json()}`);
     }
-    const todayTip = await response.json().then((data) => data.today_tip);
+    const todayTip = await response.json();
     return todayTip;
   } catch (error) {
     console.error(error);
