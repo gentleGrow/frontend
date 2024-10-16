@@ -25,7 +25,7 @@ export default function Top10SelectedByRichPersonItem({
         <p className="block w-full max-w-[128px] truncate text-body-2 except-mobile:max-w-[128px]">
           {stock.name}
         </p>
-        <p className="block max-w-[122px] items-center truncate text-body-3">
+        <p className="block w-full min-w-[102px] max-w-[122px] items-center truncate text-body-3">
           ₩{Number(stock.price.toFixed(0)).toLocaleString("ko-KR")}
         </p>
       </div>

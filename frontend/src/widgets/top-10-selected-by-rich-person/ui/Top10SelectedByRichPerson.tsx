@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Top10SelectedByRichPersonItem from "./Top10SelectedByRichPersonItem";
 import fetchRichPicks from "../api/fetchRichPicks";
-import { NoDataMessage } from "@/shared";
 
 export default async function Top10SelectedByRichPerson() {
   const top10Stocks = await fetchRichPicks();
