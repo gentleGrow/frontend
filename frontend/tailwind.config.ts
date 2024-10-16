@@ -7,10 +7,10 @@ const config: Config = {
     extend: {
       screens: {
         mobile: {
-          max: "840px",
+          max: "1024px",
         },
         tablet: {
-          min: "841px",
+          min: "1025px",
           max: "1280px",
         },
         "mobile-545": {
@@ -20,7 +20,7 @@ const config: Config = {
           min: "546px",
         },
         "except-mobile": {
-          min: "840px",
+          min: "1024px",
         },
         "except-tablet": {
           min: "1280px",
