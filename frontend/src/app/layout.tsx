@@ -38,6 +38,7 @@ export default function RootLayout({
             </QueryClientProvider>
           </AuthProvider>
         </JotaiProvider>
+        <div id="drag-overlay" className="absolute left-0 top-0"></div>
       </body>
     </html>
   );
