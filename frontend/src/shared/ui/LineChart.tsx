@@ -17,7 +17,7 @@ export default function LineChart({
       const chartInstance = echarts.init(chartRef.current);
 
       const setOption = () => {
-        const isSmallScreen = window.innerWidth <= 840;
+        const isSmallScreen = window.innerWidth <= 1024;
 
         const option = {
           title: {

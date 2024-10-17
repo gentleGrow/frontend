@@ -21,7 +21,7 @@ export default function DonutChart({
     : data?.reduce((sum, item) => sum + (item?.current_amount ?? 0), 0);
   const setOption = useCallback(() => {
     const isMobile =
-      isPortfolio || window.matchMedia("(max-width: 840px)").matches;
+      isPortfolio || window.matchMedia("(max-width: 1024px)").matches;
     const gap = 56;
     const legendWidth = isMobile ? window.innerWidth * 0.6 : 174;
 
@@ -237,7 +237,7 @@ export default function DonutChart({
   const chartHeight = isPortfolio ? 128 + 2 * 25 - 25 : 276 + data?.length * 25;
   const maxHeight = isPortfolio
     ? chartHeight
-    : windowWidth > 840
+    : windowWidth > 1024
       ? 256
       : chartHeight;
 
