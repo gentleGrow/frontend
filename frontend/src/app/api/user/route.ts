@@ -2,8 +2,9 @@ import { ACCESS_TOKEN } from "@/shared/constants/cookie";
 import { cookies } from "next/headers";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { NextResponse } from "next/server";
+import { User } from "@/entities";
 
-export function POST() {
+export function POST(): NextResponse<User | { error: string }> {
   try {
     const cookieStore = cookies();
     const decoded = jwt.decode(
@@ -26,6 +27,7 @@ export function POST() {
         nickname: "개미",
         userId: decoded.id,
         isLoggedIn: true,
+        isActivated: true,
       },
 
       { status: 200 },

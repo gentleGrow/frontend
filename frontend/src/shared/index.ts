@@ -34,3 +34,4 @@ export { getAccessToken, getRefreshToken } from "./utils/jwt-cookie";
 export { default as FloatingButton } from "./ui/FloatingButton";
 export { default as NoDataMessage } from "./ui/NoDataMessage";
 export { default as fetchWithTimeout } from "./utils/fetchWithTimeout";
+export { default as PrimaryButton } from "./ui/PrimaryButton";

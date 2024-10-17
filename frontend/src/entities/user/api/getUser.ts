@@ -1,14 +1,13 @@
-import { fetchWithTimeout } from "@/shared";
+// import { fetchWithTimeout } from "@/shared";
+import { User } from "../types/user";
 
-const getUser = async () => {
+const getUser = async (): Promise<User | null> => {
   try {
-    const res = await fetchWithTimeout("api/user", { method: "POST" });
-
-    if (!res.ok) {
-      return null;
-      //throw new Error("로그인이 필요합니다.");
-    }
+    const res = await fetch("api/user", { method: "POST" });
     const user = await res.json();
+    if (user.error) {
+      throw new Error(user.error);
+    }
     return user;
   } catch (error) {
     return null;
