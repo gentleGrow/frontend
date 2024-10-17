@@ -105,6 +105,7 @@ export default function DonutChart({
           return [x + 10, y - tooltipHeight - 10];
         },
       },
+
       legend: {
         icon: "path://M4,2 h12 a2,2 0 0 1 2,2 v12 a2,2 0 0 1 -2,2 h-12 a2,2 0 0 1 -2,-2 v-12 a2,2 0 0 1 2,-2 z",
         itemWidth: 12,
@@ -178,7 +179,7 @@ export default function DonutChart({
             : [leftMargin + seriesOuterRadius, "50%"],
           left: "0",
           right: "0",
-          top: isPortfolio ? -12 : 0,
+          top: isPortfolio ? 0 : 20,
           avoidLabelOverlap: true,
           itemStyle: {
             borderColor: "#fff",
@@ -234,7 +235,9 @@ export default function DonutChart({
     }
   }, [data, windowWidth, isPortfolio]);
 
-  const chartHeight = isPortfolio ? 128 + 2 * 25 - 25 : 276 + data?.length * 25;
+  const chartHeight = isPortfolio
+    ? 128 + 2 * 25 - 25 + 16
+    : 276 + data?.length * 25 + 16;
   const maxHeight = isPortfolio
     ? chartHeight
     : windowWidth > 1024

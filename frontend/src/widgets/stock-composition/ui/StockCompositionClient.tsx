@@ -31,7 +31,7 @@ export default function StockCompositionClient({
           </SegmentedButton>
         </SegmentedButtonGroup>
       </div>
-      <div className="mt-[48px] mobile:mt-[20px]">
+      <div className="mt-[48px] mobile:mt-0">
         {currentData.length === 0 || currentData[0]?.name === "자산 없음" ? (
           <NoDataMessage />
         ) : (
