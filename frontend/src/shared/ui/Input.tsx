@@ -8,6 +8,8 @@ export interface InputProps {
   value?: string;
   withImage?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   isHovered?: boolean;
   isSelected?: boolean;
   isDisabled?: boolean;
@@ -22,6 +24,8 @@ export default function Input({
   value,
   withImage,
   onChange,
+  onFocus,
+  onBlur,
   isHovered = false,
   isSelected = false,
   isDisabled = false,
@@ -32,10 +36,12 @@ export default function Input({
       type={type}
       placeholder={placeholder}
       value={value}
+      onFocus={onFocus}
+      onBlur={onBlur}
       onChange={onChange}
       disabled={isDisabled}
       className={clsx(
-        `font-regular rounded-md border border-gray-20 px-[10px] py-[9.5px] text-body-sm text-gray-100 hover:border-gray-40 focus:border-green-60 focus:outline-none disabled:border-gray-20 disabled:bg-white disabled:text-gray-30`,
+        `font-regular h-[36px] w-full rounded-md border border-gray-20 px-[10px] text-body-2 text-gray-100 hover:border-gray-40 focus:border-green-60 focus:outline-none disabled:border-gray-20 disabled:bg-white disabled:text-gray-30`,
         classNames,
         {
           "pl-[44px]": withImage,

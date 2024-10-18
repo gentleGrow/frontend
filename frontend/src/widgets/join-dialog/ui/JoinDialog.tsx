@@ -3,9 +3,12 @@
 import { useUser } from "@/entities";
 import UserAgreement from "./UserAgreement";
 import { Dialog } from "@/components/ui/dialog";
+import { useState } from "react";
+import NicknameSetup from "./NicknameSetup";
 
 export default function JoinDialog() {
   const { user } = useUser();
+  const [state, setState] = useState<"agreement" | "nickname">("nickname");
 
   if (user && user.isActivated) {
     return null;
@@ -15,7 +18,7 @@ export default function JoinDialog() {
       //open={user && !user?.isActivated}
       open={true}
     >
-      <UserAgreement />
+      {state === "agreement" ? <UserAgreement /> : <NicknameSetup />}
     </Dialog>
   );
 }
