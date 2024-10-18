@@ -30,7 +30,7 @@ const DragAndDropDropdown = ({
   );
 
   return (
-    <div className="flex flex-col gap-[4.5px]">
+    <div className="flex h-full max-h-[230px] flex-col gap-[4.5px] overflow-y-auto">
       <ul className="flex flex-col gap-[4.5px]">
         {requiredItems.map((item) => (
           <DragAndDropNotDraggableItem key={item.name} item={item} />
@@ -85,7 +85,7 @@ const DragAndDropDropdownDraggableItem = ({
 
   return (
     <Reorder.Item
-      className="group relative flex h-full max-h-[228px] flex-row items-center justify-between pl-2.5 pr-1"
+      className="group relative flex flex-row items-center justify-between pr-1"
       value={item}
       as="li"
       dragListener={false}
@@ -152,7 +152,7 @@ const DragAndDropNotDraggableItem = ({
   onCheckboxClicked?: () => void;
 }) => {
   return (
-    <div className="group relative flex h-full max-h-[228px] flex-row items-center justify-between pl-2.5 pr-1">
+    <div className="group relative flex flex-row items-center justify-between overflow-y-auto pr-1">
       <div className="flex flex-row items-center gap-[4.5px] opacity-40">
         <CheckBox
           checked={isChecked}
