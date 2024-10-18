@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { StockAsset } from "@/widgets/asset-management-draggable-table/types/table";
 import { assetManagementMockData } from "@/widgets/asset-management-draggable-table/api/mock";
 import { useState } from "react";
+import { allField } from "@/widgets/asset-management-draggable-table/constants/allField";
 
 const filedWidth = {
   종목명: 12,
@@ -15,15 +16,28 @@ const filedWidth = {
 
 const minimumWidth = 136;
 
+const fieldIsRequired = (field: string) =>
+  field === "종목명" || field === "수량" || field === "구매일자";
+
+const fieldIemFactory = (field: string, userFields: string[]) => ({
+  isRequired: fieldIsRequired(field),
+  isChecked: userFields.includes(field) || fieldIsRequired(field),
+  name: field,
+});
+
 const AssetManegementDraggableTable = () => {
-  const [field, setField] = useState(assetManagementMockData.asset_fields);
+  const [fields, setFields] = useState(
+    allField.map((field) =>
+      fieldIemFactory(field, assetManagementMockData.asset_fields),
+    ),
+  );
   const [fieldSize, setFieldSize] = useState(filedWidth);
 
   const windowWidth = useWindowWidth();
 
   const tableData = assetManagementMockData.stock_assets;
 
-  const isFixed = windowWidth / field.length < minimumWidth;
+  const isFixed = windowWidth / fields.length < minimumWidth;
 
   const headerBuilder = (key: string) => (
     <div
@@ -36,10 +50,21 @@ const AssetManegementDraggableTable = () => {
     </div>
   );
 
+  const handleClickCheckbox = (name: string) => {
+    const newFields = fields.map((field) => {
+      if (field.name === name) {
+        return { ...field, isChecked: !field.isChecked };
+      }
+      return field;
+    });
+    setFields(newFields);
+  };
+
   return (
     <Table
       fixWidth={isFixed}
-      fields={field}
+      fields={fields}
+      onClickFieldCheckbox={handleClickCheckbox}
       dataset={tableData as StockAsset[]}
       headerBuilder={headerBuilder}
       cellBuilder={(key, data) => {
@@ -54,10 +79,10 @@ const AssetManegementDraggableTable = () => {
         );
       }}
       fieldWidth={(key) => fieldSize[key]}
-      onFieldChane={() => {}}
+      onFieldChange={() => {}}
       onAddRow={() => {}}
       onDeleteRow={() => {}}
-      onReorder={(newFields) => setField(newFields)}
+      onReorder={setFields}
       onResize={(field, size) =>
         setFieldSize((prev) => ({ ...prev, [field]: size }))
       }
