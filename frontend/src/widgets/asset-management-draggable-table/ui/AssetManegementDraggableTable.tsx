@@ -50,21 +50,25 @@ const AssetManegementDraggableTable = () => {
     </div>
   );
 
-  const handleClickCheckbox = (name: string) => {
-    const newFields = fields.map((field) => {
-      if (field.name === name) {
-        return { ...field, isChecked: !field.isChecked };
-      }
-      return field;
+  const handleReset = () => {
+    setFields((prev) => {
+      return prev.map((field) => {
+        if (field.isRequired) {
+          return field;
+        }
+
+        return {
+          ...field,
+          isChecked: false,
+        };
+      });
     });
-    setFields(newFields);
   };
 
   return (
     <Table
       fixWidth={isFixed}
       fields={fields}
-      onClickFieldCheckbox={handleClickCheckbox}
       dataset={tableData as StockAsset[]}
       headerBuilder={headerBuilder}
       cellBuilder={(key, data) => {
@@ -83,6 +87,7 @@ const AssetManegementDraggableTable = () => {
       onAddRow={() => {}}
       onDeleteRow={() => {}}
       onReorder={setFields}
+      onReset={handleReset}
       onResize={(field, size) =>
         setFieldSize((prev) => ({ ...prev, [field]: size }))
       }

@@ -29,7 +29,7 @@ export interface TableProps<T extends unknown> {
   onAddRow: () => void;
   onFieldChange: () => void;
   onReorder: (newFields: FieldState[]) => void;
-  onClickFieldCheckbox: (name: string) => void;
+  onReset?: () => void;
   onDeleteRow: (id: number | string) => void;
   fixWidth?: boolean;
   fieldWidth?: (key: string) => number;
@@ -45,7 +45,7 @@ const Index = <T extends unknown>({
   onDeleteRow,
   onFieldChange,
   onReorder,
-  onClickFieldCheckbox,
+  onReset,
   fieldWidth,
   fixWidth = false,
   onResize,
@@ -240,8 +240,8 @@ const Index = <T extends unknown>({
           <div>
             <HandleColumDisplayButton
               fields={preservedFields}
-              onClickFieldCheckbox={onClickFieldCheckbox}
               onReorder={onReorder}
+              onReset={onReset}
             />
             {preservedDataset.map((_data, idx) => (
               <DeleteRowIconButton
