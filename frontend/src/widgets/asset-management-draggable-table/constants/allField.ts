@@ -1,4 +1,4 @@
-const allField = [
+export const allField = [
   "종목명",
   "수량",
   "구매일자",
@@ -14,4 +14,4 @@ const allField = [
   "매입금",
   "매입가",
   "거래량",
-] as const;
+];
