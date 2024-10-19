@@ -4,4 +4,7 @@ export const keyStore = createQueryKeyStore({
   summary: {
     getSummary: null,
   },
+  assetStock: {
+    getSummary: null,
+  },
 });

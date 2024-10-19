@@ -1,3 +1,5 @@
+import { assetManagementMockData } from "@/widgets/asset-management-draggable-table/api/mock";
+
 export interface AssetValue {
   isRequired: boolean;
   value: string | number | null;
@@ -38,3 +40,5 @@ export type AssetManagementResponse = StockAssetOverview & {
   stock_assets: StockAsset[];
   asset_fields: string[];
 };
+
+export type AssetStock = typeof assetManagementMockData;

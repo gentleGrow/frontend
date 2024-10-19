@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { StockAsset } from "@/widgets/asset-management-draggable-table/types/table";
 import { assetManagementMockData } from "@/widgets/asset-management-draggable-table/api/mock";
 import { useState } from "react";
-import { allField } from "@/widgets/asset-management-draggable-table/constants/allField";
+import { useGetAssetStocks } from "@/widgets/asset-management-draggable-table/quries/useGetAssetStocks";
 
 const filedWidth = {
   종목명: 12,
@@ -25,11 +25,17 @@ const fieldIemFactory = (field: string, userFields: string[]) => ({
   name: field,
 });
 
-const AssetManegementDraggableTable = () => {
+const AssetManegementDraggableTable = ({
+  accessToken,
+}: {
+  accessToken: string | null;
+}) => {
+  const { data } = useGetAssetStocks(accessToken);
+
   const [fields, setFields] = useState(
-    allField.map((field) =>
+    data?.asset_fields.map((field) =>
       fieldIemFactory(field, assetManagementMockData.asset_fields),
-    ),
+    ) ?? [],
   );
   const [fieldSize, setFieldSize] = useState(filedWidth);
 
