@@ -25,7 +25,7 @@ export interface TableProps<T extends unknown> {
   fields: FieldState[];
   dataset: T[];
   headerBuilder: (key: string) => ReactNode;
-  cellBuilder: (key: any, data: any) => ReactNode;
+  cellBuilder: (key: any, data: any, rowId: number) => ReactNode;
   onAddRow: () => void;
   onFieldChange: () => void;
   onReorder: (newFields: FieldState[]) => void;
@@ -212,7 +212,7 @@ const Index = <T extends unknown>({
       className={"w-full overflow-x-scroll scrollbar-hide"}
     >
       <div
-        className="rounded-[4px] border border-gray-20 bg-white"
+        className="relative rounded-[4px] border border-gray-20 bg-white"
         style={{
           width: fixWidth ? "1360px" : "100%",
         }}

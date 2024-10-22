@@ -6,5 +6,6 @@ export const useGetAssetStocks = (accessToken: string | null) => {
   return useSuspenseQuery({
     queryKey: keyStore.assetStock.getSummary.queryKey,
     queryFn: () => getAssetsStock(accessToken),
+    staleTime: Infinity,
   });
 };

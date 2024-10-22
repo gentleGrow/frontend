@@ -24,5 +24,5 @@ export const getAssetsStock = async (accessToken: string | null) => {
     throw new Error(`${response.status}: ${await response.json()}`);
   }
 
-  const assetsStock = (await response.json()) as AssetStock;
+  return (await response.json()) as AssetStock;
 };

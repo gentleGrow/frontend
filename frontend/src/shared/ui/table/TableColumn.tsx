@@ -11,7 +11,7 @@ export interface TableColumnProps {
   index: number;
   dataset: any;
   headerBuilder: (key: string) => ReactNode;
-  cellBuilder: (key: string, data: any) => ReactNode;
+  cellBuilder: (key: string, data: any, rowId: number) => ReactNode;
   isLastColumn?: boolean;
   fieldWidth?: number;
   onDrag: (e: UniversalDragEvent) => void;
@@ -65,7 +65,9 @@ const TableColumn = <T,>({
         )}
       </TableHeader>
       {dataset.map((data, idx) => (
-        <TableCell key={idx}>{cellBuilder(field, data[field])}</TableCell>
+        <TableCell key={idx}>
+          {cellBuilder(field, data[field], data.id)}
+        </TableCell>
       ))}
       {isClosestFromRight && (
         <div className="absolute -right-px top-0 z-50 h-full w-[4px] bg-green-60" />

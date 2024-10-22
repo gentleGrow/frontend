@@ -121,6 +121,12 @@ const config: Config = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      boxShadow: {
+        popover: "0px 0px 7px 0px rgba(0, 0, 0, 0.1)",
+      },
+      zIndex: {
+        "9999": "9999",
+      },
     },
   },
   plugins: [require("tailwindcss-animate"), require("tailwind-scrollbar-hide")],
