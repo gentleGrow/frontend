@@ -32,6 +32,8 @@ const config: Config = {
       colors: {
         alert: "#F84A4A",
         decrease: "#0A6CFF",
+        increaseBackground: "#FFECEC",
+        decreaseBackground: "#DCEAFF",
         gray: {
           "0": "#FFFFFF",
           "5": "#F7F8FA",
