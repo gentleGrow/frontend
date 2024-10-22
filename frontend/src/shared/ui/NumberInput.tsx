@@ -5,19 +5,6 @@ import { cn } from "@/lib/utils";
 import { extractNumber, fixedNumberIfNeeds } from "@/shared/utils/number";
 import { assert } from "@/shared/utils/assert";
 
-// TODO: 구현 목록
-/*
-1. 플레이스 홀더를 전달할 수 있어야 한다. - 완료
-2. value 와 onChange 를 전달할 수 있어야 한다. - 완료
-3. 에러 상태일 때 에러 메시지를 보여줄 수 있어야 한다. - 완료
-4. 비율 또는 가격을 타입으로 전달받을 수 있어야 한다. - 완료
-  4-1. 비율로 정할시 상승 하락에 따른 UI를 보여줄 수 있어야 한다.
-  4-2. 가격으로 정할시 환폐 표시를 정해서 보여줄 수 있어야 한다.
-5. 숫자만 입력할 수 있어야 한다.
-6. disabled 상태를 전달할 수 있어야 한다.
-7. 왼쪽 오른쪽 정렬을 전달할 수 있어야 한다. - 무조건 오른쪽
-**/
-
 const ColorVariants = {
   default: "text-gray-90 bg-white",
   increase: "text-alert bg-increaseBackground",
