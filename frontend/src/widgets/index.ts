@@ -13,4 +13,4 @@ export { default as ExplorePortfolio } from "./explore-portfolio/ui/ExplorePortf
 export { default as RichPortfolio } from "./rich-portfolios/ui/RichPortfolio";
 export { default as Summary } from "./Summary/ui/Summary";
 export { default as HomeGuestAccessGuideButton } from "./HomeGuestAccessGuide/ui/HomeGuestAccessGuideButton";
-export { default as AssetManagementDraggableTable } from "./asset-management-draggable-table/ui/AssetManegementDraggableTable";
+export { default as AssetManagementDraggableTable } from "./asset-management-draggable-table/ui/AssetManagementDraggableTable";

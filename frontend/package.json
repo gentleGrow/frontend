@@ -28,6 +28,7 @@
     "date-fns": "^4.1.0",
     "echarts": "^5.5.1",
     "embla-carousel-react": "^8.3.0",
+    "fuse.js": "^7.0.0",
     "google-auth-library": "^9.13.0",
     "jotai": "^2.10.0",
     "jsonwebtoken": "^9.0.2",
