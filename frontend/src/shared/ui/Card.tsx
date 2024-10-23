@@ -29,7 +29,9 @@ export default function Card({
       style={{ width: width, height: height }}
     >
       {title && (
-        <h2 className={cn("font-bold", fontSizesVariants[fontSize])}>
+        <h2
+          className={cn("font-bold text-gray-80", fontSizesVariants[fontSize])}
+        >
           {title}
         </h2>
       )}

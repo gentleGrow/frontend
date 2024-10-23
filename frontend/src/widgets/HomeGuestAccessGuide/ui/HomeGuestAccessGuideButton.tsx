@@ -10,7 +10,7 @@ export default function HomeGuestAccessGuideButton() {
   const setIsOpenLoginModal = useSetAtom(loginModalAtom);
   return (
     <div
-      className={`absolute left-1/2 top-1/2 flex w-full -translate-x-1/2 -translate-y-1/2 justify-center ${user?.isLoggedIn ? "hidden" : "block"}`}
+      className={`fixed bottom-[64px] left-1/2 flex w-full -translate-x-1/2 -translate-y-1/2 justify-center ${user?.isLoggedIn ? "hidden" : "block"}`}
     >
       <FloatingButton
         onClick={() => {
