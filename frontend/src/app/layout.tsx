@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/widgets";
 import AuthProvider from "./AuthProvider";
 import JotaiProvider from "./JotaiProvider";
 import { LoginDialog } from "@/features";
 import QueryClientProvider from "@/app/QueryClientProvider";
+import localFont from "next/font/local";
 
-const inter = Inter({ subsets: ["latin"] });
+const pretendard = localFont({
+  src: "./fonts/PretendardVariable.woff2",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Gentle Grow",
@@ -20,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={inter.className}>
+      <body className={`${pretendard.className}`}>
         <JotaiProvider>
           <AuthProvider>
             <QueryClientProvider>
