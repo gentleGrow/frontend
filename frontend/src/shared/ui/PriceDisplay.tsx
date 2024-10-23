@@ -1,5 +1,6 @@
 // components/PriceDisplay.js
 export default function PriceDisplay({ price }) {
+  console.log(price);
   const formattedNumber = new Intl.NumberFormat("ko-KR", {
     style: "currency",
     currency: "KRW",
