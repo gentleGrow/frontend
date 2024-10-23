@@ -6,12 +6,6 @@ interface GetBrokerAccountListResponse {
 }
 
 export const getBrokerAccountList = async (accessToken: string | null) => {
-  if (!accessToken)
-    return {
-      investment_bank_list: [],
-      account_list: [],
-    } as GetBrokerAccountListResponse;
-
   const response = await fetch(`${SERVICE_SERVER_URL}/api/v1/bank-accounts`);
 
   if (!response.ok) {

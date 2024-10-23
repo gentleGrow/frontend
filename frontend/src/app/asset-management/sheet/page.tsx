@@ -13,6 +13,8 @@ const Sheet = async () => {
     getBrokerAccountList(accessToken ?? null),
   ]);
 
+  console.log(response[1]);
+
   return (
     <div>
       <Suspense fallback={<div>테이블 로딩</div>}>
