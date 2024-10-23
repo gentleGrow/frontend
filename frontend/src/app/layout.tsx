@@ -27,7 +27,7 @@ export default function RootLayout({
         <JotaiProvider>
           <AuthProvider>
             <QueryClientProvider>
-              <div className="relative flex min-h-dvh flex-col text-body-1">
+              <div className="relative flex min-h-dvh flex-col text-body-1 text-gray-100">
                 <div className="flex flex-1 flex-col">
                   <Header />
                   {children}

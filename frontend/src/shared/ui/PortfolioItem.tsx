@@ -14,7 +14,9 @@ export default function PortfolioItem({
     <div className="h-[218px] shrink-0">
       <div className="h-full rounded-lg border border-gray-10 p-[16px]">
         <div className="flex items-center space-x-1">
-          <h3 className="mb-[15px]truncate text-body-3">{item.name}</h3>
+          <h3 className="mb-[15px] truncate text-body-3 text-gray-100">
+            {item.name}
+          </h3>
           {isRichPortfolio && (
             <svg
               width="16"
