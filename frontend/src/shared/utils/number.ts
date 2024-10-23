@@ -14,21 +14,15 @@ export function fixedNumberIfNeeds(value: number) {
   const integerPart = decimalSliced[0];
   const decimalPart = decimalSliced[1] as string | undefined;
 
-  if (decimalPart && hasMoreThanTwoDecimalPlaces(value)) {
-    return `${Number(value).toFixed(2)}`;
+  if (decimalPart !== undefined && hasMoreThanTwoDecimalPlaces(decimalPart)) {
+    return `${value.toFixed(2)}`;
   }
 
   return integerPart;
 }
 
-function hasMoreThanTwoDecimalPlaces(num) {
-  const match = num.toString().match(/(?:\.(\d+))?/);
-
-  if (match && match[1]) {
-    return match[1].length > 2;
-  }
-
-  return false;
+function hasMoreThanTwoDecimalPlaces(num: string) {
+  return num.length > 2;
 }
 
 export function deCommaizeNumber(value: string) {
