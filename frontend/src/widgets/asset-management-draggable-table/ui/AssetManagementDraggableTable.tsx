@@ -14,6 +14,8 @@ import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
 import { useQueryClient } from "@tanstack/react-query";
 import { keyStore } from "@/shared/lib/query-keys";
 import AccountTypeCell from "@/widgets/asset-management-draggable-table/ui/AccountTypeCell";
+import { DatePicker } from "@/shared";
+import { format } from "date-fns";
 
 const filedWidth = {
   종목명: 12,
@@ -150,6 +152,20 @@ const AssetManagementDraggableTable = ({
               selected={data?.value}
               icon
             />
+          );
+        }
+
+        if (key === "구매일자") {
+          return (
+            <div className="flex h-full w-full items-center justify-center px-[9px]">
+              <DatePicker
+                date={new Date(data?.value)}
+                onChange={(date) => {
+                  const formatedDate = format(date, "yyyy-MM-dd");
+                  handleValueChange(key, formatedDate, id);
+                }}
+              />
+            </div>
           );
         }
 
