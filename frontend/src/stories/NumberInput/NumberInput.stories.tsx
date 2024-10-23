@@ -40,7 +40,7 @@ export const PriceInputStory: Story = {
         <div className={"flex flex-col gap-3"}>
           <h2>원화</h2>
           <NumberInput
-            region={"kr"}
+            region={"KRW"}
             value={value}
             placeholder={"₩ 0"}
             onChange={setValue}
@@ -50,7 +50,7 @@ export const PriceInputStory: Story = {
         <div className={"flex flex-col gap-3"}>
           <h2>달러</h2>
           <NumberInput
-            region={"us"}
+            region={"USD"}
             placeholder={"$ 0"}
             value={usValue}
             onChange={setUsValue}

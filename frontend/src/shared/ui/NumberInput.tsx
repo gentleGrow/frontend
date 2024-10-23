@@ -16,9 +16,9 @@ const ColorVariants = {
 interface NumberInputProps {
   placeholder?: string;
   value?: number;
-  onChange: (value?: number) => void;
+  onChange?: (value?: number) => void;
   type?: "ratio" | "price" | "amount";
-  region?: "kr" | "us";
+  region?: "USD" | "KRW";
   autoFill?: boolean;
   variants?: keyof typeof ColorVariants;
 }
@@ -36,6 +36,8 @@ const NumberInput = ({
   const [isFocused, setIsFocused] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
+  console.log(value);
+
   if (type === "ratio") {
     if (!autoFill) assert("비율 타입은 autoFill 이 true 여야 합니다.");
   }
@@ -47,7 +49,7 @@ const NumberInput = ({
     const target = e.currentTarget.value;
 
     if (type === "price") {
-      const regex = region === "kr" ? /^[0-9,₩ ]+$/ : /^[0-9,$ ]+$/;
+      const regex = region === "KRW" ? /^[0-9,₩ ]+$/ : /^[0-9,$ ]+$/;
       if (!regex.test(target)) {
         setError(new Error("숫자만 입력해주세요."));
       }
@@ -73,7 +75,7 @@ const NumberInput = ({
     if (type === "price") {
       if (!value) return "";
       const price = value;
-      const prefix = region === "kr" ? "₩ " : "$ ";
+      const prefix = region === "KRW" ? "₩ " : "$ ";
 
       const commizedValue = price.toLocaleString();
       return prefix + commizedValue;
@@ -95,7 +97,7 @@ const NumberInput = ({
     <label
       htmlFor={id}
       className={cn(
-        "relative h-full w-full px-2.5 py-[12.5px]",
+        "relative flex h-full w-full flex-wrap items-center px-2.5",
         isFocused && !error && "rounded-[4px] border border-green-60",
         error && "rounded-[4px] border border-alert",
         ColorVariants[variants],
@@ -106,7 +108,7 @@ const NumberInput = ({
         readOnly={autoFill}
         id={id}
         className={cn(
-          "w-fit bg-transparent text-right text-body-2 text-inherit focus:outline-none",
+          "h-full w-full bg-transparent text-right text-body-2 text-inherit focus:outline-none",
           variants === "gray-dark"
             ? "placeholder:text-gray-60"
             : "placeholder:text-gray-50",
@@ -119,7 +121,7 @@ const NumberInput = ({
         }}
         onClick={(e) => {
           if (type === "price" && !value) {
-            const prefix = region === "kr" ? "₩ " : "$ ";
+            const prefix = region === "KRW" ? "₩ " : "$ ";
             e.currentTarget.value = prefix;
           }
           e.currentTarget.selectionStart = e.currentTarget.selectionEnd =
@@ -134,7 +136,7 @@ const NumberInput = ({
         }}
       />
       {error && (
-        <p className="absolute -top-[25px] left-0 flex h-6 flex-row items-center gap-0.5 rounded-[4px] bg-alert p-1 text-[10px] font-medium text-alert">
+        <p className="absolute -top-[25px] left-0 z-50 flex min-w-[123px] flex-row items-center gap-0.5 rounded-[4px] bg-alert p-1 text-[10px] font-medium text-alert">
           <svg
             width="16"
             height="16"
