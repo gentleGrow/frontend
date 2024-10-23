@@ -13,6 +13,7 @@ import ItemNameCell from "@/widgets/asset-management-draggable-table/ui/ItemName
 import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
 import { useQueryClient } from "@tanstack/react-query";
 import { keyStore } from "@/shared/lib/query-keys";
+import AccountTypeCell from "@/widgets/asset-management-draggable-table/ui/AccountTypeCell";
 
 const filedWidth = {
   종목명: 12,
@@ -90,7 +91,10 @@ const AssetManagementDraggableTable = ({
   const handleValueChange = (key: string, value: any, id: number) => {
     queryClient.setQueryData<AssetStock>(
       keyStore.assetStock.getSummary.queryKey,
-      (prev) => {
+      () => {
+        const prev = queryClient.getQueryData<AssetStock>(
+          keyStore.assetStock.getSummary.queryKey,
+        );
         if (!prev) return;
         return {
           ...prev,
@@ -124,6 +128,27 @@ const AssetManagementDraggableTable = ({
               selected={data?.value}
               onSelect={(item) => handleValueChange(key, item.name, id)}
               selections={itemNameList}
+            />
+          );
+        }
+
+        if (key === "계좌종류") {
+          return (
+            <AccountTypeCell
+              selected={data?.value}
+              onSelect={(name) => handleValueChange(key, name, id)}
+              selections={accountList}
+            />
+          );
+        }
+
+        if (key === "증권사") {
+          return (
+            <AccountTypeCell
+              onSelect={(name) => handleValueChange(key, name, id)}
+              selections={brokerList}
+              selected={data?.value}
+              icon
             />
           );
         }

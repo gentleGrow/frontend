@@ -91,7 +91,7 @@ const ItemNameCell = ({
         ref={inputRef}
         value={typedName ?? ""}
         onChange={(e) => setTypedName(e.target.value)}
-        className="h-full w-full px-2.5 py-[10.5px] focus:outline-green-60"
+        className="h-full w-full px-2.5 py-[10.5px] text-body-2 text-gray-90 focus:outline-green-60"
         onFocus={() => {
           setIsFocused(true);
         }}
