@@ -11,7 +11,6 @@ const checkValidateNickname = async (nickname: string) => {
       throw new Error(`${response.status} ${response.statusText}`);
     }
     const data = await response.json();
-    console.log("data ", data, nickname);
     return data.isUsed;
   } catch (error) {
     console.error(error);

@@ -44,9 +44,7 @@ export const TextButtonStory = {
   render: () => {
     const { buttonProps } = useButton({
       elementType: "div",
-      onClick: () => {
-        console.log("ttt");
-      },
+      onClick: () => {},
     });
 
     return (

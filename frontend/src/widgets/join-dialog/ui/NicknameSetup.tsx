@@ -31,7 +31,6 @@ export default function NicknameSetup({
   const debouncedCheckNickname = useCallback(
     debounce(async (newNickname: string) => {
       const isUsed = await checkValidateNickname(newNickname);
-      console.log("isUsed ", isUsed, newNickname);
       setIsUsed(isUsed);
     }, 300),
     [],
