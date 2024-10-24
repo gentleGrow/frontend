@@ -1,16 +1,28 @@
-import { fetchWithTimeout } from "@/shared";
+"use server";
+import { fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
+import { User } from "../types/user";
+import { cookies } from "next/headers";
+import { ACCESS_TOKEN } from "@/shared/constants/cookie";
 
-const getUser = async () => {
+const getUser = async (): Promise<User | null> => {
   try {
-    const res = await fetchWithTimeout("api/user", { method: "POST" });
+    const response = await fetchWithTimeout(
+      `${SERVICE_SERVER_URL}/api/auth/v1/user`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
+        },
+      },
+    );
 
-    if (!res.ok) {
-      return null;
-      //throw new Error("로그인이 필요합니다.");
+    if (!response.ok) {
+      throw new Error(`${response.status} ${response.statusText}`);
     }
-    const user = await res.json();
-    return user;
+    return await response.json();
   } catch (error) {
+    console.error(error);
     return null;
   }
 };

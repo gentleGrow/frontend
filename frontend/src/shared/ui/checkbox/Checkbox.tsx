@@ -1,17 +1,16 @@
-// CustomCheckbox.tsx
 import React from "react";
 
-interface Checkbox {
-  label: string;
-  checked: boolean;
-  required: boolean;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+interface CheckboxProps {
+  label?: string;
+  checked?: boolean;
+  required?: boolean;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const Checkbox: React.FC<Checkbox> = ({
+const CustomCheckbox: React.FC<CheckboxProps> = ({
   label,
   checked,
-  required,
+  required = false,
   onChange,
 }) => {
   return (
@@ -21,10 +20,9 @@ const Checkbox: React.FC<Checkbox> = ({
         className="hidden"
         checked={checked}
         onChange={onChange}
-        disabled={required}
       />
       <div
-        className={`flex h-4 w-4 items-center justify-center rounded-[2px] border ${checked ? "border-transparent bg-green-60" : "border-gray-30"} ${required ? "opacity-40" : null}`}
+        className={`flex h-4 w-4 items-center justify-center rounded-[2px] border ${checked ? "border-transparent bg-green-50 hover:bg-green-70" : "border-gray-30 hover:border-gray-50"} `}
       >
         {checked && (
           <svg
@@ -39,9 +37,8 @@ const Checkbox: React.FC<Checkbox> = ({
         )}
       </div>
       {label && (
-        <span
-          className={`text-sm font-normal ${required ? "text-gray-40" : "text-gray-60"}`}
-        >
+        <span className={`text-sm font-normal text-gray-600`}>
+          <span className="text-green-60">{required && "(필수) "}</span>
           {label}
         </span>
       )}
@@ -49,4 +46,4 @@ const Checkbox: React.FC<Checkbox> = ({
   );
 };
 
-export default Checkbox;
+export default CustomCheckbox;

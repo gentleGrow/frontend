@@ -11,6 +11,7 @@ import {
   Summary,
   Top10SelectedByRichPerson,
 } from "@/widgets";
+import JoinDialog from "@/widgets/join-dialog/ui/JoinDialog";
 
 export default function Home() {
   return (
@@ -44,6 +45,7 @@ export default function Home() {
         </div>
       </div>
       <HomeGuestAccessGuideButton />
+      <JoinDialog />
     </div>
   );
 }

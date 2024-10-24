@@ -1,7 +1,6 @@
 "use client";
-import { AuthContext, logout as logoutUser } from "@/entities";
+import { AuthContext, logout as logoutUser, User } from "@/entities";
 import getUser from "@/entities/user/api/getUser";
-import { User } from "@/entities/user/hooks/useUser";
 import React, { useEffect, useState } from "react";
 
 export default function AuthProvider({
@@ -23,7 +22,7 @@ export default function AuthProvider({
     initializeUser();
   }, []);
   return (
-    <AuthContext.Provider value={{ user, logout }}>
+    <AuthContext.Provider value={{ user, initializeUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,11 +1,6 @@
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
-export interface User {
-  email: string;
-  nickname: string;
-  userId: string;
-  isLoggedIn: boolean;
-}
+
 const useUser = () => {
   const context = useContext(AuthContext);
   if (!context) {

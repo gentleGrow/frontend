@@ -9,30 +9,17 @@ import {
 import KakaoLoginButton from "../KakaoLoginButton";
 import NaverLoginButton from "../NaverLoginButton";
 import GoogleLoginButton from "../GoogleLoginButton";
-import useMediaQuery from "../../../shared/hooks/useMediaQuery";
 import { loginModalAtom } from "../atoms/loginAtoms";
 import { useAtomValue, useSetAtom } from "jotai";
-import { useEffect } from "react";
 
 export default function LoginDialog({}: {}) {
-  const { isMobile } = useMediaQuery();
   const isOpenLoginModal = useAtomValue(loginModalAtom);
   const setIsOpenLoginModal = useSetAtom(loginModalAtom);
 
-  useEffect(() => {
-    if (isMobile && isOpenLoginModal) {
-      document.body.style.overflow = "hidden";
-    }
-
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [isMobile, isOpenLoginModal]);
-
   return (
-    <Dialog modal={!isMobile} open={isOpenLoginModal}>
+    <Dialog open={isOpenLoginModal}>
       <DialogContent
-        className="p-0 px-[40px] mobile-545:h-full mobile-545:min-w-full"
+        className="p-0 px-[40px] tablet:flex tablet:h-full tablet:min-w-full tablet:items-center tablet:justify-center tablet:rounded-none"
         onPointerDownOutside={() => {
           setIsOpenLoginModal(false);
         }}
@@ -59,7 +46,7 @@ export default function LoginDialog({}: {}) {
           </svg>
           <span className="sr-only">Close</span>
         </DialogClose>
-        <div className="flex h-full flex-col items-center justify-between mobile-545:pb-[72px] mobile-545:pt-[150px] except-mobile-545:space-y-[135px] except-mobile-545:py-[64px]">
+        <div className="flex h-full flex-col items-center justify-between tablet:w-[486px] tablet:py-[150px] mobile-545:w-full mobile-545:pb-[72px] mobile-545:pt-[150px] except-tablet:space-y-[135px] except-tablet:py-[64px]">
           <div className="space-y-[16px] text-center">
             <h1 className="text-heading-1">시작하기</h1>
             <p className="inline-block max-w-[394px] text-[16px] font-medium leading-[24px]">
@@ -67,7 +54,7 @@ export default function LoginDialog({}: {}) {
               로그인으로 쉽고 빠르게 서비스를 시작하세요.
             </p>
           </div>
-          <div className="flex flex-col space-y-[24px]">
+          <div className="flex w-full flex-col space-y-[24px]">
             <KakaoLoginButton />
             <NaverLoginButton />
             <GoogleLoginButton />
