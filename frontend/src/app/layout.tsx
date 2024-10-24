@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Header } from "@/widgets";
+import { Footer, Header } from "@/widgets";
 import AuthProvider from "./AuthProvider";
 import JotaiProvider from "./JotaiProvider";
 import { LoginDialog } from "@/features";
@@ -33,10 +33,7 @@ export default function RootLayout({
                   {children}
                 </div>
                 <LoginDialog />
-                <footer className="mx-auto flex h-[84px] w-full max-w-[1400px] items-center justify-between bg-gray-5 px-[20px]">
-                  <p>Copyrighted © insightout all rights reserved.</p>
-                  <p>email@gmail.com</p>
-                </footer>
+                <Footer />
               </div>
             </QueryClientProvider>
           </AuthProvider>

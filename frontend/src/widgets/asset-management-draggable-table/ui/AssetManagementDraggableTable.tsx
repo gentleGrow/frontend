@@ -17,14 +17,15 @@ import AccountTypeCell from "@/widgets/asset-management-draggable-table/ui/Accou
 import { DatePicker } from "@/shared";
 import { format } from "date-fns";
 import NumberInput from "@/shared/ui/NumberInput";
+import { useUser } from "@/entities";
+import { useSetAtom } from "jotai/index";
+import { loginModalAtom } from "@/features";
 
 const filedWidth = {
   종목명: 12,
   계좌종류: 9,
   수익률: 8,
 };
-
-const minimumWidth = 136;
 
 const fieldIsRequired = (field: string) =>
   field === "종목명" || field === "수량" || field === "구매일자";
@@ -40,6 +41,14 @@ const autoFilledField = [
   "현재가",
   "수익금",
 ];
+
+const cellMinimumWidth = {
+  종목명: 150,
+  수량: 130,
+  구매일자: 136,
+  증권사: 156,
+  "계좌 종류": 120,
+};
 
 const NumberFieldType = {
   Amount: "amount",
@@ -78,6 +87,10 @@ const AssetManagementDraggableTable = ({
   accountList,
   brokerList,
 }: AssetManagementDraggableTableProps) => {
+  const { user } = useUser();
+
+  const setIsOpenLoginModal = useSetAtom(loginModalAtom);
+
   const { data } = useGetAssetStocks(accessToken);
   const [currentCurrency, setCurrentCurrency] = useState<"kr" | "us">("kr");
 
@@ -94,7 +107,15 @@ const AssetManagementDraggableTable = ({
 
   const tableData = data.stock_assets;
 
-  const isFixed = windowWidth / fields.length < minimumWidth;
+  const tableMinimumWidth = Object.keys(fieldSize).reduce((acc, key) => {
+    return acc + (cellMinimumWidth[key] ?? 136);
+  }, 0);
+
+  console.log("tableMinimumWidth", tableMinimumWidth);
+
+  console.log("windowWidth", windowWidth);
+
+  const isFixed = windowWidth - 40 - tableMinimumWidth < 0;
 
   const headerBuilder = (key: string) => (
     <div
@@ -123,6 +144,11 @@ const AssetManagementDraggableTable = ({
   };
 
   const handleValueChange = (key: string, value: any, id: number) => {
+    if (!user?.isLoggedIn) {
+      setIsOpenLoginModal(true);
+      return;
+    }
+
     queryClient.setQueryData<AssetStock>(
       keyStore.assetStock.getSummary.queryKey,
       () => {
@@ -295,10 +321,6 @@ const AssetManagementDraggableTable = ({
         }
 
         if (key === "매입가") {
-          // 데이터 수정 로직 실행이 느려서 컨트롤로 동작하기 어렵다...
-          // unControlled로 변경해야 할 듯 하다.
-          // react-hook-form을 사용해야 하나?
-          // 아니면 더 좋은 방법이 없나?
           return (
             <NumberInput
               onChange={(value) => handleValueChange(key, value, id)}
@@ -313,6 +335,7 @@ const AssetManagementDraggableTable = ({
 
         return;
       }}
+      tableWidth={tableMinimumWidth}
       fieldWidth={(key) => fieldSize[key]}
       onFieldChange={() => {}}
       onAddRow={() => {}}

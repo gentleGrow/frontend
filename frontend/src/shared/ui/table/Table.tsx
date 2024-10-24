@@ -23,6 +23,7 @@ interface FieldState {
 
 export interface TableProps<T extends unknown> {
   fields: FieldState[];
+  tableWidth?: number;
   dataset: T[];
   headerBuilder: (key: string) => ReactNode;
   cellBuilder: (key: any, data: any, rowId: number) => ReactNode;
@@ -38,6 +39,7 @@ export interface TableProps<T extends unknown> {
 
 const Index = <T extends unknown>({
   fields,
+  tableWidth,
   dataset,
   cellBuilder,
   headerBuilder,
@@ -214,7 +216,7 @@ const Index = <T extends unknown>({
       <div
         className="relative rounded-[4px] border border-gray-20 bg-white"
         style={{
-          width: fixWidth ? "1360px" : "100%",
+          width: fixWidth ? `${tableWidth}px` : "100%",
         }}
       >
         <ResizablePanelGroup direction="horizontal" className="relative">
