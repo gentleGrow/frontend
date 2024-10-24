@@ -1,19 +1,28 @@
+"use client";
+
 import AssetManagementTabBar from "@/widgets/assets-management-tab-bar/ui/AssetManagementTabBar";
-import { Suspense } from "react";
-import { Summary } from "@/widgets"; // 새로 분리한 Tab 컴포넌트 가져오기
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import useMediaQuery from "@/shared/hooks/useMediaQuery";
 
 const AssetManagement: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const { isMobile } = useMediaQuery();
+  const pathname = usePathname();
+
   return (
-    <div className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col gap-4 bg-gray-5 except-mobile:px-5">
+    <motion.div
+      layout={!isMobile}
+      className={cn(
+        "mx-auto flex w-full flex-1 flex-col gap-4 bg-gray-5 except-mobile:px-5",
+        pathname === "/asset-management/sheet" ? "" : "max-w-[1400px]",
+      )}
+    >
       <AssetManagementTabBar />
-      {/* timestamp */}
-      <Suspense fallback={<div>로딩중...</div>}>
-        <Summary />
-      </Suspense>
       <div>{children}</div>
-    </div>
+    </motion.div>
   );
 };
 

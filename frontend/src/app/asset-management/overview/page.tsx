@@ -4,6 +4,7 @@ import {
   EstimateDividend,
   InvestmentPerformanceChart,
   StockComposition,
+  Summary,
 } from "@/widgets";
 import { Suspense } from "react";
 import AssetsAccumulateTrend from "@/widgets/assets-accumulate-trend/ui/AssetsAccumulateTrend";
@@ -11,6 +12,9 @@ import AssetsAccumulateTrend from "@/widgets/assets-accumulate-trend/ui/AssetsAc
 const Overview = () => {
   return (
     <div className="flex flex-col gap-4">
+      <Suspense fallback={<div>로딩중...</div>}>
+        <Summary />
+      </Suspense>
       <div className="grid grid-cols-1 gap-4 except-mobile:grid-cols-5">
         <div className="except-mobile:col-span-2">
           <Suspense fallback={<div>종목 구성 로딩</div>}>

@@ -31,6 +31,8 @@ const config: Config = {
       colors: {
         alert: "#F84A4A",
         decrease: "#0A6CFF",
+        increaseBackground: "#FFECEC",
+        decreaseBackground: "#DCEAFF",
         gray: {
           "0": "#FFFFFF",
           "5": "#F7F8FA",
@@ -117,6 +119,12 @@ const config: Config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        popover: "0px 0px 7px 0px rgba(0, 0, 0, 0.1)",
+      },
+      zIndex: {
+        "9999": "9999",
       },
     },
   },

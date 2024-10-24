@@ -29,7 +29,7 @@ export default function EstimateDividendClient({
     <div
       className={`relative ${selectedTab === "모두" ? "h-[390px]" : "h-full"} w-full rounded-xl border border-gray-20 bg-white p-[16px] mobile:rounded-none ${selectedTab === "모두" ? "mobile:h-[500px]" : "h-full min-h-[388px]"} mobile:border-none`}
     >
-      <h2 className="text-heading-2">예상 배당액</h2>
+      <h2 className="text-heading-2 text-gray-80">예상 배당액</h2>
       <div className="mt-[16px] flex w-full justify-between except-mobile:absolute except-mobile:right-[16px] except-mobile:top-[12px] except-mobile:mt-0">
         <div className="w-[176px] shrink-0 mobile:hidden" />
         <div className="w-full except-mobile:w-[148px]">

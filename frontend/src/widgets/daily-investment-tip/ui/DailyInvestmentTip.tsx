@@ -4,7 +4,9 @@ export default async function DailyInvestmentTip() {
   const todayTip = await fetchTodayTip();
   return (
     <div className="flex h-[80px] items-center space-x-[20px] rounded-md border border-gray-20 bg-gray-0 p-[16px] mobile:h-[120px] mobile:flex-col mobile:items-start mobile:space-x-0 mobile:space-y-[20px] mobile:rounded-none mobile:border-none mobile:px-[20px]">
-      <h3 className="block shrink-0 text-heading-2">오늘의 투자 tip</h3>
+      <h3 className="block shrink-0 text-heading-2 text-gray-80">
+        오늘의 투자 tip
+      </h3>
       <div className="flex h-[48px] w-full grow items-center space-x-[8px] border border-green-20 bg-green-10/30 px-[16px]">
         <svg
           width="18"

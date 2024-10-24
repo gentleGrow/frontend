@@ -14,6 +14,7 @@ export default async function Summary() {
   const user = await getUser();
   const summary =
     user && user.isJoined ? await fetchSummary() : await fetchSampleSummary();
+
   return (
     <>
       <div className="flex w-full mobile:hidden except-mobile:space-x-[16px]">
@@ -23,7 +24,7 @@ export default async function Summary() {
             title={SummaryTitle[item]}
             amount={
               summary[item].profit_amount || typeof summary[item] === "object"
-                ? 0
+                ? summary[item].profit_amount
                 : summary[item]
             }
             rate={summary[item].profit_rate || 0}

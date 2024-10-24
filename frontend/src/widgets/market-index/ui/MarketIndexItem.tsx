@@ -11,7 +11,7 @@ export default function MarketIndexItem({
 }) {
   return (
     <div className="flex flex-col justify-center space-y-[12px] border-r border-gray-20 px-[16px] text-heading-4">
-      <p className="">{stockMarket}</p>
+      <p className="text-gray-80">{stockMarket}</p>
       <div className="flex items-center space-x-[8px]">
         <p>{stockIndex}</p>
         <IncDecRate rate={rate} />

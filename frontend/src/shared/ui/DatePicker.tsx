@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import Calendar from "@/shared/ui/calendar/calendar";
+import { Calendar } from "@/shared";
 import * as React from "react";
 
 const CalendarIcon = () => {
