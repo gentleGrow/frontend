@@ -30,7 +30,7 @@ const DragAndDropDropdown = ({
   );
 
   return (
-    <div className="flex h-full max-h-[230px] flex-col gap-[4.5px] overflow-y-auto">
+    <div className="flex h-full max-h-[230px] flex-col gap-[4.5px] overflow-y-auto scrollbar-hide">
       <ul className="flex flex-col gap-[4.5px]">
         {requiredItems.map((item) => (
           <DragAndDropNotDraggableItem key={item.name} item={item} />
@@ -85,24 +85,35 @@ const DragAndDropDropdownDraggableItem = ({
 
   return (
     <Reorder.Item
-      className="group relative flex flex-row items-center justify-between pr-1"
+      className="group relative flex flex-row items-center justify-between pl-2.5 pr-1"
       value={item}
       as="li"
       dragListener={false}
       dragControls={controls}
+      drag="y"
+      dragPropagation={false}
     >
       {isDragging && (
         <div className="absolute left-0 top-0 h-full w-[2px] bg-green-60" />
       )}
       <div className="flex flex-row items-center gap-[4.5px]">
         <CheckBox checked={isChecked} onChange={onCheckboxClicked} />
-        <span className="text-body-2 text-gray-90 group-hover:font-semibold">
+        <span className="text-body-2 text-gray-90 except-mobile:group-hover:font-semibold">
           {item.name}
         </span>
       </div>
       <button
-        className="cursor-grab"
+        className="cursor-grab touch-none"
         type="button"
+        onTouchStart={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsDragging(true);
+          controls.start(e);
+        }}
+        onTouchEnd={() => {
+          setIsDragging(false);
+        }}
         onPointerUp={(e) => {
           e.currentTarget.style.cursor = "grab";
           const parent = e.currentTarget.parentElement;
@@ -152,7 +163,7 @@ const DragAndDropNotDraggableItem = ({
   onCheckboxClicked?: () => void;
 }) => {
   return (
-    <div className="group relative flex flex-row items-center justify-between overflow-y-auto pr-1">
+    <div className="group relative flex flex-row items-center justify-between overflow-y-auto pl-2.5 pr-1">
       <div className="flex flex-row items-center gap-[4.5px] opacity-40">
         <CheckBox
           checked={isChecked}
