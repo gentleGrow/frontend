@@ -2,14 +2,13 @@ import SeeMoreButton from "./SeeMoreButton";
 import StockTable from "./StockTable";
 import fetchMyStocks from "../api/fetchMyStocks";
 import fetchDummyMyStocks from "../api/fetchDummyMyStocks";
-import { cookies } from "next/headers";
 import { NoDataMessage } from "@/shared";
+import { getUser } from "@/entities";
 
 export default async function MyStocks() {
-  const hasAccessToken = cookies().get("accessToken") ? true : false;
-  const data = hasAccessToken
-    ? await fetchMyStocks()
-    : await fetchDummyMyStocks();
+  const user = await getUser();
+  const data =
+    user && user.isJoined ? await fetchMyStocks() : await fetchDummyMyStocks();
 
   const stocks = data.slice(0, 6);
   return (

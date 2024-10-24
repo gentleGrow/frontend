@@ -21,13 +21,6 @@ const getUser = async (): Promise<User | null> => {
       throw new Error(`${response.status} ${response.statusText}`);
     }
     return await response.json();
-
-    // const res = await fetch("api/user", { method: "POST" });
-    // const user = await res.json();
-    // if (user.error) {
-    //   throw new Error(user.error);
-    // }
-    // return user;
   } catch (error) {
     console.error(error);
     return null;
