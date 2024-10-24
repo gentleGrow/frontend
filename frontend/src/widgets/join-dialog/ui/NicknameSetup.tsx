@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import hasSpecialChar from "../utils/hasSpecialChar";
+import updateNickname from "../api/updateNickname";
 
 export default function NicknameSetup() {
   const [nickname, setNickname] = useState<string>("");
@@ -114,7 +115,10 @@ export default function NicknameSetup() {
       </div>
 
       <DialogFooter className="mt-[52px]">
-        <PrimaryButton isDisabled={isNicknameInvalid || nickname.length < 2}>
+        <PrimaryButton
+          isDisabled={isNicknameInvalid || nickname.length < 2}
+          onClick={async () => await updateNickname(nickname)}
+        >
           완료하기
         </PrimaryButton>
       </DialogFooter>

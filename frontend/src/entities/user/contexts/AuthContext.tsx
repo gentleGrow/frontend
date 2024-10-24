@@ -1,10 +1,9 @@
 "use client";
 import { createContext } from "react";
-import { User } from "../hooks/useUser";
+import { User } from "../types/user";
 
 interface AuthContextType {
   user: User | null;
-  //   login: (username: string) => void;
   logout: () => void;
 }
 

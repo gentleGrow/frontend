@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/shared/ui/checkbox";
-export default function UserAgreement() {
+export default function UserAgreement({ nextStep }: { nextStep: () => void }) {
   const [isAgreedToTerms, setIsAgreedToTerms] = useState<boolean>(false);
   const [isAgreedToPrivacyPolicy, setIsAgreedToPrivacyPolicy] =
     useState<boolean>(false);
@@ -74,6 +74,7 @@ export default function UserAgreement() {
       <DialogFooter className="mt-[32px]">
         <PrimaryButton
           isDisabled={!isAgreedToTerms && !isAgreedToPrivacyPolicy}
+          onClick={nextStep}
         >
           다음
         </PrimaryButton>

@@ -4,12 +4,14 @@ import { ReactNode } from "react";
 export default function PrimaryButton({
   isHover = false,
   isDisabled = false,
+  onClick,
   props,
   children,
 }: {
   isHover?: boolean;
   isDisabled?: boolean;
   props?: Record<string, any>;
+  onClick?: () => void;
   children?: ReactNode;
 }) {
   const { className, ...restProps } = props || {};
@@ -23,7 +25,12 @@ export default function PrimaryButton({
   );
 
   return (
-    <button className={finalClassName} disabled={isDisabled} {...restProps}>
+    <button
+      className={finalClassName}
+      disabled={isDisabled}
+      onClick={onClick}
+      {...restProps}
+    >
       {children}
     </button>
   );

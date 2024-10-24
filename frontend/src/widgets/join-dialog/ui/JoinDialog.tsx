@@ -9,16 +9,17 @@ import NicknameSetup from "./NicknameSetup";
 export default function JoinDialog() {
   const { user } = useUser();
   const [state, setState] = useState<"agreement" | "nickname">("nickname");
-
-  if (user && user.isActivated) {
+  console.log("user", user);
+  if (!user || (user && user.isJoined)) {
     return null;
   }
   return (
-    <Dialog
-      //open={user && !user?.isActivated}
-      open={true}
-    >
-      {state === "agreement" ? <UserAgreement /> : <NicknameSetup />}
+    <Dialog open={user && !user.isJoined}>
+      {state === "agreement" ? (
+        <UserAgreement nextStep={() => setState("nickname")} />
+      ) : (
+        <NicknameSetup />
+      )}
     </Dialog>
   );
 }
