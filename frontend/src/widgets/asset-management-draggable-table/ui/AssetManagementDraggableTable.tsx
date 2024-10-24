@@ -20,6 +20,7 @@ import NumberInput from "@/shared/ui/NumberInput";
 import { useUser } from "@/entities";
 import { useSetAtom } from "jotai/index";
 import { loginModalAtom } from "@/features";
+import SortingButton from "@/widgets/asset-management-draggable-table/ui/SortingButton";
 
 const filedWidth = {
   종목명: 12,
@@ -29,6 +30,25 @@ const filedWidth = {
 
 const fieldIsRequired = (field: string) =>
   field === "종목명" || field === "수량" || field === "구매일자";
+
+const numberFields = [
+  "수량",
+  "현재가",
+  "배당금",
+  "고가",
+  "증권사",
+  "저가",
+  "시가",
+  "수익률",
+  "수익금",
+  "매입금",
+  "매입가",
+  "거래량",
+];
+
+const fieldTypeIsNumber = (field: string) => {
+  return numberFields.includes(field);
+};
 
 const autoFilledField = [
   "수익률",
@@ -81,18 +101,42 @@ interface AssetManagementDraggableTableProps {
   accountList: string[];
 }
 
+const getSortType = (field: string): "date" | "number" | "string" => {
+  if (field === "구매일자") {
+    return "date";
+  }
+
+  if (numberFields.includes(field)) {
+    return "number";
+  }
+
+  return "string";
+};
+
 const AssetManagementDraggableTable = ({
   accessToken,
   itemNameList,
   accountList,
   brokerList,
 }: AssetManagementDraggableTableProps) => {
+  const [currentSorting, setCurrentSorting] = useState<"asc" | "desc">("asc");
+  const [sortingField, setSortingField] = useState<string | null>(null);
+
   const [currencySetting, setCurrencySetting] = useState<"KRW" | "USD">("KRW");
   const { user } = useUser();
 
   const setIsOpenLoginModal = useSetAtom(loginModalAtom);
 
-  const { data } = useGetAssetStocks(accessToken);
+  const { data } = useGetAssetStocks(
+    accessToken,
+    sortingField === null
+      ? null
+      : {
+          sortBy: sortingField,
+          sortOrder: currentSorting,
+          type: getSortType(sortingField),
+        },
+  );
 
   const queryClient = useQueryClient();
 
@@ -113,16 +157,45 @@ const AssetManagementDraggableTable = ({
 
   const isFixed = windowWidth - 40 - tableMinimumWidth < 0;
 
-  const headerBuilder = (key: string) => (
-    <div
-      className={cn(
-        "text-right",
-        typeof tableData[0][key] === "number" ? "text-right" : "text-start",
-      )}
-    >
-      {key}
-    </div>
-  );
+  const headerBuilder = (key: string) => {
+    let sorting: "desc" | "asc" = "desc";
+
+    if (key === sortingField) {
+      sorting = currentSorting;
+    }
+
+    return (
+      <div
+        className={cn(
+          "relative flex flex-row items-center gap-2",
+          fieldTypeIsNumber(key) ? "justify-end" : "justify-start",
+        )}
+      >
+        <span>{key}</span>
+        <SortingButton
+          sorting={sorting}
+          isActive={key === sortingField}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (!sortingField) {
+              setSortingField(key);
+              setCurrentSorting("desc");
+              return;
+            }
+
+            if (key === sortingField) {
+              setCurrentSorting(currentSorting === "asc" ? "desc" : "asc");
+            } else {
+              setSortingField(key);
+              setCurrentSorting("asc");
+            }
+          }}
+        />
+      </div>
+    );
+  };
 
   const handleReset = () => {
     setFields((prev) => {

@@ -66,8 +66,6 @@ const Index = <T extends unknown>({
   const { updatePointer, stopAutoScroll, startAutoScroll } =
     useAutoScroll(containerRef);
 
-  const preservedCellBuilder = usePreservedCallback(cellBuilder);
-  const preservedHeaderBuilder = usePreservedCallback(headerBuilder);
   const preservedOnAddRow = usePreservedCallback(onAddRow);
   const preservedOnDeleteRow = usePreservedCallback(onDeleteRow);
   const preservedOnFieldChange = usePreservedCallback(onFieldChange);
@@ -214,13 +212,19 @@ const Index = <T extends unknown>({
       className={"w-full overflow-x-scroll scrollbar-hide"}
     >
       <div
-        className="relative rounded-[4px] border border-gray-20 bg-white"
+        className="overflow-visible rounded-[4px] border border-gray-20 bg-white"
         style={{
           width: fixWidth ? `${tableWidth}px` : "100%",
         }}
       >
-        <ResizablePanelGroup direction="horizontal" className="relative">
-          <hr className="absolute left-0 top-[42px] z-50 h-[1px] w-full border border-gray-50 bg-gray-50" />
+        <ResizablePanelGroup
+          direction="horizontal"
+          className="relative z-0"
+          style={{
+            overflow: "visible !important",
+          }}
+        >
+          <hr className="absolute left-0 top-[42px] z-20 h-[1px] w-full border border-gray-50 bg-gray-50" />
           {preservedUserField.map((field, index) => (
             <TableColumn
               key={field.name}
@@ -229,8 +233,8 @@ const Index = <T extends unknown>({
               field={field.name}
               onResize={onResize}
               dataset={preservedDataset}
-              headerBuilder={preservedHeaderBuilder}
-              cellBuilder={preservedCellBuilder}
+              headerBuilder={headerBuilder}
+              cellBuilder={cellBuilder}
               fieldWidth={fieldWidth?.(field.name)}
               isLastColumn={index === fields.length - 1}
               onDragEnd={onDragEnd}
@@ -245,9 +249,9 @@ const Index = <T extends unknown>({
               onReorder={onReorder}
               onReset={onReset}
             />
-            {preservedDataset.map((_data, idx) => (
+            {preservedDataset.map((_data: any, idx) => (
               <DeleteRowIconButton
-                key={idx}
+                key={_data?.id ?? idx}
                 onDeleteRow={(id) => console.log(id)}
                 rowId={0}
               />

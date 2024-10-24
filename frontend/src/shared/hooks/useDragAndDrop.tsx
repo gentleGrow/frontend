@@ -49,6 +49,7 @@ export const useDragAndDrop = ({
 }: UseDragAndDrop) => {
   const context = useContext(DragContext);
   const draggingClone = useRef<HTMLElement | null>(null);
+  const origin = useRef<HTMLElement | null>(null);
 
   if (!context)
     throw new Error("useDragAndDrop must be used within a DragProvider");
@@ -87,6 +88,8 @@ export const useDragAndDrop = ({
   const onPointerUp = (e: PointerEvent) => {
     if (!id.current) return;
 
+    origin?.current?.style.setProperty("background", "white");
+
     if (e.pointerType === "touch") {
       (e?.currentTarget as HTMLElement)?.releasePointerCapture(e.pointerId);
       (e.currentTarget as HTMLElement).removeEventListener(
@@ -111,10 +114,13 @@ export const useDragAndDrop = ({
   };
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.currentTarget.style.setProperty("background", "rgba(239, 240, 241, 1)");
+
     const draggingArea = document.getElementById("drag-overlay");
     if (!draggingArea) return;
 
     draggingClone.current = e.currentTarget.cloneNode(true) as HTMLElement;
+    origin.current = e.currentTarget;
     // check if is touch event
     if (e.pointerType === "touch") {
       e.currentTarget.setPointerCapture(e.pointerId);
