@@ -7,8 +7,8 @@ import { useState } from "react";
 import NicknameSetup from "./NicknameSetup";
 
 export default function JoinDialog() {
-  const { user } = useUser();
-  const [state, setState] = useState<"agreement" | "nickname">("nickname");
+  const { user, initializeUser } = useUser();
+  const [state, setState] = useState<"agreement" | "nickname">("agreement");
   console.log("user", user);
   if (!user || (user && user.isJoined)) {
     return null;
@@ -18,7 +18,7 @@ export default function JoinDialog() {
       {state === "agreement" ? (
         <UserAgreement nextStep={() => setState("nickname")} />
       ) : (
-        <NicknameSetup />
+        <NicknameSetup initializeUser={initializeUser} />
       )}
     </Dialog>
   );

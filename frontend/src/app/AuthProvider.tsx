@@ -22,7 +22,7 @@ export default function AuthProvider({
     initializeUser();
   }, []);
   return (
-    <AuthContext.Provider value={{ user, logout }}>
+    <AuthContext.Provider value={{ user, initializeUser, logout }}>
       {children}
     </AuthContext.Provider>
   );
