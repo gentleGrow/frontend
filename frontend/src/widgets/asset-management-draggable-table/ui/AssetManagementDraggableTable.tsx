@@ -111,10 +111,6 @@ const AssetManagementDraggableTable = ({
     return acc + (cellMinimumWidth[key] ?? 136);
   }, 0);
 
-  console.log("tableMinimumWidth", tableMinimumWidth);
-
-  console.log("windowWidth", windowWidth);
-
   const isFixed = windowWidth - 40 - tableMinimumWidth < 0;
 
   const headerBuilder = (key: string) => (
