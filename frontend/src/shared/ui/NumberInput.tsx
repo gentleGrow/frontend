@@ -36,8 +36,6 @@ const NumberInput = ({
   const [isFocused, setIsFocused] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  console.log(value);
-
   if (type === "ratio") {
     if (!autoFill) assert("비율 타입은 autoFill 이 true 여야 합니다.");
   }
