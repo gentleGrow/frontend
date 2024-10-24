@@ -2,7 +2,7 @@
 
 import { useUser } from "@/entities";
 import UserAgreement from "./UserAgreement";
-import { Dialog, DialogClose } from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
 import { useState } from "react";
 import NicknameSetup from "./NicknameSetup";
 import { deleteCookie } from "@/shared";

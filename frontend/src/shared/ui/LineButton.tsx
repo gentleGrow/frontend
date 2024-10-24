@@ -21,7 +21,7 @@ export default function LineButton({
   const { className, ...restProps } = props || {};
 
   const finalClassName = clsx(
-    "relative h-[48px] w-[394px] rounded-md border text-[16px] font-semibold leading-[24px] text-[#2A2D31] disabled:text-[#B9BCC1] ",
+    "relative h-[48px] w-full rounded-md border text-[16px] font-semibold leading-[24px] text-[#2A2D31] disabled:text-[#B9BCC1] ",
     {
       "text-center": align === "center",
       "text-left pl-[40px]": align === "left",

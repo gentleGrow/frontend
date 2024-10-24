@@ -17,7 +17,7 @@ export default function PrimaryButton({
   const { className, ...restProps } = props || {};
 
   const finalClassName = clsx(
-    "relative h-[48px] w-[394px] rounded-md  text-center text-[16px] bg-green-60 font-semibold leading-[24px] text-white disabled:bg-gray-10 disabled:text-gray-50",
+    "relative h-[48px] w-full rounded-md  text-center text-[16px] bg-green-60 font-semibold leading-[24px] text-white disabled:bg-gray-10 disabled:text-gray-50",
     {
       " hover:bg-green-70": !isDisabled,
     },
