@@ -2,9 +2,11 @@
 
 import { useUser } from "@/entities";
 import UserAgreement from "./UserAgreement";
-import { Dialog } from "@/components/ui/dialog";
+import { Dialog, DialogClose } from "@/components/ui/dialog";
 import { useState } from "react";
 import NicknameSetup from "./NicknameSetup";
+import { deleteCookie } from "@/shared";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/shared/constants/cookie";
 
 export default function JoinDialog() {
   const { user, initializeUser } = useUser();
@@ -12,12 +14,23 @@ export default function JoinDialog() {
   if (!user || (user && user.isJoined)) {
     return null;
   }
+  const handleClose = () => {
+    deleteCookie(ACCESS_TOKEN);
+    deleteCookie(REFRESH_TOKEN);
+    initializeUser();
+  };
   return (
     <Dialog open={user && !user.isJoined}>
       {state === "agreement" ? (
-        <UserAgreement nextStep={() => setState("nickname")} />
+        <UserAgreement
+          handleClose={handleClose}
+          nextStep={() => setState("nickname")}
+        />
       ) : (
-        <NicknameSetup initializeUser={initializeUser} />
+        <NicknameSetup
+          initializeUser={initializeUser}
+          handleClose={handleClose}
+        />
       )}
     </Dialog>
   );

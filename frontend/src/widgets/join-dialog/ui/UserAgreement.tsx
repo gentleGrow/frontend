@@ -2,6 +2,7 @@
 import { LineButton, PrimaryButton } from "@/shared";
 import { useState } from "react";
 import {
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -9,7 +10,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/shared/ui/checkbox";
-export default function UserAgreement({ nextStep }: { nextStep: () => void }) {
+export default function UserAgreement({
+  nextStep,
+  handleClose,
+}: {
+  handleClose: () => void;
+  nextStep: () => void;
+}) {
   const [isAgreedToTerms, setIsAgreedToTerms] = useState<boolean>(false);
   const [isAgreedToPrivacyPolicy, setIsAgreedToPrivacyPolicy] =
     useState<boolean>(false);
@@ -25,7 +32,25 @@ export default function UserAgreement({ nextStep }: { nextStep: () => void }) {
   };
   return (
     <DialogContent className="p-[40px] pt-[64px]">
-      <DialogHeader className="mb-[88px] space-y-4">
+      <DialogClose
+        onClick={handleClose}
+        className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-green-40 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+      >
+        <svg
+          width="32"
+          height="32"
+          viewBox="0 0 32 32"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M23.1943 10.4171C23.6393 9.97216 23.6393 9.2507 23.1943 8.80571C22.7493 8.36073 22.0278 8.36073 21.5829 8.80571L16 14.3886L10.4171 8.80572C9.97216 8.36073 9.2507 8.36073 8.80571 8.80571C8.36073 9.2507 8.36073 9.97216 8.80571 10.4171L14.3886 16L8.80571 21.5829C8.36073 22.0278 8.36073 22.7493 8.80571 23.1943C9.2507 23.6393 9.97216 23.6393 10.4171 23.1943L16 17.6114L21.5829 23.1943C22.0278 23.6393 22.7493 23.6393 23.1943 23.1943C23.6393 22.7493 23.6393 22.0278 23.1943 21.5829L17.6114 16L23.1943 10.4171Z"
+            fill="#4F555E"
+          />
+        </svg>
+        <span className="sr-only">Close</span>
+      </DialogClose>
+      <DialogHeader className="mb-[88px] space-y-4 text-left">
         <DialogTitle className="text-[36px] font-bold leading-[48px]">
           약관을 확인하고
           <br />
