@@ -9,7 +9,6 @@ import NicknameSetup from "./NicknameSetup";
 export default function JoinDialog() {
   const { user, initializeUser } = useUser();
   const [state, setState] = useState<"agreement" | "nickname">("agreement");
-  console.log("user", user);
   if (!user || (user && user.isJoined)) {
     return null;
   }

@@ -73,7 +73,7 @@ export default function UserAgreement({ nextStep }: { nextStep: () => void }) {
       </div>
       <DialogFooter className="mt-[32px]">
         <PrimaryButton
-          isDisabled={!isAgreedToTerms && !isAgreedToPrivacyPolicy}
+          isDisabled={!isAgreedToTerms || !isAgreedToPrivacyPolicy}
           onClick={nextStep}
         >
           다음

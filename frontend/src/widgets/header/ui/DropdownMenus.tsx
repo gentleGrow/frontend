@@ -14,7 +14,7 @@ export default function DropdownMenus() {
   return (
     <>
       <DropdownMenuLabel
-        className={`${user?.isLoggedIn ? "flex" : "hidden"} shrink-0 items-center justify-between space-x-[8px]`}
+        className={`${user?.isJoined ? "flex" : "hidden"} shrink-0 items-center justify-between space-x-[8px]`}
       >
         <div>
           <svg
@@ -50,8 +50,8 @@ export default function DropdownMenus() {
           <p className="text-body-3">{user?.nickname}</p>
         </div>
       </DropdownMenuLabel>
-      <DropdownMenuSeparator hidden={user?.isLoggedIn ? false : true} />
-      {user?.isLoggedIn ? (
+      <DropdownMenuSeparator hidden={user?.isJoined ? false : true} />
+      {user?.isJoined ? (
         <DropdownMenuItem onClick={() => logout()}>로그아웃</DropdownMenuItem>
       ) : (
         <DropdownMenuItem

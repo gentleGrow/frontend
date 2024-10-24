@@ -22,16 +22,14 @@ export default function NicknameSetup({
   const [isOnFocus, setIsOnFocus] = useState<boolean>(false);
 
   const isNicknameInvalid =
-    isUsed ||
-    hasSpecialChar(nickname) ||
-    nickname.length < 2 ||
-    nickname.length > 12;
+    hasSpecialChar(nickname) || nickname.length < 2 || nickname.length > 12;
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedCheckNickname = useCallback(
     debounce(async (newNickname: string) => {
-      const isValid = await checkValidateNickname(newNickname);
-      setIsUsed(!isValid);
+      const isUsed = await checkValidateNickname(newNickname);
+      console.log("isUsed ", isUsed, newNickname);
+      setIsUsed(isUsed);
     }, 300),
     [],
   );
@@ -41,7 +39,6 @@ export default function NicknameSetup({
     setNickname(newNickname);
     debouncedCheckNickname(newNickname);
   };
-
   return (
     <DialogContent className="p-[40px] pt-[64px]">
       <DialogHeader className="mb-[140px] space-y-4">
@@ -62,7 +59,7 @@ export default function NicknameSetup({
           type="text"
           placeholder="닉네임을 입력해 주세요."
           value={nickname}
-          isError={nickname !== "" && isNicknameInvalid}
+          isError={(nickname !== "" && isNicknameInvalid) || isUsed}
           onBlur={() => setIsOnFocus(false)}
           onFocus={() => setIsOnFocus(true)}
           onChange={handleNicknameChange}
@@ -71,7 +68,7 @@ export default function NicknameSetup({
         <div className="text-body-5 text-gray-100">
           {nickname.length === 0 ? (
             "2~12자 내 한글, 영문 대소문자, 숫자만 입력할 수 있어요."
-          ) : isNicknameInvalid ? (
+          ) : isNicknameInvalid || isUsed ? (
             <div className="flex items-center space-x-1 text-alert">
               <svg
                 className="flex-shrink-0"
@@ -98,7 +95,7 @@ export default function NicknameSetup({
                 />
               </svg>
               <span>
-                {isUsed && "이미 사용 중인 닉네임이에요."}
+                {!isNicknameInvalid && isUsed && "이미 사용 중인 닉네임이에요."}
                 {hasSpecialChar(nickname) && "특수문자는 사용할 수 없어요."}
                 {(nickname.length < 2 || nickname.length > 12) &&
                   "2~12자 내로 입력해 주세요."}
@@ -136,7 +133,7 @@ export default function NicknameSetup({
 
       <DialogFooter className="mt-[52px]">
         <PrimaryButton
-          isDisabled={isNicknameInvalid || nickname.length < 2}
+          isDisabled={isUsed || isNicknameInvalid || nickname.length < 2}
           onClick={async () =>
             await updateNickname(nickname).then(initializeUser)
           }

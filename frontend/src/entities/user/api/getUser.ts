@@ -6,7 +6,6 @@ import { ACCESS_TOKEN } from "@/shared/constants/cookie";
 
 const getUser = async (): Promise<User | null> => {
   try {
-    console.log("cookies", cookies().get(ACCESS_TOKEN)?.value);
     const response = await fetchWithTimeout(
       `${SERVICE_SERVER_URL}/api/auth/v1/user`,
       {
