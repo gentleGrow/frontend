@@ -35,7 +35,7 @@ const DraggableTableHeader = ({
         ref,
       })}
       className={cn(
-        "relative h-[44px] border-collapse cursor-grab border-r border-gray-30 px-2.5 py-[12.5px] text-body-2 font-semibold",
+        "group z-0 h-[44px] border-collapse cursor-grab overflow-visible border-r border-gray-30 px-2.5 py-[12.5px] text-body-2 font-semibold",
       )}
     >
       {children}
@@ -56,7 +56,7 @@ const NotDraggableTableHeader = ({
       id={field}
       data-key={field}
       className={cn(
-        "relative h-[44px] border-collapse border-r border-gray-30 px-2.5 py-[12.5px] text-body-2 font-semibold",
+        "group relative z-0 h-[44px] border-collapse overflow-visible border-r border-gray-30 px-2.5 py-[12.5px] text-body-2 font-semibold",
       )}
     >
       {children}

@@ -45,12 +45,18 @@ const TableColumn = <T,>({
   return (
     <ResizablePanel
       defaultSize={fieldWidth}
-      className="relative table-column border-collapse"
+      className="relative z-0 table-column border-collapse overflow-visible"
       minSize={6}
       onResize={resizeHandler}
       order={index}
       id={field}
     >
+      {isClosestFromRight && (
+        <div className="absolute -right-[2px] top-0 z-50 h-full w-[4px] bg-green-60" />
+      )}
+      {isClosestFromLeft && (
+        <div className="absolute -left-[2px] top-0 z-50 h-full w-[4px] bg-green-60" />
+      )}
       <TableHeader
         field={field}
         onDrag={onDrag}
@@ -59,22 +65,16 @@ const TableColumn = <T,>({
       >
         {headerBuilder(field)}
         {!isLastColumn ? (
-          <ResizableHandle className="right-0 top-0 h-[42px] w-2 bg-transparent" />
+          <ResizableHandle className="-right-[1.5px] top-[5px] z-50 h-[32px] w-[3px] rounded-full bg-transparent after:hover:bg-green-60 active:after:bg-green-60" />
         ) : (
           <div className="absolute right-0 top-0 h-[42px] cursor-default bg-transparent"></div>
         )}
       </TableHeader>
       {dataset.map((data, idx) => (
-        <TableCell key={idx}>
+        <TableCell key={data?.id ?? idx}>
           {cellBuilder(field, data[field], data.id)}
         </TableCell>
       ))}
-      {isClosestFromRight && (
-        <div className="absolute -right-px top-0 z-50 h-full w-[4px] bg-green-60" />
-      )}
-      {isClosestFromLeft && (
-        <div className="absolute -left-px top-0 z-50 h-full w-[4px] bg-green-60" />
-      )}
     </ResizablePanel>
   );
 };
