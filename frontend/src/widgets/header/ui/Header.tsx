@@ -1,10 +1,23 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import LogoLink from "./LogoLink";
 import Menus from "./Menu";
 import Profile from "./Profile";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 export default function Header() {
+  const pathname = usePathname();
+
   return (
-    <header className="mx-auto flex h-[64px] w-full max-w-[1400px] items-center justify-between px-[16px]">
+    <motion.header
+      layout
+      className={cn(
+        "mx-auto flex h-[64px] w-full items-center justify-between px-[20px]",
+        pathname === "/asset-management/sheet" ? "" : "max-w-[1400px]",
+      )}
+    >
       <div className="flex">
         <div className="mr-[120px] mobile:hidden">
           <LogoLink />
@@ -16,6 +29,6 @@ export default function Header() {
           <Profile />
         </div>
       </div>
-    </header>
+    </motion.header>
   );
 }
