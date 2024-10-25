@@ -28,10 +28,9 @@ export interface TableProps<T extends unknown> {
   headerBuilder: (key: string) => ReactNode;
   cellBuilder: (key: any, data: any, rowId: number) => ReactNode;
   onAddRow: () => void;
-  onFieldChange: () => void;
   onReorder: (newFields: FieldState[]) => void;
   onReset?: () => void;
-  onDeleteRow: (id: number | string) => void;
+  onDeleteRow: (id: number) => void;
   fixWidth?: boolean;
   fieldWidth?: (key: string) => number;
   onResize?: (fieldName: string, size: number) => void;
@@ -45,7 +44,6 @@ const Index = <T extends unknown>({
   headerBuilder,
   onAddRow,
   onDeleteRow,
-  onFieldChange,
   onReorder,
   onReset,
   fieldWidth,
@@ -65,10 +63,6 @@ const Index = <T extends unknown>({
   const isDragging = React.useRef(false);
   const { updatePointer, stopAutoScroll, startAutoScroll } =
     useAutoScroll(containerRef);
-
-  const preservedOnAddRow = usePreservedCallback(onAddRow);
-  const preservedOnDeleteRow = usePreservedCallback(onDeleteRow);
-  const preservedOnFieldChange = usePreservedCallback(onFieldChange);
 
   const preservedFields = usePreservedReference(fields);
   const preservedUserField = usePreservedReference(
@@ -245,20 +239,22 @@ const Index = <T extends unknown>({
           ))}
           <div>
             <HandleColumDisplayButton
-              fields={preservedFields}
+              fields={fields}
               onReorder={onReorder}
               onReset={onReset}
             />
-            {preservedDataset.map((_data: any, idx) => (
-              <DeleteRowIconButton
-                key={_data?.id ?? idx}
-                onDeleteRow={(id) => console.log(id)}
-                rowId={0}
-              />
-            ))}
+            {preservedDataset.map((_data: any, idx) => {
+              return (
+                <DeleteRowIconButton
+                  key={_data?.id ?? idx}
+                  onDeleteRow={onDeleteRow}
+                  rowId={_data?.id}
+                />
+              );
+            })}
           </div>
         </ResizablePanelGroup>
-        <AddRowButton />
+        <AddRowButton onClick={onAddRow} />
       </div>
     </div>
   );
