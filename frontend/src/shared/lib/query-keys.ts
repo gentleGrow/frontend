@@ -6,5 +6,11 @@ export const keyStore = createQueryKeyStore({
   },
   assetStock: {
     getSummary: null,
+    postAssetStock: null,
+    patchAssetStock: null,
+    deleteAssetField: null,
+  },
+  assetField: {
+    putAssetField: null,
   },
 });
