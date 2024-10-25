@@ -11,6 +11,7 @@ const DeleteRowIconButton = ({
     <button
       className="flex h-[44px] w-[44px] items-center justify-center border-b border-b-gray-10"
       onClick={() => onDeleteRow(rowId)}
+      type="button"
     >
       <svg
         width="12"

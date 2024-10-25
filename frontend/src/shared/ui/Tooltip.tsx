@@ -1,23 +1,37 @@
-import { PropsWithChildren } from "react";
+"use client";
+
+import React, { PropsWithChildren } from "react";
+import {
+  Tooltip as TooltipOrigin,
+  TooltipContent as TooltipContentOrigin,
+  TooltipProvider,
+  TooltipTrigger as TooltipTriggerOrigin,
+} from "@/components/ui/tooltip";
 
 const Tooltip = ({ children }: PropsWithChildren) => {
-  return <div className="relative">{children}</div>;
+  const childArray = React.Children.toArray(children);
+
+  if (childArray.length !== 2) {
+    throw new Error("Tooltip component requires exactly 2 children");
+  }
+
+  return (
+    <TooltipProvider>
+      <TooltipOrigin>{children}</TooltipOrigin>
+    </TooltipProvider>
+  );
 };
 
 function TooltipTrigger({ children }: PropsWithChildren) {
-  return (
-    <div title="툴팁" className="peer cursor-pointer">
-      {children}
-    </div>
-  );
+  return <TooltipTriggerOrigin asChild>{children}</TooltipTriggerOrigin>;
 }
 
 function TooltipContent({ children }: PropsWithChildren) {
   return (
-    <ul className="absolute -top-[13px] left-2 w-[230px] -translate-x-1/2 -translate-y-full space-y-1 rounded-[8px] bg-gray-70 p-2.5 text-xs font-normal text-white opacity-0 peer-hover:opacity-100">
+    <TooltipContentOrigin className="relative flex w-[230px] -translate-y-[6px] translate-x-1 flex-col items-center space-y-1 overflow-visible rounded-[8px] bg-gray-70 p-2.5 text-xs font-normal text-white">
       {children}
-      <div className="triable-down absolute -bottom-[11px] left-1/2 -translate-x-[6px]" />
-    </ul>
+      <div className="triable-down absolute -bottom-[9px] left-1/2 z-9999 -translate-x-[6px]" />
+    </TooltipContentOrigin>
   );
 }
 

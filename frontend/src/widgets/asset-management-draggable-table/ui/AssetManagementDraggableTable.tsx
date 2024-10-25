@@ -21,6 +21,17 @@ import { useUser } from "@/entities";
 import { useSetAtom } from "jotai/index";
 import { loginModalAtom } from "@/features";
 import SortingButton from "@/widgets/asset-management-draggable-table/ui/SortingButton";
+import { motion } from "framer-motion";
+import { usePostAssetStock } from "@/entities/assetManagement/queries/usePostAssetStock";
+import { usePatchAssetStock } from "@/entities/assetManagement/queries/usePatchAssetStock";
+import { useDebounce } from "@/shared/hooks/useDebounce";
+import { PostAssetStockRequestBody } from "@/entities/assetManagement/apis/postAssetStock";
+import { PatchAssetStockRequestBody } from "@/entities/assetManagement/apis/patchAssetStock";
+import { allField } from "@/widgets/asset-management-draggable-table/constants/allField";
+import { usePutAssetField } from "@/entities/assetManagement/queries/usePutAssetField";
+import { useDeleteAssetStock } from "@/entities/assetManagement/queries/useDeleteAssetStock";
+import Tooltip from "@/shared/ui/Tooltip";
+import Image from "next/image";
 
 const filedWidth = {
   종목명: 12,
@@ -28,8 +39,11 @@ const filedWidth = {
   수익률: 8,
 };
 
-const fieldIsRequired = (field: string) =>
-  field === "종목명" || field === "수량" || field === "구매일자";
+let NewFieldId = -1;
+
+const essentialFields = ["종목명", "수량", "구매일자"];
+
+const fieldIsRequired = (field: string) => essentialFields.includes(field);
 
 const numberFields = [
   "수량",
@@ -61,6 +75,14 @@ const autoFilledField = [
   "현재가",
   "수익금",
 ];
+
+const changeFieldToForm = {
+  구매일자: "buy_date",
+  수량: "quantity",
+  계좌종류: "account_type",
+  증권사: "investment_bank",
+  매입가: "purchase_price",
+};
 
 const cellMinimumWidth = {
   종목명: 150,
@@ -101,6 +123,24 @@ interface AssetManagementDraggableTableProps {
   accountList: string[];
 }
 
+const defaultFields = [
+  {
+    isRequired: true,
+    isChecked: true,
+    name: "종목명",
+  },
+  {
+    isRequired: true,
+    isChecked: true,
+    name: "수량",
+  },
+  {
+    isRequired: true,
+    isChecked: true,
+    name: "구매일자",
+  },
+];
+
 const getSortType = (field: string): "date" | "number" | "string" => {
   if (field === "구매일자") {
     return "date";
@@ -138,13 +178,20 @@ const AssetManagementDraggableTable = ({
         },
   );
 
+  const { mutate: originCreateAssetStock } = usePostAssetStock();
+  const { mutate: originUpdateAssetStock } = usePatchAssetStock();
+  const { mutate: updateAssetField } = usePutAssetField();
+  const { mutate: deleteAssetStock } = useDeleteAssetStock();
+
+  const updateAssetStock = useDebounce(originUpdateAssetStock, 500);
+  const createAssetStock = useDebounce(originCreateAssetStock, 500);
+
   const queryClient = useQueryClient();
 
   const [fields, setFields] = useState(
-    data?.asset_fields.map((field) =>
-      fieldIemFactory(field, data.asset_fields),
-    ) ?? [],
+    allField.map((field) => fieldIemFactory(field, data?.asset_fields)) ?? [],
   );
+
   const [fieldSize, setFieldSize] = useState(filedWidth);
 
   const windowWidth = useWindowWidth();
@@ -171,7 +218,29 @@ const AssetManagementDraggableTable = ({
           fieldTypeIsNumber(key) ? "justify-end" : "justify-start",
         )}
       >
-        <span>{key}</span>
+        <span className="flex flex-row gap-1">
+          {key}
+          {essentialFields.includes(key) && (
+            <span className="text-green-60">*</span>
+          )}
+          {key === "수익률" && (
+            <Tooltip>
+              <Tooltip.Trigger>
+                <Image
+                  src={"/images/tip.svg"}
+                  width={16}
+                  height={16}
+                  alt="tip"
+                />
+              </Tooltip.Trigger>
+              <Tooltip.Content>
+                주식을 매수한 평균 매입가입니다. 주가의 변동으로 처음 매입했던
+                가격과 다른 가격으로 매수될 경우 평균을 내서 해당 보유 주식의
+                전체 매수 가격을 표기하는 방법이에요.
+              </Tooltip.Content>
+            </Tooltip>
+          )}
+        </span>
         <SortingButton
           sorting={sorting}
           isActive={key === sortingField}
@@ -212,10 +281,185 @@ const AssetManagementDraggableTable = ({
     });
   };
 
+  const handleDeleteRow = (id: number) => {
+    if (accessToken) {
+      deleteAssetStock({ accessToken: accessToken, id });
+    }
+
+    queryClient.setQueryData<AssetStock>(
+      keyStore.assetStock.getSummary.queryKey,
+      () => {
+        const prev = queryClient.getQueryData<AssetStock>(
+          keyStore.assetStock.getSummary.queryKey,
+        );
+        if (!prev) return;
+        return {
+          ...prev,
+          stock_assets: prev.stock_assets.filter((stock) => stock.id !== id),
+        };
+      },
+    );
+  };
+
+  const handleAddRow = () => {
+    queryClient.setQueryData<AssetStock>(
+      keyStore.assetStock.getSummary.queryKey,
+      // @ts-ignore
+      () => {
+        const prev = queryClient.getQueryData<AssetStock>(
+          keyStore.assetStock.getSummary.queryKey,
+        );
+        if (!prev) return;
+        return {
+          ...prev,
+          stock_assets: [
+            ...prev.stock_assets,
+            {
+              id: NewFieldId--,
+              주식통화: currencySetting,
+              종목명: {
+                isRequired: true,
+                value: undefined,
+              },
+              수량: {
+                isRequired: true,
+                value: undefined,
+              },
+              구매일자: {
+                isRequired: true,
+                value: format(new Date(), "yyyy-MM-dd"),
+              },
+              증권사: {
+                isRequired: true,
+                value: undefined,
+              },
+              계좌종류: {
+                isRequired: true,
+                value: undefined,
+              },
+              수익률: {
+                isRequired: false,
+                value: undefined,
+              },
+              시가: {
+                isRequired: false,
+                value: undefined,
+              },
+              고가: {
+                isRequired: false,
+                value: undefined,
+              },
+              저가: {
+                isRequired: false,
+                value: undefined,
+              },
+              거래량: {
+                isRequired: false,
+                value: undefined,
+              },
+              배당금: {
+                isRequired: false,
+                value: undefined,
+              },
+              매입금: {
+                isRequired: false,
+                value: undefined,
+              },
+              현재가: {
+                isRequired: false,
+                value: undefined,
+              },
+              수익금: {
+                isRequired: false,
+                value: undefined,
+              },
+              매입가: {
+                isRequired: false,
+                value: undefined,
+              },
+            },
+          ],
+        };
+      },
+    );
+  };
+
   const handleValueChange = (key: string, value: any, id: number) => {
-    if (!user?.isLoggedIn) {
+    if (!accessToken) {
       setIsOpenLoginModal(true);
       return;
+    }
+
+    if (id < 0) {
+      const targetRow = tableData.find((stock) => stock.id === id);
+
+      const isAllFilled = essentialFields.every(
+        (field) => targetRow?.[field].value !== undefined,
+      );
+
+      if (isAllFilled) {
+        const name = targetRow?.종목명.value;
+        const code = itemNameList.find((item) => item.name === name)?.code;
+
+        if (!code) return;
+
+        const body: PostAssetStockRequestBody = {
+          account_type: (targetRow?.계좌종류.value ?? null) as string | null,
+          buy_date: targetRow?.구매일자.value as string,
+          investment_bank: (targetRow?.증권사.value ?? null) as string | null,
+          purchase_currency_type: currencySetting,
+          purchase_price: (targetRow?.매입가.value ?? null) as number | null,
+          quantity: targetRow?.수량.value as number,
+          stock_code: code as string,
+          tempId: id,
+        };
+
+        createAssetStock({ accessToken: accessToken as string, body });
+      }
+    } else {
+      if (key === "종목명") {
+        const name = value;
+        const target = itemNameList.find((item) => item.name === name);
+        const code = target?.code;
+
+        if (!code) return;
+
+        const body: PatchAssetStockRequestBody = {
+          id: id as number,
+          account_type: null,
+          buy_date: null,
+          investment_bank: null,
+          purchase_currency_type: null,
+          purchase_price: null,
+          quantity: null,
+          stock_code: code as string,
+        };
+
+        updateAssetStock({
+          accessToken: accessToken as string,
+          body,
+        });
+      } else {
+        const body: PatchAssetStockRequestBody = {
+          id: id as number,
+          buy_date: null,
+          account_type: null,
+          investment_bank: null,
+          purchase_currency_type: null,
+          purchase_price: null,
+          quantity: null,
+          stock_code: null,
+        };
+
+        body[changeFieldToForm[key]] = value;
+
+        console.log(key, value, id, body);
+
+        updateAssetStock({
+          accessToken: accessToken as string,
+          body,
+        });
+      }
     }
 
     queryClient.setQueryData<AssetStock>(
@@ -244,8 +488,31 @@ const AssetManagementDraggableTable = ({
     );
   };
 
+  const handleReorder = (
+    newFields: {
+      isRequired: boolean;
+      isChecked: boolean;
+      name: string;
+    }[],
+  ) => {
+    setFields(newFields);
+    const valueToUpdate = newFields
+      .filter((field) => field.isChecked || field.isRequired)
+      .map((field) => field.name);
+
+    if (accessToken) {
+      updateAssetField({ accessToken, newFields: valueToUpdate });
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-3 mobile:px-5">
+    <motion.div
+      className="flex flex-col gap-3 mobile:px-5"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.7 }}
+    >
       <header className="flex w-full flex-row items-center justify-between">
         <div className="text-[20px] font-normal">
           총 <span className="font-bold text-green-60">{tableData.length}</span>
@@ -273,7 +540,7 @@ const AssetManagementDraggableTable = ({
       </header>
       <Table
         fixWidth={isFixed}
-        fields={fields}
+        fields={fields.length === 0 ? defaultFields : fields}
         dataset={tableData as StockAsset[]}
         headerBuilder={headerBuilder}
         cellBuilder={(key, data, id) => {
@@ -391,7 +658,7 @@ const AssetManagementDraggableTable = ({
             return (
               <NumberInput
                 value={data?.value}
-                onChange={(value) => {}}
+                onChange={(value) => handleValueChange(key, value, id)}
                 placeholder=""
                 type="amount"
                 variants="default"
@@ -432,10 +699,9 @@ const AssetManagementDraggableTable = ({
         }}
         tableWidth={tableMinimumWidth}
         fieldWidth={(key) => fieldSize[key]}
-        onFieldChange={() => {}}
-        onAddRow={() => {}}
-        onDeleteRow={() => {}}
-        onReorder={setFields}
+        onAddRow={handleAddRow}
+        onDeleteRow={handleDeleteRow}
+        onReorder={handleReorder}
         onReset={handleReset}
         onResize={(field, size) =>
           setFieldSize((prev) => ({ ...prev, [field]: size }))
@@ -463,7 +729,7 @@ const AssetManagementDraggableTable = ({
           실시간 수치와는 다소 차이가 있을 수 있습니다.
         </span>
       </footer>
-    </div>
+    </motion.div>
   );
 };
 

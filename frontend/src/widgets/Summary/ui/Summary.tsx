@@ -4,6 +4,7 @@ import SummaryCard from "./SummaryCard";
 import SummaryCardMobile from "./SummaryCardMobile";
 import fetchSampleSummary from "../api/fetchSampleSummary";
 import { getUser } from "@/entities";
+
 export const SummaryTitle = {
   today_review_rate: "오늘의 review",
   total_asset_amount: "나의 총 자산",
@@ -11,6 +12,7 @@ export const SummaryTitle = {
   profit: "수익금",
 };
 export default async function Summary() {
+
   const user = await getUser();
   const summary =
     user && user.isJoined ? await fetchSummary() : await fetchSampleSummary();

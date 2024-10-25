@@ -1,8 +1,12 @@
 import React, { memo } from "react";
 
-const AddRowButton = () => {
+const AddRowButton = ({ onClick }: { onClick: () => void }) => {
   return (
-    <button className="flex h-[44px] w-full flex-row items-center gap-2 px-3 py-[9px]">
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex h-[44px] w-full flex-row items-center gap-2 px-3 py-[9px]"
+    >
       <svg
         width="24"
         height="24"

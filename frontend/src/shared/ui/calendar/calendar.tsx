@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   isDateToday,
@@ -39,10 +39,15 @@ const MonthVariants = {
 interface CalendarProps {
   selectedDate: Date | null;
   onSelectDate: (date: Date) => void;
+  disableKrHoliday?: boolean;
 }
 
 // DatePicker 컴포넌트
-const Calendar = ({ selectedDate = null, onSelectDate }: CalendarProps) => {
+const Calendar = ({
+  selectedDate = null,
+  onSelectDate,
+  disableKrHoliday,
+}: CalendarProps) => {
   // 현재 날짜와 선택된 날짜 상태
   const [currentDate, setCurrentDate] = useState(selectedDate || new Date());
 
@@ -52,6 +57,41 @@ const Calendar = ({ selectedDate = null, onSelectDate }: CalendarProps) => {
   // 현재 연도 및 월 계산
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth() + 1; // 0-based index이므로 +1 필요
+
+  const [disabledDates, setDisabledDates] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!disableKrHoliday) return;
+    const filePath =
+      "/data/holiday/" +
+      currentYear +
+      "-" +
+      (currentMonth < 10 ? "0" + currentMonth : currentMonth) +
+      ".xml";
+
+    const xml = new XMLHttpRequest();
+    xml.open("GET", filePath, false);
+    xml.send();
+
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xml.responseText, "text/xml");
+    const dates = xmlDoc.getElementsByTagName("locdate");
+
+    const disabledDates: string[] = [];
+
+    for (let i = 0; i < dates.length; i++) {
+      let textContent = dates[i].textContent;
+      if (!textContent) {
+        continue;
+      }
+      // 20240101 -> 2024-01-01
+      const regex = /(\d{4})(\d{2})(\d{2})/;
+      const textDate = textContent.replace(regex, "$1-$2-$3");
+
+      disabledDates.push(textDate);
+    }
+    setDisabledDates(disabledDates);
+  }, [currentYear, currentMonth]);
 
   // 이전 달의 마지막 날짜
   const lastDateOfPrevMonth = new Date(
@@ -127,18 +167,48 @@ const Calendar = ({ selectedDate = null, onSelectDate }: CalendarProps) => {
             variant: "disabled",
           });
         } else {
-          // 실제 해당 월의 날짜들을 채워넣는 부분
-          daysArray.push({
-            day: (week - 1) * 7 + day - firstDay + 1,
-            variant: isGreaterThanTodayDate(
+          let variant: "default" | "disabled" = "default";
+
+          if (
+            isGreaterThanTodayDate(
               new Date(
                 currentYear,
                 currentMonth - 1,
                 (week - 1) * 7 + day - firstDay + 1,
               ),
             )
-              ? "disabled"
-              : "default",
+          ) {
+            variant = "disabled";
+          }
+
+          if (
+            disabledDates.includes(
+              `${currentYear}-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${
+                (week - 1) * 7 + day - firstDay + 1 < 10
+                  ? "0" + ((week - 1) * 7 + day - firstDay + 1)
+                  : (week - 1) * 7 + day - firstDay + 1
+              }`,
+            )
+          ) {
+            variant = "disabled";
+          }
+
+          if (
+            [Weekday.Sun, Weekday.Sat].includes(
+              new Date(
+                currentYear,
+                currentMonth - 1,
+                (week - 1) * 7 + day - firstDay + 1,
+              ).getDay(),
+            )
+          ) {
+            variant = "disabled";
+          }
+
+          // 실제 해당 월의 날짜들을 채워넣는 부분
+          daysArray.push({
+            day: (week - 1) * 7 + day - firstDay + 1,
+            variant,
           });
         }
       }
@@ -173,9 +243,17 @@ const Calendar = ({ selectedDate = null, onSelectDate }: CalendarProps) => {
               onClick={switchToMonthMode}
             >{`${currentYear}.${currentMonth}`}</button>
           )}
-          <CalendarRightArrowButton
-            onClick={isMonthMode ? handleNextYear : handleNextMonth}
-          />
+          {!isMonthMode &&
+          isGreaterThanTodayDate(new Date(currentYear, currentMonth, 1)) ? (
+            <div className="h-5 w-5" />
+          ) : isMonthMode &&
+            isGreaterThanTodayDate(new Date(currentYear + 1, 0, 1)) ? (
+            <div className="h-5 w-5" />
+          ) : (
+            <CalendarRightArrowButton
+              onClick={isMonthMode ? handleNextYear : handleNextMonth}
+            />
+          )}
         </div>
       </div>
 
