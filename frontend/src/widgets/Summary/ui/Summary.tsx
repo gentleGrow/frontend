@@ -4,6 +4,7 @@ import SummaryCard from "./SummaryCard";
 import SummaryCardMobile from "./SummaryCardMobile";
 import { cookies } from "next/headers";
 import fetchSampleSummary from "../api/fetchSampleSummary";
+
 export const SummaryTitle = {
   today_review_rate: "오늘의 review",
   total_asset_amount: "나의 총 자산",
@@ -15,7 +16,6 @@ export default async function Summary() {
   const summary = hasAccessToken
     ? await fetchSummary()
     : await fetchSampleSummary();
-  console.log(summary);
   return (
     <>
       <div className="flex w-full mobile:hidden except-mobile:space-x-[16px]">
