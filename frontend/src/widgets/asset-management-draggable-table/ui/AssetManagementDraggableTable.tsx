@@ -30,6 +30,8 @@ import { PatchAssetStockRequestBody } from "@/entities/assetManagement/apis/patc
 import { allField } from "@/widgets/asset-management-draggable-table/constants/allField";
 import { usePutAssetField } from "@/entities/assetManagement/queries/usePutAssetField";
 import { useDeleteAssetStock } from "@/entities/assetManagement/queries/useDeleteAssetStock";
+import Tooltip from "@/shared/ui/Tooltip";
+import Image from "next/image";
 
 const filedWidth = {
   종목명: 12,
@@ -216,7 +218,29 @@ const AssetManagementDraggableTable = ({
           fieldTypeIsNumber(key) ? "justify-end" : "justify-start",
         )}
       >
-        <span>{key}</span>
+        <span className="flex flex-row gap-1">
+          {key}
+          {essentialFields.includes(key) && (
+            <span className="text-green-60">*</span>
+          )}
+          {key === "수익률" && (
+            <Tooltip>
+              <Tooltip.Trigger>
+                <Image
+                  src={"/images/tip.svg"}
+                  width={16}
+                  height={16}
+                  alt="tip"
+                />
+              </Tooltip.Trigger>
+              <Tooltip.Content>
+                주식을 매수한 평균 매입가입니다. 주가의 변동으로 처음 매입했던
+                가격과 다른 가격으로 매수될 경우 평균을 내서 해당 보유 주식의
+                전체 매수 가격을 표기하는 방법이에요.
+              </Tooltip.Content>
+            </Tooltip>
+          )}
+        </span>
         <SortingButton
           sorting={sorting}
           isActive={key === sortingField}

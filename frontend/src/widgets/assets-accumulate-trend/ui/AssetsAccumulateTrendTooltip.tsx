@@ -1,3 +1,5 @@
+"use client";
+
 import Tooltip from "@/shared/ui/Tooltip";
 import Image from "next/image";
 
@@ -15,7 +17,7 @@ const AssetsAccumulateTrendTooltip = () => {
             계산합니다.
           </p>
         </li>
-        <li className="flex flex-row items-start">
+        <li className="flex w-full flex-row items-start">
           <span className="mr-1">*</span>
           <p className="whitespace-normal">물가 상승률은 3%로 계산합니다.</p>
         </li>
