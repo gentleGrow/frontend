@@ -14,18 +14,6 @@ const nextConfig = {
         source: "/api/v1/:path*", // 프록시를 사용할 경로
         destination: "http://api.gaemischool.com:8000/api/v1/:path*", // 실제 API 서버 주소
       },
-      {
-        source: "http://api/gaemischool.com:8000/api/v1/sample/asset-field",
-        destination: "http://api.gaemischool.com:8000/api/v1/sample/asset-field",
-      },
-      {
-        source: "http://api/gaemischool.com:8000/api/v1/assetstock",
-        destination: "http://api.gaemischool.com:8000/api/v1/assetstock",
-      },
-      {
-        source: "http://api/gaemischool.com:8000/api/v1/assetstock/:id",
-        destination: "http://api.gaemischool.com:8000/api/v1/assetstock/:id",
-      }
     ];
   },
   webpack: (config) => {

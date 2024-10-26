@@ -1,4 +1,4 @@
-import { fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
+import { fetchWithTimeout } from "@/shared";
 
 interface GetBrokerAccountListResponse {
   investment_bank_list: string[];
@@ -6,9 +6,7 @@ interface GetBrokerAccountListResponse {
 }
 
 export const getBrokerAccountList = async (accessToken: string | null) => {
-  const response = await fetchWithTimeout(
-    `${SERVICE_SERVER_URL}/api/v1/bank-accounts`,
-  );
+  const response = await fetchWithTimeout(`/api/v1/bank-accounts`);
 
   if (!response.ok) {
     throw new Error("Failed to fetchWithTimeout broker account list");
