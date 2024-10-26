@@ -159,8 +159,6 @@ const AssetManagementDraggableTable = ({
   accountList,
   brokerList,
 }: AssetManagementDraggableTableProps) => {
-  console.log("accessToken: ", accessToken);
-
   const [currentSorting, setCurrentSorting] = useState<"asc" | "desc">("asc");
   const [sortingField, setSortingField] = useState<string | null>(null);
 
@@ -190,8 +188,14 @@ const AssetManagementDraggableTable = ({
 
   const queryClient = useQueryClient();
 
+  const receivedFields = data?.asset_fields;
+
+  const lastField = allField.filter((field) => !receivedFields.includes(field));
+
   const [fields, setFields] = useState(
-    allField.map((field) => fieldIemFactory(field, data?.asset_fields)) ?? [],
+    [...receivedFields, ...lastField].map((field) =>
+      fieldIemFactory(field, data?.asset_fields),
+    ) ?? [],
   );
 
   const [fieldSize, setFieldSize] = useState(filedWidth);
