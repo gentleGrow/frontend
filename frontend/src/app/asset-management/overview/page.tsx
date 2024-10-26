@@ -6,35 +6,30 @@ import {
   StockComposition,
   Summary,
 } from "@/widgets";
-import { Suspense } from "react";
 import AssetsAccumulateTrend from "@/widgets/assets-accumulate-trend/ui/AssetsAccumulateTrend";
+import AssetManagementAccessGuideButton from "@/widgets/asset-management-guest-access-guide-button/ui/AssetManagementAccessGuideButton";
+import { cookies } from "next/headers";
+import { ACCESS_TOKEN } from "@/shared/constants/cookie";
 
 const Overview = () => {
+  const accessToken = cookies()?.get(ACCESS_TOKEN)?.value;
+
   return (
     <div className="flex flex-col gap-4">
-      <Suspense fallback={<div>로딩중...</div>}>
-        <Summary />
-      </Suspense>
+      <Summary />
       <div className="grid grid-cols-1 gap-4 except-mobile:grid-cols-5">
         <div className="except-mobile:col-span-2">
-          <Suspense fallback={<div>종목 구성 로딩</div>}>
-            <StockComposition />
-          </Suspense>
+          <StockComposition />
         </div>
         <div className="except-mobile:col-span-3">
-          <Suspense fallback={<div>투자 성과 로딩</div>}>
-            <InvestmentPerformanceChart />
-          </Suspense>
+          <InvestmentPerformanceChart />
         </div>
       </div>
       <div className="grid-cols grid grid-cols-1 gap-4 except-mobile:grid-cols-2">
-        <Suspense fallback={<div>자산 적립 추이 로딩</div>}>
-          <AssetsAccumulateTrend />
-        </Suspense>
-        <Suspense fallback={<div>예산 배당액 로딩</div>}>
-          <EstimateDividend />
-        </Suspense>
+        <AssetsAccumulateTrend />
+        <EstimateDividend />
       </div>
+      {!accessToken ? <AssetManagementAccessGuideButton /> : null}
     </div>
   );
 };
