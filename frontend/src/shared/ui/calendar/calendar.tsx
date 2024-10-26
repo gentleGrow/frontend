@@ -91,7 +91,7 @@ const Calendar = ({
       disabledDates.push(textDate);
     }
     setDisabledDates(disabledDates);
-  }, [currentYear, currentMonth]);
+  }, [currentYear, currentMonth, disableKrHoliday]);
 
   // 이전 달의 마지막 날짜
   const lastDateOfPrevMonth = new Date(
