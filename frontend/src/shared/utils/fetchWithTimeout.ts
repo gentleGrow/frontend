@@ -8,6 +8,9 @@ const fetchWithTimeout = async (resource: string, options: Options = {}) => {
   const id = setTimeout(() => controller.abort(), timeout);
   const response = await fetch(resource, {
     ...fetchOptions,
+    next: {
+      revalidate: 60 * 10,
+    },
     signal: controller.signal,
   });
   clearTimeout(id);
