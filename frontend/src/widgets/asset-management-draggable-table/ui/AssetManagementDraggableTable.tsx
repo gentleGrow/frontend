@@ -159,6 +159,8 @@ const AssetManagementDraggableTable = ({
   accountList,
   brokerList,
 }: AssetManagementDraggableTableProps) => {
+  console.log("accessToken: ", accessToken);
+
   const [currentSorting, setCurrentSorting] = useState<"asc" | "desc">("asc");
   const [sortingField, setSortingField] = useState<string | null>(null);
 
@@ -453,8 +455,6 @@ const AssetManagementDraggableTable = ({
 
         body[changeFieldToForm[key]] = value;
 
-        console.log(key, value, id, body);
-
         updateAssetStock({
           accessToken: accessToken as string,
           body,
@@ -597,17 +597,21 @@ const AssetManagementDraggableTable = ({
           ) {
             return (
               <NumberInput
-                value={data?.value}
+                value={data?.value ?? undefined}
                 placeholder="자동 계산 필드입니다."
                 type={fieldNumberType(key)}
                 variants={
-                  !data?.value
+                  data?.value === null
                     ? "gray-light"
-                    : data?.value > 0
-                      ? "increase"
-                      : data?.value < 0
-                        ? "decrease"
-                        : "default"
+                    : data.value === undefined
+                      ? "gray-light"
+                      : data.value === 0
+                        ? "default"
+                        : data?.value > 0
+                          ? "increase"
+                          : data?.value < 0
+                            ? "decrease"
+                            : "default"
                 }
                 autoFill
               />
