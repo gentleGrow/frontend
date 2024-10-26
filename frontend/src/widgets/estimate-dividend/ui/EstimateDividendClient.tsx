@@ -67,9 +67,9 @@ export default function EstimateDividendClient({
                 ₩
                 {Number(
                   (
-                    (estimatedDividendAll[barChartNavItems[currentNavItemIndex]]
-                      ?.total as number) * 10000
-                  ).toFixed(0),
+                    estimatedDividendAll[barChartNavItems[currentNavItemIndex]]
+                      ?.total as number
+                  ).toFixed(2),
                 ).toLocaleString("ko-KR")}
               </p>
             </div>
