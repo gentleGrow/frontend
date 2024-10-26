@@ -1,7 +1,7 @@
-import { fetchWithTimeout } from "@/shared";
+import { fetchWithTimeout, getBaseUrl } from "@/shared";
 
 export const deleteAssetStock = async (accessToken: string, id: number) =>
-  fetchWithTimeout(`/api/v1/assetstock/${id}`, {
+  fetchWithTimeout(`${getBaseUrl()}/api/v1/assetstock/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",

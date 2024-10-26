@@ -1,4 +1,4 @@
-import { fetchWithTimeout } from "@/shared";
+import { fetchWithTimeout, getBaseUrl } from "@/shared";
 
 export interface ItemName {
   name: string;
@@ -8,7 +8,7 @@ export interface ItemName {
 export const getItemNameList = async (accessToken: string | null) => {
   // if (!accessToken) return [] as ItemName[];
 
-  const response = await fetchWithTimeout(`/api/v1/stocks`);
+  const response = await fetchWithTimeout(`${getBaseUrl()}/api/v1/stocks`);
 
   if (!response.ok) {
     throw new Error("Failed to fetchWithTimeout item name list");

@@ -1,9 +1,11 @@
-import { fetchWithTimeout } from "@/shared";
+import { fetchWithTimeout, getBaseUrl } from "@/shared";
 import { AssetStock } from "@/widgets/asset-management-draggable-table/types/table";
 
 export const getAssetsStock = async (accessToken: string | null) => {
   if (!accessToken) {
-    const mockData = await fetchWithTimeout(`/api/v1/sample/assetstock`);
+    const mockData = await fetchWithTimeout(
+      `${getBaseUrl()}/api/v1/sample/assetstock`,
+    );
 
     if (!mockData.ok) {
       throw new Error(`${mockData.status}: ${await mockData.json()}`);
@@ -12,7 +14,7 @@ export const getAssetsStock = async (accessToken: string | null) => {
     return (await mockData.json()) as AssetStock;
   }
 
-  const response = await fetchWithTimeout(`/api/v1/assetstock`, {
+  const response = await fetchWithTimeout(`${getBaseUrl()}/api/v1/assetstock`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },

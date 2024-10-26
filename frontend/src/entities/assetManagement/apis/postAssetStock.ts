@@ -1,4 +1,4 @@
-import { fetchWithTimeout } from "@/shared";
+import { fetchWithTimeout, getBaseUrl } from "@/shared";
 
 export interface PostAssetStockRequestBody {
   buy_date: string;
@@ -14,7 +14,7 @@ export const postAssetStock = async (
   accessToken: string,
   body: PostAssetStockRequestBody,
 ) => {
-  return fetchWithTimeout(`/api/v1/assetstock`, {
+  return fetchWithTimeout(`${getBaseUrl()}/api/v1/assetstock`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

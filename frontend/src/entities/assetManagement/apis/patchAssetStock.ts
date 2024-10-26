@@ -1,4 +1,4 @@
-import { fetchWithTimeout } from "@/shared";
+import { fetchWithTimeout, getBaseUrl } from "@/shared";
 
 export interface PatchAssetStockRequestBody {
   id: number;
@@ -14,7 +14,7 @@ export const patchAssetStock = async (
   accessToken: string,
   body: PatchAssetStockRequestBody,
 ) => {
-  return fetchWithTimeout(`/api/v1/assetstock`, {
+  return fetchWithTimeout(`${getBaseUrl()}/api/v1/assetstock`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
