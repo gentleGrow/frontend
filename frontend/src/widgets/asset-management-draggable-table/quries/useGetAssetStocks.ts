@@ -14,6 +14,8 @@ export const useGetAssetStocks = (
     queryKey: keyStore.assetStock.getSummary.queryKey,
     queryFn: () => getAssetsStock(accessToken),
     staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnWindowFocus: true,
     select: (data) => {
       if (!sortOptions) {
         return data;
