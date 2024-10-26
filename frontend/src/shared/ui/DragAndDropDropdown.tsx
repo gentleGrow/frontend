@@ -109,7 +109,7 @@ const DragAndDropDropdownDraggableItem = ({
           e.preventDefault();
           e.stopPropagation();
           setIsDragging(true);
-          controls.start(e);
+          // controls.start(e); 에러 확인 부탁드려요.
         }}
         onTouchEnd={() => {
           setIsDragging(false);
