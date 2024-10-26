@@ -37,6 +37,7 @@ const DragAndDropDropdown = ({
         ))}
       </ul>
       <Reorder.Group
+        layoutScroll
         className="flex flex-col gap-[4.5px]"
         axis="y"
         as="ul"
@@ -105,15 +106,6 @@ const DragAndDropDropdownDraggableItem = ({
       <button
         className="cursor-grab touch-none"
         type="button"
-        onTouchStart={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setIsDragging(true);
-          // controls.start(e); 에러 확인 부탁드려요.
-        }}
-        onTouchEnd={() => {
-          setIsDragging(false);
-        }}
         onPointerUp={(e) => {
           e.currentTarget.style.cursor = "grab";
           const parent = e.currentTarget.parentElement;
