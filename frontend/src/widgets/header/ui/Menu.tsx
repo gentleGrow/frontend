@@ -4,7 +4,7 @@ import MenuItem from "./MenuItem";
 
 const MENUS = [
   { name: "홈", href: "/" },
-  { name: "자산관리", href: "/asset-management" },
+  { name: "자산관리", href: "/asset-management/sheet" },
 ];
 
 export default function Menu({
@@ -20,7 +20,9 @@ export default function Menu({
       {MENUS.map((menu) => {
         const isSelected =
           selectedItem.includes(menu.name) ||
-          (menu.href === "/" ? pathname === "/" : pathname.includes(menu.href));
+          (menu.href === "/"
+            ? pathname === "/"
+            : pathname.includes("/asset-management/"));
 
         const isHovered = hoveredItem.includes(menu.name);
 
