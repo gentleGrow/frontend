@@ -99,15 +99,20 @@ const DatePicker = ({ date, onChange }: DatePickerProps) => {
       <PopoverTrigger onClick={() => setIsOpen(true)} asChild>
         <button
           className={cn(
-            "flex w-full max-w-[242px] flex-row items-center gap-4 text-body-3 font-normal",
-            date === undefined ? "text-gray-50" : "text-gray-90",
+            "flex w-full max-w-[242px] flex-row items-center gap-4",
           )}
         >
-          <CalendarIcon />
+          <span className="shrink-0">
+            <CalendarIcon />
+          </span>
           {date ? (
-            <span>{format(date, "yyyy.MM.dd")}</span>
+            <span className="shrink-0 text-body-2 text-gray-90">
+              {format(date, "yyyy.MM.dd")}
+            </span>
           ) : (
-            <span>YYYY.MM.DD</span>
+            <span className="shrink-0 text-body-2 text-gray-50">
+              YYYY.MM.DD
+            </span>
           )}
         </button>
       </PopoverTrigger>

@@ -333,7 +333,7 @@ const AssetManagementDraggableTable = ({
               },
               구매일자: {
                 isRequired: true,
-                value: format(new Date(), "yyyy-MM-dd"),
+                value: undefined,
               },
               증권사: {
                 isRequired: true,
@@ -585,7 +585,7 @@ const AssetManagementDraggableTable = ({
             return (
               <div className="flex h-full w-full items-center justify-center px-[9px]">
                 <DatePicker
-                  date={new Date(data?.value)}
+                  date={data?.value ? new Date(data.value) : null}
                   onChange={(date) => {
                     const formatedDate = format(date, "yyyy-MM-dd");
                     handleValueChange(key, formatedDate, id);
