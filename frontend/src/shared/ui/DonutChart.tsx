@@ -177,7 +177,7 @@ export default function DonutChart({
             : [leftMargin + seriesOuterRadius, "50%"],
           left: "0",
           right: "0",
-          top: isPortfolio ? 0 : 20,
+          top: 0,
           avoidLabelOverlap: true,
           itemStyle: {
             borderColor: "#fff",
