@@ -4,7 +4,7 @@ import MenuItem from "./MenuItem";
 
 const MENUS = [
   { name: "홈", href: "/" },
-  { name: "자산관리", href: "/asset-management/sheet" },
+  { name: "자산관리", href: "/asset-management" },
 ];
 
 export default function Menu({
