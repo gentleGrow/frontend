@@ -1,5 +1,6 @@
 import { fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
 import { ACCESS_TOKEN } from "@/shared/constants/cookie";
+import { time } from "console";
 import { cookies } from "next/headers";
 export interface Summary {
   today_review_rate: number;
@@ -21,6 +22,7 @@ const fetchSummary = async (): Promise<Summary> => {
           "Content-Type": "application/json",
           Authorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
         },
+        revalidate: 0,
       },
     );
     if (!response.ok) {

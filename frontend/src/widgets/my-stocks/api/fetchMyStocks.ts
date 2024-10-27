@@ -20,6 +20,7 @@ const fetchMyStocks = async (): Promise<MyStock[]> => {
           "Content-Type": "application/json",
           Authorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
         },
+        revalidate: 0,
       },
     );
     if (!response.ok) {

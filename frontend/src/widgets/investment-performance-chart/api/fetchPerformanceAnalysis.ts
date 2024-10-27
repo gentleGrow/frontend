@@ -25,6 +25,7 @@ const fetchPerformanceAnalysis = async (): Promise<PerformanceAnalysisData> => {
             "Content-Type": "application/json",
             Authorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
           },
+          revalidate: 0,
         },
       ),
       fetchWithTimeout(

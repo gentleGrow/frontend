@@ -3,13 +3,13 @@ interface Options {
 }
 
 const fetchWithTimeout = async (resource: string, options: Options = {}) => {
-  const { timeout = 5000, ...fetchOptions } = options;
+  const { timeout = 5000, revalidate = 60 * 10, ...fetchOptions } = options;
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
   const response = await fetch(resource, {
     ...fetchOptions,
     next: {
-      revalidate: 60 * 10,
+      revalidate: revalidate,
     },
     signal: controller.signal,
   });
