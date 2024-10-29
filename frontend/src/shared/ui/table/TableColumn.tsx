@@ -45,7 +45,7 @@ const TableColumn = <T,>({
   return (
     <ResizablePanel
       defaultSize={fieldWidth}
-      className="relative z-0 table-column border-collapse overflow-visible"
+      className="relative z-0 table-column border-collapse overflow-visible hover:z-50"
       minSize={6}
       onResize={resizeHandler}
       order={index}
@@ -65,7 +65,7 @@ const TableColumn = <T,>({
       >
         {headerBuilder(field)}
         {!isLastColumn ? (
-          <ResizableHandle className="-right-[1.5px] top-[5px] z-50 h-[32px] w-[3px] rounded-full bg-transparent after:hover:bg-green-60 active:after:bg-green-60" />
+          <ResizableHandle className="-right-[5px] top-[5px] z-50 h-[32px] w-[10px] rounded-full bg-transparent after:hover:bg-green-60 active:after:bg-green-60" />
         ) : (
           <div className="absolute right-0 top-0 h-[42px] cursor-default bg-transparent"></div>
         )}

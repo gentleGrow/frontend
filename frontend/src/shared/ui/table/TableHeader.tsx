@@ -19,26 +19,30 @@ const DraggableTableHeader = ({
   onDrag,
   field,
 }: PropsWithChildren<Omit<TableHeaderProps, "isDraggable">>) => {
-  const ref = React.useRef<HTMLHeadElement>(null);
+  const ref = React.useRef<HTMLDivElement>(null);
   return (
     <header
-      ref={ref}
-      style={{
-        touchAction: "none",
-        userSelect: "none",
-      }}
-      id={field}
-      data-key={field}
-      {...useDragAndDrop({
-        onDragEnd,
-        onDrag,
-        ref,
-      })}
       className={cn(
-        "group z-0 h-[44px] border-collapse cursor-grab overflow-visible border-r border-gray-30 px-2.5 py-[12.5px] text-body-2 font-semibold",
+        "z-0 h-[44px] overflow-visible border-r border-gray-30 px-2.5 py-[12.5px]",
       )}
     >
-      {children}
+      <div
+        ref={ref}
+        style={{
+          touchAction: "none",
+          userSelect: "none",
+        }}
+        id={field}
+        data-key={field}
+        {...useDragAndDrop({
+          onDragEnd,
+          onDrag,
+          ref,
+        })}
+        className="group h-full w-full border-collapse cursor-grab text-body-2 font-semibold"
+      >
+        {children}
+      </div>
     </header>
   );
 };
@@ -49,17 +53,21 @@ const NotDraggableTableHeader = ({
 }: PropsWithChildren<Pick<TableHeaderProps, "field">>) => {
   return (
     <header
-      style={{
-        touchAction: "none",
-        userSelect: "none",
-      }}
-      id={field}
-      data-key={field}
       className={cn(
-        "group relative z-0 h-[44px] border-collapse overflow-visible border-r border-gray-30 px-2.5 py-[12.5px] text-body-2 font-semibold",
+        "z-0 h-[44px] border-collapse overflow-visible border-r border-gray-30 px-2.5 py-[12.5px]",
       )}
     >
-      {children}
+      <div
+        style={{
+          touchAction: "none",
+          userSelect: "none",
+        }}
+        className={"group h-full w-full text-body-2 font-semibold"}
+        id={field}
+        data-key={field}
+      >
+        {children}
+      </div>
     </header>
   );
 };
