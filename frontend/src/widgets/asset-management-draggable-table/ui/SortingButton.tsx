@@ -8,8 +8,8 @@ const SortingUpHoverIcon = () => (
     viewBox="0 0 20 20"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    className="rounded-[2px] hover:bg-gray-10"
   >
-    <rect width="20" height="20" rx="4" fill="#EFF0F1" />
     <path
       d="M9.25 15C9.25 15.4142 9.58579 15.75 10 15.75C10.4142 15.75 10.75 15.4142 10.75 15L9.25 15ZM10.75 15L10.75 5L9.25 5L9.25 15L10.75 15Z"
       fill="#7A8088"
@@ -31,6 +31,7 @@ const SortingUpSelectedIcon = () => (
     viewBox="0 0 20 20"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    className="rounded-[2px] hover:bg-gray-10"
   >
     <path
       d="M9.25 15C9.25 15.4142 9.58579 15.75 10 15.75C10.4142 15.75 10.75 15.4142 10.75 15L9.25 15ZM10.75 15L10.75 5L9.25 5L9.25 15L10.75 15Z"
@@ -53,8 +54,8 @@ const SortingDownHoverIcon = () => (
     viewBox="0 0 20 20"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    className="rounded-[2px] hover:bg-gray-10"
   >
-    <rect width="20" height="20" rx="4" fill="#EFF0F1" />
     <path
       d="M10.75 5C10.75 4.58579 10.4142 4.25 10 4.25C9.58579 4.25 9.25 4.58579 9.25 5L10.75 5ZM9.25 5L9.25 15L10.75 15L10.75 5L9.25 5Z"
       fill="#7A8088"
@@ -76,6 +77,7 @@ const SortingDownSelectedIcon = () => (
     viewBox="0 0 20 20"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    className="rounded-[2px] hover:bg-gray-10"
   >
     <path
       d="M10.75 5C10.75 4.58579 10.4142 4.25 10 4.25C9.58579 4.25 9.25 4.58579 9.25 5L10.75 5ZM9.25 5L9.25 15L10.75 15L10.75 5L9.25 5Z"
