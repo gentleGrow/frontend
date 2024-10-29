@@ -3,6 +3,7 @@ import { assetManagementMockData } from "@/widgets/asset-management-draggable-ta
 export interface AssetValue {
   isRequired: boolean;
   value: string | number | null;
+  changedValue?: string | number | null;
 }
 
 export interface StorkAssetFields {
@@ -39,6 +40,8 @@ export type StockAsset = StorkAssetFields & {
 export type AssetManagementResponse = StockAssetOverview & {
   stock_assets: StockAsset[];
   asset_fields: string[];
+  dollar_exchange: number;
+  won_exchange: number;
 };
 
 export type AssetStock = typeof assetManagementMockData;
