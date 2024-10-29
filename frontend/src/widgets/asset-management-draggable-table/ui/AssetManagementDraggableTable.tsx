@@ -7,7 +7,7 @@ import {
   AssetStock,
   StockAsset,
 } from "@/widgets/asset-management-draggable-table/types/table";
-import { useState } from "react";
+import { FC, useState } from "react";
 import { useGetAssetStocks } from "@/widgets/asset-management-draggable-table/quries/useGetAssetStocks";
 import ItemNameCell from "@/widgets/asset-management-draggable-table/ui/ItemNameCell";
 import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
@@ -34,6 +34,9 @@ import Image from "next/image";
 import { extractNumber, isNumber } from "@/shared/utils/number";
 import { ceil } from "es-toolkit/compat";
 import { cloneDeep } from "es-toolkit";
+import { withAsyncBoundary } from "@toss/async-boundary";
+import { Skeleton } from "@/components/ui/skeleton";
+import CommonErrorFallback from "@/shared/ui/CommonErrorFallback";
 
 const filedWidth = {
   종목명: 12,
@@ -167,12 +170,12 @@ const getSortType = (field: string | null): "date" | "number" | "string" => {
   return "string";
 };
 
-const AssetManagementDraggableTable = ({
+const AssetManagementDraggableTable: FC<AssetManagementDraggableTableProps> = ({
   accessToken,
   itemNameList,
   accountList,
   brokerList,
-}: AssetManagementDraggableTableProps) => {
+}) => {
   const [currentSorting, setCurrentSorting] = useState<"asc" | "desc">("asc");
   const [sortingField, setSortingField] = useState<string | null>(null);
 
@@ -897,4 +900,8 @@ const AssetManagementDraggableTable = ({
   );
 };
 
-export default AssetManagementDraggableTable;
+// @ts-ignore
+export default withAsyncBoundary(AssetManagementDraggableTable, {
+  pendingFallback: <Skeleton className="h-full w-full bg-gray-40" />,
+  errorFallback: CommonErrorFallback,
+});

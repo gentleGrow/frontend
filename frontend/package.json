@@ -19,6 +19,7 @@
     "@radix-ui/react-tooltip": "^1.1.3",
     "@tanstack/react-query": "^5.51.23",
     "@tanstack/react-table": "^8.20.5",
+    "@toss/async-boundary": "^1.5.2",
     "@vanilla-extract/dynamic": "^2.1.1",
     "@yarnpkg/plugin-node-modules": "^3.0.0-rc.9",
     "add": "^2.0.6",
