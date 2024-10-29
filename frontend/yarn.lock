@@ -1428,6 +1428,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.14.8, @babel/runtime@npm:^7.19.0, @babel/runtime@npm:^7.21.0":
+  version: 7.26.0
+  resolution: "@babel/runtime@npm:7.26.0"
+  dependencies:
+    regenerator-runtime: "npm:^0.14.0"
+  checksum: 10c0/12c01357e0345f89f4f7e8c0e81921f2a3e3e101f06e8eaa18a382b517376520cd2fa8c237726eb094dab25532855df28a7baaf1c26342b52782f6936b07c287
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.25.7":
   version: 7.25.7
   resolution: "@babel/template@npm:7.25.7"
@@ -4085,6 +4094,72 @@ __metadata:
   version: 2.0.0
   resolution: "@tootallnate/once@npm:2.0.0"
   checksum: 10c0/073bfa548026b1ebaf1659eb8961e526be22fa77139b10d60e712f46d2f0f05f4e6c8bec62a087d41088ee9e29faa7f54838568e475ab2f776171003c3920858
+  languageName: node
+  linkType: hard
+
+"@toss/async-boundary@npm:^1.5.2":
+  version: 1.5.2
+  resolution: "@toss/async-boundary@npm:1.5.2"
+  dependencies:
+    "@toss/error-boundary": "npm:^1.5.2"
+  peerDependencies:
+    react: ^16.8 || ^17 || ^18
+  checksum: 10c0/411ac17cb8e3fb6d21feb39ca7c77e38025f396bbbe9638a701cc6f261b275919b663e2666231186fdd64f8c268f876491b50ea35c9d43fa94afb94e4b396669
+  languageName: node
+  linkType: hard
+
+"@toss/error-boundary@npm:^1.5.2":
+  version: 1.5.2
+  resolution: "@toss/error-boundary@npm:1.5.2"
+  dependencies:
+    "@toss/react": "npm:^1.8.1"
+    "@toss/utils": "npm:^1.6.1"
+  peerDependencies:
+    react: ^16.8 || ^17 || ^18
+  checksum: 10c0/394ea748945c78ec53550f2e8ff3138fa165077a36ae3a90e5bac103f085ae2ad41051b960e9f25a3d0471fa2441b804bfb4020292011030f8072d1c1837b4bf
+  languageName: node
+  linkType: hard
+
+"@toss/react@npm:^1.8.1":
+  version: 1.8.1
+  resolution: "@toss/react@npm:1.8.1"
+  dependencies:
+    "@babel/runtime": "npm:^7.14.8"
+    "@toss/storage": "npm:^1.4.1"
+    "@toss/utils": "npm:^1.6.1"
+    classnames: "npm:^2.3.1"
+    lodash.debounce: "npm:^4.0.8"
+    lodash.throttle: "npm:^4.1.1"
+  peerDependencies:
+    react: ^16.0.0 || ^17.0.0 || ^18
+  checksum: 10c0/b230042873c690811ff9f78aa538e5fff579ff992153952c644bd9b013a9457224ab98c74dc6faa09e227a121a23ac93a4c8ea43afab1d0780807357806519d8
+  languageName: node
+  linkType: hard
+
+"@toss/storage@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "@toss/storage@npm:1.4.1"
+  dependencies:
+    "@babel/runtime": "npm:^7.19.0"
+  checksum: 10c0/cf0480f2e08b6a5547f460482104d5758bcc07844eec1a41c79dc52a2872270fee293a9623c404ebf92ce6a8c48356d2a85a0818bed31fde0d7404eb8b219a75
+  languageName: node
+  linkType: hard
+
+"@toss/utility-types@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@toss/utility-types@npm:1.2.1"
+  checksum: 10c0/03323f3ff7a3b4ef97fd6b02f8c6ff01252e8f78b9888fea8ff1c1dc3615d945f02a12d5c7585ee9debba5e394bb63ca1dbe3e8cd843c7fce30935c72ea3797d
+  languageName: node
+  linkType: hard
+
+"@toss/utils@npm:^1.6.1":
+  version: 1.6.1
+  resolution: "@toss/utils@npm:1.6.1"
+  dependencies:
+    "@babel/runtime": "npm:^7.14.8"
+    "@toss/utility-types": "npm:^1.2.1"
+    date-fns: "npm:^2.25.0"
+  checksum: 10c0/3869e9f420344159ffe6e2dd612d95c9978d66f106a401c4ba2f6df7403311406eef41e0da68030b93be149d82f153d588fc1568d354cb1c2eca5878bcd36620
   languageName: node
   linkType: hard
 
@@ -7128,7 +7203,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"classnames@npm:^2.5.1":
+"classnames@npm:^2.3.1, classnames@npm:^2.5.1":
   version: 2.5.1
   resolution: "classnames@npm:2.5.1"
   checksum: 10c0/afff4f77e62cea2d79c39962980bf316bacb0d7c49e13a21adaadb9221e1c6b9d3cdb829d8bb1b23c406f4e740507f37e1dcf506f7e3b7113d17c5bab787aa69
@@ -7755,6 +7830,15 @@ __metadata:
     es-errors: "npm:^1.3.0"
     is-data-view: "npm:^1.0.1"
   checksum: 10c0/21b0d2e53fd6e20cc4257c873bf6d36d77bd6185624b84076c0a1ddaa757b49aaf076254006341d35568e89f52eecd1ccb1a502cfb620f2beca04f48a6a62a8f
+  languageName: node
+  linkType: hard
+
+"date-fns@npm:^2.25.0":
+  version: 2.30.0
+  resolution: "date-fns@npm:2.30.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.21.0"
+  checksum: 10c0/e4b521fbf22bc8c3db332bbfb7b094fd3e7627de0259a9d17c7551e2d2702608a7307a449206065916538e384f37b181565447ce2637ae09828427aed9cb5581
   languageName: node
   linkType: hard
 
@@ -11722,6 +11806,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.throttle@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "lodash.throttle@npm:4.1.1"
+  checksum: 10c0/14628013e9e7f65ac904fc82fd8ecb0e55a9c4c2416434b1dd9cf64ae70a8937f0b15376a39a68248530adc64887ed0fe2b75204b2c9ec3eea1cb2d66ddd125d
+  languageName: node
+  linkType: hard
+
 "lodash@npm:^4.17.11, lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
@@ -12416,6 +12507,7 @@ __metadata:
     "@storybook/test": "npm:^8.2.9"
     "@tanstack/react-query": "npm:^5.51.23"
     "@tanstack/react-table": "npm:^8.20.5"
+    "@toss/async-boundary": "npm:^1.5.2"
     "@types/add": "npm:^2"
     "@types/jsonwebtoken": "npm:^9"
     "@types/lodash": "npm:^4"
