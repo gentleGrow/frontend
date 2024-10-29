@@ -1,14 +1,16 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { keyStore } from "@/shared/lib/query-keys";
 import { getAssetsStock } from "@/widgets/asset-management-draggable-table/api/getAssetsStock";
+import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
 
 export const useGetAssetStocks = (
   accessToken: string | null,
-  sortOptions: {
-    sortBy: string;
+  options: {
+    sortBy: string | null;
     sortOrder: "asc" | "desc";
     type: "date" | "string" | "number";
-  } | null,
+    itemList: ItemName[];
+  },
 ) => {
   return useSuspenseQuery({
     queryKey: keyStore.assetStock.getSummary.queryKey,
@@ -17,45 +19,42 @@ export const useGetAssetStocks = (
     gcTime: Infinity,
     refetchOnWindowFocus: true,
     select: (data) => {
-      if (!sortOptions) {
-        return data;
-      }
+      if (options.sortBy === null) return data;
+
+      data.stock_assets.sort((a, b) => {
+        if (options.sortOrder === "asc") {
+          switch (options.type) {
+            case "date":
+              return (
+                new Date(a[options.sortBy!].value).getTime() -
+                new Date(b[options.sortBy!].value).getTime()
+              );
+            case "string":
+              return a[options.sortBy!].value.localeCompare(
+                b[options.sortBy!].value,
+              );
+            default:
+              return a[options.sortBy!].value - b[options.sortBy!].value;
+          }
+        }
+
+        switch (options.type) {
+          case "date":
+            return (
+              new Date(b[options.sortBy!].value).getTime() -
+              new Date(a[options.sortBy!].value).getTime()
+            );
+          case "string":
+            return b[options.sortBy!].value.localeCompare(
+              a[options.sortBy!].value,
+            );
+          default:
+            return b[options.sortBy!].value - a[options.sortBy!].value;
+        }
+      });
 
       return {
         ...data,
-        stock_assets: data.stock_assets.sort((a, b) => {
-          if (sortOptions.sortOrder === "asc") {
-            switch (sortOptions.type) {
-              case "date":
-                return (
-                  new Date(a[sortOptions.sortBy].value).getTime() -
-                  new Date(b[sortOptions.sortBy].value).getTime()
-                );
-              case "string":
-                return a[sortOptions.sortBy].value.localeCompare(
-                  b[sortOptions.sortBy].value,
-                );
-              default:
-                return (
-                  a[sortOptions.sortBy].value - b[sortOptions.sortBy].value
-                );
-            }
-          }
-
-          switch (sortOptions.type) {
-            case "date":
-              return (
-                new Date(b[sortOptions.sortBy].value).getTime() -
-                new Date(a[sortOptions.sortBy].value).getTime()
-              );
-            case "string":
-              return b[sortOptions.sortBy].value.localeCompare(
-                a[sortOptions.sortBy].value,
-              );
-            default:
-              return b[sortOptions.sortBy].value - a[sortOptions.sortBy].value;
-          }
-        }),
       };
     },
   });

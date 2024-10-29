@@ -1,5 +1,5 @@
 import { keyStore } from "@/shared/lib/query-keys";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   patchAssetStock,
   PatchAssetStockRequestBody,
@@ -8,6 +8,8 @@ import { useSetAtom } from "jotai";
 import { lastUpdatedAtAtom } from "@/entities/assetManagement/atoms/lastUpdatedAtAtom";
 
 export const usePatchAssetStock = () => {
+  const queryClient = useQueryClient();
+
   const setLastUpdatedAt = useSetAtom(lastUpdatedAtAtom);
   return useMutation({
     mutationKey: keyStore.assetStock.patchAssetStock.queryKey,
@@ -19,8 +21,11 @@ export const usePatchAssetStock = () => {
       accessToken: string;
     }) => patchAssetStock(accessToken, body),
 
-    onSuccess: () => {
+    onSuccess: async () => {
       setLastUpdatedAt(new Date());
+      await queryClient.invalidateQueries({
+        queryKey: keyStore.assetStock.getSummary.queryKey,
+      });
     },
   });
 };

@@ -665,4 +665,6 @@ export const assetManagementMockData: AssetManagementResponse = {
   total_profit_rate: -0.5805466245303776,
   total_profit_amount: -102705.97951782122,
   total_dividend_amount: 28594.977282714844,
+  dollar_exchange: 1170.0,
+  won_exchange: 0.0009,
 };

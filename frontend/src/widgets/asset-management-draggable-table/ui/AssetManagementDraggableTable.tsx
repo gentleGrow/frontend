@@ -17,7 +17,6 @@ import AccountTypeCell from "@/widgets/asset-management-draggable-table/ui/Accou
 import { DatePicker, SegmentedButton, SegmentedButtonGroup } from "@/shared";
 import { format } from "date-fns";
 import NumberInput from "@/shared/ui/NumberInput";
-import { useUser } from "@/entities";
 import { useSetAtom } from "jotai/index";
 import { loginModalAtom } from "@/features";
 import SortingButton from "@/widgets/asset-management-draggable-table/ui/SortingButton";
@@ -32,6 +31,9 @@ import { usePutAssetField } from "@/entities/assetManagement/queries/usePutAsset
 import { useDeleteAssetStock } from "@/entities/assetManagement/queries/useDeleteAssetStock";
 import Tooltip from "@/shared/ui/Tooltip";
 import Image from "next/image";
+import { extractNumber, isNumber } from "@/shared/utils/number";
+import { ceil } from "es-toolkit/compat";
+import { cloneDeep } from "es-toolkit";
 
 const filedWidth = {
   종목명: 12,
@@ -43,6 +45,17 @@ let NewFieldId = -1;
 
 const essentialFields = ["종목명", "수량", "구매일자"];
 
+const priceInputFields = [
+  "현재가",
+  "배당금",
+  "고가",
+  "저가",
+  "시가",
+  "매입금",
+  "매입가",
+  "수익금",
+];
+
 const fieldIsRequired = (field: string) => essentialFields.includes(field);
 
 const numberFields = [
@@ -50,7 +63,6 @@ const numberFields = [
   "현재가",
   "배당금",
   "고가",
-  "증권사",
   "저가",
   "시가",
   "수익률",
@@ -141,7 +153,9 @@ const defaultFields = [
   },
 ];
 
-const getSortType = (field: string): "date" | "number" | "string" => {
+const getSortType = (field: string | null): "date" | "number" | "string" => {
+  if (field === null) return "string";
+
   if (field === "구매일자") {
     return "date";
   }
@@ -163,20 +177,15 @@ const AssetManagementDraggableTable = ({
   const [sortingField, setSortingField] = useState<string | null>(null);
 
   const [currencySetting, setCurrencySetting] = useState<"KRW" | "USD">("KRW");
-  const { user } = useUser();
 
   const setIsOpenLoginModal = useSetAtom(loginModalAtom);
 
-  const { data } = useGetAssetStocks(
-    accessToken,
-    sortingField === null
-      ? null
-      : {
-          sortBy: sortingField,
-          sortOrder: currentSorting,
-          type: getSortType(sortingField),
-        },
-  );
+  const { data } = useGetAssetStocks(accessToken, {
+    sortBy: sortingField,
+    sortOrder: currentSorting,
+    type: getSortType(sortingField),
+    itemList: itemNameList,
+  });
 
   const { mutate: originCreateAssetStock } = usePostAssetStock();
   const { mutate: originUpdateAssetStock } = usePatchAssetStock();
@@ -202,7 +211,31 @@ const AssetManagementDraggableTable = ({
 
   const windowWidth = useWindowWidth();
 
-  const tableData = data.stock_assets;
+  const tableData = data.stock_assets.map((stock) => {
+    const newStock = cloneDeep(stock);
+    priceInputFields.forEach((field) => {
+      const currentCurrency = stock.주식통화;
+      if (!newStock[field]) return;
+      if (currentCurrency === "USD") {
+        if (typeof newStock[field].value === "number") {
+          newStock[field].changedValue = ceil(
+            newStock[field].value * data.won_exchange,
+          );
+        }
+      } else if (currentCurrency === "KRW") {
+        if (typeof newStock[field].value === "number") {
+          newStock[field].changedValue = ceil(
+            newStock[field].value * data.dollar_exchange,
+            2,
+          );
+        }
+      }
+    });
+
+    return {
+      ...newStock,
+    };
+  });
 
   const tableMinimumWidth = Object.keys(fieldSize).reduce((acc, key) => {
     return acc + (cellMinimumWidth[key] ?? 136);
@@ -390,7 +423,12 @@ const AssetManagementDraggableTable = ({
     );
   };
 
-  const handleValueChange = (key: string, value: any, id: number) => {
+  const handleValueChange = (
+    key: string,
+    value: any,
+    id: number,
+    region?: "KRW" | "USD",
+  ) => {
     if (!accessToken) {
       setIsOpenLoginModal(true);
       return;
@@ -399,23 +437,32 @@ const AssetManagementDraggableTable = ({
     if (id < 0) {
       const targetRow = tableData.find((stock) => stock.id === id);
 
-      const isAllFilled = essentialFields.every(
-        (field) => targetRow?.[field].value !== undefined,
-      );
+      if (!targetRow) return;
+
+      const cloneRow = JSON.parse(JSON.stringify(targetRow));
+
+      cloneRow[key].value = value;
+
+      const isAllFilled = essentialFields.every((field) => {
+        if (cloneRow?.[field].value === undefined) {
+          return key === field && value !== undefined;
+        }
+        return true;
+      });
 
       if (isAllFilled) {
-        const name = targetRow?.종목명.value;
+        const name = cloneRow?.종목명.value;
         const code = itemNameList.find((item) => item.name === name)?.code;
 
         if (!code) return;
 
         const body: PostAssetStockRequestBody = {
-          account_type: (targetRow?.계좌종류.value ?? null) as string | null,
-          buy_date: targetRow?.구매일자.value as string,
-          investment_bank: (targetRow?.증권사.value ?? null) as string | null,
+          account_type: (cloneRow?.계좌종류.value ?? null) as string | null,
+          buy_date: cloneRow?.구매일자.value as string,
+          investment_bank: (cloneRow?.증권사.value ?? null) as string | null,
           purchase_currency_type: currencySetting,
-          purchase_price: (targetRow?.매입가.value ?? null) as number | null,
-          quantity: targetRow?.수량.value as number,
+          purchase_price: (cloneRow?.매입가.value ?? null) as number | null,
+          quantity: cloneRow?.수량.value as number,
           stock_code: code as string,
           tempId: id,
         };
@@ -445,6 +492,55 @@ const AssetManagementDraggableTable = ({
           accessToken: accessToken as string,
           body,
         });
+      } else if (key === "매입가") {
+        let price = Number(extractNumber(value));
+
+        if (isNumber(price)) {
+          const body: PatchAssetStockRequestBody = {
+            id: id as number,
+            buy_date: null,
+            account_type: null,
+            investment_bank: null,
+            purchase_currency_type: region ?? null,
+            purchase_price: price,
+            quantity: null,
+            stock_code: null,
+          };
+
+          if (isNumber(price)) {
+            updateAssetStock({
+              accessToken: accessToken as string,
+              body,
+            });
+          }
+        }
+
+        queryClient.setQueryData<AssetStock>(
+          keyStore.assetStock.getSummary.queryKey,
+          () => {
+            const prev = queryClient.getQueryData<AssetStock>(
+              keyStore.assetStock.getSummary.queryKey,
+            );
+            if (!prev) return;
+            return {
+              ...prev,
+              stock_assets: prev.stock_assets.map((stock) => {
+                if (stock.id === id) {
+                  return {
+                    ...stock,
+                    주식통화: currencySetting,
+                    [key]: {
+                      isRequired: stock[key].isRequired,
+                      value,
+                    },
+                  };
+                }
+                return stock;
+              }),
+            };
+          },
+        );
+        return;
       } else {
         const body: PatchAssetStockRequestBody = {
           id: id as number,
@@ -479,6 +575,7 @@ const AssetManagementDraggableTable = ({
             if (stock.id === id) {
               return {
                 ...stock,
+                주식통화: region ?? stock.주식통화,
                 [key]: {
                   isRequired: stock[key].isRequired,
                   value,
@@ -509,6 +606,10 @@ const AssetManagementDraggableTable = ({
     }
   };
 
+  const handleCurrencyChange = (currency: "KRW" | "USD") => {
+    setCurrencySetting(currency);
+  };
+
   return (
     <motion.div
       className="flex flex-col gap-3 mobile:px-5"
@@ -527,13 +628,13 @@ const AssetManagementDraggableTable = ({
           <div className="w-[56px] shrink-0">
             <SegmentedButtonGroup>
               <SegmentedButton
-                onClick={() => setCurrencySetting("KRW")}
+                onClick={() => handleCurrencyChange("KRW")}
                 isSelected={currencySetting === "KRW"}
               >
                 ₩
               </SegmentedButton>
               <SegmentedButton
-                onClick={() => setCurrencySetting("USD")}
+                onClick={() => handleCurrencyChange("USD")}
                 isSelected={currencySetting === "USD"}
               >
                 $
@@ -549,7 +650,15 @@ const AssetManagementDraggableTable = ({
         headerBuilder={headerBuilder}
         cellBuilder={(key, data, id) => {
           const currentRow = tableData.find((stock) => stock.id === id);
-          const currentCurrency = currentRow?.주식통화;
+
+          const code = itemNameList.find(
+            (item) => item.name === currentRow?.종목명.value,
+          )?.code;
+
+          const isKrCodeRegex = /^\d{6}$/;
+          const isKrCode = isKrCodeRegex.test(code ?? "");
+          const currentCurrency = isKrCode ? "KRW" : currencySetting;
+
           if (key === "종목명") {
             return (
               <ItemNameCell
@@ -599,9 +708,15 @@ const AssetManagementDraggableTable = ({
             autoFilledField.includes(key) &&
             fieldNumberType(key) === NumberFieldType.Rate
           ) {
+            let value = data?.value;
+
+            if (isNumber(data?.value)) {
+              value = data?.value;
+            }
+
             return (
               <NumberInput
-                value={data?.value ?? undefined}
+                value={value ?? undefined}
                 placeholder="자동 계산 필드입니다."
                 type={fieldNumberType(key)}
                 variants={
@@ -626,9 +741,15 @@ const AssetManagementDraggableTable = ({
             autoFilledField.includes(key) &&
             fieldNumberType(key) === NumberFieldType.Amount
           ) {
+            let value = data?.value;
+
+            if (isNumber(data?.value)) {
+              value = ceil(data?.value);
+            }
+
             return (
               <NumberInput
-                value={data?.value}
+                value={value}
                 placeholder="자동 계산 필드입니다."
                 type={fieldNumberType(key)}
                 autoFill
@@ -638,9 +759,22 @@ const AssetManagementDraggableTable = ({
           }
 
           if (key === "배당금") {
+            let value = data?.value;
+            const originCurrency = currentRow?.주식통화 ?? "KRW";
+
+            if (originCurrency !== currentCurrency) {
+              value = data?.changedValue;
+            } else {
+              if (currentCurrency === "KRW") {
+                value = ceil(value);
+              } else {
+                value = ceil(value, 2);
+              }
+            }
+
             return (
               <NumberInput
-                value={data?.value}
+                value={value}
                 type={fieldNumberType(key)}
                 region={currentCurrency}
                 placeholder={
@@ -678,9 +812,22 @@ const AssetManagementDraggableTable = ({
             autoFilledField.includes(key) &&
             fieldNumberType(key) === NumberFieldType.Price
           ) {
+            let value = data?.value;
+            const originCurrency = currentRow?.주식통화 ?? "KRW";
+
+            if (originCurrency !== currentCurrency && data?.value) {
+              value = data?.changedValue;
+            } else {
+              if (currentCurrency === "KRW") {
+                value = ceil(value);
+              } else {
+                value = ceil(value, 2);
+              }
+            }
+
             return (
               <NumberInput
-                value={data?.value}
+                value={value}
                 type={fieldNumberType(key)}
                 region={currentCurrency}
                 placeholder={"자동 계산 필드입니다."}
@@ -691,10 +838,19 @@ const AssetManagementDraggableTable = ({
           }
 
           if (key === "매입가") {
+            let value = data?.value;
+            const originCurrency = currentRow?.주식통화 ?? "KRW";
+
+            if (originCurrency !== currentCurrency && data?.value) {
+              value = data?.changedValue;
+            }
+
             return (
               <NumberInput
-                onChange={(value) => handleValueChange(key, value, id)}
-                value={data?.value}
+                onChange={(value) => {
+                  handleValueChange(key, value, id, currentCurrency);
+                }}
+                value={value}
                 type={fieldNumberType(key)}
                 region={currentCurrency}
                 placeholder={currentCurrency === "KRW" ? "₩ 0" : "$ 0"}

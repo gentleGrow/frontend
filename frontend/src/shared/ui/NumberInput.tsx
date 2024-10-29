@@ -2,7 +2,12 @@
 
 import React, { useId, useState } from "react";
 import { cn } from "@/lib/utils";
-import { extractNumber, fixedNumberIfNeeds } from "@/shared/utils/number";
+import {
+  commaizeNumber,
+  containsInvalidInput,
+  extractNumber,
+  fixedNumberIfNeeds,
+} from "@/shared/utils/number";
 import { assert } from "@/shared/utils/assert";
 
 const ColorVariants = {
@@ -15,8 +20,8 @@ const ColorVariants = {
 
 interface NumberInputProps {
   placeholder?: string;
-  value?: number;
-  onChange?: (value?: number) => void;
+  value?: string;
+  onChange?: (value?: string) => void;
   type?: "ratio" | "price" | "amount";
   region?: "USD" | "KRW";
   autoFill?: boolean;
@@ -44,50 +49,35 @@ const NumberInput = ({
     if (error) {
       setError(null);
     }
-    const target = e.currentTarget.value;
-
-    if (type === "price") {
-      const regex = region === "KRW" ? /^[0-9,₩ ]+$/ : /^[0-9,$ ]+$/;
-      if (!regex.test(target)) {
-        setError(new Error("숫자만 입력해주세요."));
-      }
-    }
-
-    if (type === "amount") {
-      if (!/^[0-9,]+$/g.test(target)) {
-        setError(new Error("숫자만 입력해주세요."));
-      }
-    }
+    let target = e.currentTarget.value;
 
     const targetValue = extractNumber(target);
 
-    if (targetValue === "") {
-      onChange?.(0);
-      return;
+    if (containsInvalidInput(target)) {
+      setError(new Error("숫자만 입력해 주세요."));
     }
-
-    onChange?.(Number(targetValue));
+    onChange?.(targetValue ?? "");
   };
 
-  const formatValue = (value?: number) => {
+  const formatValue = () => {
     if (type === "price") {
       if (!value) return "";
       const price = value;
       const prefix = region === "KRW" ? "₩ " : "$ ";
 
-      const commizedValue = price.toLocaleString();
+      const commizedValue = commaizeNumber(price);
       return prefix + commizedValue;
     }
 
     if (type === "amount") {
       if (!value) return "";
-      return value.toLocaleString();
+      return commaizeNumber(value);
     }
 
     if (type === "ratio") {
       if (value === undefined) return;
-      const prefix = value > 0 ? "+" : "";
-      return prefix + fixedNumberIfNeeds(value) + "%";
+      const prefix = Number(value) > 0 ? "+" : "";
+      return prefix + fixedNumberIfNeeds(Number(value)) + "%";
     }
   };
 
@@ -112,7 +102,7 @@ const NumberInput = ({
             : "placeholder:text-gray-50",
         )}
         placeholder={placeholder}
-        value={formatValue(value)}
+        value={formatValue()}
         onChange={handleChange}
         onFocus={(e) => {
           setIsFocused(true);
