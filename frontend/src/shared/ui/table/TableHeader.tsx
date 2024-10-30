@@ -19,28 +19,26 @@ const DraggableTableHeader = ({
   onDrag,
   field,
 }: PropsWithChildren<Omit<TableHeaderProps, "isDraggable">>) => {
-  const ref = React.useRef<HTMLDivElement>(null);
+  const ref = React.useRef<HTMLHeadElement>(null);
   return (
     <header
+      ref={ref}
+      style={{
+        touchAction: "none",
+        userSelect: "none",
+      }}
+      id={field}
+      data-key={field}
+      {...useDragAndDrop({
+        onDragEnd,
+        onDrag,
+        ref,
+      })}
       className={cn(
         "z-0 h-[44px] overflow-visible border-r border-gray-30 px-2.5 py-[12.5px]",
       )}
     >
-      <div
-        ref={ref}
-        style={{
-          touchAction: "none",
-          userSelect: "none",
-        }}
-        id={field}
-        data-key={field}
-        {...useDragAndDrop({
-          onDragEnd,
-          onDrag,
-          ref,
-        })}
-        className="group h-full w-full border-collapse cursor-grab text-body-2 font-semibold"
-      >
+      <div className="group h-full w-full border-collapse cursor-grab text-body-2 font-semibold">
         {children}
       </div>
     </header>

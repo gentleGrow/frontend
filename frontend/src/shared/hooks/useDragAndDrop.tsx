@@ -90,19 +90,16 @@ export const useDragAndDrop = ({
 
     origin?.current?.style.setProperty("background", "white");
 
+    const draggingArea = document.getElementById("drag-overlay");
+    if (!draggingArea) return;
+
     if (e.pointerType === "touch") {
-      (e?.currentTarget as HTMLElement)?.releasePointerCapture(e.pointerId);
-      (e.currentTarget as HTMLElement).removeEventListener(
-        "pointermove",
-        onPointerMove,
-      );
-      (e.currentTarget as HTMLElement).removeEventListener(
-        "pointerup",
-        onPointerUp,
-      );
+      ref.current?.releasePointerCapture(e.pointerId);
+      ref?.current?.removeEventListener("pointermove", onPointerMove);
+      ref.current?.removeEventListener("pointerup", onPointerUp);
     } else {
-      draggingClone.current?.removeEventListener("pointermove", onPointerMove);
-      draggingClone.current?.removeEventListener("pointerup", onPointerUp);
+      document.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("pointerup", onPointerUp);
     }
 
     draggingClone.current?.remove();
@@ -114,21 +111,21 @@ export const useDragAndDrop = ({
   };
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    e.currentTarget.style.setProperty("background", "rgba(239, 240, 241, 1)");
+    ref?.current?.style.setProperty("background", "rgba(239, 240, 241, 1)");
 
     const draggingArea = document.getElementById("drag-overlay");
     if (!draggingArea) return;
 
-    draggingClone.current = e.currentTarget.cloneNode(true) as HTMLElement;
-    origin.current = e.currentTarget;
+    draggingClone.current = ref?.current?.cloneNode(true) as HTMLElement;
+    origin.current = ref?.current;
     // check if is touch event
     if (e.pointerType === "touch") {
-      e.currentTarget.setPointerCapture(e.pointerId);
-      e.currentTarget.addEventListener("pointermove", onPointerMove);
-      e.currentTarget.addEventListener("pointerup", onPointerUp);
+      ref?.current?.setPointerCapture(e.pointerId);
+      ref?.current?.addEventListener("pointermove", onPointerMove);
+      ref?.current?.addEventListener("pointerup", onPointerUp);
     } else {
-      draggingClone.current?.addEventListener("pointermove", onPointerMove);
-      draggingClone.current?.addEventListener("pointerup", onPointerUp);
+      document.addEventListener("pointermove", onPointerMove);
+      document.addEventListener("pointerup", onPointerUp);
     }
 
     draggingArea.appendChild(draggingClone.current);
