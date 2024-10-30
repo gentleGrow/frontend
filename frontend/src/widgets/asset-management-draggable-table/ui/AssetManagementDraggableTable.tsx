@@ -695,7 +695,7 @@ const AssetManagementDraggableTable: FC<AssetManagementDraggableTableProps> = ({
 
           if (key === "구매일자") {
             return (
-              <div className="flex h-full w-full items-center justify-center px-[9px]">
+              <div className="flex h-full w-full flex-row items-center justify-start px-[9px]">
                 <DatePicker
                   date={data?.value ? new Date(data.value) : null}
                   onChange={(date) => {
