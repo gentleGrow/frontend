@@ -25,7 +25,7 @@ const ItemNameCell = ({
 
   const options = useMemo(
     () => ({
-      keys: ["name"], // 검색할 키
+      keys: ["name_kr", "name_en"], // 검색할 키
       threshold: 0.3, // 일치율 (0.0 ~ 1.0), 낮을수록 정확한 매칭
     }),
     [],
@@ -109,11 +109,11 @@ const ItemNameCell = ({
               <li
                 className={cn(
                   "group relative flex flex-row items-center gap-1 px-2 py-[7.5px] font-normal",
-                  selected === item.name && "bg-gray-5",
+                  selected === item.name_kr && "bg-gray-5",
                 )}
                 onClick={(e) => {
                   onSelect(item);
-                  setTypedName(item.name);
+                  setTypedName(item.name_kr);
                   setIsFocused(false);
                 }}
                 key={item.code}
@@ -123,7 +123,7 @@ const ItemNameCell = ({
                     "line-clamp-1 text-body-2 text-gray-90 group-hover:font-semibold"
                   }
                 >
-                  {item.name}
+                  {item.name_kr}
                 </span>
                 <span
                   className={
@@ -132,7 +132,7 @@ const ItemNameCell = ({
                 >
                   {item.code}
                 </span>
-                {selected === item.name && (
+                {selected === item.name_kr && (
                   <div
                     className={
                       "absolute left-0 right-0 h-full w-[2px] bg-green-60"

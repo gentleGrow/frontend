@@ -455,7 +455,7 @@ const AssetManagementDraggableTable: FC<AssetManagementDraggableTableProps> = ({
 
       if (isAllFilled) {
         const name = cloneRow?.종목명.value;
-        const code = itemNameList.find((item) => item.name === name)?.code;
+        const code = itemNameList.find((item) => item.name_kr === name)?.code;
 
         if (!code) return;
 
@@ -475,7 +475,7 @@ const AssetManagementDraggableTable: FC<AssetManagementDraggableTableProps> = ({
     } else {
       if (key === "종목명") {
         const name = value;
-        const target = itemNameList.find((item) => item.name === name);
+        const target = itemNameList.find((item) => item.name_kr === name);
         const code = target?.code;
 
         if (!code) return;
@@ -655,7 +655,7 @@ const AssetManagementDraggableTable: FC<AssetManagementDraggableTableProps> = ({
           const currentRow = tableData.find((stock) => stock.id === id);
 
           const code = itemNameList.find(
-            (item) => item.name === currentRow?.종목명.value,
+            (item) => item.name_kr === currentRow?.종목명.value,
           )?.code;
 
           const isKrCodeRegex = /^\d{6}$/;
@@ -666,7 +666,7 @@ const AssetManagementDraggableTable: FC<AssetManagementDraggableTableProps> = ({
             return (
               <ItemNameCell
                 selected={data?.value}
-                onSelect={(item) => handleValueChange(key, item.name, id)}
+                onSelect={(item) => handleValueChange(key, item.name_kr, id)}
                 selections={itemNameList}
               />
             );

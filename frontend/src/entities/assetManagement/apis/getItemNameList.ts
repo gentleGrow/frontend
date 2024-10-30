@@ -1,7 +1,8 @@
 import { fetchWithTimeout, getBaseUrl } from "@/shared";
 
 export interface ItemName {
-  name: string;
+  name_en: string;
+  name_kr: string;
   code: string;
 }
 
