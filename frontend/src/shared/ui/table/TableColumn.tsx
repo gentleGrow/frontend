@@ -45,7 +45,7 @@ const TableColumn = <T,>({
   return (
     <ResizablePanel
       defaultSize={fieldWidth}
-      className="relative z-0 table-column border-collapse overflow-visible hover:z-50"
+      className="relative z-0 table-column border-collapse overflow-visible"
       minSize={6}
       onResize={resizeHandler}
       order={index}
