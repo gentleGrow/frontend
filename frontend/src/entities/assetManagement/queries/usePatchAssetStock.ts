@@ -6,11 +6,14 @@ import {
 } from "@/entities/assetManagement/apis/patchAssetStock";
 import { useSetAtom } from "jotai";
 import { lastUpdatedAtAtom } from "@/entities/assetManagement/atoms/lastUpdatedAtAtom";
+import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 
 export const usePatchAssetStock = () => {
   const queryClient = useQueryClient();
 
   const setLastUpdatedAt = useSetAtom(lastUpdatedAtAtom);
+  const setCellError = useSetAtom(cellErrorAtom);
+
   return useMutation({
     mutationKey: keyStore.assetStock.patchAssetStock.queryKey,
     mutationFn: async ({
@@ -21,7 +24,7 @@ export const usePatchAssetStock = () => {
       accessToken: string;
     }) => patchAssetStock(accessToken, body),
 
-    onSuccess: async (data) => {
+    onSuccess: async (data, variables) => {
       setLastUpdatedAt(new Date());
       const response = (await data.json()) as {
         status_code: number;
@@ -32,6 +35,12 @@ export const usePatchAssetStock = () => {
       if (String(response).startsWith("2")) {
         await queryClient.invalidateQueries({
           queryKey: keyStore.assetStock.getSummary.queryKey,
+        });
+      } else {
+        setCellError({
+          rowId: variables.body.id,
+          field: response.field,
+          message: response.content,
         });
       }
     },
