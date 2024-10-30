@@ -5,6 +5,7 @@ import TableHeader from "./TableHeader";
 
 import { ResizableHandle, ResizablePanel } from "@/components/ui/resizable";
 import { UniversalDragEvent } from "@/shared/hooks/useDragAndDrop";
+import { CellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 
 export interface TableColumnProps {
   field: string;
@@ -21,6 +22,7 @@ export interface TableColumnProps {
   onResize?: (field: string, size: number) => void;
   tableId?: string;
   isDraggable?: boolean;
+  errorInfo?: CellErrorAtom | null;
 }
 
 const TableColumn = <T,>({
@@ -37,6 +39,7 @@ const TableColumn = <T,>({
   isClosestFromLeft,
   onResize,
   isDraggable = true,
+  errorInfo,
 }: TableColumnProps) => {
   const resizeHandler = (size: number) => {
     onResize?.(field, size);
@@ -71,7 +74,10 @@ const TableColumn = <T,>({
         )}
       </TableHeader>
       {dataset.map((data, idx) => (
-        <TableCell key={data?.id ?? idx}>
+        <TableCell
+          error={errorInfo?.rowId === data?.id && field === errorInfo?.field}
+          key={data?.id ?? idx}
+        >
           {cellBuilder(field, data[field], data.id)}
         </TableCell>
       ))}
