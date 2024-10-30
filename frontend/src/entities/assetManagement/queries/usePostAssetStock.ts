@@ -32,7 +32,7 @@ export const usePostAssetStock = () => {
         field: string;
       };
 
-      if (String(response).startsWith("2")) {
+      if (String(response.status_code).startsWith("2")) {
         const id = variables.body.tempId;
         const prevData = queryClient.getQueryData<AssetStock>(
           keyStore.assetStock.getSummary.queryKey,
@@ -49,6 +49,8 @@ export const usePostAssetStock = () => {
         setLastUpdatedAt(new Date());
         await queryClient.invalidateQueries({
           queryKey: keyStore.assetStock.getSummary.queryKey,
+          exact: true,
+          stale: true,
         });
 
         queryClient.setQueryData<AssetStock>(

@@ -14,6 +14,7 @@ import {
   UniversalDragEvent,
 } from "@/shared/hooks/useDragAndDrop";
 import useAutoScroll from "@/shared/hooks/useAutoScroll";
+import { CellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 
 interface FieldState {
   isRequired: boolean;
@@ -34,6 +35,7 @@ export interface TableProps<T extends unknown> {
   fixWidth?: boolean;
   fieldWidth?: (key: string) => number;
   onResize?: (fieldName: string, size: number) => void;
+  errorInfo: CellErrorAtom | null;
 }
 
 const Index = <T extends unknown>({
@@ -49,6 +51,7 @@ const Index = <T extends unknown>({
   fieldWidth,
   fixWidth = false,
   onResize,
+  errorInfo,
 }: TableProps<T>) => {
   const [mostClosetFromRight, setMostClosetFromRight] = React.useState<
     string | null
@@ -232,6 +235,7 @@ const Index = <T extends unknown>({
               isClosestFromRight={field.name === mostClosetFromRight}
               isClosestFromLeft={field.name === mostClosetFromLeft}
               isDraggable={!field.isRequired}
+              errorInfo={errorInfo}
             />
           ))}
           <div>
