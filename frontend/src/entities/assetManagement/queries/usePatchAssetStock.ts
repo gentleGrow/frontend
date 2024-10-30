@@ -25,14 +25,14 @@ export const usePatchAssetStock = () => {
     }) => patchAssetStock(accessToken, body),
 
     onSuccess: async (data, variables) => {
-      setLastUpdatedAt(new Date());
       const response = (await data.json()) as {
         status_code: number;
         content: string;
         field: string;
       };
 
-      if (String(response).startsWith("2")) {
+      if (String(response.status_code).startsWith("2")) {
+        setLastUpdatedAt(new Date());
         await queryClient.invalidateQueries({
           queryKey: keyStore.assetStock.getSummary.queryKey,
         });
