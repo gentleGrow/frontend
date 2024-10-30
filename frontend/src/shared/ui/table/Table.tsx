@@ -201,10 +201,7 @@ const Index = <T extends unknown>({
   });
 
   return (
-    <div
-      ref={containerRef}
-      className={"w-full overflow-x-scroll scrollbar-hide"}
-    >
+    <div ref={containerRef} className={"w-full overflow-x-scroll"}>
       <div
         className="overflow-visible rounded-[4px] border border-gray-20 bg-white"
         style={{
