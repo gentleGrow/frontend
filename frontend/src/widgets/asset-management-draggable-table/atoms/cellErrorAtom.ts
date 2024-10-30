@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 
-interface CellErrorAtom {
+export interface CellErrorAtom {
   field: string;
   rowId: number;
   message: string;

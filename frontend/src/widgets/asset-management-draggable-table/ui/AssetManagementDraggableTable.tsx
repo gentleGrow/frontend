@@ -7,7 +7,7 @@ import {
   AssetStock,
   StockAsset,
 } from "@/widgets/asset-management-draggable-table/types/table";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useGetAssetStocks } from "@/widgets/asset-management-draggable-table/quries/useGetAssetStocks";
 import ItemNameCell from "@/widgets/asset-management-draggable-table/ui/ItemNameCell";
 import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
@@ -37,6 +37,8 @@ import { cloneDeep } from "es-toolkit";
 import { withAsyncBoundary } from "@toss/async-boundary";
 import { Skeleton } from "@/components/ui/skeleton";
 import CommonErrorFallback from "@/shared/ui/CommonErrorFallback";
+import { useAtomValue } from "jotai";
+import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 
 const filedWidth = {
   종목명: 12,
@@ -189,6 +191,12 @@ const AssetManagementDraggableTable: FC<AssetManagementDraggableTableProps> = ({
     type: getSortType(sortingField),
     itemList: itemNameList,
   });
+  const errorInfo = useAtomValue(cellErrorAtom);
+  const setErrorInfo = useSetAtom(cellErrorAtom);
+
+  useEffect(() => {
+    setErrorInfo(null);
+  }, [setErrorInfo]);
 
   const { mutate: originCreateAssetStock } = usePostAssetStock();
   const { mutate: originUpdateAssetStock } = usePatchAssetStock();
@@ -437,6 +445,8 @@ const AssetManagementDraggableTable: FC<AssetManagementDraggableTableProps> = ({
       return;
     }
 
+    setErrorInfo(null);
+
     if (id < 0) {
       const targetRow = tableData.find((stock) => stock.id === id);
 
@@ -651,6 +661,7 @@ const AssetManagementDraggableTable: FC<AssetManagementDraggableTableProps> = ({
         fields={fields.length === 0 ? defaultFields : fields}
         dataset={tableData as StockAsset[]}
         headerBuilder={headerBuilder}
+        errorInfo={errorInfo}
         cellBuilder={(key, data, id) => {
           const currentRow = tableData.find((stock) => stock.id === id);
 
