@@ -21,11 +21,19 @@ export const usePatchAssetStock = () => {
       accessToken: string;
     }) => patchAssetStock(accessToken, body),
 
-    onSuccess: async () => {
+    onSuccess: async (data) => {
       setLastUpdatedAt(new Date());
-      await queryClient.invalidateQueries({
-        queryKey: keyStore.assetStock.getSummary.queryKey,
-      });
+      const response = (await data.json()) as {
+        status_code: number;
+        content: string;
+        field: string;
+      };
+
+      if (String(response).startsWith("2")) {
+        await queryClient.invalidateQueries({
+          queryKey: keyStore.assetStock.getSummary.queryKey,
+        });
+      }
     },
   });
 };

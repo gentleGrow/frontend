@@ -24,41 +24,49 @@ export const usePostAssetStock = () => {
     }) => postAssetStock(accessToken, body),
 
     onSuccess: async (_data, variables, _context) => {
-      const id = variables.body.tempId;
-      const prevData = queryClient.getQueryData<AssetStock>(
-        keyStore.assetStock.getSummary.queryKey,
-      );
+      const response = (await _data.json()) as {
+        status_code: number;
+        content: string;
+        field: string;
+      };
 
-      if (!prevData) {
-        return;
+      if (String(response).startsWith("2")) {
+        const id = variables.body.tempId;
+        const prevData = queryClient.getQueryData<AssetStock>(
+          keyStore.assetStock.getSummary.queryKey,
+        );
+
+        if (!prevData) {
+          return;
+        }
+
+        const notAddedRow = prevData.stock_assets.filter(
+          (stock) => stock.id < 0 && stock.id !== id,
+        );
+
+        setLastUpdatedAt(new Date());
+        await queryClient.invalidateQueries({
+          queryKey: keyStore.assetStock.getSummary.queryKey,
+        });
+
+        queryClient.setQueryData<AssetStock>(
+          keyStore.assetStock.getSummary.queryKey,
+          () => {
+            const currentData = queryClient.getQueryData<AssetStock>(
+              keyStore.assetStock.getSummary.queryKey,
+            );
+
+            if (!currentData) {
+              return;
+            }
+
+            return {
+              ...currentData,
+              stock_assets: [...currentData.stock_assets, ...notAddedRow],
+            };
+          },
+        );
       }
-
-      const notAddedRow = prevData.stock_assets.filter(
-        (stock) => stock.id < 0 && stock.id !== id,
-      );
-
-      setLastUpdatedAt(new Date());
-      await queryClient.invalidateQueries({
-        queryKey: keyStore.assetStock.getSummary.queryKey,
-      });
-
-      queryClient.setQueryData<AssetStock>(
-        keyStore.assetStock.getSummary.queryKey,
-        () => {
-          const currentData = queryClient.getQueryData<AssetStock>(
-            keyStore.assetStock.getSummary.queryKey,
-          );
-
-          if (!currentData) {
-            return;
-          }
-
-          return {
-            ...currentData,
-            stock_assets: [...currentData.stock_assets, ...notAddedRow],
-          };
-        },
-      );
     },
   });
 };
