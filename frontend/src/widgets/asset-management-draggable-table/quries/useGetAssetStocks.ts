@@ -5,7 +5,7 @@ import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
 
 export const useGetAssetStocks = (
   accessToken: string | null,
-  options: {
+  options?: {
     sortBy: string | null;
     sortOrder: "asc" | "desc";
     type: "date" | "string" | "number";
@@ -19,6 +19,8 @@ export const useGetAssetStocks = (
     gcTime: Infinity,
     refetchOnWindowFocus: true,
     select: (data) => {
+      if (!options) return data;
+
       if (options.sortBy === null) return data;
 
       data.stock_assets.sort((a, b) => {

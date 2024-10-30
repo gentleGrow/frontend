@@ -902,6 +902,6 @@ const AssetManagementDraggableTable: FC<AssetManagementDraggableTableProps> = ({
 
 // @ts-ignore
 export default withAsyncBoundary(AssetManagementDraggableTable, {
-  pendingFallback: <Skeleton className="h-full w-full bg-gray-40" />,
+  pendingFallback: <Skeleton className="h-full w-full" />,
   errorFallback: CommonErrorFallback,
 });
