@@ -7,11 +7,13 @@ import {
 import { useSetAtom } from "jotai";
 import { lastUpdatedAtAtom } from "@/entities/assetManagement/atoms/lastUpdatedAtAtom";
 import { AssetStock } from "@/widgets/asset-management-draggable-table/types/table";
+import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 
 export const usePostAssetStock = () => {
   const queryClient = useQueryClient();
 
   const setLastUpdatedAt = useSetAtom(lastUpdatedAtAtom);
+  const setCellError = useSetAtom(cellErrorAtom);
 
   return useMutation({
     mutationKey: keyStore.assetStock.postAssetStock.queryKey,
@@ -23,8 +25,8 @@ export const usePostAssetStock = () => {
       body: PostAssetStockRequestBody;
     }) => postAssetStock(accessToken, body),
 
-    onSuccess: async (_data, variables, _context) => {
-      const response = (await _data.json()) as {
+    onSuccess: async (data, variables, _context) => {
+      const response = (await data.json()) as {
         status_code: number;
         content: string;
         field: string;
@@ -66,6 +68,12 @@ export const usePostAssetStock = () => {
             };
           },
         );
+      } else {
+        setCellError({
+          rowId: variables.body.tempId,
+          field: response.field,
+          message: response.content,
+        });
       }
     },
   });
