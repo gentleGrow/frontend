@@ -49,6 +49,8 @@ export const usePostAssetStock = () => {
         setLastUpdatedAt(new Date());
         await queryClient.invalidateQueries({
           queryKey: keyStore.assetStock.getSummary.queryKey,
+          exact: true,
+          stale: true,
         });
 
         queryClient.setQueryData<AssetStock>(
