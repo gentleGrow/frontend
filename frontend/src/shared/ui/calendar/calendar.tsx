@@ -310,7 +310,8 @@ const Calendar = ({
                   {!isDateToday(selectedDate) &&
                     isDateToday(
                       new Date(currentYear, currentMonth - 1, day.day),
-                    ) && (
+                    ) &&
+                    day.variant !== "disabled" && (
                       <span className="absolute -top-[2px] left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-green-60" />
                     )}
                   <span
@@ -320,7 +321,7 @@ const Calendar = ({
                       isSameDate(
                         selectedDate,
                         new Date(currentYear, currentMonth - 1, day.day),
-                      )
+                      ) && day.variant !== "disabled"
                         ? DateVariants.selectedBackground
                         : "",
                     )}
@@ -331,7 +332,7 @@ const Calendar = ({
                       isSameDate(
                         selectedDate,
                         new Date(currentYear, currentMonth - 1, day.day),
-                      )
+                      ) && day.variant !== "disabled"
                         ? DateVariants.selectedText
                         : "",
                     )}
