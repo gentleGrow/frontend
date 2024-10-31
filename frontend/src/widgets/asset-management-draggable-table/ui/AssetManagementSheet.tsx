@@ -116,14 +116,13 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
     type: getSortType(sortingField),
     itemList: itemNameList,
   });
+  const dollarExchange = data.dollar_exchange ?? 0;
+  const wonExchange = data.won_exchange ?? 0;
 
   const tableData = data.stock_assets.map((stock) =>
     parseStockForMultipleCurrency(stock, { wonExchange, dollarExchange }),
   );
   const receivedFields = data?.asset_fields;
-
-  const dollarExchange = data.dollar_exchange ?? 0;
-  const wonExchange = data.won_exchange ?? 0;
 
   const errorInfo = useAtomValue(cellErrorAtom);
   const setErrorInfo = useSetAtom(cellErrorAtom);
