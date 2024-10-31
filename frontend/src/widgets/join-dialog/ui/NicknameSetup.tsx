@@ -23,7 +23,7 @@ export default function NicknameSetup({
   const [nickname, setNickname] = useState<string>("");
   const [isUsed, setIsUsed] = useState<boolean>(false);
   const [isOnFocus, setIsOnFocus] = useState<boolean>(false);
-
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const isNicknameInvalid =
     hasSpecialChar(nickname) || nickname.length < 2 || nickname.length > 12;
 
@@ -167,10 +167,17 @@ export default function NicknameSetup({
           </div>
 
           <DialogFooter className="mt-[52px]">
+            <DialogDescription className="text-alert">
+              {errorMessage}
+            </DialogDescription>
             <PrimaryButton
               isDisabled={isUsed || isNicknameInvalid || nickname.length < 2}
               onClick={async () => {
                 const isUpdated = await updateNickname(nickname);
+                if (!isUpdated)
+                  setErrorMessage(
+                    "회원가입 도중 오류가 발생했어요. 다시 시도해 주세요.",
+                  );
               }}
             >
               완료하기
