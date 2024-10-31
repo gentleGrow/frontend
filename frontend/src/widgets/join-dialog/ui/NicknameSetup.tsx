@@ -167,7 +167,7 @@ export default function NicknameSetup({
           </div>
 
           <DialogFooter className="mt-[52px]">
-            <DialogDescription className="text-alert">
+            <DialogDescription className="text-center text-alert">
               {errorMessage}
             </DialogDescription>
             <PrimaryButton
