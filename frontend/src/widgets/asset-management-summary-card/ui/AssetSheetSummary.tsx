@@ -3,8 +3,6 @@
 import AssetManagementSummaryCard from "@/widgets/asset-management-summary-card/ui/AssetManagementSummaryCard";
 import AssetManagementMobileSummary from "@/widgets/asset-management-summary-card/ui/AssetManagementMobileSummary";
 import { useGetAssetStocks } from "@/widgets/asset-management-draggable-table/quries/useGetAssetStocks";
-import { withAsyncBoundary } from "@toss/async-boundary";
-import AssetSheetSummarySkeleton from "./AssetManagementSkeleton";
 
 interface AssetSheetSummaryProps {
   accessToken: string | null;
@@ -46,7 +44,4 @@ const AssetSheetSummary = ({ accessToken }: AssetSheetSummaryProps) => {
 };
 
 // @ts-ignore
-export default withAsyncBoundary(AssetSheetSummary, {
-  FallbackComponent: AssetSheetSummarySkeleton,
-  ErrorComponent: () => null,
-});
+export default AssetSheetSummary;

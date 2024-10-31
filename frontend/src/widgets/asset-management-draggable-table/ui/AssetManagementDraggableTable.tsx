@@ -34,9 +34,6 @@ import Image from "next/image";
 import { extractNumber, isNumber } from "@/shared/utils/number";
 import { ceil } from "es-toolkit/compat";
 import { cloneDeep } from "es-toolkit";
-import { withAsyncBoundary } from "@toss/async-boundary";
-import { Skeleton } from "@/components/ui/skeleton";
-import CommonErrorFallback from "@/shared/ui/CommonErrorFallback";
 import { useAtomValue } from "jotai";
 import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 
@@ -912,7 +909,4 @@ const AssetManagementDraggableTable: FC<AssetManagementDraggableTableProps> = ({
 };
 
 // @ts-ignore
-export default withAsyncBoundary(AssetManagementDraggableTable, {
-  pendingFallback: <Skeleton className="h-full w-full" />,
-  errorFallback: CommonErrorFallback,
-});
+export default AssetManagementDraggableTable;
