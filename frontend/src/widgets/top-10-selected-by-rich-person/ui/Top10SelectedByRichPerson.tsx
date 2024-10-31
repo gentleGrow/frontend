@@ -4,7 +4,6 @@ import fetchRichPicks from "../api/fetchRichPicks";
 
 export default async function Top10SelectedByRichPerson() {
   const top10Stocks = await fetchRichPicks();
-  console.log(top10Stocks);
   return (
     <div className="relative h-[592px] space-y-[16px] rounded-lg border border-gray-20 bg-white p-[16px] mobile:rounded-none mobile:border-none">
       <div className="flex items-center space-x-[8px]">
