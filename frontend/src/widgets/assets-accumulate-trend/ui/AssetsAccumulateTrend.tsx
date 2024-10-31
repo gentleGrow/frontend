@@ -14,9 +14,11 @@ const AssetsAccumulateTrend = async () => {
         <h2 className="text-heading-2">자산 적립 추이</h2>
         <AssetsAccumulateTrendTooltip />
       </header>
-      <div className={"relative pl-3"}>
-        {!data && <NoDataMessage />}
-        <LineChart data={data ?? null} type={"auto"} />
+      <div className={"relative h-full pl-3"}>
+        {data.xAxises.length === 0 && <NoDataMessage />}
+        {data.xAxises.length > 0 && (
+          <LineChart data={data ?? null} type={"auto"} />
+        )}
       </div>
     </div>
   );
