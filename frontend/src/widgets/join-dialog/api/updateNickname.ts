@@ -3,7 +3,6 @@ import { fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
 import { ACCESS_TOKEN } from "@/shared/constants/cookie";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 const updateNickname = async (nickname: string) => {
   try {
@@ -23,10 +22,10 @@ const updateNickname = async (nickname: string) => {
       throw new Error(`${response.status} ${response.statusText}`);
     }
   } catch (error) {
-    console.error(error);
+    console.error("회원가입 오류 발생", error);
     return false;
   }
   revalidatePath("/");
-  redirect("/");
+  return true;
 };
 export default updateNickname;

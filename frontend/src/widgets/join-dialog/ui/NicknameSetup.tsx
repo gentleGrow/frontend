@@ -12,6 +12,7 @@ import hasSpecialChar from "../utils/hasSpecialChar";
 import updateNickname from "../api/updateNickname";
 import debounce from "lodash.debounce";
 import checkValidateNickname from "../api/checkValidateNickname";
+import { revalidatePath } from "next/cache";
 
 export default function NicknameSetup({
   initializeUser,
@@ -166,18 +167,20 @@ export default function NicknameSetup({
             </span>
           </div>
 
-          <DialogFooter className="mt-[52px]">
-            <DialogDescription className="text-center text-alert">
-              {errorMessage}
-            </DialogDescription>
+          <DialogFooter className="mt-[52px] flex flex-col space-y-2 sm:flex-col">
+            <p className="text-center text-xs text-alert">{errorMessage}</p>
             <PrimaryButton
               isDisabled={isUsed || isNicknameInvalid || nickname.length < 2}
               onClick={async () => {
                 const isUpdated = await updateNickname(nickname);
-                if (!isUpdated)
+                if (!isUpdated) {
                   setErrorMessage(
                     "회원가입 도중 오류가 발생했어요. 다시 시도해 주세요.",
                   );
+                  return;
+                }
+
+                initializeUser();
               }}
             >
               완료하기

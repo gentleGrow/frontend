@@ -85,6 +85,7 @@ const fetchPerformanceAnalysis = async (): Promise<PerformanceAnalysisData> => {
           `${oneYearResponse.status}: ${await oneYearResponse.json()}`,
       );
     }
+
     const [fiveDays, oneMonths, threeMonths, sixMonths, oneYear] =
       await Promise.all([
         fiveDaysResponse.json(),

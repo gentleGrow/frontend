@@ -24,7 +24,6 @@ export default function EstimateDividendClient({
   const [currentNavItemIndex, setCurrentNavItemIndex] = useState<number>(
     barChartNavItems.length - 1 <= 0 ? 0 : barChartNavItems.length - 1,
   );
-
   return (
     <div
       className={`relative ${selectedTab === "모두" ? "h-[390px]" : "h-full"} w-full rounded-xl border border-gray-20 bg-white p-[16px] mobile:rounded-none ${selectedTab === "모두" ? "mobile:h-[500px]" : "h-full min-h-[388px]"} mobile:border-none`}
@@ -69,7 +68,7 @@ export default function EstimateDividendClient({
                   (
                     estimatedDividendAll[barChartNavItems[currentNavItemIndex]]
                       ?.total as number
-                  ).toFixed(2),
+                  )?.toFixed(2),
                 ).toLocaleString("ko-KR")}
               </p>
             </div>
@@ -84,7 +83,8 @@ export default function EstimateDividendClient({
           .length !== 0 ? (
           <BarChart
             chartData={
-              barChartNavItems.length > 0
+              barChartNavItems.length > 0 &&
+              estimatedDividendAll[barChartNavItems[currentNavItemIndex]]
                 ? {
                     ...(({ total, ...rest }) => rest)(
                       estimatedDividendAll[
