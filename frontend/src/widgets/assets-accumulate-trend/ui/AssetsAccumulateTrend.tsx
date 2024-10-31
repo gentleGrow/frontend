@@ -9,7 +9,7 @@ const AssetsAccumulateTrend = async () => {
   const data = await getAssetSaveTrent(accessToken ?? null);
 
   return (
-    <div className="flex flex-col rounded-[8px] border border-gray-20 bg-white px-4 pb-5 pt-4">
+    <div className="flex min-h-[320px] flex-col rounded-[8px] border border-gray-20 bg-white px-4 pb-5 pt-4 mobile:rounded-none mobile:border-none">
       <header className="flex flex-row items-center gap-2">
         <h2 className="text-heading-2">자산 적립 추이</h2>
         <AssetsAccumulateTrendTooltip />
