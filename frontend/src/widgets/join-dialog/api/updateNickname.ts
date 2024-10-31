@@ -22,12 +22,11 @@ const updateNickname = async (nickname: string) => {
     if (!response.ok) {
       throw new Error(`${response.status} ${response.statusText}`);
     }
-
-    revalidatePath("/");
-    redirect("/");
   } catch (error) {
     console.error(error);
     return false;
   }
+  revalidatePath("/");
+  redirect("/");
 };
 export default updateNickname;
