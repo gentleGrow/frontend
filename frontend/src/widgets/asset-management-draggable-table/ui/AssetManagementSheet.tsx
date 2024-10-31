@@ -27,6 +27,7 @@ import AssetManagementSheetHeader from "@/widgets/asset-management-draggable-tab
 import { useAssetManagementSheetWidth } from "@/widgets/asset-management-draggable-table/hooks/useAssetManagementSheetWidth";
 import { CurrencyType } from "@/widgets/asset-management-draggable-table/constants/currencyType";
 import { useHandleAssetStock } from "@/widgets/asset-management-draggable-table/hooks/useHandleAssetStock";
+import { useInitializeAtoms } from "@/widgets/asset-management-draggable-table/atoms/useInitializeAtoms";
 
 const autoFilledField = [
   "수익률",
@@ -105,6 +106,8 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
 }) => {
   const [currentSorting, setCurrentSorting] = useAtom(currentSortingTypeAtom);
   const [sortingField, setSortingField] = useAtom(sortingFieldAtom);
+
+  useInitializeAtoms();
 
   const [currencySetting, setCurrencySetting] = useState<CurrencyType>(
     CurrencyType.KRW,
