@@ -17,7 +17,6 @@ export const useGetAssetStocks = (
     queryFn: () => getAssetsStock(accessToken),
     staleTime: Infinity,
     gcTime: Infinity,
-    refetchOnWindowFocus: true,
     select: (data) => {
       if (!options) return data;
 

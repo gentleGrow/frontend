@@ -36,7 +36,6 @@ export const usePatchAssetStock = () => {
         await queryClient.invalidateQueries({
           queryKey: keyStore.assetStock.getSummary.queryKey,
           exact: true,
-          stale: true,
         });
       } else {
         setCellError({

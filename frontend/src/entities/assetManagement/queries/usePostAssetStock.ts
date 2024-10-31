@@ -50,7 +50,6 @@ export const usePostAssetStock = () => {
         await queryClient.invalidateQueries({
           queryKey: keyStore.assetStock.getSummary.queryKey,
           exact: true,
-          stale: true,
         });
 
         queryClient.setQueryData<AssetStock>(
