@@ -12,6 +12,7 @@ export const getItemNameList = async (accessToken: string | null) => {
   const response = await fetchWithTimeout(`${getBaseUrl()}/api/v1/stocks`);
 
   if (!response.ok) {
+    console.log(await response.json());
     throw new Error("Failed to fetchWithTimeout item name list");
   }
 
