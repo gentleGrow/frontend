@@ -32,7 +32,7 @@ const DateVariants = {
 
 const MonthVariants = {
   default:
-    "text-body-1 text-gray-90 rounded-full font-regular group-hover:rounded-full group-hover:bg-gray-10 disabled:text-gray-30 hover:bg-gray-10",
+    "text-body-1 text-gray-90 rounded-full font-regular group-hover:rounded-full group-hover:bg-gray-10 disabled:text-gray-30 hover:bg-gray-10 disabled:bg-white",
   selected: "bg-green-60 text-white hover:bg-green-60",
 };
 
