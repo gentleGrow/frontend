@@ -22,12 +22,7 @@ const DragAndDropDropdown = ({
   onReorder,
 }: DragAndDropDropdownProps) => {
   const requiredItems = items.filter((item) => item.isRequired);
-  const unCheckedItems = items.filter(
-    (item) => !item.isChecked && !item.isRequired,
-  );
-  const draggableItems = items.filter(
-    (item) => !item.isRequired && item.isChecked,
-  );
+  const draggableItems = items.filter((item) => !item.isRequired);
 
   return (
     <div className="flex h-full max-h-[230px] flex-col gap-[4.5px] overflow-y-auto scrollbar-hide">
@@ -43,29 +38,18 @@ const DragAndDropDropdown = ({
         as="ul"
         values={items}
         onReorder={(newOrdered) => {
-          onReorder([...requiredItems, ...newOrdered, ...unCheckedItems]);
+          onReorder([...requiredItems, ...newOrdered]);
         }}
       >
         {draggableItems.map((item) => (
           <DragAndDropDropdownDraggableItem
             item={item}
-            isChecked={items.includes(item)}
+            isChecked={item.isChecked}
             onCheckboxClicked={() => onCheckboxClicked(item.name)}
             key={item.name}
           />
         ))}
       </Reorder.Group>
-      <ul className="flex flex-col gap-[4.5px]">
-        {unCheckedItems.map((item) => (
-          <DragAndDropNotDraggableItem
-            key={item.name}
-            item={item}
-            disabled={false}
-            isChecked={item.isChecked}
-            onCheckboxClicked={() => onCheckboxClicked(item.name)}
-          />
-        ))}
-      </ul>
     </div>
   );
 };
