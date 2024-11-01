@@ -12,6 +12,7 @@ const AddRowButton = ({ onClick }: { onClick: () => void }) => {
         height="24"
         viewBox="0 0 24 24"
         fill="none"
+        className="hover:fill-gray-10"
         xmlns="http://www.w3.org/2000/svg"
       >
         <rect x="0.5" y="0.5" width="23" height="23" rx="3.5" fill="white" />

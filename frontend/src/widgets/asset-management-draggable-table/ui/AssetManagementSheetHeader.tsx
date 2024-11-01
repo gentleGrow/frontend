@@ -38,7 +38,7 @@ const AssetManagementSheetHeader = ({
         fieldTypeIsNumber(field) ? "justify-end" : "justify-start",
       )}
     >
-      <span className="flex flex-row gap-1">
+      <span className="flex flex-row items-center gap-1">
         {field}
         {essentialFields.includes(field) && (
           <span className="text-green-60">*</span>
@@ -46,7 +46,14 @@ const AssetManagementSheetHeader = ({
         {field === "수익률" && (
           <Tooltip>
             <Tooltip.Trigger>
-              <Image src={"/images/tip.svg"} width={16} height={16} alt="tip" />
+              <span className="flex h-5 w-5 items-center justify-center rounded-[4px] hover:bg-gray-10">
+                <Image
+                  src={"/images/tip.svg"}
+                  width={12}
+                  height={12}
+                  alt="tip"
+                />
+              </span>
             </Tooltip.Trigger>
             <Tooltip.Content>
               주식을 매수한 평균 매입가입니다. 주가의 변동으로 처음 매입했던
