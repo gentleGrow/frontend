@@ -1,3 +1,4 @@
+import { getUser } from "@/entities";
 import {
   DailyInvestmentTip,
   EstimateDividend,
@@ -13,7 +14,7 @@ import {
 } from "@/widgets";
 import JoinDialog from "@/widgets/join-dialog/ui/JoinDialog";
 
-export default function Home() {
+export default async function Home() {
   return (
     <div className="mx-auto w-full max-w-[1400px] space-y-[16px] bg-gray-5 p-[20px] mobile:p-0">
       <DailyInvestmentTip />

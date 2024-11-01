@@ -14,7 +14,7 @@ const getUser = async (): Promise<User | null> => {
           "Content-Type": "application/json",
           Authorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
         },
-        revalidate: 0,
+        revalidate: 60,
       },
     );
 
