@@ -64,7 +64,9 @@ const HandleColumDisplayButton = ({
     >
       <PopoverTrigger asChild>
         <button
-          className={"flex h-[44px] w-[44px] items-center justify-center"}
+          className={
+            "flex h-[44px] w-[44px] items-center justify-center hover:bg-gray-10"
+          }
         >
           <svg
             width="16"
@@ -118,7 +120,7 @@ const HandleColumDisplayButton = ({
             </button>
           </label>
           <PopoverClose asChild>
-            <button>
+            <button className="rounded-[2px] hover:bg-gray-10">
               <svg
                 width="20"
                 height="20"
