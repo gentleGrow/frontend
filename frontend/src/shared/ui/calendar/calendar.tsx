@@ -32,7 +32,7 @@ const DateVariants = {
 
 const MonthVariants = {
   default:
-    "text-body-1 text-gray-90 rounded-full font-regular group-hover:rounded-full group-hover:bg-gray-10 disabled:text-gray-30 hover:bg-gray-10",
+    "text-body-1 text-gray-90 rounded-full font-regular group-hover:rounded-full group-hover:bg-gray-10 disabled:text-gray-30 hover:bg-gray-10 disabled:bg-white",
   selected: "bg-green-60 text-white hover:bg-green-60",
 };
 
@@ -314,18 +314,20 @@ const Calendar = ({
                     day.variant !== "disabled" && (
                       <span className="absolute -top-[2px] left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-green-60" />
                     )}
-                  <span
-                    className={cn(
-                      "absolute left-1/2 top-1/2 h-[20px] w-[20px] -translate-x-1/2 -translate-y-1/2",
-                      DateVariants.hover,
-                      isSameDate(
-                        selectedDate,
-                        new Date(currentYear, currentMonth - 1, day.day),
-                      ) && day.variant !== "disabled"
-                        ? DateVariants.selectedBackground
-                        : "",
-                    )}
-                  />
+                  {day.variant !== "disabled" && (
+                    <span
+                      className={cn(
+                        "absolute left-1/2 top-1/2 h-[20px] w-[20px] -translate-x-1/2 -translate-y-1/2",
+                        DateVariants.hover,
+                        isSameDate(
+                          selectedDate,
+                          new Date(currentYear, currentMonth - 1, day.day),
+                        ) && day.variant !== "disabled"
+                          ? DateVariants.selectedBackground
+                          : "",
+                      )}
+                    />
+                  )}
                   <span
                     className={cn(
                       "absolute left-1/2 top-1/2 flex h-[20px] w-[20px] -translate-x-1/2 -translate-y-1/2 items-center justify-center",
