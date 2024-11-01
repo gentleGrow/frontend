@@ -314,18 +314,20 @@ const Calendar = ({
                     day.variant !== "disabled" && (
                       <span className="absolute -top-[2px] left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-green-60" />
                     )}
-                  <span
-                    className={cn(
-                      "absolute left-1/2 top-1/2 h-[20px] w-[20px] -translate-x-1/2 -translate-y-1/2",
-                      DateVariants.hover,
-                      isSameDate(
-                        selectedDate,
-                        new Date(currentYear, currentMonth - 1, day.day),
-                      ) && day.variant !== "disabled"
-                        ? DateVariants.selectedBackground
-                        : "",
-                    )}
-                  />
+                  {day.variant !== "disabled" && (
+                    <span
+                      className={cn(
+                        "absolute left-1/2 top-1/2 h-[20px] w-[20px] -translate-x-1/2 -translate-y-1/2",
+                        DateVariants.hover,
+                        isSameDate(
+                          selectedDate,
+                          new Date(currentYear, currentMonth - 1, day.day),
+                        ) && day.variant !== "disabled"
+                          ? DateVariants.selectedBackground
+                          : "",
+                      )}
+                    />
+                  )}
                   <span
                     className={cn(
                       "absolute left-1/2 top-1/2 flex h-[20px] w-[20px] -translate-x-1/2 -translate-y-1/2 items-center justify-center",
