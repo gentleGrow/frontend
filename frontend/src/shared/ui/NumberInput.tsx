@@ -112,8 +112,6 @@ const NumberInput = ({
             const prefix = region === "KRW" ? "₩ " : "$ ";
             e.currentTarget.value = prefix;
           }
-          e.currentTarget.selectionStart = e.currentTarget.selectionEnd =
-            e.currentTarget.value.length;
         }}
         onBlur={(e) => {
           setIsFocused(false);
