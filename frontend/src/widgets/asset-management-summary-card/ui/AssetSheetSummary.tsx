@@ -10,7 +10,7 @@ interface AssetSheetSummaryProps {
 
 const AssetSheetSummary = ({ accessToken }: AssetSheetSummaryProps) => {
   const { data } = useGetAssetStocks(accessToken);
-  someunedfned();
+
   return (
     <>
       <div className="flex flex-row gap-4 overflow-x-scroll scrollbar-hide mobile:hidden">
