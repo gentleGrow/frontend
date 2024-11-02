@@ -1,6 +1,7 @@
 import { createVanillaExtractPlugin } from "@vanilla-extract/next-plugin";
 import path from "path";
 import { fileURLToPath } from "url";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,4 +26,11 @@ const nextConfig = {
   },
 };
 
-export default withVanillaExtract(nextConfig);
+export default withVanillaExtract(withSentryConfig(nextConfig, {
+  org: "gihwan",
+  project: "gentle-grow-front",
+
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+
+  silent: false, // Can be used to suppress logs
+}));
