@@ -5,14 +5,14 @@ const AddRowButton = ({ onClick }: { onClick: () => void }) => {
     <button
       type="button"
       onClick={onClick}
-      className="flex h-[44px] w-full flex-row items-center gap-2 px-3 py-[9px]"
+      className="group flex h-[44px] w-full flex-row items-center gap-2 px-3 py-[9px]"
     >
       <svg
         width="24"
         height="24"
         viewBox="0 0 24 24"
         fill="none"
-        className="hover:fill-gray-10"
+        className="group-hover:fill-gray-10"
         xmlns="http://www.w3.org/2000/svg"
       >
         <rect x="0.5" y="0.5" width="23" height="23" rx="3.5" fill="white" />
