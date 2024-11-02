@@ -28,7 +28,7 @@ export const usePutAssetField = () => {
       };
 
       if (String(body?.status_code).startsWith("2")) {
-        void queryClient.invalidateQueries({
+        await queryClient.invalidateQueries({
           queryKey: keyStore.assetStock.getSummary.queryKey,
           exact: true,
         });

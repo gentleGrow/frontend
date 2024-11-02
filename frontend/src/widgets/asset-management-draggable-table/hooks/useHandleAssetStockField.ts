@@ -40,7 +40,7 @@ export const useHandleAssetStockField = ({
     });
   };
 
-  const handleReorder = (
+  const handleChange = (
     newFields: {
       isRequired: boolean;
       isChecked: boolean;
@@ -60,6 +60,6 @@ export const useHandleAssetStockField = ({
   return {
     fields,
     handleReset,
-    handleReorder,
+    handleChange,
   };
 };
