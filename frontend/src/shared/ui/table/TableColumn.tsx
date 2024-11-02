@@ -76,6 +76,7 @@ const TableColumn = <T,>({
       {dataset.map((data, idx) => (
         <TableCell
           error={errorInfo?.rowId === data?.id && field === errorInfo?.field}
+          errorMessage={errorInfo?.message}
           key={data?.id ?? idx}
         >
           {cellBuilder(field, data[field], data.id)}
