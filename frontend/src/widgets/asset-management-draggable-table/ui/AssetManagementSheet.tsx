@@ -2,7 +2,7 @@
 
 import Table from "@/shared/ui/table/Table";
 import { StockAsset } from "@/widgets/asset-management-draggable-table/types/table";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { useGetAssetStocks } from "@/widgets/asset-management-draggable-table/quries/useGetAssetStocks";
 import ItemNameCell from "@/widgets/asset-management-draggable-table/ui/ItemNameCell";
 import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
@@ -10,7 +10,7 @@ import AccountTypeCell from "@/widgets/asset-management-draggable-table/ui/Accou
 import { DatePicker, SegmentedButton, SegmentedButtonGroup } from "@/shared";
 import { format } from "date-fns";
 import NumberInput from "@/shared/ui/NumberInput";
-import { useAtom, useSetAtom } from "jotai/index";
+import { useAtom } from "jotai/index";
 import { motion } from "framer-motion";
 import { allField } from "@/widgets/asset-management-draggable-table/constants/allField";
 import { isNumber } from "@/shared/utils/number";
@@ -128,11 +128,6 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
   const receivedFields = data?.asset_fields;
 
   const errorInfo = useAtomValue(cellErrorAtom);
-  const setErrorInfo = useSetAtom(cellErrorAtom);
-
-  useEffect(() => {
-    setErrorInfo(null);
-  }, [setErrorInfo]);
 
   const { handleAddRow, handleDeleteRow, handleValueChange } =
     useHandleAssetStock({
@@ -141,7 +136,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
       itemNameList,
       tableData,
     });
-  const { fields, handleReset, handleReorder } = useHandleAssetStockField({
+  const { fields, handleReset, handleChange } = useHandleAssetStockField({
     fieldsList: {
       all: allField,
       received: receivedFields ?? [],
@@ -412,7 +407,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
         fieldWidth={(key) => fieldSize[key]}
         onAddRow={handleAddRow}
         onDeleteRow={handleDeleteRow}
-        onReorder={handleReorder}
+        onReorder={handleChange}
         onReset={handleReset}
         onResize={resizeFieldSize}
       />
