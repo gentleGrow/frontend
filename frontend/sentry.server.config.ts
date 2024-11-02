@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
-  dsn: "https://5a92f0e36a1f33c0967099497c9756ad@o4507145378594816.ingest.us.sentry.io/4508226900393984",
+  dsn: "https://0110d6b9eb461570890c42347392c9e9@o4508069829541888.ingest.us.sentry.io/4508227065544704",
 
   // Set tracesSampleRate to 1.0 to capture 100%
   // of transactions for tracing.

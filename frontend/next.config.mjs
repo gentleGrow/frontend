@@ -27,9 +27,10 @@ const nextConfig = {
 };
 
 export default withVanillaExtract(withSentryConfig(nextConfig, {
-  org: "gihwan",
-  project: "gentle-grow-front",
+  org: "gaemischool",
+  project: "front",
 
+  // An auth token is required for uploading source maps.
   authToken: process.env.SENTRY_AUTH_TOKEN,
 
   silent: false, // Can be used to suppress logs
