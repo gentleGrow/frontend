@@ -336,9 +336,9 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                 variants={
                   data?.value === null
                     ? "gray-light"
-                    : data.value === undefined
+                    : data?.value === undefined
                       ? "gray-light"
-                      : data.value === 0
+                      : data?.value === 0
                         ? "default"
                         : data?.value > 0
                           ? "increase"
