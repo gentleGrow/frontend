@@ -7,6 +7,8 @@ import { LoginDialog } from "@/features";
 import QueryClientProvider from "@/app/QueryClientProvider";
 import localFont from "next/font/local";
 
+import { GoogleAnalytics } from "@next/third-parties/google";
+
 const pretendard = localFont({
   src: "./fonts/PretendardVariable.woff2",
   display: "swap",
@@ -40,6 +42,7 @@ export default function RootLayout({
         </JotaiProvider>
         <div id="drag-overlay" className="absolute left-0 top-0"></div>
       </body>
+      <GoogleAnalytics gaId={process.env.GA_ID as string} />
     </html>
   );
 }
