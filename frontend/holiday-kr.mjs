@@ -1,14 +1,16 @@
-// 필요한 라이브러리들을 import 합니다.
 import { promises as fs } from "fs";
 import path from "path";
-import fetch from "node-fetch"; // Node.js 18 미만일 경우 필요합니다.
+import fetch from "node-fetch";
 
-// API 키를 환경 변수나 별도의 설정 파일에서 가져오는 것이 좋습니다.
-const API_KEY =
-  "6UQSega4Jmi3r3DOAYZS%2F0OWDEgCsN%2FFr4Q1E13fPwuuUN92E0gq%2BMkv%2FHHCFLb2PAVQ0PcgEK%2B4leazk9fWIg%3D%3D"; // 실제 API 키로 대체하세요.
+const API_KEY = process.env.KR_HOLIDAYS_API_KEY;
 
 const API_URL =
   "http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo";
+
+if (!API_KEY) {
+  console.error("API key is not provided.");
+  process.exit(1);
+}
 
 // 시작 날짜와 현재 날짜를 설정합니다.
 let startDate = new Date(2000, 0, 1); // 2000년 1월 1일
@@ -51,6 +53,8 @@ const curDate = new Date(); // 현재 날짜
     try {
       const res = await fetch(API_URL + queryParams);
       const body = await res.text();
+
+      body.includes("errMsg") && console.log(`Error fetching holidays for ${curYear}-${curMonth}:`, body);
 
       // 저장할 디렉토리를 생성합니다.
       const dirPath = path.join(".", "public", "data", "holiday");

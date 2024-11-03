@@ -122,6 +122,7 @@ const config: Config = {
       },
       boxShadow: {
         popover: "0px 0px 7px 0px rgba(0, 0, 0, 0.1)",
+        deleteRow: "0px 0px 4px 0px rgba(0, 0, 0, 0.2)",
       },
       zIndex: {
         "9999": "9999",

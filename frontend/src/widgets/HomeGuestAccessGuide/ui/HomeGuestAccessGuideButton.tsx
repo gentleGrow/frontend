@@ -1,25 +1,8 @@
-"use client";
-import { useUser } from "@/entities";
-import { loginModalAtom } from "@/features";
-import { FloatingButton } from "@/shared";
-import { useSetAtom } from "jotai";
+import { getUser } from "@/entities";
+import HomeGuestAccessGuideButtonClient from "./HomeGuestAccessGuideButtonClient";
 
-export default function HomeGuestAccessGuideButton() {
-  const { user } = useUser();
+export default async function HomeGuestAccessGuideButton() {
+  const user = await getUser();
 
-  const setIsOpenLoginModal = useSetAtom(loginModalAtom);
-  return (
-    <div
-      className={`fixed bottom-[64px] left-1/2 flex w-full -translate-x-1/2 -translate-y-1/2 justify-center ${user?.isJoined ? "hidden" : "block"}`}
-    >
-      <FloatingButton
-        onClick={() => {
-          setIsOpenLoginModal(true);
-        }}
-      >
-        가데이터로 구성한 화면입니다. 자산 시트를 작성하고 나만의 데이터를
-        확인하세요.
-      </FloatingButton>
-    </div>
-  );
+  return <HomeGuestAccessGuideButtonClient user={user} />;
 }

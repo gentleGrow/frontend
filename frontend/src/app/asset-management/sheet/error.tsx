@@ -1,6 +1,15 @@
 "use client";
 
+import { useEffect } from "react";
+
+import * as Sentry from "@sentry/nextjs";
+
 export default function SheetError({ error }: { error: Error }) {
+  useEffect(() => {
+    // Log the error to Sentry
+    Sentry.captureException(error);
+  }, [error]);
+
   return (
     <div className="flex flex-col items-center gap-3 p-5">
       <h2 className="text-heading-2 text-gray-90">에러가 발생했습니다.</h2>

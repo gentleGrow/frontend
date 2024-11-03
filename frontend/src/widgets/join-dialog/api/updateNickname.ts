@@ -3,10 +3,10 @@ import { fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
 import { ACCESS_TOKEN } from "@/shared/constants/cookie";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 const updateNickname = async (nickname: string) => {
   try {
+    console.log("nickname", nickname);
     const response = await fetchWithTimeout(
       `${SERVICE_SERVER_URL}/api/auth/v1/nickname`,
       {
@@ -18,15 +18,16 @@ const updateNickname = async (nickname: string) => {
         body: JSON.stringify({ nickname }),
       },
     );
+    console.log("response", response);
 
     if (!response.ok) {
       throw new Error(`${response.status} ${response.statusText}`);
     }
   } catch (error) {
-    console.error(error);
+    console.error("회원가입 오류 발생", error);
     return false;
   }
-  revalidatePath("/");
-  redirect("/");
+  revalidatePath("/", "layout");
+  return true;
 };
 export default updateNickname;
