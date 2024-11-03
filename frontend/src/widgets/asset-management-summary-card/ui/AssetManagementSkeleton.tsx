@@ -9,7 +9,7 @@ const AssetSheetSummarySkeleton = () => {
       {Array.from({ length: 4 }).map((_, index) => (
         <Skeleton
           key={`skeleton-${index}`}
-          className="h-[237px] w-1/4 mobile:hidden"
+          className="h-[100px] w-1/4 mobile:hidden"
         />
       ))}
     </>
