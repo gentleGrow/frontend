@@ -49,6 +49,8 @@ const curDate = new Date(); // 현재 날짜
       const res = await fetch(API_URL + queryParams);
       const body = await res.text();
 
+      body.includes("errMsg") && console.log(`Error fetching holidays for ${curYear}-${curMonth}:`, body);
+
       // 저장할 디렉토리를 생성합니다.
       const dirPath = path.join(".", "public", "data", "holiday");
       await fs.mkdir(dirPath, { recursive: true });
