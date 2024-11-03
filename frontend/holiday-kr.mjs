@@ -7,6 +7,11 @@ const API_KEY = process.env.KR_HOLIDAYS_API_KEY;
 const API_URL =
   "http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo";
 
+if (!API_KEY) {
+  console.error("API key is not provided.");
+  process.exit(1);
+}
+
 // 시작 날짜와 현재 날짜를 설정합니다.
 let startDate = new Date(2000, 0, 1); // 2000년 1월 1일
 const curDate = new Date(); // 현재 날짜
