@@ -14,7 +14,7 @@ const TableCell = ({
   return (
     <div
       className={cn(
-        "relative z-0 h-[44px] border-collapse overflow-visible text-body-2",
+        "relative z-20 h-[44px] border-collapse overflow-visible text-body-2",
         error
           ? "border border-alert"
           : "border-b border-r border-gray-10 border-r-gray-10",
