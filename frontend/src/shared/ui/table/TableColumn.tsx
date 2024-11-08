@@ -3,7 +3,7 @@ import React, { memo, ReactNode } from "react";
 import TableCell from "./TableCell";
 import TableHeader from "./TableHeader";
 
-import { ResizableHandle, ResizablePanel } from "@/components/ui/resizable";
+import { ResizablePanel } from "@/components/ui/resizable";
 import { UniversalDragEvent } from "@/shared/hooks/useDragAndDrop";
 import { CellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 
@@ -55,10 +55,10 @@ const TableColumn = <T,>({
       id={field}
     >
       {isClosestFromRight && (
-        <div className="absolute -right-[2px] top-0 z-50 h-full w-[4px] bg-green-60" />
+        <div className="absolute -right-[2px] top-0 z-30 h-full w-[4px] bg-green-60" />
       )}
       {isClosestFromLeft && (
-        <div className="absolute -left-[2px] top-0 z-50 h-full w-[4px] bg-green-60" />
+        <div className="absolute -left-[2px] top-0 z-30 h-full w-[4px] bg-green-60" />
       )}
       <TableHeader
         field={field}
@@ -67,11 +67,6 @@ const TableColumn = <T,>({
         isDraggable={isDraggable}
       >
         {headerBuilder(field)}
-        {!isLastColumn ? (
-          <ResizableHandle className="-right-[5px] top-[5px] z-50 h-[32px] w-[10px] rounded-full bg-transparent after:hover:bg-green-60 active:after:bg-green-60" />
-        ) : (
-          <div className="absolute right-0 top-0 h-[42px] cursor-default bg-transparent"></div>
-        )}
       </TableHeader>
       {dataset.map((data, idx) => (
         <TableCell

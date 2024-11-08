@@ -1,7 +1,10 @@
 "use client";
 
 import React, { ReactNode, useRef } from "react";
-import { ResizablePanelGroup } from "@/components/ui/resizable";
+import {
+  ResizableHandle,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import TableColumn from "@/shared/ui/table/TableColumn";
 import DeleteRowIconButton from "@/shared/ui/table/DeleteRowIconButton";
 import { usePreservedCallback } from "@/shared/hooks/usePreservedCallback";
@@ -220,23 +223,30 @@ const Index = <T extends unknown>({
         >
           <hr className="absolute left-0 top-[42px] z-20 h-[1px] w-full border border-gray-50 bg-gray-50" />
           {preservedUserField.map((field, index) => (
-            <TableColumn
-              key={field.name}
-              onDrag={onDrag}
-              index={index}
-              field={field.name}
-              onResize={onResize}
-              dataset={preservedDataset}
-              headerBuilder={headerBuilder}
-              cellBuilder={cellBuilder}
-              fieldWidth={fieldWidth?.(field.name)}
-              isLastColumn={index === fields.length - 1}
-              onDragEnd={onDragEnd}
-              isClosestFromRight={field.name === mostClosetFromRight}
-              isClosestFromLeft={field.name === mostClosetFromLeft}
-              isDraggable={!field.isRequired}
-              errorInfo={errorInfo}
-            />
+            <>
+              <TableColumn
+                key={field.name}
+                onDrag={onDrag}
+                index={index}
+                field={field.name}
+                onResize={onResize}
+                dataset={preservedDataset}
+                headerBuilder={headerBuilder}
+                cellBuilder={cellBuilder}
+                fieldWidth={fieldWidth?.(field.name)}
+                isLastColumn={index === fields.length - 1}
+                onDragEnd={onDragEnd}
+                isClosestFromRight={field.name === mostClosetFromRight}
+                isClosestFromLeft={field.name === mostClosetFromLeft}
+                isDraggable={!field.isRequired}
+                errorInfo={errorInfo}
+              />
+              {index !== fields.length - 1 ? (
+                <ResizableHandle className="relative z-50 h-[32px] translate-y-[5px] rounded-full border-none bg-transparent hover:bg-green-60 active:bg-green-60" />
+              ) : (
+                <div className="absolute right-0 top-0 h-[42px] cursor-default bg-transparent"></div>
+              )}
+            </>
           ))}
           <div>
             <HandleColumDisplayButton

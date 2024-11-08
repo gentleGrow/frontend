@@ -52,7 +52,7 @@ const NotDraggableTableHeader = ({
   return (
     <header
       className={cn(
-        "z-0 h-[44px] border-collapse overflow-visible border-r border-gray-30 px-2.5 py-[12.5px]",
+        "z-20 h-[44px] border-collapse overflow-visible border-r border-gray-30 px-2.5 py-[12.5px]",
       )}
     >
       <div
