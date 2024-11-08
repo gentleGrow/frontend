@@ -13,7 +13,6 @@ export interface TableColumnProps {
   dataset: any;
   headerBuilder: (key: string) => ReactNode;
   cellBuilder: (key: string, data: any, rowId: number) => ReactNode;
-  isLastColumn?: boolean;
   fieldWidth?: number;
   onDrag: (e: UniversalDragEvent) => void;
   onDragEnd: (e: UniversalDragEvent) => void;
@@ -31,7 +30,6 @@ const TableColumn = <T,>({
   dataset,
   headerBuilder,
   cellBuilder,
-  isLastColumn,
   fieldWidth = 10,
   onDragEnd,
   onDrag,
@@ -48,18 +46,12 @@ const TableColumn = <T,>({
   return (
     <ResizablePanel
       defaultSize={fieldWidth}
-      className="relative z-0 table-column border-collapse overflow-visible"
+      className="relative z-0 -ml-[3px] table-column border-collapse"
       minSize={6}
       onResize={resizeHandler}
       order={index}
       id={field}
     >
-      {isClosestFromRight && (
-        <div className="absolute -right-[2px] top-0 z-30 h-full w-[4px] bg-green-60" />
-      )}
-      {isClosestFromLeft && (
-        <div className="absolute -left-[2px] top-0 z-30 h-full w-[4px] bg-green-60" />
-      )}
       <TableHeader
         field={field}
         onDrag={onDrag}
@@ -69,13 +61,16 @@ const TableColumn = <T,>({
         {headerBuilder(field)}
       </TableHeader>
       {dataset.map((data, idx) => (
-        <TableCell
-          error={errorInfo?.rowId === data?.id && field === errorInfo?.field}
-          errorMessage={errorInfo?.message}
-          key={data?.id ?? idx}
-        >
-          {cellBuilder(field, data[field], data.id)}
-        </TableCell>
+        <>
+          <TableCell
+            error={errorInfo?.rowId === data?.id && field === errorInfo?.field}
+            errorMessage={errorInfo?.message}
+            key={data?.id ?? idx}
+          >
+            {cellBuilder(field, data[field], data.id)}
+          </TableCell>
+          <div className="h-[1px] w-full bg-gray-10" />
+        </>
       ))}
     </ResizablePanel>
   );

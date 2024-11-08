@@ -9,11 +9,11 @@ const DeleteRowIconButton = ({
 }) => {
   return (
     <button
-      className="flex h-[44px] w-[44px] items-center justify-center border-b border-b-gray-10"
+      className="flex h-[45px] w-[44px] items-center justify-center border-b border-b-gray-10"
       onClick={() => onDeleteRow(rowId)}
       type="button"
     >
-      <span className="hover:shadow-deleteRow rounded-[4px] p-2.5">
+      <span className="rounded-[4px] p-2.5 hover:shadow-deleteRow">
         <svg
           width="12"
           height="12"
