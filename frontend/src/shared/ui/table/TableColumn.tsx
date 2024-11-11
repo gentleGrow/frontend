@@ -1,4 +1,4 @@
-import React, { memo, ReactNode } from "react";
+import React, { Fragment, memo, ReactNode } from "react";
 
 import TableCell from "./TableCell";
 import TableHeader from "./TableHeader";
@@ -61,16 +61,15 @@ const TableColumn = <T,>({
         {headerBuilder(field)}
       </TableHeader>
       {dataset.map((data, idx) => (
-        <>
+        <Fragment key={data?.id ?? idx}>
           <TableCell
             error={errorInfo?.rowId === data?.id && field === errorInfo?.field}
             errorMessage={errorInfo?.message}
-            key={data?.id ?? idx}
           >
             {cellBuilder(field, data[field], data.id)}
           </TableCell>
           <div className="h-[1px] w-full bg-gray-10" />
-        </>
+        </Fragment>
       ))}
     </ResizablePanel>
   );
