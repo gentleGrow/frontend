@@ -39,7 +39,7 @@ export default function StockTable({ stocks }: { stocks: any[] }) {
                 className={`max-w-[73px] truncate text-right ${stock.profit_rate < 0 && "text-decrease"} ${stock.profit_rate > 0 && "text-alert"}`}
               >
                 {stock.profit_rate > 0 && "+"}
-                {Number(stock.profit_rate.toFixed(2)).toLocaleString("ko-kr")}%
+                {Number(stock.profit_rate.toFixed(0)).toLocaleString("ko-kr")}%
               </TableCell>
               <TableCell className="max-w-[73px] truncate text-right">
                 {stock.profit_amount < 0 && "-"}₩

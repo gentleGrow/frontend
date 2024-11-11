@@ -68,7 +68,7 @@ export default function EstimateDividendClient({
                   (
                     estimatedDividendAll[barChartNavItems[currentNavItemIndex]]
                       ?.total as number
-                  )?.toFixed(2),
+                  )?.toFixed(0),
                 ).toLocaleString("ko-KR")}
               </p>
             </div>

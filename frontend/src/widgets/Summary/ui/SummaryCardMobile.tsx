@@ -26,7 +26,7 @@ export default function SummaryCardMobile({
             className={`font-bold ${reviewRate === 0 && "text-gray-100"} ${reviewRate > 0 && "text-alert"} ${reviewRate < 0 && "text-decrease"}`}
           >
             {reviewRate > 0 ? "+" : reviewRate < 0 ? "-" : ""}
-            {reviewRate.toFixed(2)}%
+            {reviewRate.toFixed(0)}%
           </span>
         </div>
         <div className="mt-[27px] flex flex-col space-y-[8px]">
