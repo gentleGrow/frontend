@@ -43,7 +43,7 @@ export default function Profile() {
           </svg>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="p-[16px]">
+      <DropdownMenuContent align="end" className="p-3">
         <DropdownMenus />
       </DropdownMenuContent>
     </DropdownMenu>

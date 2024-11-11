@@ -7,6 +7,7 @@ import {
 import { useUser } from "@/entities";
 import { loginModalAtom } from "@/features";
 import { useSetAtom } from "jotai";
+import Link from "next/link";
 import React from "react";
 export default function DropdownMenus() {
   const { user, logout } = useUser();
@@ -14,7 +15,7 @@ export default function DropdownMenus() {
   return (
     <>
       <DropdownMenuLabel
-        className={`${user?.isJoined ? "flex" : "hidden"} shrink-0 items-center justify-between space-x-[8px]`}
+        className={`${user?.isJoined ? "flex" : "hidden"} shrink-0 items-center justify-between space-x-3 px-4 py-3`}
       >
         <div>
           <svg
@@ -45,22 +46,44 @@ export default function DropdownMenus() {
             />
           </svg>
         </div>
-        <div className="flex flex-col space-y-[5px]">
+        <div className="flex flex-col space-y-1">
           <p className="text-body-2">{user?.email}</p>
           <p className="text-body-3">{user?.nickname}</p>
         </div>
       </DropdownMenuLabel>
-      <DropdownMenuSeparator hidden={user?.isJoined ? false : true} />
+
       {user?.isJoined ? (
-        <DropdownMenuItem onClick={() => logout()}>로그아웃</DropdownMenuItem>
+        <>
+          <DropdownMenuItem className="px-4 py-[9.5px] text-body-3">
+            <Link href="/my-page">마이페이지</Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator className="my-2" />
+          <DropdownMenuItem className="px-4 py-[9.5px] text-body-3">
+            고객센터
+          </DropdownMenuItem>
+          <DropdownMenuSeparator className="my-2" />
+          <DropdownMenuItem
+            onClick={() => logout()}
+            className="px-4 py-[9.5px] text-body-3"
+          >
+            로그아웃
+          </DropdownMenuItem>
+        </>
       ) : (
-        <DropdownMenuItem
-          onClick={() => {
-            setIsOpenLoginModal(true);
-          }}
-        >
-          로그인
-        </DropdownMenuItem>
+        <>
+          <DropdownMenuSeparator
+            hidden={user?.isJoined ? false : true}
+            className="my-2"
+          />
+          <DropdownMenuItem
+            className="px-4 py-[9.5px] text-body-3"
+            onClick={() => {
+              setIsOpenLoginModal(true);
+            }}
+          >
+            로그인
+          </DropdownMenuItem>
+        </>
       )}
     </>
   );
