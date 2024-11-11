@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode, useRef } from "react";
+import React, { Fragment, ReactNode, useRef } from "react";
 import {
   ResizableHandle,
   ResizablePanelGroup,
@@ -224,9 +224,8 @@ const Index = <T extends unknown>({
         >
           <hr className="absolute left-0 top-[42px] z-9999 h-[1px] w-full border border-gray-50 bg-gray-50" />
           {preservedUserField.map((field, index) => (
-            <>
+            <Fragment key={field.name}>
               <TableColumn
-                key={field.name}
                 onDrag={onDrag}
                 index={index}
                 field={field.name}
@@ -241,7 +240,6 @@ const Index = <T extends unknown>({
                 isClosestFromLeft={mostClosetFromLeft === field.name}
                 isClosestFromRight={mostClosetFromRight === field.name}
               />
-
               <div className={cn("relative bottom-0 top-0")}>
                 <div
                   className={cn(
@@ -265,7 +263,7 @@ const Index = <T extends unknown>({
               ) : (
                 <div className="absolute right-0 top-0 h-[42px] cursor-default bg-transparent"></div>
               )}
-            </>
+            </Fragment>
           ))}
           <div>
             <HandleColumDisplayButton
