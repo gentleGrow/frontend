@@ -34,10 +34,10 @@ export default function LineChart({
             trigger: "axis",
             formatter: (params) => {
               const date = data.dates[params[0].dataIndex];
-              const myReturn = Number(params[0].data.toFixed(2)).toLocaleString(
+              const myReturn = Number(params[0].data.toFixed(0)).toLocaleString(
                 "ko-KR",
               );
-              const kospi = Number(params[1].data.toFixed(2)).toLocaleString(
+              const kospi = Number(params[1].data.toFixed(0)).toLocaleString(
                 "ko-KR",
               );
               return `

@@ -24,7 +24,7 @@ export default function SummaryCard({ title, amount, rate }: SummaryCardProps) {
                 className={`text-heading-1 text-alert ${amount === 0 && "text-gray-100"} ${amount && amount > 0 && "text-alert"} ${amount && amount < 0 && "text-decrease"}`}
               >
                 {amount && amount > 0 ? "+" : amount && amount < 0 ? "-" : ""}
-                {amount?.toFixed(2)}%
+                {amount?.toFixed(0)}%
               </span>
             </div>
           )}

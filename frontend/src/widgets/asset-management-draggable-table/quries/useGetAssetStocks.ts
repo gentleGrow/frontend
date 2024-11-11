@@ -2,6 +2,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { keyStore } from "@/shared/lib/query-keys";
 import { getAssetsStock } from "@/widgets/asset-management-draggable-table/api/getAssetsStock";
 import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
+import { cloneDeep } from "es-toolkit";
 
 export const useGetAssetStocks = (
   accessToken: string | null,
@@ -17,7 +18,9 @@ export const useGetAssetStocks = (
     queryFn: () => getAssetsStock(accessToken),
     staleTime: Infinity,
     gcTime: Infinity,
-    select: (data) => {
+    select: (oldData) => {
+      const data = cloneDeep(oldData);
+
       if (!options) return data;
 
       if (options.sortBy === null) return data;
@@ -35,7 +38,16 @@ export const useGetAssetStocks = (
                 b[options.sortBy!].value,
               );
             default:
-              return a[options.sortBy!].value - b[options.sortBy!].value;
+              const aValue =
+                a.주식통화 === "KRW"
+                  ? a[options.sortBy!].value
+                  : a[options.sortBy!].value * data.won_exchange;
+              const bValue =
+                b.주식통화 === "KRW"
+                  ? b[options.sortBy!].value
+                  : b[options.sortBy!].value * data.won_exchange;
+
+              return aValue - bValue;
           }
         }
 
@@ -50,13 +62,20 @@ export const useGetAssetStocks = (
               a[options.sortBy!].value,
             );
           default:
-            return b[options.sortBy!].value - a[options.sortBy!].value;
+            const aValue =
+              a.주식통화 === "KRW"
+                ? a[options.sortBy!].value
+                : a[options.sortBy!].value * data.won_exchange;
+            const bValue =
+              b.주식통화 === "KRW"
+                ? b[options.sortBy!].value
+                : b[options.sortBy!].value * data.won_exchange;
+
+            return bValue - aValue;
         }
       });
 
-      return {
-        ...data,
-      };
+      return data;
     },
   });
 };

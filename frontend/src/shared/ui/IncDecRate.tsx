@@ -8,8 +8,8 @@ export default function IncDecRate({
   // 양수는 올림, 음수는 내림하여 둘째 자리까지 표시
   const roundedRate =
     rate > 0
-      ? (Math.ceil(rate * 100) / 100).toFixed(2)
-      : (Math.floor(rate * 100) / 100).toFixed(2);
+      ? (Math.ceil(rate * 100) / 100).toFixed(0)
+      : (Math.floor(rate * 100) / 100).toFixed(0);
 
   return (
     <div

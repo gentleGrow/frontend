@@ -81,7 +81,7 @@ export default function DonutChart({
         formatter: (params: any) => {
           return `<span style="font-size:12px; line-height:18px; color:#2A2D31; word-break: break-all;white-space: pre-wrap;"> ${
             params.name
-          } · <span style="font-weight:bold; word-break: break-all;white-space: pre-wrap;">${params.percent}</span>%<br/><span style="font-weight:bold; word-break: break-all;white-space: pre-wrap;">₩${Number(Number(params.value).toFixed(2)).toLocaleString("ko-kr")}원</span></span>`;
+          } · <span style="font-weight:bold; word-break: break-all;white-space: pre-wrap;">${params.percent}</span>%<br/><span style="font-weight:bold; word-break: break-all;white-space: pre-wrap;">₩${Number(Number(params.value).toFixed(0)).toLocaleString("ko-kr")}원</span></span>`;
         },
         backgroundColor: "rgba(255, 255, 255, 0.9)",
         borderColor: "transparent",
@@ -127,7 +127,7 @@ export default function DonutChart({
               : name;
 
           if (isPortfolio) {
-            return `{name|${formattedName}}{percent|${percent?.toFixed(2)}%}`;
+            return `{name|${formattedName}}{percent|${percent?.toFixed(0)}%}`;
           } else {
             return `{name|${formattedName}}{space|} {percent|${percent?.toFixed(
               2,

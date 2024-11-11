@@ -1,7 +1,10 @@
 "use client";
 
-import React, { ReactNode, useRef } from "react";
-import { ResizablePanelGroup } from "@/components/ui/resizable";
+import React, { Fragment, ReactNode, useRef } from "react";
+import {
+  ResizableHandle,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import TableColumn from "@/shared/ui/table/TableColumn";
 import DeleteRowIconButton from "@/shared/ui/table/DeleteRowIconButton";
 import { usePreservedCallback } from "@/shared/hooks/usePreservedCallback";
@@ -15,6 +18,7 @@ import {
 } from "@/shared/hooks/useDragAndDrop";
 import useAutoScroll from "@/shared/hooks/useAutoScroll";
 import { CellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
+import { cn } from "@/lib/utils";
 
 interface FieldState {
   isRequired: boolean;
@@ -213,30 +217,53 @@ const Index = <T extends unknown>({
       >
         <ResizablePanelGroup
           direction="horizontal"
-          className="relative z-0"
+          className="relative z-0 overflow-hidden"
           style={{
             overflow: "visible !important",
           }}
         >
-          <hr className="absolute left-0 top-[42px] z-20 h-[1px] w-full border border-gray-50 bg-gray-50" />
+          <hr className="absolute left-0 top-[42px] z-9999 h-[1px] w-full border border-gray-50 bg-gray-50" />
           {preservedUserField.map((field, index) => (
-            <TableColumn
-              key={field.name}
-              onDrag={onDrag}
-              index={index}
-              field={field.name}
-              onResize={onResize}
-              dataset={preservedDataset}
-              headerBuilder={headerBuilder}
-              cellBuilder={cellBuilder}
-              fieldWidth={fieldWidth?.(field.name)}
-              isLastColumn={index === fields.length - 1}
-              onDragEnd={onDragEnd}
-              isClosestFromRight={field.name === mostClosetFromRight}
-              isClosestFromLeft={field.name === mostClosetFromLeft}
-              isDraggable={!field.isRequired}
-              errorInfo={errorInfo}
-            />
+            <Fragment key={field.name}>
+              <TableColumn
+                onDrag={onDrag}
+                index={index}
+                field={field.name}
+                onResize={onResize}
+                dataset={preservedDataset}
+                headerBuilder={headerBuilder}
+                cellBuilder={cellBuilder}
+                fieldWidth={fieldWidth?.(field.name)}
+                onDragEnd={onDragEnd}
+                isDraggable={!field.isRequired}
+                errorInfo={errorInfo}
+                isClosestFromLeft={mostClosetFromLeft === field.name}
+                isClosestFromRight={mostClosetFromRight === field.name}
+              />
+              <div className={cn("relative bottom-0 top-0")}>
+                <div
+                  className={cn(
+                    "absolute bottom-[44px] top-0 z-40 w-[1px] bg-gray-30",
+                    preservedFields.at(index + 1)?.name ===
+                      mostClosetFromLeft && "bg-green-60",
+                    mostClosetFromRight === field.name && "bg-green-60",
+                  )}
+                />
+                <div
+                  className={cn(
+                    "absolute bottom-0 top-[44px] z-40 w-[1px] bg-gray-10",
+                    preservedFields.at(index + 1)?.name ===
+                      mostClosetFromLeft && "bg-green-60",
+                    mostClosetFromRight === field.name && "bg-green-60",
+                  )}
+                />
+              </div>
+              {index !== fields.length - 1 ? (
+                <ResizableHandle className="relative z-50 h-[32px] translate-y-[5px] rounded-full border-none bg-transparent hover:bg-green-60 active:bg-green-60" />
+              ) : (
+                <div className="absolute right-0 top-0 h-[42px] cursor-default bg-transparent"></div>
+              )}
+            </Fragment>
           ))}
           <div>
             <HandleColumDisplayButton
