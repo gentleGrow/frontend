@@ -20,6 +20,7 @@ import {
 import useAutoScroll from "@/shared/hooks/useAutoScroll";
 import { CellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 import { cn } from "@/lib/utils";
+import { filedWidth } from "@/widgets/asset-management-draggable-table/constants/fieldWidth";
 
 interface FieldState {
   isRequired: boolean;
@@ -225,8 +226,8 @@ const Index = <T extends unknown>({
             <ResizablePanel
               key={field.name}
               className="-ml-[2px] flex flex-row"
-              defaultSize={fieldWidth?.(field.name) ?? 10}
-              minSize={4}
+              defaultSize={filedWidth[field.name] ?? 10}
+              minSize={(filedWidth[field.name] ?? 10) / 2}
               onResize={(size) => onResize?.(field.name, size)}
               order={index}
               id={field.name}
@@ -259,7 +260,8 @@ const Index = <T extends unknown>({
                   )}
                 />
               </div>
-              {index !== fields.length - 1 ? (
+              {index !==
+              fields.filter((field) => field.isChecked).length - 1 ? (
                 <ResizableHandle className="relative z-50 h-[32px] translate-y-[5px] rounded-full border-none bg-transparent hover:bg-green-60 active:bg-green-60" />
               ) : (
                 <div className="relative right-0 top-0 z-50 h-[32px] w-[3px] cursor-default bg-transparent" />

@@ -316,7 +316,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                 type={fieldNumberType(key)}
                 region={currentCurrency}
                 placeholder={currentCurrency === "KRW" ? "₩ 0" : "$ 0"}
-                variants={!data?.value ? "gray-light" : "default"}
+                variants="default"
               />
             );
           }
