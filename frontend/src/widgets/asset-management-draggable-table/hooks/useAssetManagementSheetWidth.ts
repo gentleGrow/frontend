@@ -3,13 +3,13 @@ import { cellMinimumWidth } from "@/widgets/asset-management-draggable-table/con
 import { useState } from "react";
 import { filedWidth } from "@/widgets/asset-management-draggable-table/constants/fieldWidth";
 
-export const useAssetManagementSheetWidth = () => {
+export const useAssetManagementSheetWidth = (fieldList: string[]) => {
   const [fieldSize, setFieldSize] = useState(filedWidth);
 
   const windowWidth = useWindowWidth();
 
-  const tableMinimumWidth = Object.keys(fieldSize).reduce((acc, key) => {
-    return acc + (cellMinimumWidth[key] ?? 136);
+  const tableMinimumWidth = Object.keys(fieldList).reduce((acc, key) => {
+    return acc + (cellMinimumWidth[key] ?? 136) * 1.5;
   }, 0);
 
   const isFixed = windowWidth - 40 - tableMinimumWidth < 0;
@@ -23,8 +23,8 @@ export const useAssetManagementSheetWidth = () => {
 
   return {
     fieldSize,
-    tableMinimumWidth,
     isFixed,
+    tableMinimumWidth,
     resizeFieldSize,
   };
 };

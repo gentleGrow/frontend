@@ -2,56 +2,32 @@ import React, { Fragment, memo, ReactNode } from "react";
 
 import TableCell from "./TableCell";
 import TableHeader from "./TableHeader";
-
-import { ResizablePanel } from "@/components/ui/resizable";
 import { UniversalDragEvent } from "@/shared/hooks/useDragAndDrop";
 import { CellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 
 export interface TableColumnProps {
   field: string;
-  index: number;
   dataset: any;
   headerBuilder: (key: string) => ReactNode;
   cellBuilder: (key: string, data: any, rowId: number) => ReactNode;
-  fieldWidth?: number;
-  onDrag: (e: UniversalDragEvent) => void;
   onDragEnd: (e: UniversalDragEvent) => void;
-  isClosestFromRight?: boolean;
-  isClosestFromLeft?: boolean;
-  onResize?: (field: string, size: number) => void;
-  tableId?: string;
+  onDrag: (e: UniversalDragEvent) => void;
   isDraggable?: boolean;
   errorInfo?: CellErrorAtom | null;
 }
 
 const TableColumn = <T,>({
   field,
-  index,
   dataset,
   headerBuilder,
   cellBuilder,
-  fieldWidth = 10,
   onDragEnd,
   onDrag,
-  isClosestFromRight,
-  isClosestFromLeft,
-  onResize,
   isDraggable = true,
   errorInfo,
 }: TableColumnProps) => {
-  const resizeHandler = (size: number) => {
-    onResize?.(field, size);
-  };
-
   return (
-    <ResizablePanel
-      defaultSize={fieldWidth}
-      className="relative z-0 -ml-[3px] table-column border-collapse"
-      minSize={6}
-      onResize={resizeHandler}
-      order={index}
-      id={field}
-    >
+    <div className="z-0 table-column flex-1 border-collapse">
       <TableHeader
         field={field}
         onDrag={onDrag}
@@ -71,7 +47,7 @@ const TableColumn = <T,>({
           <div className="h-[1px] w-full bg-gray-10" />
         </Fragment>
       ))}
-    </ResizablePanel>
+    </div>
   );
 };
 

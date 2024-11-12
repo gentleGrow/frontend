@@ -144,8 +144,11 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
     accessToken,
   });
 
-  const { fieldSize, tableMinimumWidth, isFixed, resizeFieldSize } =
-    useAssetManagementSheetWidth();
+  const { fieldSize, isFixed, resizeFieldSize, tableMinimumWidth } =
+    useAssetManagementSheetWidth(
+      fields.filter((field) => field.isChecked).map((field) => field.name) ??
+        [],
+    );
 
   const handleCurrencyChange = (currency: "KRW" | "USD") => {
     setCurrencySetting(currency);
