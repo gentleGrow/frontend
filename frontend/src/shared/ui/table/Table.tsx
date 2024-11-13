@@ -212,14 +212,14 @@ const Index = <T extends unknown>({
   return (
     <div ref={containerRef} className={"w-full overflow-x-scroll"}>
       <div
-        className="overflow-visible rounded-[4px] border border-gray-20"
+        className="overflow-visible rounded-[4px] border border-gray-20 bg-white"
         style={{
           width: fixWidth ? `${tableWidth}px` : "100%",
         }}
       >
         <ResizablePanelGroup
           direction="horizontal"
-          className="relative z-0 overflow-hidden bg-white"
+          className="relative z-0 overflow-hidden"
         >
           <hr className="absolute left-0 top-[42px] z-9999 h-[1px] w-full border border-gray-50 bg-gray-50" />
           {preservedUserField.map((field, index) => (
