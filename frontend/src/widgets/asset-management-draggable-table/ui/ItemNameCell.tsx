@@ -25,7 +25,7 @@ const ItemNameCell = ({
 
   const options = useMemo(
     () => ({
-      keys: ["name_kr", "name_en"], // 검색할 키
+      keys: ["name_kr", "name_en", "code"], // 검색할 키
       threshold: 0.3, // 일치율 (0.0 ~ 1.0), 낮을수록 정확한 매칭
     }),
     [],
@@ -91,7 +91,7 @@ const ItemNameCell = ({
         ref={inputRef}
         value={typedName ?? ""}
         onChange={(e) => setTypedName(e.target.value)}
-        className="h-full w-full px-2.5 py-[10.5px] text-body-2 text-gray-90 focus:outline-green-60"
+        className="ml-[2px] h-full w-[calc(100%_-_2px)] px-2.5 py-[10.5px] text-body-2 text-gray-90 focus:outline-green-60"
         onFocus={() => {
           setIsFocused(true);
         }}
