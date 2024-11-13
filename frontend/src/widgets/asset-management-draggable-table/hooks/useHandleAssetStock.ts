@@ -77,7 +77,11 @@ export const useHandleAssetStock = ({
       setIsOpenLoginModal(true);
       return;
     }
-    deleteAssetStock({ accessToken: accessToken, id });
+
+    if (id >= 0) {
+      deleteAssetStock({ accessToken: accessToken, id });
+    }
+
     queryClient.setQueryData<AssetStock>(
       keyStore.assetStock.getSummary.queryKey,
       () => {
