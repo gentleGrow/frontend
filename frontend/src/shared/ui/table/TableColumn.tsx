@@ -27,7 +27,7 @@ const TableColumn = <T,>({
   errorInfo,
 }: TableColumnProps) => {
   return (
-    <div className="z-0 table-column flex-1 border-collapse">
+    <div id={field} className="z-0 table-column flex-1 border-collapse">
       <TableHeader
         field={field}
         onDrag={onDrag}
