@@ -1,8 +1,9 @@
 "use client";
 
-import React, { Fragment, ReactNode, useRef } from "react";
+import React, { ReactNode, useRef } from "react";
 import {
   ResizableHandle,
+  ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import TableColumn from "@/shared/ui/table/TableColumn";
@@ -19,6 +20,7 @@ import {
 import useAutoScroll from "@/shared/hooks/useAutoScroll";
 import { CellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 import { cn } from "@/lib/utils";
+import { filedWidth } from "@/widgets/asset-management-draggable-table/constants/fieldWidth";
 
 interface FieldState {
   isRequired: boolean;
@@ -210,37 +212,37 @@ const Index = <T extends unknown>({
   return (
     <div ref={containerRef} className={"w-full overflow-x-scroll"}>
       <div
-        className="overflow-visible rounded-[4px] border border-gray-20 bg-white"
+        className="overflow-visible rounded-[4px] border border-gray-20"
         style={{
           width: fixWidth ? `${tableWidth}px` : "100%",
         }}
       >
         <ResizablePanelGroup
           direction="horizontal"
-          className="relative z-0 overflow-hidden"
-          style={{
-            overflow: "visible !important",
-          }}
+          className="relative z-0 overflow-hidden bg-white"
         >
           <hr className="absolute left-0 top-[42px] z-9999 h-[1px] w-full border border-gray-50 bg-gray-50" />
           {preservedUserField.map((field, index) => (
-            <Fragment key={field.name}>
+            <ResizablePanel
+              key={field.name}
+              className="-ml-[2px] flex flex-row"
+              defaultSize={filedWidth[field.name] ?? 10}
+              minSize={(filedWidth[field.name] ?? 10) / 2}
+              onResize={(size) => onResize?.(field.name, size)}
+              order={index}
+              id={field.name}
+            >
               <TableColumn
                 onDrag={onDrag}
-                index={index}
                 field={field.name}
-                onResize={onResize}
                 dataset={preservedDataset}
                 headerBuilder={headerBuilder}
                 cellBuilder={cellBuilder}
-                fieldWidth={fieldWidth?.(field.name)}
                 onDragEnd={onDragEnd}
                 isDraggable={!field.isRequired}
                 errorInfo={errorInfo}
-                isClosestFromLeft={mostClosetFromLeft === field.name}
-                isClosestFromRight={mostClosetFromRight === field.name}
               />
-              <div className={cn("relative bottom-0 top-0")}>
+              <div className={cn("relative bottom-0 top-0 z-40")}>
                 <div
                   className={cn(
                     "absolute bottom-[44px] top-0 z-40 w-[1px] bg-gray-30",
@@ -258,14 +260,15 @@ const Index = <T extends unknown>({
                   )}
                 />
               </div>
-              {index !== fields.length - 1 ? (
+              {index !==
+              fields.filter((field) => field.isChecked).length - 1 ? (
                 <ResizableHandle className="relative z-50 h-[32px] translate-y-[5px] rounded-full border-none bg-transparent hover:bg-green-60 active:bg-green-60" />
               ) : (
-                <div className="absolute right-0 top-0 h-[42px] cursor-default bg-transparent"></div>
+                <div className="relative right-0 top-0 z-50 h-[32px] w-[3px] cursor-default bg-transparent" />
               )}
-            </Fragment>
+            </ResizablePanel>
           ))}
-          <div>
+          <div className="-ml-[2px]">
             <HandleColumDisplayButton
               fields={fields}
               onReorder={onReorder}
