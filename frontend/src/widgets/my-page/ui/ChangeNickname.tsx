@@ -1,6 +1,7 @@
 "use client";
 import { User } from "@/entities";
 import { Input, PrimaryButton } from "@/shared";
+import updateNickname from "@/widgets/join-dialog/api/updateNickname";
 import { useState } from "react";
 
 export default function ChangeNickname({ user }: { user: User }) {
@@ -29,6 +30,9 @@ export default function ChangeNickname({ user }: { user: User }) {
         <PrimaryButton
           buttonSize="medium"
           disabled={!nickname || nickname === user.nickname}
+          onClick={async () => {
+            await updateNickname(nickname);
+          }}
         >
           저장
         </PrimaryButton>
