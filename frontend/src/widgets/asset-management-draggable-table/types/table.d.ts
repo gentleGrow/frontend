@@ -1,27 +1,40 @@
-import { assetManagementMockData } from "@/widgets/asset-management-draggable-table/api/mock";
+import { allField } from "@/widgets/asset-management-draggable-table/constants/allField";
 
-export interface AssetValue {
+export interface AssetValue<T extends string | number | null> {
   isRequired: boolean;
-  value: string | number | null;
-  changedValue?: string | number | null;
+  value: T;
+  changedValue?: T extends number ? number : undefined;
 }
 
-export interface StorkAssetFields {
-  계좌종류: AssetValue;
-  구매일자: AssetValue;
-  현재가: AssetValue;
-  배당금: AssetValue;
-  고가: AssetValue;
-  증권사: AssetValue;
-  저가: AssetValue;
-  시가: AssetValue;
-  수익률: AssetValue;
-  수익금: AssetValue;
-  매입금: AssetValue;
-  매입가: AssetValue;
-  수량: AssetValue;
-  종목명: AssetValue;
-  거래량: AssetValue;
+export interface StockAssetParent {
+  종목명: string;
+  수익률: number;
+  수익금: number;
+  배당금: number;
+}
+
+export interface StockAssetSub {
+  계좌종류: AssetValue<string | null>;
+  매매일자: AssetValue<string>;
+  현재가: AssetValue<number | null>;
+  배당금: AssetValue<number | null>;
+  고가: AssetValue<number | null>;
+  증권사: AssetValue<string | null>;
+  저가: AssetValue<number | null>;
+  시가: AssetValue<number | null>;
+  수익률: AssetValue<number | null>;
+  수익금: AssetValue<number | null>;
+  거래가: AssetValue<number | null>;
+  수량: AssetValue<number>;
+  종목명: AssetValue<string>;
+  거래량: AssetValue<number | null>;
+  id: number;
+  주식통화: "KRW" | "USD";
+}
+
+export interface StockAsset {
+  parent: StockAssetParent;
+  sub: StockAssetSub[];
 }
 
 export interface StockAssetOverview {
@@ -32,16 +45,9 @@ export interface StockAssetOverview {
   total_dividend_amount: number;
 }
 
-export type StockAsset = StorkAssetFields & {
-  id: number;
-  주식통화: "KRW" | "USD";
-};
-
 export type AssetManagementResponse = StockAssetOverview & {
   stock_assets: StockAsset[];
-  asset_fields: string[];
+  asset_fields: Partial<typeof allField>;
   dollar_exchange: number;
   won_exchange: number;
 };
-
-export type AssetStock = typeof assetManagementMockData;
