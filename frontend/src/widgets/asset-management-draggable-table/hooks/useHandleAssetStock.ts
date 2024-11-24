@@ -1,9 +1,8 @@
 import {
-  AssetStock,
+  AssetManagementResponse,
   StockAsset,
 } from "@/widgets/asset-management-draggable-table/types/table";
 import { keyStore } from "@/shared/lib/query-keys";
-import { buildEmptyStock } from "@/widgets/asset-management-draggable-table/utils/buildEmptyStock";
 import { CurrencyType } from "@/widgets/asset-management-draggable-table/constants/currencyType";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePostAssetStock } from "@/entities/assetManagement/queries/usePostAssetStock";
@@ -53,23 +52,11 @@ export const useHandleAssetStock = ({
   const queryClient = useQueryClient();
 
   const handleAddRow = () => {
-    queryClient.setQueryData<AssetStock>(
-      keyStore.assetStock.getSummary.queryKey,
-      // @ts-ignore
-      () => {
-        const prev = queryClient.getQueryData<AssetStock>(
-          keyStore.assetStock.getSummary.queryKey,
-        );
-        if (!prev) return;
-        return {
-          ...prev,
-          stock_assets: [
-            ...prev.stock_assets,
-            buildEmptyStock(currencySetting),
-          ],
-        };
-      },
-    );
+    if (!accessToken) {
+      setIsOpenLoginModal(true);
+      return;
+    }
+    originCreateAssetStock({ accessToken });
   };
 
   const handleDeleteRow = (id: number) => {
@@ -78,14 +65,12 @@ export const useHandleAssetStock = ({
       return;
     }
 
-    if (id >= 0) {
-      deleteAssetStock({ accessToken: accessToken, id });
-    }
+    deleteAssetStock({ accessToken: accessToken, id });
 
-    queryClient.setQueryData<AssetStock>(
+    queryClient.setQueryData<AssetManagementResponse>(
       keyStore.assetStock.getSummary.queryKey,
       () => {
-        const prev = queryClient.getQueryData<AssetStock>(
+        const prev = queryClient.getQueryData<AssetManagementResponse>(
           keyStore.assetStock.getSummary.queryKey,
         );
         if (!prev) return;
