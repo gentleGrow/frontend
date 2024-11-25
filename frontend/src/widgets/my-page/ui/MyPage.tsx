@@ -1,8 +1,9 @@
-import { getUser } from "@/entities";
+"use client";
+import useUser from "@/entities/user/model/useUser";
 import ChangeNickname from "./ChangeNickname";
 
-export default async function MyPage() {
-  const user = await getUser();
+export default function MyPage() {
+  const { user } = useUser();
   if (!user) return null;
   return (
     <section className="max-w-[557px]">

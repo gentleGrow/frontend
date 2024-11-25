@@ -1,11 +1,12 @@
 "use client";
 import { User } from "@/entities";
+import useUserUpdate from "@/entities/user/model/useUserUpdate";
 import { Input, PrimaryButton } from "@/shared";
-import updateNickname from "@/widgets/join-dialog/api/updateNickname";
 import { useState } from "react";
 
 export default function ChangeNickname({ user }: { user: User }) {
   const [nickname, setNickname] = useState(user?.nickname);
+  const { updateNickname, updateNicknameStatus } = useUserUpdate();
   return (
     <>
       <label className="text-heading-2 text-gray-100" htmlFor="nickname">
@@ -26,15 +27,19 @@ export default function ChangeNickname({ user }: { user: User }) {
           {nickname.length}/12
         </span>
       </div>
-      <div className="absolute left-1/2 -translate-x-1/2">
+      <div className="justify-self-center">
         <PrimaryButton
           buttonSize="medium"
-          disabled={!nickname || nickname === user.nickname}
-          onClick={async () => {
-            await updateNickname(nickname);
+          disabled={
+            !nickname ||
+            nickname === user.nickname ||
+            updateNicknameStatus === "pending"
+          }
+          onClick={() => {
+            updateNickname({ newNickname: nickname });
           }}
         >
-          저장
+          {updateNicknameStatus === "pending" ? "저장 중.." : "저장"}
         </PrimaryButton>
       </div>
     </>

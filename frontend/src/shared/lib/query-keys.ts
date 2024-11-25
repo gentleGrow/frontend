@@ -13,4 +13,7 @@ export const keyStore = createQueryKeyStore({
   assetField: {
     putAssetField: null,
   },
+  user: {
+    getUser: null,
+  },
 });
