@@ -5,6 +5,7 @@ interface CheckboxProps {
   checked?: boolean;
   required?: boolean;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  emphasizeLabel?: boolean;
 }
 
 const CustomCheckbox: React.FC<CheckboxProps> = ({
@@ -12,6 +13,7 @@ const CustomCheckbox: React.FC<CheckboxProps> = ({
   checked,
   required = false,
   onChange,
+  emphasizeLabel,
 }) => {
   return (
     <label className="flex flex-1 cursor-pointer items-center space-x-1.5">
@@ -37,7 +39,9 @@ const CustomCheckbox: React.FC<CheckboxProps> = ({
         )}
       </div>
       {label && (
-        <span className={`text-sm font-normal text-gray-600`}>
+        <span
+          className={` ${emphasizeLabel ? "text-heading-4 font-bold text-gray-100" : "text-sm font-normal text-gray-60"} `}
+        >
           <span className="text-green-60">{required && "(필수) "}</span>
           {label}
         </span>
