@@ -21,7 +21,9 @@ const getUser = async (): Promise<User | null> => {
     if (!response.ok) {
       throw new Error(`${response.status} ${response.statusText}`);
     }
-    return await response.json();
+
+    const userData = await response.json();
+    return userData;
   } catch (error) {
     console.error(error);
     return null;

@@ -4,13 +4,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { useUser } from "@/entities";
+import useUser from "@/entities/user/model/useUser";
+import useUserLogout from "@/entities/user/model/useUserLogout";
 import { loginModalAtom } from "@/features";
 import { useSetAtom } from "jotai";
 import Link from "next/link";
 import React from "react";
 export default function DropdownMenus() {
-  const { user, logout } = useUser();
+  const { user } = useUser();
+  const { logoutUser } = useUserLogout();
   const setIsOpenLoginModal = useSetAtom(loginModalAtom);
   return (
     <>
@@ -55,7 +57,9 @@ export default function DropdownMenus() {
       {user?.isJoined ? (
         <>
           <DropdownMenuItem className="px-4 py-[9.5px] text-body-3">
-            <Link href="/my-page">마이페이지</Link>
+            <Link href="/my-page" className="h-full w-full">
+              마이페이지
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator className="my-2" />
           <DropdownMenuItem className="px-4 py-[9.5px] text-body-3">
@@ -63,7 +67,7 @@ export default function DropdownMenus() {
           </DropdownMenuItem>
           <DropdownMenuSeparator className="my-2" />
           <DropdownMenuItem
-            onClick={() => logout()}
+            onClick={() => logoutUser()}
             className="px-4 py-[9.5px] text-body-3"
           >
             로그아웃

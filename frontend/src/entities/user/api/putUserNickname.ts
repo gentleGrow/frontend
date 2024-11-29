@@ -1,12 +1,10 @@
 "use server";
 import { fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
 import { ACCESS_TOKEN } from "@/shared/constants/cookie";
-import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 const putUserNickname = async (nickname: string) => {
   try {
-    console.log("nickname", nickname);
     const response = await fetchWithTimeout(
       `${SERVICE_SERVER_URL}/api/auth/v1/nickname`,
       {
@@ -18,7 +16,6 @@ const putUserNickname = async (nickname: string) => {
         body: JSON.stringify({ nickname }),
       },
     );
-    console.log("response", response);
 
     if (!response.ok) {
       throw new Error(`${response.status} ${response.statusText}`);
@@ -26,7 +23,6 @@ const putUserNickname = async (nickname: string) => {
   } catch (error) {
     return false;
   }
-  revalidatePath("/", "layout");
   return true;
 };
 export default putUserNickname;

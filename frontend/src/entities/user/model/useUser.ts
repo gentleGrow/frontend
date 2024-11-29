@@ -5,7 +5,7 @@ import { keyStore } from "@/shared/lib/query-keys";
 const useUser = () => {
   const { data: user, status: getUserStatus } = useQuery({
     queryKey: keyStore.user.getUser.queryKey,
-    queryFn: getUser,
+    queryFn: async () => await getUser(),
     staleTime: Infinity,
     gcTime: Infinity,
   });

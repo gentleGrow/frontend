@@ -1,10 +1,20 @@
 "use client";
 import { Textarea } from "@/components/ui/textarea";
+import useUserDelete from "@/entities/user/model/useUserDelete";
 import { PrimaryButton } from "@/shared";
 import { Checkbox } from "@/shared/ui/checkbox/index";
 import { useState } from "react";
 
+const REASONS = [
+  "서비스를 잘 이용하지 않아요.",
+  "서비스 사용법이 어려워요.",
+  "투자를 더 이상 하지 않게 되었어요.",
+  "보안이나 개인정보가 걱정돼요.",
+  "오류가 자주 발생해요.",
+  "기타 (직접 입력)",
+];
 export default function Deactivate() {
+  const { deactivateUser } = useUserDelete();
   const [selectedReason, setSelectedReason] = useState<number | null>(null);
   const [reasonText, setReasonText] = useState<string>("");
   const [isAgreed, setIsAgreed] = useState<boolean>(false);
@@ -43,7 +53,7 @@ export default function Deactivate() {
               value={reasonText}
               maxLength={200}
               onChange={(e) => setReasonText(e.target.value)}
-              className="h-[64px] min-h-0 resize-none border-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="h-[64px] min-h-0 resize-none border-none focus:ring-0 focus-visible:!ring-0 focus-visible:!ring-offset-0"
             />
             <div className="absolute bottom-[30.5px] left-1/2 h-[1px] w-[96%] -translate-x-1/2 bg-gray-10" />
             <span className="absolute bottom-[10px] right-[10px] text-body-5 text-gray-60">
@@ -67,7 +77,19 @@ export default function Deactivate() {
           onChange={() => setIsAgreed(!isAgreed)}
         />
       </div>
-      <PrimaryButton disabled={isDisabled}>탈퇴하기</PrimaryButton>
+      <PrimaryButton
+        onClick={() =>
+          deactivateUser({
+            reason:
+              selectedReason === 5
+                ? reasonText
+                : REASONS[selectedReason as number],
+          })
+        }
+        disabled={isDisabled}
+      >
+        탈퇴하기
+      </PrimaryButton>
     </section>
   );
 }
