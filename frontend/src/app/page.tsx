@@ -1,4 +1,3 @@
-import { getUser } from "@/entities";
 import {
   DailyInvestmentTip,
   EstimateDividend,
@@ -12,6 +11,7 @@ import {
   Summary,
   Top10SelectedByRichPerson,
 } from "@/widgets";
+import FinishDeactivatedDialog from "@/widgets/deactivate-widget/ui/FinishDeactivatedDialog";
 import JoinDialog from "@/widgets/join-dialog/ui/JoinDialog";
 
 export default async function Home() {
@@ -46,6 +46,7 @@ export default async function Home() {
         </div>
       </div>
       <HomeGuestAccessGuideButton />
+      <FinishDeactivatedDialog />
       <JoinDialog />
     </div>
   );

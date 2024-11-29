@@ -1,26 +1,29 @@
 import clsx from "clsx";
-import { ReactNode } from "react";
+import { ReactNode, ButtonHTMLAttributes } from "react";
 
-export default function PrimaryButton({
-  isHover = false,
-  isDisabled = false,
-  onClick,
-  props,
-  children,
-}: {
+type PrimaryButtonProps = {
   isHover?: boolean;
   isDisabled?: boolean;
-  props?: Record<string, any>;
   onClick?: () => void;
+  buttonSize?: "large" | "medium";
   children?: ReactNode;
-}) {
-  const { className, ...restProps } = props || {};
+} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "size">;
+
+export default function PrimaryButton(props: PrimaryButtonProps) {
+  const {
+    isHover = false,
+    isDisabled = false,
+    onClick,
+    buttonSize = "large",
+    children,
+    className,
+    ...restProps
+  } = props;
 
   const finalClassName = clsx(
-    "relative h-[48px] w-full rounded-md  text-center text-[16px] bg-green-60 font-semibold leading-[24px] text-white disabled:bg-gray-10 disabled:text-gray-50",
-    {
-      " hover:bg-green-70": !isDisabled,
-    },
+    "relative rounded-md text-center  bg-green-60 font-semibold leading-[24px] text-white disabled:bg-gray-10 disabled:text-gray-50",
+    buttonSize === "large" ? "h-12 w-full " : "h-9 w-fit px-[29.5px] text-sm",
+    !isDisabled && "hover:bg-green-70",
     className,
   );
 

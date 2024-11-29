@@ -24,7 +24,6 @@ const updateNickname = async (nickname: string) => {
       throw new Error(`${response.status} ${response.statusText}`);
     }
   } catch (error) {
-    console.error("회원가입 오류 발생", error);
     return false;
   }
   revalidatePath("/", "layout");

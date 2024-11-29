@@ -16,3 +16,5 @@ export { default as HomeGuestAccessGuideButton } from "./HomeGuestAccessGuide/ui
 export { default as AssetManagementDraggableTable } from "./asset-management-draggable-table/ui/AssetManagementSheet";
 export { default as Footer } from "./footer/ui/Footer";
 export { default as AssetSheetSummary } from "./asset-management-summary-card/ui/AssetSheetSummary";
+export { default as MyPage } from "./my-page/ui/MyPage";
+export { default as MyPageMenu } from "./my-page-menu/ui/MyPageMenu";

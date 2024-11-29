@@ -1,32 +1,28 @@
 "use server";
 import { fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
-import { User } from "../types/user";
-import { cookies } from "next/headers";
 import { ACCESS_TOKEN } from "@/shared/constants/cookie";
+import { cookies } from "next/headers";
 
-const getUser = async (): Promise<User | null> => {
+const putUserNickname = async (nickname: string) => {
   try {
     const response = await fetchWithTimeout(
-      `${SERVICE_SERVER_URL}/api/auth/v1/user`,
+      `${SERVICE_SERVER_URL}/api/auth/v1/nickname`,
       {
-        method: "GET",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + cookies().get(ACCESS_TOKEN)?.value,
         },
-        revalidate: 60,
+        body: JSON.stringify({ nickname }),
       },
     );
 
     if (!response.ok) {
       throw new Error(`${response.status} ${response.statusText}`);
     }
-
-    const userData = await response.json();
-    return userData;
   } catch (error) {
-    console.error(error);
-    return null;
+    return false;
   }
+  return true;
 };
-export default getUser;
+export default putUserNickname;
