@@ -15,7 +15,7 @@ export const getAssetsStock = async (accessToken: string | null) => {
   }
 
   const response = await fetchWithTimeout(
-    `${getBaseUrl()}/api/asset/v2/assetstock`,
+    `${getBaseUrl()}/api/asset/v1/assetstock`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
