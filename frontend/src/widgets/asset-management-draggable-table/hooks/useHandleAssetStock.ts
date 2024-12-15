@@ -1,9 +1,9 @@
 import {
-  AssetStock,
+  AssetManagementResponse,
   StockAsset,
+  StockAssetSub,
 } from "@/widgets/asset-management-draggable-table/types/table";
 import { keyStore } from "@/shared/lib/query-keys";
-import { buildEmptyStock } from "@/widgets/asset-management-draggable-table/utils/buildEmptyStock";
 import { CurrencyType } from "@/widgets/asset-management-draggable-table/constants/currencyType";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePostAssetStock } from "@/entities/assetManagement/queries/usePostAssetStock";
@@ -52,24 +52,12 @@ export const useHandleAssetStock = ({
 
   const queryClient = useQueryClient();
 
-  const handleAddRow = () => {
-    queryClient.setQueryData<AssetStock>(
-      keyStore.assetStock.getSummary.queryKey,
-      // @ts-ignore
-      () => {
-        const prev = queryClient.getQueryData<AssetStock>(
-          keyStore.assetStock.getSummary.queryKey,
-        );
-        if (!prev) return;
-        return {
-          ...prev,
-          stock_assets: [
-            ...prev.stock_assets,
-            buildEmptyStock(currencySetting),
-          ],
-        };
-      },
-    );
+  const handleAddRow = (body: PostAssetStockRequestBody) => {
+    if (!accessToken) {
+      setIsOpenLoginModal(true);
+      return;
+    }
+    originCreateAssetStock({ accessToken, body });
   };
 
   const handleDeleteRow = (id: number) => {
@@ -78,21 +66,31 @@ export const useHandleAssetStock = ({
       return;
     }
 
-    if (id >= 0) {
-      deleteAssetStock({ accessToken: accessToken, id });
-    }
+    deleteAssetStock({ accessToken: accessToken, id });
 
-    queryClient.setQueryData<AssetStock>(
+    queryClient.setQueryData<AssetManagementResponse>(
       keyStore.assetStock.getSummary.queryKey,
       () => {
-        const prev = queryClient.getQueryData<AssetStock>(
+        const prev = queryClient.getQueryData<AssetManagementResponse>(
           keyStore.assetStock.getSummary.queryKey,
         );
         if (!prev) return;
-        return {
-          ...prev,
-          stock_assets: prev.stock_assets.filter((stock) => stock.id !== id),
-        };
+
+        const newData = { ...prev };
+
+        const targetRowIndex = newData.stock_assets.findIndex((stock) =>
+          stock.sub.some((sub) => sub.id === id),
+        );
+
+        if (!targetRowIndex) return;
+
+        const targetSub = newData.stock_assets[targetRowIndex].sub;
+
+        newData.stock_assets[targetRowIndex].sub = targetSub.filter(
+          (sub) => sub.id !== id,
+        );
+
+        return newData;
       },
     );
   };
@@ -111,7 +109,8 @@ export const useHandleAssetStock = ({
     setErrorInfo(null);
 
     if (id < 0) {
-      const targetRow = tableData.find((stock) => stock.id === id);
+      const everySubRow = tableData.map((stock) => stock.sub).flat();
+      const targetRow = everySubRow.find((sub) => sub.id === id);
 
       if (!targetRow) return;
 
@@ -191,32 +190,44 @@ export const useHandleAssetStock = ({
           }
         }
 
-        queryClient.setQueryData<AssetStock>(
+        return queryClient.setQueryData<AssetManagementResponse>(
           keyStore.assetStock.getSummary.queryKey,
           () => {
-            const prev = queryClient.getQueryData<AssetStock>(
+            const prev = queryClient.getQueryData<AssetManagementResponse>(
               keyStore.assetStock.getSummary.queryKey,
             );
             if (!prev) return;
-            return {
-              ...prev,
-              stock_assets: prev.stock_assets.map((stock) => {
-                if (stock.id === id) {
-                  return {
-                    ...stock,
-                    주식통화: currencySetting,
-                    [key]: {
-                      isRequired: stock[key].isRequired,
-                      value,
+
+            const targetRowIndex = prev.stock_assets.findIndex(
+              (stock) => stock.parent.종목명 === key,
+            );
+
+            if (targetRowIndex === -1) return;
+
+            const newStock = [...prev.stock_assets];
+            newStock[targetRowIndex].sub = newStock[targetRowIndex].sub.map(
+              (sub) => {
+                if (sub.id === id) {
+                  const updatedSub: StockAssetSub = {
+                    ...sub,
+                    [key as keyof StockAssetSub]: {
+                      ...sub[key],
+                      value: price,
                     },
                   };
+
+                  return updatedSub;
                 }
-                return stock;
-              }),
+                return sub;
+              },
+            );
+
+            return {
+              ...prev,
+              stock_assets: newStock,
             };
           },
         );
-        return;
       } else {
         const body: PatchAssetStockRequestBody = {
           id: id as number,
@@ -238,28 +249,41 @@ export const useHandleAssetStock = ({
       }
     }
 
-    queryClient.setQueryData<AssetStock>(
+    queryClient.setQueryData<AssetManagementResponse>(
       keyStore.assetStock.getSummary.queryKey,
       () => {
-        const prev = queryClient.getQueryData<AssetStock>(
+        const prev = queryClient.getQueryData<AssetManagementResponse>(
           keyStore.assetStock.getSummary.queryKey,
         );
         if (!prev) return;
-        return {
-          ...prev,
-          stock_assets: prev.stock_assets.map((stock) => {
-            if (stock.id === id) {
-              return {
-                ...stock,
-                주식통화: region ?? stock.주식통화,
-                [key]: {
-                  isRequired: stock[key].isRequired,
+
+        const targetRowIndex = prev.stock_assets.findIndex(
+          (stock) => stock.parent.종목명 === key,
+        );
+
+        if (targetRowIndex === -1) return;
+
+        const newStock = [...prev.stock_assets];
+        newStock[targetRowIndex].sub = newStock[targetRowIndex].sub.map(
+          (sub) => {
+            if (sub.id === id) {
+              const updatedSub: StockAssetSub = {
+                ...sub,
+                [key as keyof StockAssetSub]: {
+                  ...sub[key],
                   value,
                 },
               };
+
+              return updatedSub;
             }
-            return stock;
-          }),
+            return sub;
+          },
+        );
+
+        return {
+          ...prev,
+          stock_assets: newStock,
         };
       },
     );

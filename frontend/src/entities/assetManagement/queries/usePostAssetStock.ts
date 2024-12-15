@@ -6,7 +6,8 @@ import {
 } from "@/entities/assetManagement/apis/postAssetStock";
 import { useSetAtom } from "jotai";
 import { lastUpdatedAtAtom } from "@/entities/assetManagement/atoms/lastUpdatedAtAtom";
-import { AssetStock } from "@/widgets/asset-management-draggable-table/types/table";
+import { AssetManagementResponse } from "@/widgets/asset-management-draggable-table/types/table";
+import { groupBy } from "es-toolkit";
 import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 
 export const usePostAssetStock = () => {
@@ -34,7 +35,7 @@ export const usePostAssetStock = () => {
 
       if (String(response.status_code).startsWith("2")) {
         const id = variables.body.tempId;
-        const prevData = queryClient.getQueryData<AssetStock>(
+        const prevData = queryClient.getQueryData<AssetManagementResponse>(
           keyStore.assetStock.getSummary.queryKey,
         );
 
@@ -42,8 +43,12 @@ export const usePostAssetStock = () => {
           return;
         }
 
-        const notAddedRow = prevData.stock_assets.filter(
-          (stock) => stock.id < 0 && stock.id !== id,
+        const allSubRows = prevData.stock_assets
+          .map((stockAsset) => stockAsset.sub)
+          .flat();
+
+        const notAddedRow = allSubRows.filter(
+          (stockSub) => stockSub.id < 0 && stockSub.id !== id,
         );
 
         setLastUpdatedAt(new Date());
@@ -52,21 +57,38 @@ export const usePostAssetStock = () => {
           exact: true,
         });
 
-        queryClient.setQueryData<AssetStock>(
+        const groupedNotAddedRow = groupBy(
+          notAddedRow,
+          (item) => item.종목명.value,
+        );
+
+        queryClient.setQueryData<AssetManagementResponse>(
           keyStore.assetStock.getSummary.queryKey,
           () => {
-            const currentData = queryClient.getQueryData<AssetStock>(
-              keyStore.assetStock.getSummary.queryKey,
-            );
+            const currentData =
+              queryClient.getQueryData<AssetManagementResponse>(
+                keyStore.assetStock.getSummary.queryKey,
+              );
 
             if (!currentData) {
               return;
             }
 
-            return {
-              ...currentData,
-              stock_assets: [...currentData.stock_assets, ...notAddedRow],
-            };
+            const newData = { ...currentData };
+
+            Object.entries(groupedNotAddedRow).forEach(([key, value]) => {
+              const targetIndex = newData.stock_assets.findIndex(
+                (stockAsset) => stockAsset.parent.종목명 === key,
+              );
+
+              if (targetIndex === -1) {
+                return;
+              }
+
+              newData.stock_assets[targetIndex].sub.push(...value);
+            });
+
+            return newData;
           },
         );
       } else {
