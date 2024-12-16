@@ -1,7 +1,8 @@
 import {
   AssetManagementResponse,
-  StockAsset,
+  StockAssetParentWithType,
   StockAssetSub,
+  StockAssetSubWithType,
 } from "@/widgets/asset-management-draggable-table/types/table";
 import { keyStore } from "@/shared/lib/query-keys";
 import { CurrencyType } from "@/widgets/asset-management-draggable-table/constants/currencyType";
@@ -18,6 +19,9 @@ import { extractNumber, isNumber } from "@/shared/utils/number";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
 import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
+import { isSub } from "@/widgets/asset-management-draggable-table/utils/parseStockForMultipleCurrency";
+
+let tempId = -1;
 
 const changeFieldToForm = {
   구매일자: "buy_date",
@@ -31,7 +35,7 @@ interface UseHandleAssetStockParams {
   currencySetting: CurrencyType;
   itemNameList: ItemName[];
   accessToken: string | null;
-  tableData: StockAsset[];
+  tableData: (StockAssetParentWithType | StockAssetSubWithType)[];
 }
 
 export const useHandleAssetStock = ({
@@ -52,12 +56,51 @@ export const useHandleAssetStock = ({
 
   const queryClient = useQueryClient();
 
-  const handleAddRow = (body: PostAssetStockRequestBody) => {
+  const handleAddRow = (parentTitle: string) => {
     if (!accessToken) {
       setIsOpenLoginModal(true);
       return;
     }
-    originCreateAssetStock({ accessToken, body });
+    queryClient.setQueryData<AssetManagementResponse>(
+      keyStore.assetStock.getSummary.queryKey,
+      () => {
+        const prev = queryClient.getQueryData<AssetManagementResponse>(
+          keyStore.assetStock.getSummary.queryKey,
+        );
+        if (!prev) return;
+
+        const newStock = [...prev.stock_assets];
+
+        const targetParentIndex = newStock.findIndex(
+          (stock) => stock.parent.종목명 === parentTitle,
+        );
+        if (targetParentIndex === -1) return;
+
+        newStock[targetParentIndex].sub.push({
+          id: tempId--,
+          종목명: { value: "", isRequired: true },
+          수량: { value: 0, isRequired: true },
+          계좌종류: { value: "", isRequired: false },
+          매매일자: { value: "", isRequired: false },
+          현재가: { value: null, isRequired: false },
+          배당금: { value: null, isRequired: false },
+          고가: { value: null, isRequired: false },
+          증권사: { value: "", isRequired: false },
+          저가: { value: null, isRequired: false },
+          시가: { value: null, isRequired: false },
+          수익률: { value: null, isRequired: false },
+          수익금: { value: null, isRequired: false },
+          거래가: { value: null, isRequired: false },
+          거래량: { value: null, isRequired: false },
+          주식통화: currencySetting,
+        });
+
+        return {
+          ...prev,
+          stock_assets: newStock,
+        };
+      },
+    );
   };
 
   const handleDeleteRow = (id: number) => {
@@ -109,7 +152,9 @@ export const useHandleAssetStock = ({
     setErrorInfo(null);
 
     if (id < 0) {
-      const everySubRow = tableData.map((stock) => stock.sub).flat();
+      const everySubRow: StockAssetSubWithType[] = tableData.filter((stock) =>
+        isSub(stock),
+      );
       const targetRow = everySubRow.find((sub) => sub.id === id);
 
       if (!targetRow) return;

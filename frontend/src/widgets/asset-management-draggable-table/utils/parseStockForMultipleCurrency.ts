@@ -1,17 +1,32 @@
 import { cloneDeep } from "es-toolkit";
 import { ceil } from "es-toolkit/compat";
-import { StockAsset } from "@/widgets/asset-management-draggable-table/types/table";
+import {
+  StockAssetParentWithType,
+  StockAssetSub,
+  StockAssetSubWithType,
+} from "@/widgets/asset-management-draggable-table/types/table";
 import { priceInputFields } from "@/widgets/asset-management-draggable-table/constants/priceInputFields";
 import { CurrencyType } from "@/widgets/asset-management-draggable-table/constants/currencyType";
 import { precisionByCurrency } from "@/widgets/asset-management-draggable-table/constants/precisionByCurrency";
+import { ColumnType } from "@/features/assetManagement/consts/column-type";
+
+export const isSub = (
+  stock: StockAssetSubWithType | StockAssetParentWithType,
+): stock is StockAssetSub & { type: typeof ColumnType.Sub } => {
+  return stock.type === ColumnType.Sub;
+};
 
 export const parseStockForMultipleCurrency = (
-  stock: StockAsset,
+  stock: StockAssetSubWithType | StockAssetParentWithType,
   {
     wonExchange,
     dollarExchange,
   }: { wonExchange: number; dollarExchange: number },
 ) => {
+  if (!isSub(stock)) {
+    return stock;
+  }
+
   const newStock = cloneDeep(stock);
   priceInputFields.forEach((field) => {
     const currentCurrency = stock.주식통화;

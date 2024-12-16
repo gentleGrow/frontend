@@ -285,7 +285,7 @@ const Index = <T extends unknown>({
             })}
           </div>
         </ResizablePanelGroup>
-        <AddRowButton onClick={onAddRow} />
+        <AddRowButton onClick={() => onAddRow} />
       </div>
     </div>
   );
