@@ -4,7 +4,7 @@ import { AssetManagementResponse } from "@/widgets/asset-management-draggable-ta
 export const getAssetsStock = async (accessToken: string | null) => {
   if (!accessToken) {
     const mockData = await fetchWithTimeout(
-      `${getBaseUrl()}/api/v1/sample/assetstock`,
+      `${getBaseUrl()}/api/asset/v1/sample/assetstock`,
     );
 
     if (!mockData.ok) {
