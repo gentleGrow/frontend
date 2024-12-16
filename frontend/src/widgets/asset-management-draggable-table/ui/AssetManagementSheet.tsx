@@ -194,7 +194,8 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
         headerBuilder={(key) => <AssetManagementSheetHeader field={key} />}
         errorInfo={errorInfo}
         cellBuilder={(key, data, id) => {
-          const currentRow = tableData.find((stock) => stock.id === id);
+          const allSubs = tableData.map((stock) => stock.sub).flat();
+          const currentRow = allSubs.find((stock) => stock.id === id);
 
           const code = itemNameList.find(
             (item) => item.name_kr === currentRow?.종목명.value,

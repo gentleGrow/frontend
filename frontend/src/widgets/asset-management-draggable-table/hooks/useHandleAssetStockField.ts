@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { fieldIemFactory } from "@/widgets/asset-management-draggable-table/utils/fieldItemFactory";
 import { usePutAssetField } from "@/entities/assetManagement/queries/usePutAssetField";
+import { allField } from "@/widgets/asset-management-draggable-table/constants/allField";
 
 interface UseHandleAssetStockFieldParams {
   fieldsList: {
-    all: string[];
-    received: string[];
+    all: typeof allField;
+    received: Partial<typeof allField>;
   };
   accessToken: string | null;
 }
@@ -20,9 +21,9 @@ export const useHandleAssetStockField = ({
     (field) => !fieldsList.received.includes(field),
   );
   const [fields, setFields] = useState(
-    [...fieldsList.received, ...lastField].map((field) =>
-      fieldIemFactory(field, fieldsList.received),
-    ) ?? [],
+    [...fieldsList.received, ...lastField]
+      .filter((field) => field !== undefined)
+      .map((field) => fieldIemFactory(field, fieldsList.received)) ?? [],
   );
 
   const handleReset = () => {
@@ -44,7 +45,7 @@ export const useHandleAssetStockField = ({
     newFields: {
       isRequired: boolean;
       isChecked: boolean;
-      name: string;
+      name: (typeof allField)[number];
     }[],
   ) => {
     setFields(newFields);
