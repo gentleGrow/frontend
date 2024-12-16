@@ -1,4 +1,5 @@
 import { allField } from "@/widgets/asset-management-draggable-table/constants/allField";
+import { ColumnType } from "@/features/assetManagement/consts/column-type";
 
 export interface AssetValue<T extends string | number | null> {
   isRequired: boolean;
@@ -50,4 +51,11 @@ export type AssetManagementResponse = StockAssetOverview & {
   asset_fields: Partial<typeof allField>;
   dollar_exchange: number;
   won_exchange: number;
+};
+
+export type StockAssetSubWithType = StockAssetSub & {
+  type: ColumnType.Sub;
+};
+export type StockAssetParentWithType = StockAssetParent & {
+  type: ColumnType.Parent;
 };

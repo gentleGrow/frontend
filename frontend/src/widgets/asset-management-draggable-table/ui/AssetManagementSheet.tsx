@@ -1,7 +1,6 @@
 "use client";
 
 import Table from "@/shared/ui/table/Table";
-import { StockAsset } from "@/widgets/asset-management-draggable-table/types/table";
 import { FC, useState } from "react";
 import { useGetAssetStocks } from "@/widgets/asset-management-draggable-table/quries/useGetAssetStocks";
 import ItemNameCell from "@/widgets/asset-management-draggable-table/ui/ItemNameCell";
@@ -19,7 +18,10 @@ import { useAtomValue } from "jotai";
 import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 import AssetManagementSheetFooter from "@/widgets/asset-management-draggable-table/ui/AssetManagementSheetFooter";
 import { useHandleAssetStockField } from "@/widgets/asset-management-draggable-table/hooks/useHandleAssetStockField";
-import { parseStockForMultipleCurrency } from "@/widgets/asset-management-draggable-table/utils/parseStockForMultipleCurrency";
+import {
+  isSub,
+  parseStockForMultipleCurrency,
+} from "@/widgets/asset-management-draggable-table/utils/parseStockForMultipleCurrency";
 import { numberFields } from "@/widgets/asset-management-draggable-table/constants/numberFields";
 import { currentSortingTypeAtom } from "@/widgets/asset-management-draggable-table/atoms/currentSortingTypeAtom";
 import { sortingFieldAtom } from "@/widgets/asset-management-draggable-table/atoms/sortingFieldAtom";
@@ -28,6 +30,7 @@ import { useAssetManagementSheetWidth } from "@/widgets/asset-management-draggab
 import { CurrencyType } from "@/widgets/asset-management-draggable-table/constants/currencyType";
 import { useHandleAssetStock } from "@/widgets/asset-management-draggable-table/hooks/useHandleAssetStock";
 import { useInitializeAtoms } from "@/widgets/asset-management-draggable-table/atoms/useInitializeAtoms";
+import { ColumnType } from "@/features/assetManagement/consts/column-type";
 
 const autoFilledField = [
   "수익률",
@@ -122,9 +125,15 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
   const dollarExchange = data.dollar_exchange ?? 0;
   const wonExchange = data.won_exchange ?? 0;
 
-  const tableData = data.stock_assets.map((stock) =>
-    parseStockForMultipleCurrency(stock, { wonExchange, dollarExchange }),
-  );
+  const tableData = data.stock_assets
+    .map((stock) => [
+      { ...stock.parent, type: ColumnType.Parent },
+      ...stock.sub.map((sub) => ({ ...sub, type: ColumnType.Sub })),
+    ])
+    .flat()
+    .map((stock) =>
+      parseStockForMultipleCurrency(stock, { wonExchange, dollarExchange }),
+    );
   const receivedFields = data?.asset_fields;
 
   const errorInfo = useAtomValue(cellErrorAtom);
@@ -190,12 +199,13 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
       <Table
         fixWidth={isFixed}
         fields={fields.length === 0 ? defaultFields : fields}
-        dataset={tableData as StockAsset[]}
+        dataset={tableData}
         headerBuilder={(key) => <AssetManagementSheetHeader field={key} />}
         errorInfo={errorInfo}
         cellBuilder={(key, data, id) => {
-          const allSubs = tableData.map((stock) => stock.sub).flat();
+          const allSubs = tableData.filter((stock) => isSub(stock)).flat();
           const currentRow = allSubs.find((stock) => stock.id === id);
+          // TODO: 서브 행을 동적으로 삽입해야 할거 같음.
 
           const code = itemNameList.find(
             (item) => item.name_kr === currentRow?.종목명.value,
@@ -409,9 +419,11 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
         }}
         tableWidth={tableMinimumWidth}
         fieldWidth={(key) => fieldSize[key]}
-        onAddRow={handleAddRow}
+        // TODO: 수정 해야함.
+        // TODO: 타입 시스템 및 테이블 인터페이스 점검하기
+        onAddRow={() => handleAddRow("")}
         onDeleteRow={handleDeleteRow}
-        onReorder={handleChange}
+        onReorder={() => handleChange}
         onReset={handleReset}
         onResize={resizeFieldSize}
       />
