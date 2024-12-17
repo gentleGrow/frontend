@@ -17,13 +17,15 @@ export const isSub = (
 };
 
 export const parseStockForMultipleCurrency = (
-  stock: StockAssetSubWithType | StockAssetParentWithType,
+  stock: StockAssetParentWithType,
   {
     wonExchange,
     dollarExchange,
   }: { wonExchange: number; dollarExchange: number },
 ) => {
   if (!isSub(stock)) {
+    const newParentStock = cloneDeep(stock);
+    // TODO: 흠... 서브 행이 원화, 환화로 입력 가능한데, 부모 행의 값은 무조건 원화로만 오는지? 수정 되어야 함.
     return stock;
   }
 
