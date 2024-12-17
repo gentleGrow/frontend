@@ -7,7 +7,6 @@ import ItemNameCell from "@/widgets/asset-management-draggable-table/ui/ItemName
 import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
 import AccountTypeCell from "@/widgets/asset-management-draggable-table/ui/AccountTypeCell";
 import { DatePicker, SegmentedButton, SegmentedButtonGroup } from "@/shared";
-import { format } from "date-fns";
 import NumberInput from "@/shared/ui/NumberInput";
 import { useAtom } from "jotai/index";
 import { motion } from "framer-motion";
@@ -18,10 +17,7 @@ import { useAtomValue } from "jotai";
 import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 import AssetManagementSheetFooter from "@/widgets/asset-management-draggable-table/ui/AssetManagementSheetFooter";
 import { useHandleAssetStockField } from "@/widgets/asset-management-draggable-table/hooks/useHandleAssetStockField";
-import {
-  isSub,
-  parseStockForMultipleCurrency,
-} from "@/widgets/asset-management-draggable-table/utils/parseStockForMultipleCurrency";
+import { parseStockForMultipleCurrency } from "@/widgets/asset-management-draggable-table/utils/parseStockForMultipleCurrency";
 import { numberFields } from "@/widgets/asset-management-draggable-table/constants/numberFields";
 import { currentSortingTypeAtom } from "@/widgets/asset-management-draggable-table/atoms/currentSortingTypeAtom";
 import { sortingFieldAtom } from "@/widgets/asset-management-draggable-table/atoms/sortingFieldAtom";
@@ -31,6 +27,7 @@ import { CurrencyType } from "@/widgets/asset-management-draggable-table/constan
 import { useHandleAssetStock } from "@/widgets/asset-management-draggable-table/hooks/useHandleAssetStock";
 import { useInitializeAtoms } from "@/widgets/asset-management-draggable-table/atoms/useInitializeAtoms";
 import { ColumnType } from "@/features/assetManagement/consts/column-type";
+import { StockAssetParentWithType } from "@/widgets/asset-management-draggable-table/types/table";
 
 const autoFilledField = [
   "수익률",
@@ -122,18 +119,25 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
     type: getSortType(sortingField),
     itemList: itemNameList,
   });
+
   const dollarExchange = data.dollar_exchange ?? 0;
   const wonExchange = data.won_exchange ?? 0;
 
+  // TODO: parent 만 우선적으로 디스플레이 하기
   const tableData = data.stock_assets
-    .map((stock) => [
-      { ...stock.parent, type: ColumnType.Parent },
-      ...stock.sub.map((sub) => ({ ...sub, type: ColumnType.Sub })),
-    ])
+    .map(
+      (stock) =>
+        ({
+          ...stock.parent,
+          id: stock.parent.종목명,
+          type: ColumnType.Parent,
+        }) as StockAssetParentWithType,
+    )
     .flat()
     .map((stock) =>
       parseStockForMultipleCurrency(stock, { wonExchange, dollarExchange }),
     );
+
   const receivedFields = data?.asset_fields;
 
   const errorInfo = useAtomValue(cellErrorAtom);
@@ -203,23 +207,27 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
         headerBuilder={(key) => <AssetManagementSheetHeader field={key} />}
         errorInfo={errorInfo}
         cellBuilder={(key, data, id) => {
-          const allSubs = tableData.filter((stock) => isSub(stock)).flat();
-          const currentRow = allSubs.find((stock) => stock.id === id);
-          // TODO: 서브 행을 동적으로 삽입해야 할거 같음.
+          const currentRow = tableData.find((stock) => stock.id === id);
 
           const code = itemNameList.find(
-            (item) => item.name_kr === currentRow?.종목명.value,
+            (item) => item.name_kr === currentRow?.종목명,
           )?.code;
 
           const isKrCodeRegex = /^\d{6}$/;
           const isKrCode = isKrCodeRegex.test(code ?? "");
           const currentCurrency = isKrCode ? "KRW" : currencySetting;
 
+          // TODO: parent 행에 대한 작업 먼저 처리 해야함. 어떤 항목은 수정 가능하고 어떤 항목은 disabled 되어야 하는지.
+          // TODO: 이외에 추가적으로 보여져야 하는 필드들에 대해 처리 해야함. 매매 필드가 그러함.
+
           if (key === "종목명") {
             return (
               <ItemNameCell
-                selected={data?.value}
-                onSelect={(item) => handleValueChange(key, item.name_kr, id)}
+                selected={data}
+                onSelect={
+                  // (item) => handleValueChange(key, item.name_kr, id)
+                  () => {}
+                }
                 selections={itemNameList}
               />
             );
@@ -228,8 +236,9 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
           if (key === "계좌종류") {
             return (
               <AccountTypeCell
-                selected={data?.value}
-                onSelect={(name) => handleValueChange(key, name, id)}
+                selected={data}
+                // onSelect={(name) => handleValueChange(key, name, id)}
+                onSelect={() => {}}
                 selections={accountList}
               />
             );
@@ -238,22 +247,23 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
           if (key === "증권사") {
             return (
               <AccountTypeCell
-                onSelect={(name) => handleValueChange(key, name, id)}
+                // onSelect={(name) => handleValueChange(key, name, id)}
+                onSelect={() => {}}
                 selections={brokerList}
-                selected={data?.value}
+                selected={data}
                 icon
               />
             );
           }
 
-          if (key === "구매일자") {
+          if (key === "매매일자") {
             return (
               <div className="flex h-full w-full flex-row items-center justify-start px-[9px]">
                 <DatePicker
-                  date={data?.value ? new Date(data.value) : null}
+                  date={data ? new Date(data) : null}
                   onChange={(date) => {
-                    const formatedDate = format(date, "yyyy-MM-dd");
-                    handleValueChange(key, formatedDate, id);
+                    // const formatedDate = format(date, "yyyy-MM-dd");
+                    // handleValueChange(key, formatedDate, id);
                   }}
                 />
               </div>
@@ -261,8 +271,9 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
           }
 
           if (key === "배당금") {
-            let value = data?.value;
-            const originCurrency = currentRow?.주식통화 ?? "KRW";
+            let value = data;
+            // const originCurrency = currentRow?.주식통화 ?? "KRW";
+            const originCurrency = "KRW";
 
             if (originCurrency !== currentCurrency) {
               value = data?.changedValue;
@@ -280,16 +291,16 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                 type={fieldNumberType(key)}
                 region={currentCurrency}
                 placeholder={
-                  data?.value === undefined
+                  data === undefined
                     ? "자동 계산 필드입니다."
-                    : data.value === 0
+                    : data === 0
                       ? "배당금이 없는 종목이에요."
                       : ""
                 }
                 variants={
-                  data?.value === undefined
+                  data === undefined
                     ? "gray-light"
-                    : data.value === 0
+                    : data === 0
                       ? "gray-dark"
                       : "default"
                 }
@@ -301,8 +312,8 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
           if (key === "수량") {
             return (
               <NumberInput
-                value={data?.value}
-                onChange={(value) => handleValueChange(key, value, id)}
+                value={data}
+                // onChange={(value) => handleValueChange(key, value, id)}
                 placeholder=""
                 type="amount"
                 variants="default"
@@ -311,17 +322,18 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
           }
 
           if (key === "매입가") {
-            let value = data?.value;
-            const originCurrency = currentRow?.주식통화 ?? "KRW";
+            let value = data;
+            // const originCurrency = currentRow?.주식통화 ?? "KRW";
+            const originCurrency = "KRW";
 
-            if (originCurrency !== currentCurrency && data?.value) {
+            if (originCurrency !== currentCurrency && data) {
               value = data?.changedValue;
             }
 
             return (
               <NumberInput
                 onChange={(value) => {
-                  handleValueChange(key, value, id, currentCurrency);
+                  // handleValueChange(key, value, id, currentCurrency);
                 }}
                 value={value}
                 type={fieldNumberType(key)}
@@ -336,10 +348,10 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             autoFilledField.includes(key) &&
             fieldNumberType(key) === NumberFieldType.Rate
           ) {
-            let value = data?.value;
+            let value = data;
 
-            if (isNumber(data?.value)) {
-              value = data?.value;
+            if (isNumber(data)) {
+              value = data;
             }
 
             return (
@@ -348,15 +360,15 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                 placeholder="자동 계산 필드입니다."
                 type={fieldNumberType(key)}
                 variants={
-                  data?.value === null
+                  data === null
                     ? "gray-light"
-                    : data?.value === undefined
+                    : data === undefined
                       ? "gray-light"
-                      : data?.value === 0
+                      : data === 0
                         ? "default"
-                        : data?.value > 0
+                        : data > 0
                           ? "increase"
-                          : data?.value < 0
+                          : data < 0
                             ? "decrease"
                             : "default"
                 }
@@ -369,10 +381,10 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             autoFilledField.includes(key) &&
             fieldNumberType(key) === NumberFieldType.Amount
           ) {
-            let value = data?.value;
+            let value = data;
 
-            if (isNumber(data?.value)) {
-              value = ceil(data?.value);
+            if (isNumber(data)) {
+              value = ceil(data);
             }
 
             return (
@@ -381,7 +393,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                 placeholder="자동 계산 필드입니다."
                 type={fieldNumberType(key)}
                 autoFill
-                variants={!data?.value ? "gray-light" : "default"}
+                variants={!data ? "gray-light" : "default"}
               />
             );
           }
@@ -390,8 +402,9 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             autoFilledField.includes(key) &&
             fieldNumberType(key) === NumberFieldType.Price
           ) {
-            let value = data?.value;
-            const originCurrency = currentRow?.주식통화 ?? "KRW";
+            let value = data;
+            // const originCurrency = currentRow?.주식통화 ?? "KRW";
+            const originCurrency = "KRW";
 
             if (originCurrency !== currentCurrency && value) {
               value = data?.changedValue;
@@ -410,7 +423,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                 region={currentCurrency}
                 placeholder={"자동 계산 필드입니다."}
                 autoFill
-                variants={!data?.value ? "gray-light" : "default"}
+                variants={!data ? "gray-light" : "default"}
               />
             );
           }

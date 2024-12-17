@@ -57,5 +57,6 @@ export type StockAssetSubWithType = StockAssetSub & {
   type: ColumnType.Sub;
 };
 export type StockAssetParentWithType = StockAssetParent & {
+  id: string;
   type: ColumnType.Parent;
 };

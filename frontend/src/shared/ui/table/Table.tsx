@@ -33,7 +33,7 @@ export interface TableProps<T extends unknown> {
   tableWidth?: number;
   dataset: T[];
   headerBuilder: (key: string) => ReactNode;
-  cellBuilder: (key: any, data: any, rowId: number) => ReactNode;
+  cellBuilder: (key: any, data: any, rowId: number | string) => ReactNode;
   onAddRow: () => void;
   onReorder: (newFields: FieldState[]) => void;
   onReset?: () => void;
@@ -285,7 +285,7 @@ const Index = <T extends unknown>({
             })}
           </div>
         </ResizablePanelGroup>
-        <AddRowButton onClick={() => onAddRow} />
+        <AddRowButton onClick={onAddRow} />
       </div>
     </div>
   );
