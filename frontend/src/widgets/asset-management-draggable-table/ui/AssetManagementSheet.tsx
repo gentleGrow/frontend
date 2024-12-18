@@ -253,7 +253,15 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             case "계좌종류":
               return <div></div>;
             case "현재가":
-              return <div>현재가</div>;
+              return (
+                <NumberInput
+                  value={data}
+                  type={fieldNumberType(key)}
+                  placeholder={"₩ 0"}
+                  variants="default"
+                  autoFill
+                />
+              );
             case "배당금":
               return <div>배당금</div>;
             case "고가":
