@@ -249,7 +249,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                 </div>
               );
             case "매매":
-              return <div>매매</div>;
+              return <div className="h-full w-full bg-gray-5" />;
             case "계좌종류":
               return <div>컴포넌트 구상</div>;
             case "현재가":
