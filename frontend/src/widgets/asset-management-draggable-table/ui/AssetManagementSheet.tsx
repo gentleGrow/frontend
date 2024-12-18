@@ -206,8 +206,80 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
         dataset={tableData}
         headerBuilder={(key) => <AssetManagementSheetHeader field={key} />}
         errorInfo={errorInfo}
-        cellBuilder={(key, data, id) => {
+        cellBuilder={(key: (typeof allField)[number], data, id) => {
           const currentRow = tableData.find((stock) => stock.id === id);
+
+          const type = currentRow?.type;
+          const isParent = type === ColumnType.Parent;
+
+          switch (isParent && key) {
+            case "종목명":
+              return (
+                <ItemNameCell
+                  selected={data}
+                  onSelect={
+                    // (item) => handleValueChange(key, item.name_kr, id)
+                    () => {}
+                  }
+                  selections={itemNameList}
+                  readonly
+                />
+              );
+            case "수량":
+              return (
+                <NumberInput
+                  value={data}
+                  // onChange={(value) => handleValueChange(key, value, id)}
+                  placeholder={!data ? "0" : ""}
+                  type="amount"
+                  variants={!data ? "gray-light" : "default"}
+                  autoFill
+                />
+              );
+            case "매매일자":
+              return (
+                <div className="pointer-events-none flex h-full w-full touch-none flex-row items-center justify-start bg-gray-5 px-[9px] text-gray-50">
+                  <DatePicker
+                    date={data ? new Date(data) : null}
+                    onChange={(date) => {
+                      // const formatedDate = format(date, "yyyy-MM-dd");
+                      // handleValueChange(key, formatedDate, id);
+                    }}
+                  />
+                </div>
+              );
+            case "매매":
+              return <div>매매</div>;
+            case "계좌종류":
+              return <div>컴포넌트 구상</div>;
+            case "현재가":
+              return <div>현재가</div>;
+            case "배당금":
+              return <div>배당금</div>;
+            case "고가":
+              return <div>고가</div>;
+            case "증권사":
+              return <div>증권사</div>;
+            case "저가":
+              return <div>저가</div>;
+            case "시가":
+              return <div>시가</div>;
+            case "수익률":
+              return <div>수익률</div>;
+            case "수익금":
+              return <div>수익금</div>;
+            case "거래금":
+              return <div>거래금</div>;
+            case "거래가":
+              return <div>거래가</div>;
+            case "거래량":
+              return <div>거래량</div>;
+          }
+
+          if (isParent && key === "매매") {
+            // TODO: 매매 컴포넌트 채워넣기
+            return;
+          }
 
           const code = itemNameList.find(
             (item) => item.name_kr === currentRow?.종목명,
@@ -219,19 +291,6 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
 
           // TODO: parent 행에 대한 작업 먼저 처리 해야함. 어떤 항목은 수정 가능하고 어떤 항목은 disabled 되어야 하는지.
           // TODO: 이외에 추가적으로 보여져야 하는 필드들에 대해 처리 해야함. 매매 필드가 그러함.
-
-          if (key === "종목명") {
-            return (
-              <ItemNameCell
-                selected={data}
-                onSelect={
-                  // (item) => handleValueChange(key, item.name_kr, id)
-                  () => {}
-                }
-                selections={itemNameList}
-              />
-            );
-          }
 
           if (key === "계좌종류") {
             return (
@@ -253,20 +312,6 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                 selected={data}
                 icon
               />
-            );
-          }
-
-          if (key === "매매일자") {
-            return (
-              <div className="flex h-full w-full flex-row items-center justify-start px-[9px]">
-                <DatePicker
-                  date={data ? new Date(data) : null}
-                  onChange={(date) => {
-                    // const formatedDate = format(date, "yyyy-MM-dd");
-                    // handleValueChange(key, formatedDate, id);
-                  }}
-                />
-              </div>
             );
           }
 
@@ -309,40 +354,28 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             );
           }
 
-          if (key === "수량") {
-            return (
-              <NumberInput
-                value={data}
-                // onChange={(value) => handleValueChange(key, value, id)}
-                placeholder=""
-                type="amount"
-                variants="default"
-              />
-            );
-          }
-
-          if (key === "매입가") {
-            let value = data;
-            // const originCurrency = currentRow?.주식통화 ?? "KRW";
-            const originCurrency = "KRW";
-
-            if (originCurrency !== currentCurrency && data) {
-              value = data?.changedValue;
-            }
-
-            return (
-              <NumberInput
-                onChange={(value) => {
-                  // handleValueChange(key, value, id, currentCurrency);
-                }}
-                value={value}
-                type={fieldNumberType(key)}
-                region={currentCurrency}
-                placeholder={currentCurrency === "KRW" ? "₩ 0" : "$ 0"}
-                variants="default"
-              />
-            );
-          }
+          // if (key === "") {
+          //   let value = data;
+          //   // const originCurrency = currentRow?.주식통화 ?? "KRW";
+          //   const originCurrency = "KRW";
+          //
+          //   if (originCurrency !== currentCurrency && data) {
+          //     value = data?.changedValue;
+          //   }
+          //
+          //   return (
+          //     <NumberInput
+          //       onChange={(value) => {
+          //         // handleValueChange(key, value, id, currentCurrency);
+          //       }}
+          //       value={value}
+          //       type={fieldNumberType(key)}
+          //       region={currentCurrency}
+          //       placeholder={currentCurrency === "KRW" ? "₩ 0" : "$ 0"}
+          //       variants="default"
+          //     />
+          //   );
+          // }
 
           if (
             autoFilledField.includes(key) &&
