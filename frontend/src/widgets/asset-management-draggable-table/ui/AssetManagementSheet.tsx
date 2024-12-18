@@ -263,7 +263,42 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                 />
               );
             case "배당금":
-              return <div>배당금</div>;
+              let value = data;
+              // const originCurrency = currentRow?.주식통화 ?? "KRW";
+              // const originCurrency = "KRW";
+              //
+              // if (originCurrency !== currentCurrency) {
+              //   value = data?.changedValue;
+              // } else {
+              //   if (currentCurrency === "KRW") {
+              //     value = ceil(value);
+              //   } else {
+              //     value = ceil(value, 2);
+              //   }
+              // }
+
+              return (
+                <NumberInput
+                  value={ceil(value) + ""}
+                  type={fieldNumberType(key)}
+                  region={"KRW"}
+                  placeholder={
+                    data === undefined
+                      ? "자동 계산 필드입니다."
+                      : data === 0
+                        ? "배당금이 없는 종목이에요."
+                        : ""
+                  }
+                  variants={
+                    data === undefined
+                      ? "gray-light"
+                      : data === 0
+                        ? "gray-dark"
+                        : "default"
+                  }
+                  autoFill
+                />
+              );
             case "고가":
               return <div>고가</div>;
             case "증권사":
@@ -319,45 +354,6 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                 selections={brokerList}
                 selected={data}
                 icon
-              />
-            );
-          }
-
-          if (key === "배당금") {
-            let value = data;
-            // const originCurrency = currentRow?.주식통화 ?? "KRW";
-            const originCurrency = "KRW";
-
-            if (originCurrency !== currentCurrency) {
-              value = data?.changedValue;
-            } else {
-              if (currentCurrency === "KRW") {
-                value = ceil(value);
-              } else {
-                value = ceil(value, 2);
-              }
-            }
-
-            return (
-              <NumberInput
-                value={value}
-                type={fieldNumberType(key)}
-                region={currentCurrency}
-                placeholder={
-                  data === undefined
-                    ? "자동 계산 필드입니다."
-                    : data === 0
-                      ? "배당금이 없는 종목이에요."
-                      : ""
-                }
-                variants={
-                  data === undefined
-                    ? "gray-light"
-                    : data === 0
-                      ? "gray-dark"
-                      : "default"
-                }
-                autoFill
               />
             );
           }
