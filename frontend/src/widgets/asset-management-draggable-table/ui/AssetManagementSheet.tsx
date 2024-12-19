@@ -232,7 +232,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                   // onChange={(value) => handleValueChange(key, value, id)}
                   placeholder={!data ? "0" : ""}
                   type="amount"
-                  variants={!data ? "gray-light" : "default"}
+                  variants={"default"}
                   autoFill
                 />
               );
@@ -251,14 +251,14 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             case "매매":
               return <div className="h-full w-full bg-gray-5" />;
             case "계좌종류":
-              return <div></div>;
+              return <div className="h-full w-full bg-gray-5" />;
             case "현재가":
               return (
                 <NumberInput
-                  value={data}
+                  value={ceil(data) + ""}
                   type={fieldNumberType(key)}
                   placeholder={"₩ 0"}
-                  variants="default"
+                  variants="gray-light"
                   autoFill
                 />
               );
@@ -300,23 +300,94 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                 />
               );
             case "고가":
-              return <div>고가</div>;
+              return (
+                <NumberInput
+                  type={fieldNumberType(key)}
+                  placeholder={"₩ 0"}
+                  variants="gray-light"
+                  autoFill
+                />
+              );
             case "증권사":
-              return <div>증권사</div>;
+              return <div className="h-full w-full bg-gray-5" />;
             case "저가":
-              return <div>저가</div>;
+              return (
+                <NumberInput
+                  type={fieldNumberType(key)}
+                  placeholder={"₩ 0"}
+                  variants="gray-light"
+                  autoFill
+                />
+              );
             case "시가":
-              return <div>시가</div>;
+              return (
+                <NumberInput
+                  type={fieldNumberType(key)}
+                  placeholder={"₩ 0"}
+                  variants="gray-light"
+                  autoFill
+                />
+              );
             case "수익률":
-              return <div>수익률</div>;
+              return (
+                <NumberInput
+                  value={data ?? undefined}
+                  placeholder="자동 계산 필드입니다."
+                  type={fieldNumberType(key)}
+                  variants={
+                    data === null
+                      ? "gray-light"
+                      : data === undefined
+                        ? "gray-light"
+                        : data === 0
+                          ? "default"
+                          : data > 0
+                            ? "increase"
+                            : data < 0
+                              ? "decrease"
+                              : "default"
+                  }
+                  autoFill
+                />
+              );
             case "수익금":
-              return <div>수익금</div>;
+              return (
+                <NumberInput
+                  value={ceil(data) + ""}
+                  type={fieldNumberType(key)}
+                  placeholder={"₩ 0"}
+                  variants="default"
+                  autoFill
+                />
+              );
             case "거래금":
-              return <div>거래금</div>;
+              return (
+                <NumberInput
+                  value={ceil(data) + ""}
+                  type={fieldNumberType(key)}
+                  placeholder={"₩ 0"}
+                  variants="default"
+                  autoFill
+                />
+              );
             case "거래가":
-              return <div>거래가</div>;
+              return (
+                <NumberInput
+                  type={fieldNumberType(key)}
+                  placeholder={"₩ 0"}
+                  variants="gray-light"
+                  autoFill
+                />
+              );
             case "거래량":
-              return <div>거래량</div>;
+              return (
+                <NumberInput
+                  type={fieldNumberType(key)}
+                  placeholder={"0"}
+                  variants="gray-light"
+                  autoFill
+                />
+              );
           }
 
           if (isParent && key === "매매") {
