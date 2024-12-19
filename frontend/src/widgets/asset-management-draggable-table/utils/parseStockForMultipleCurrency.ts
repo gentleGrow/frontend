@@ -1,13 +1,9 @@
 import { cloneDeep } from "es-toolkit";
-import { ceil } from "es-toolkit/compat";
 import {
   StockAssetParentWithType,
   StockAssetSub,
   StockAssetSubWithType,
 } from "@/widgets/asset-management-draggable-table/types/table";
-import { priceInputFields } from "@/widgets/asset-management-draggable-table/constants/priceInputFields";
-import { CurrencyType } from "@/widgets/asset-management-draggable-table/constants/currencyType";
-import { precisionByCurrency } from "@/widgets/asset-management-draggable-table/constants/precisionByCurrency";
 import { ColumnType } from "@/features/assetManagement/consts/column-type";
 
 export const isSub = (
@@ -17,10 +13,10 @@ export const isSub = (
 };
 
 export const parseStockForMultipleCurrency = (
-  stock: StockAssetParentWithType,
+  stock: StockAssetParentWithType | StockAssetSubWithType,
   {
-    wonExchange,
-    dollarExchange,
+    // wonExchange,
+    // dollarExchange,
   }: { wonExchange: number; dollarExchange: number },
 ) => {
   if (!isSub(stock)) {
@@ -29,30 +25,32 @@ export const parseStockForMultipleCurrency = (
     return stock;
   }
 
-  const newStock = cloneDeep(stock);
-  priceInputFields.forEach((field) => {
-    const currentCurrency = stock.주식통화;
-    if (!newStock[field]) return;
-    if (
-      currentCurrency === CurrencyType.USD &&
-      typeof newStock[field].value === "number"
-    ) {
-      newStock[field].changedValue = ceil(
-        newStock[field].value * wonExchange,
-        precisionByCurrency[CurrencyType.KRW],
-      );
-    } else if (
-      currentCurrency === CurrencyType.KRW &&
-      typeof newStock[field].value === "number"
-    ) {
-      newStock[field].changedValue = ceil(
-        newStock[field].value * dollarExchange,
-        precisionByCurrency[CurrencyType.USD],
-      );
-    }
-  });
+  return stock;
 
-  return {
-    ...newStock,
-  };
+  // const newStock = cloneDeep(stock);
+  // priceInputFields.forEach((field) => {
+  //   const currentCurrency = stock.주식통화;
+  //   if (!newStock[field]) return;
+  //   if (
+  //     currentCurrency === CurrencyType.USD &&
+  //     typeof newStock[field].value === "number"
+  //   ) {
+  //     newStock[field].changedValue = ceil(
+  //       newStock[field].value * wonExchange,
+  //       precisionByCurrency[CurrencyType.KRW],
+  //     );
+  //   } else if (
+  //     currentCurrency === CurrencyType.KRW &&
+  //     typeof newStock[field].value === "number"
+  //   ) {
+  //     newStock[field].changedValue = ceil(
+  //       newStock[field].value * dollarExchange,
+  //       precisionByCurrency[CurrencyType.USD],
+  //     );
+  //   }
+  // });
+
+  // return {
+  //   ...newStock,
+  // };
 };
