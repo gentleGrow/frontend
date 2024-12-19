@@ -7,7 +7,7 @@ interface GetBrokerAccountListResponse {
 
 export const getBrokerAccountList = async (accessToken: string | null) => {
   const response = await fetchWithTimeout(
-    `${getBaseUrl()}/api/v1/bank-accounts`,
+    `${getBaseUrl()}/api/asset/v1/bank-accounts`,
   );
 
   if (!response.ok) {
