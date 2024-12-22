@@ -9,8 +9,8 @@ interface AccordionButtonProps {
 }
 
 const AccordionToggleButton: FC<AccordionButtonProps> = ({
-  onToggle,
   value,
+  onToggle,
 }) => {
   const handleClick = () => {
     onToggle(!value);
@@ -20,7 +20,7 @@ const AccordionToggleButton: FC<AccordionButtonProps> = ({
     <button
       className={cn(
         "flex h-full items-center justify-center p-2.5",
-        value ? "rotate-180" : "",
+        value ? "" : "rotate-180",
       )}
       type="button"
       onClick={handleClick}
