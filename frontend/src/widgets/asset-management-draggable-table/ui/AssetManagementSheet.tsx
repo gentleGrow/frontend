@@ -3,7 +3,6 @@
 import Table from "@/shared/ui/table/Table";
 import { FC, useState } from "react";
 import { useGetAssetStocks } from "@/widgets/asset-management-draggable-table/quries/useGetAssetStocks";
-import ItemNameCell from "@/widgets/asset-management-draggable-table/ui/ItemNameCell";
 import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
 import { DatePicker, SegmentedButton, SegmentedButtonGroup } from "@/shared";
 import NumberInput from "@/shared/ui/NumberInput";
@@ -435,15 +434,9 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
           switch (key) {
             case "종목명":
               return (
-                <ItemNameCell
-                  selected={data?.value}
-                  onSelect={
-                    // (item) => handleValueChange(key, item.name_kr, id)
-                    () => {}
-                  }
-                  selections={itemNameList}
-                  readonly
-                />
+                <div className="ml-16 flex h-full w-full flex-row items-center border-l-[3px] border-l-gray-30 bg-gray-5 px-2.5 text-body-2 text-gray-90">
+                  {data?.value}
+                </div>
               );
             case "수량":
               return (
