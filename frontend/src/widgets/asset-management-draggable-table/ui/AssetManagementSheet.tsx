@@ -26,6 +26,7 @@ import { useHandleAssetStock } from "@/widgets/asset-management-draggable-table/
 import { useInitializeAtoms } from "@/widgets/asset-management-draggable-table/atoms/useInitializeAtoms";
 import { ColumnType } from "@/features/assetManagement/consts/column-type";
 import {
+  AssetValue,
   StockAssetParentWithType,
   StockAssetSubWithType,
 } from "@/widgets/asset-management-draggable-table/types/table";
@@ -104,9 +105,9 @@ const getSortType = (field: string | null): "date" | "number" | "string" => {
 const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
   accessToken,
   itemNameList,
-  accountList,
-  brokerList,
 }) => {
+  const [openedFields, setOpenedFields] = useState<string[]>([]);
+
   const [currentSorting, setCurrentSorting] = useAtom(currentSortingTypeAtom);
   const [sortingField, setSortingField] = useAtom(sortingFieldAtom);
 
@@ -143,6 +144,18 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
       ),
     ])
     .flat()
+    .filter((stock) => {
+      if (stock.type === ColumnType.Parent) return true;
+
+      console.log(stock);
+
+      return (
+        stock.type === ColumnType.Sub &&
+        openedFields.includes(
+          (stock.종목명 as unknown as AssetValue<string>).value,
+        )
+      );
+    })
     .map((stock) =>
       parseStockForMultipleCurrency(stock, { wonExchange, dollarExchange }),
     );
@@ -225,7 +238,19 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             case "종목명":
               return (
                 <div className="flex h-full w-full flex-row items-center">
-                  <AccordionToggleButton onToggle={() => {}} value={true} />
+                  <AccordionToggleButton
+                    onToggle={(changedValue) => {
+                      if (changedValue) {
+                        console.log(changedValue);
+                        setOpenedFields((prev) => [...prev, data]);
+                      } else {
+                        setOpenedFields((prev) =>
+                          prev.filter((field) => field !== data),
+                        );
+                      }
+                    }}
+                    value={openedFields.includes(data)}
+                  />
                   <div className="flex w-full flex-row items-center justify-between px-2.5 py-[12.5]">
                     <div className="text-body-2 text-gray-90">{data}</div>
                     <SellBuyButton type="button" onClick={() => {}} />
