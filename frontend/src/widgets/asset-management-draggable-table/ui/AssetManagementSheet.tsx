@@ -29,6 +29,8 @@ import {
   StockAssetParentWithType,
   StockAssetSubWithType,
 } from "@/widgets/asset-management-draggable-table/types/table";
+import AccordionToggleButton from "@/shared/ui/AccordionToggleButton";
+import SellBuyButton from "@/widgets/asset-management-draggable-table/ui/SellBuyButton";
 
 const autoFilledField = [
   "수익률",
@@ -222,15 +224,13 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
           switch (isParent && key) {
             case "종목명":
               return (
-                <ItemNameCell
-                  selected={data}
-                  onSelect={
-                    // (item) => handleValueChange(key, item.name_kr, id)
-                    () => {}
-                  }
-                  selections={itemNameList}
-                  readonly
-                />
+                <div className="flex h-full w-full flex-row items-center">
+                  <AccordionToggleButton onToggle={() => {}} value={true} />
+                  <div className="flex w-full flex-row items-center justify-between px-2.5 py-[12.5]">
+                    <div className="text-body-2 text-gray-90">{data}</div>
+                    <SellBuyButton type="button" onClick={() => {}} />
+                  </div>
+                </div>
               );
             case "수량":
               return (
