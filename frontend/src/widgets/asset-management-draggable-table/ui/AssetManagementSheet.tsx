@@ -126,7 +126,6 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
   const dollarExchange = data.dollar_exchange ?? 0;
   const wonExchange = data.won_exchange ?? 0;
 
-  // TODO: parent 만 우선적으로 디스플레이 하기
   const tableData = data.stock_assets
     .map((stock) => [
       {
@@ -462,7 +461,17 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                 </div>
               );
             case "매매":
-              return <div className="h-full w-full bg-gray-5" />;
+              return (
+                <div className="h-fulㅇ flex w-full p-[9px]">
+                  <button className="flex h-full w-[42px] flex-row items-center justify-between rounded-full bg-alert px-[5px] py-[3.5px]">
+                    <span>매도</span>
+                    <span className="justifyㅇ-center flex h-full flex-col gap-0.5">
+                      <span className="h-[3px] w-[3px] rounded-full bg-white" />
+                      <span className="h-[3px] w-[3px] rounded-full bg-white" />
+                    </span>
+                  </button>
+                </div>
+              );
             case "계좌종류":
               return <div className="h-full w-full bg-gray-5" />;
             case "현재가":
