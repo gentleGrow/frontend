@@ -31,6 +31,7 @@ import {
 } from "@/widgets/asset-management-draggable-table/types/table";
 import AccordionToggleButton from "@/shared/ui/AccordionToggleButton";
 import SellBuyButton from "@/widgets/asset-management-draggable-table/ui/SellBuyButton";
+import { createEmptyStockId } from "@/entities/assetManagement/utils/tempIdUtils";
 
 const autoFilledField = [
   "수익률",
@@ -130,7 +131,10 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
     .map((stock) => [
       {
         ...stock.parent,
-        id: stock.parent.종목명,
+        id:
+          stock.parent.종목명 === ""
+            ? createEmptyStockId()
+            : stock.parent.종목명,
         type: ColumnType.Parent,
       } as StockAssetParentWithType,
       ...stock.sub.map(
@@ -162,7 +166,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
 
   const errorInfo = useAtomValue(cellErrorAtom);
 
-  const { handleAddRow, handleDeleteRow, handleValueChange } =
+  const { addEmptyParentColumn, handleDeleteRow, handleValueChange } =
     useHandleAssetStock({
       currencySetting,
       accessToken,
@@ -239,7 +243,6 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                   <AccordionToggleButton
                     onToggle={(changedValue) => {
                       if (changedValue) {
-                        console.log(changedValue);
                         setOpenedFields((prev) => [...prev, data]);
                       } else {
                         setOpenedFields((prev) =>
@@ -614,7 +617,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
         }}
         tableWidth={tableMinimumWidth}
         fieldWidth={(key) => fieldSize[key]}
-        onAddRow={() => handleAddRow("")}
+        onAddRow={addEmptyParentColumn}
         onDeleteRow={handleDeleteRow}
         onReorder={() => handleChange}
         onReset={handleReset}
