@@ -1,7 +1,7 @@
 "use client";
 
 import Table from "@/shared/ui/table/Table";
-import { FC, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import { useGetAssetStocks } from "@/widgets/asset-management-draggable-table/quries/useGetAssetStocks";
 import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
 import { DatePicker, SegmentedButton, SegmentedButtonGroup } from "@/shared";
@@ -131,40 +131,47 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
   const dollarExchange = data.dollar_exchange ?? 0;
   const wonExchange = data.won_exchange ?? 0;
 
-  const tableData = data.stock_assets
-    .map((stock) => [
-      {
-        ...stock.parent,
-        id:
-          stock.parent.종목명 === ""
-            ? createEmptyStockId()
-            : stock.parent.종목명,
-        type: ColumnType.Parent,
-      } as StockAssetParentWithType,
-      ...stock.sub.map(
-        (sub) =>
-          ({
-            ...sub,
-            type: ColumnType.Sub,
-          }) as StockAssetSubWithType,
-      ),
-    ])
-    .flat()
-    .filter((stock) => {
-      if (stock.type === ColumnType.Parent) return true;
+  // TODO: 현재 문제 상황
+  /*
+   * createEmptyStockId 함수가 매번 새로운 ID 값을 생성해낸다.
+   * cellBuilder 함수에서 인자로 들어오는 id 값을 가지는 행을 찾아낼 수 없다.
+   * */
+  const tableData = useMemo(
+    () =>
+      data.stock_assets
+        .map((stock) => [
+          {
+            ...stock.parent,
+            id:
+              stock.parent.종목명 === ""
+                ? createEmptyStockId()
+                : stock.parent.종목명,
+            type: ColumnType.Parent,
+          } as StockAssetParentWithType,
+          ...stock.sub.map(
+            (sub) =>
+              ({
+                ...sub,
+                type: ColumnType.Sub,
+              }) as StockAssetSubWithType,
+          ),
+        ])
+        .flat()
+        .filter((stock) => {
+          if (stock.type === ColumnType.Parent) return true;
 
-      console.log(stock);
-
-      return (
-        stock.type === ColumnType.Sub &&
-        openedFields.includes(
-          (stock.종목명 as unknown as AssetValue<string>).value,
-        )
-      );
-    })
-    .map((stock) =>
-      parseStockForMultipleCurrency(stock, { wonExchange, dollarExchange }),
-    );
+          return (
+            stock.type === ColumnType.Sub &&
+            openedFields.includes(
+              (stock.종목명 as unknown as AssetValue<string>).value,
+            )
+          );
+        })
+        .map((stock) =>
+          parseStockForMultipleCurrency(stock, { wonExchange, dollarExchange }),
+        ),
+    [data.stock_assets, dollarExchange, openedFields, wonExchange],
+  );
 
   const receivedFields = data?.asset_fields;
 
@@ -236,6 +243,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
         errorInfo={errorInfo}
         cellBuilder={(key: (typeof allField)[number], data, id) => {
           const currentRow = tableData.find((stock) => stock.id === id);
+          console.log(tableData, id);
 
           if (!currentRow?.id)
             throw new Error("currentRow 의 id 값이 정의되지 않았습니다.");
@@ -246,7 +254,18 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
           switch (isParent && key) {
             case "종목명":
               return isTempId(currentRow?.id + "") ? (
-                <ItemNameCell onSelect={() => {}} selections={itemNameList} />
+                <ItemNameCell
+                  onSelect={({ name_kr }) => {
+                    const existingRow = tableData.find(
+                      (stock) => stock.종목명 === name_kr,
+                    );
+
+                    if (existingRow) {
+                      return window.alert("이미 추가된 종목입니다.");
+                    }
+                  }}
+                  selections={itemNameList}
+                />
               ) : (
                 <div className="flex h-full w-full flex-row items-center">
                   <AccordionToggleButton

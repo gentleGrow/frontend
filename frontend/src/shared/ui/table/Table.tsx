@@ -78,8 +78,6 @@ const Index = <T extends unknown>({
     fields.filter((field) => field.isChecked),
   );
 
-  const preservedDataset = usePreservedReference(dataset);
-
   const { throttledFn: throttledOnDrag, cancel: cancelOnDrag } = useThrottle(
     (e: UniversalDragEvent) => {
       const { clientX, clientY } = e;
@@ -235,7 +233,7 @@ const Index = <T extends unknown>({
               <TableColumn
                 onDrag={onDrag}
                 field={field.name}
-                dataset={preservedDataset}
+                dataset={dataset}
                 headerBuilder={headerBuilder}
                 cellBuilder={cellBuilder}
                 onDragEnd={onDragEnd}
@@ -274,7 +272,7 @@ const Index = <T extends unknown>({
               onReorder={onReorder}
               onReset={onReset}
             />
-            {preservedDataset.map((_data: any, idx) => {
+            {dataset.map((_data: any, idx) => {
               return (
                 <DeleteRowIconButton
                   key={_data?.id ?? idx}
