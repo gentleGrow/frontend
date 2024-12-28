@@ -177,7 +177,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
 
   const errorInfo = useAtomValue(cellErrorAtom);
 
-  const { addEmptyParentColumn, handleDeleteRow, handleValueChange } =
+  const { addEmptyParentColumn, handleDeleteRow, handleStockNameChange } =
     useHandleAssetStock({
       currencySetting,
       accessToken,
@@ -255,13 +255,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
               return isTempId(currentRow?.id + "") ? (
                 <ItemNameCell
                   onSelect={({ name_kr }) => {
-                    const existingRow = tableData.find(
-                      (stock) => stock.종목명 === name_kr,
-                    );
-
-                    if (existingRow) {
-                      return window.alert("이미 추가된 종목입니다.");
-                    }
+                    handleStockNameChange(name_kr);
                   }}
                   selections={itemNameList}
                 />
