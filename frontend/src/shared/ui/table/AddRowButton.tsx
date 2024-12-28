@@ -46,7 +46,7 @@ const AddRowButton = ({ onClick }: { onClick: () => void }) => {
           </clipPath>
         </defs>
       </svg>
-      <span className="text-sm font-medium text-gray-100">행 추가</span>
+      <span className="text-sm font-medium text-gray-100">종목 추가</span>
     </button>
   );
 };
