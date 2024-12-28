@@ -243,7 +243,6 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
         errorInfo={errorInfo}
         cellBuilder={(key: (typeof allField)[number], data, id) => {
           const currentRow = tableData.find((stock) => stock.id === id);
-          console.log(tableData, id);
 
           if (!currentRow?.id)
             throw new Error("currentRow 의 id 값이 정의되지 않았습니다.");
