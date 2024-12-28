@@ -111,6 +111,17 @@ const ItemNameCell = ({
             ref={popupRef}
             className="flex w-full flex-col rounded-[12px] border border-gray-20 bg-white p-2 shadow shadow-popover"
           >
+            {filteredSelections.length === 0 && typedName.trim().length > 0 && (
+              <li className="px-2 py-[7.5px] text-body-2 text-gray-50">
+                검색 결과가 없습니다.
+              </li>
+            )}
+            {filteredSelections.length === 0 &&
+              typedName.trim().length === 0 && (
+                <li className="px-2 py-[7.5px] text-body-2 text-gray-50">
+                  검색어를 입력해 주세요.
+                </li>
+              )}
             {filteredSelections.map((item) => (
               <li
                 className={cn(
