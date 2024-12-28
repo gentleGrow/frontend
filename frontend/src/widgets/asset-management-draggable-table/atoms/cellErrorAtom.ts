@@ -2,7 +2,7 @@ import { atom } from "jotai";
 
 export interface CellErrorAtom {
   field: string;
-  rowId: number;
+  rowId: number | string;
   message: string;
 }
 

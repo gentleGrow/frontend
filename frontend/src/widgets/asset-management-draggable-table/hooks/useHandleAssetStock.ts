@@ -116,7 +116,7 @@ export const useHandleAssetStock = ({
     setErrorInfo(null);
   };
 
-  const handleStockNameChange = (name: string) => {
+  const handleStockNameChange = (id: string | number, name: string) => {
     const prev = queryClient.getQueryData<AssetManagementResponse>(
       keyStore.assetStock.getSummary.queryKey,
     );
@@ -128,7 +128,11 @@ export const useHandleAssetStock = ({
     );
 
     if (existingColumnIndex !== -1) {
-      // TODO: 에러 로직 추가
+      setErrorInfo({
+        field: "종목명",
+        rowId: id,
+        message: "이미 존재하는 종목이에요.",
+      });
       return;
     }
 

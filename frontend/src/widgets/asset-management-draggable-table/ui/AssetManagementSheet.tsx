@@ -255,7 +255,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
               return isTempId(currentRow?.id + "") ? (
                 <ItemNameCell
                   onSelect={({ name_kr }) => {
-                    handleStockNameChange(name_kr);
+                    handleStockNameChange(id, name_kr);
                   }}
                   selections={itemNameList}
                 />
