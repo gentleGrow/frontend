@@ -31,7 +31,11 @@ import {
 } from "@/widgets/asset-management-draggable-table/types/table";
 import AccordionToggleButton from "@/shared/ui/AccordionToggleButton";
 import SellBuyButton from "@/widgets/asset-management-draggable-table/ui/SellBuyButton";
-import { createEmptyStockId } from "@/entities/assetManagement/utils/tempIdUtils";
+import {
+  createEmptyStockId,
+  isTempId,
+} from "@/entities/assetManagement/utils/tempIdUtils";
+import ItemNameCell from "@/widgets/asset-management-draggable-table/ui/ItemNameCell";
 
 const autoFilledField = [
   "수익률",
@@ -233,12 +237,17 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
         cellBuilder={(key: (typeof allField)[number], data, id) => {
           const currentRow = tableData.find((stock) => stock.id === id);
 
+          if (!currentRow?.id)
+            throw new Error("currentRow 의 id 값이 정의되지 않았습니다.");
+
           const type = currentRow?.type;
           const isParent = type === ColumnType.Parent;
 
           switch (isParent && key) {
             case "종목명":
-              return (
+              return isTempId(currentRow?.id + "") ? (
+                <ItemNameCell onSelect={() => {}} selections={itemNameList} />
+              ) : (
                 <div className="flex h-full w-full flex-row items-center">
                   <AccordionToggleButton
                     onToggle={(changedValue) => {
