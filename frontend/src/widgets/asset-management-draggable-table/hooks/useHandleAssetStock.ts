@@ -6,7 +6,7 @@ import {
 import { keyStore } from "@/shared/lib/query-keys";
 import { CurrencyType } from "@/widgets/asset-management-draggable-table/constants/currencyType";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePostAssetStock } from "@/entities/assetManagement/queries/usePostAssetStock";
+import { usePostAssetStockParent } from "@/entities/assetManagement/queries/usePostAssetStockParent";
 import { usePatchAssetStock } from "@/entities/assetManagement/queries/usePatchAssetStock";
 import { useDeleteAssetStock } from "@/entities/assetManagement/queries/useDeleteAssetStock";
 import { useSetAtom } from "jotai/index";
@@ -39,12 +39,13 @@ export const useHandleAssetStock = ({
   itemNameList,
   tableData,
 }: UseHandleAssetStockParams) => {
-  const { mutate: originCreateAssetStock } = usePostAssetStock();
+  const { mutate: originCreateAssetStockParent } =
+    usePostAssetStockParent(itemNameList);
   const { mutate: originUpdateAssetStock } = usePatchAssetStock();
   const { mutate: deleteAssetStock } = useDeleteAssetStock();
 
   const updateAssetStock = useDebounce(originUpdateAssetStock, 500);
-  const createAssetStock = useDebounce(originCreateAssetStock, 500);
+  const createAssetStockParent = useDebounce(originCreateAssetStockParent, 500);
 
   const setIsOpenLoginModal = useSetAtom(loginModalAtom);
   const setErrorInfo = useSetAtom(cellErrorAtom);
@@ -56,7 +57,9 @@ export const useHandleAssetStock = ({
       setIsOpenLoginModal(true);
       return;
     }
+
     const emptyStock = createEmptyStockAsset();
+
     queryClient.setQueryData(keyStore.assetStock.getSummary.queryKey, () => {
       const prev = queryClient.getQueryData<AssetManagementResponse>(
         keyStore.assetStock.getSummary.queryKey,
@@ -116,7 +119,12 @@ export const useHandleAssetStock = ({
     setErrorInfo(null);
   };
 
-  const handleStockNameChange = (id: string | number, name: string) => {
+  const handleStockNameChange = (id: string | number, item: ItemName) => {
+    if (!accessToken) {
+      setIsOpenLoginModal(true);
+      return;
+    }
+
     const prev = queryClient.getQueryData<AssetManagementResponse>(
       keyStore.assetStock.getSummary.queryKey,
     );
@@ -124,7 +132,7 @@ export const useHandleAssetStock = ({
     if (!prev) return;
 
     const existingColumnIndex = prev.stock_assets.findIndex(
-      (stock) => stock.parent.종목명 === name,
+      (stock) => stock.parent.종목명 === item.name_kr,
     );
 
     if (existingColumnIndex !== -1) {
@@ -136,8 +144,13 @@ export const useHandleAssetStock = ({
       return;
     }
 
-    // TODO: 종목 추가
-    console.log(name);
+    createAssetStockParent({
+      accessToken: accessToken,
+      body: {
+        stock_code: item.code,
+      },
+      rowId: id,
+    });
   };
 
   return {

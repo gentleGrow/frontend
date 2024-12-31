@@ -131,11 +131,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
   const dollarExchange = data.dollar_exchange ?? 0;
   const wonExchange = data.won_exchange ?? 0;
 
-  // TODO: 현재 문제 상황
-  /*
-   * createEmptyStockId 함수가 매번 새로운 ID 값을 생성해낸다.
-   * cellBuilder 함수에서 인자로 들어오는 id 값을 가지는 행을 찾아낼 수 없다.
-   * */
+  // TODO: 스톡 데이터 테이블 데이터로 파싱하는 로직 수정 하기
   const tableData = useMemo(
     () =>
       data.stock_assets
@@ -184,6 +180,18 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
       itemNameList,
       tableData,
     });
+
+  if (tableData.length === 0) {
+    addEmptyParentColumn();
+  }
+
+  if (
+    tableData.length > 0 &&
+    tableData.every((stock) => !isTempId(stock.id + ""))
+  ) {
+    addEmptyParentColumn();
+  }
+
   const { fields, handleReset, handleChange } = useHandleAssetStockField({
     fieldsList: {
       all: allField,
@@ -254,8 +262,9 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             case "종목명":
               return isTempId(currentRow?.id + "") ? (
                 <ItemNameCell
-                  onSelect={({ name_kr }) => {
-                    handleStockNameChange(id, name_kr);
+                  defaultSelected={null}
+                  onSelect={(item) => {
+                    handleStockNameChange(id, item);
                   }}
                   selections={itemNameList}
                 />

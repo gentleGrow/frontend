@@ -18,9 +18,13 @@ import {
   UniversalDragEvent,
 } from "@/shared/hooks/useDragAndDrop";
 import useAutoScroll from "@/shared/hooks/useAutoScroll";
-import { CellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
+import {
+  cellErrorAtom,
+  CellErrorAtom,
+} from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 import { cn } from "@/lib/utils";
 import { filedWidth } from "@/widgets/asset-management-draggable-table/constants/fieldWidth";
+import { useSetAtom } from "jotai";
 
 interface FieldState {
   isRequired: boolean;
@@ -65,6 +69,8 @@ const Index = <T extends unknown>({
   const [mostClosetFromLeft, setMostClosetFromLeft] = React.useState<
     string | null
   >(null);
+
+  const setErrorInfo = useSetAtom(cellErrorAtom);
 
   const draggingPosition = useRef<[number, number]>([0, 0]);
 
@@ -208,7 +214,16 @@ const Index = <T extends unknown>({
   });
 
   return (
-    <div ref={containerRef} className={"w-full overflow-x-scroll"}>
+    <div
+      id="table"
+      ref={containerRef}
+      onMouseDownCapture={() => {
+        if (errorInfo) {
+          setErrorInfo(null);
+        }
+      }}
+      className="relative w-full overflow-x-scroll"
+    >
       <div
         className="overflow-visible rounded-[4px] border border-gray-20 bg-white"
         style={{
