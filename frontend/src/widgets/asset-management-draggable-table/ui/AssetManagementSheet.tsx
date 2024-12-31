@@ -1,7 +1,7 @@
 "use client";
 
 import Table from "@/shared/ui/table/Table";
-import { FC, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import { useGetAssetStocks } from "@/widgets/asset-management-draggable-table/quries/useGetAssetStocks";
 import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
 import { DatePicker, SegmentedButton, SegmentedButtonGroup } from "@/shared";
@@ -31,6 +31,11 @@ import {
 } from "@/widgets/asset-management-draggable-table/types/table";
 import AccordionToggleButton from "@/shared/ui/AccordionToggleButton";
 import SellBuyButton from "@/widgets/asset-management-draggable-table/ui/SellBuyButton";
+import {
+  createEmptyStockId,
+  isTempId,
+} from "@/entities/assetManagement/utils/tempIdUtils";
+import ItemNameCell from "@/widgets/asset-management-draggable-table/ui/ItemNameCell";
 
 const autoFilledField = [
   "수익률",
@@ -126,49 +131,67 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
   const dollarExchange = data.dollar_exchange ?? 0;
   const wonExchange = data.won_exchange ?? 0;
 
-  const tableData = data.stock_assets
-    .map((stock) => [
-      {
-        ...stock.parent,
-        id: stock.parent.종목명,
-        type: ColumnType.Parent,
-      } as StockAssetParentWithType,
-      ...stock.sub.map(
-        (sub) =>
-          ({
-            ...sub,
-            type: ColumnType.Sub,
-          }) as StockAssetSubWithType,
-      ),
-    ])
-    .flat()
-    .filter((stock) => {
-      if (stock.type === ColumnType.Parent) return true;
+  // TODO: 스톡 데이터 테이블 데이터로 파싱하는 로직 수정 하기
+  const tableData = useMemo(
+    () =>
+      data.stock_assets
+        .map((stock) => [
+          {
+            ...stock.parent,
+            id:
+              stock.parent.종목명 === ""
+                ? createEmptyStockId()
+                : stock.parent.종목명,
+            type: ColumnType.Parent,
+          } as StockAssetParentWithType,
+          ...stock.sub.map(
+            (sub) =>
+              ({
+                ...sub,
+                type: ColumnType.Sub,
+              }) as StockAssetSubWithType,
+          ),
+        ])
+        .flat()
+        .filter((stock) => {
+          if (stock.type === ColumnType.Parent) return true;
 
-      console.log(stock);
-
-      return (
-        stock.type === ColumnType.Sub &&
-        openedFields.includes(
-          (stock.종목명 as unknown as AssetValue<string>).value,
-        )
-      );
-    })
-    .map((stock) =>
-      parseStockForMultipleCurrency(stock, { wonExchange, dollarExchange }),
-    );
+          return (
+            stock.type === ColumnType.Sub &&
+            openedFields.includes(
+              (stock.종목명 as unknown as AssetValue<string>).value,
+            )
+          );
+        })
+        .map((stock) =>
+          parseStockForMultipleCurrency(stock, { wonExchange, dollarExchange }),
+        ),
+    [data.stock_assets, dollarExchange, openedFields, wonExchange],
+  );
 
   const receivedFields = data?.asset_fields;
 
   const errorInfo = useAtomValue(cellErrorAtom);
 
-  const { handleAddRow, handleDeleteRow, handleValueChange } =
+  const { addEmptyParentColumn, handleDeleteRow, handleStockNameChange } =
     useHandleAssetStock({
       currencySetting,
       accessToken,
       itemNameList,
       tableData,
     });
+
+  if (tableData.length === 0) {
+    addEmptyParentColumn();
+  }
+
+  if (
+    tableData.length > 0 &&
+    tableData.every((stock) => !isTempId(stock.id + ""))
+  ) {
+    addEmptyParentColumn();
+  }
+
   const { fields, handleReset, handleChange } = useHandleAssetStockField({
     fieldsList: {
       all: allField,
@@ -229,17 +252,27 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
         cellBuilder={(key: (typeof allField)[number], data, id) => {
           const currentRow = tableData.find((stock) => stock.id === id);
 
+          if (!currentRow?.id)
+            throw new Error("currentRow 의 id 값이 정의되지 않았습니다.");
+
           const type = currentRow?.type;
           const isParent = type === ColumnType.Parent;
 
           switch (isParent && key) {
             case "종목명":
-              return (
+              return isTempId(currentRow?.id + "") ? (
+                <ItemNameCell
+                  defaultSelected={null}
+                  onSelect={(item) => {
+                    handleStockNameChange(id, item);
+                  }}
+                  selections={itemNameList}
+                />
+              ) : (
                 <div className="flex h-full w-full flex-row items-center">
                   <AccordionToggleButton
                     onToggle={(changedValue) => {
                       if (changedValue) {
-                        console.log(changedValue);
                         setOpenedFields((prev) => [...prev, data]);
                       } else {
                         setOpenedFields((prev) =>
@@ -614,7 +647,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
         }}
         tableWidth={tableMinimumWidth}
         fieldWidth={(key) => fieldSize[key]}
-        onAddRow={() => handleAddRow("")}
+        onAddRow={addEmptyParentColumn}
         onDeleteRow={handleDeleteRow}
         onReorder={() => handleChange}
         onReset={handleReset}

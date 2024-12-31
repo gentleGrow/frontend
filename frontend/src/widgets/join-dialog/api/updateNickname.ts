@@ -6,7 +6,6 @@ import { cookies } from "next/headers";
 
 const updateNickname = async (nickname: string) => {
   try {
-    console.log("nickname", nickname);
     const response = await fetchWithTimeout(
       `${SERVICE_SERVER_URL}/api/auth/v1/nickname`,
       {
@@ -18,7 +17,6 @@ const updateNickname = async (nickname: string) => {
         body: JSON.stringify({ nickname }),
       },
     );
-    console.log("response", response);
 
     if (!response.ok) {
       throw new Error(`${response.status} ${response.statusText}`);

@@ -5,19 +5,19 @@ import { createPortal } from "react-dom";
 import Fuse from "fuse.js";
 
 interface ItemNameCellProps {
-  selected?: string | null;
+  defaultSelected: string | null;
   onSelect: (name: ItemName) => void;
   selections: ItemName[];
   readonly?: boolean;
 }
 
 const ItemNameCell = ({
-  selected,
+  defaultSelected,
   onSelect,
   selections,
   readonly = false,
 }: ItemNameCellProps) => {
-  const [typedName, setTypedName] = useState(selected ?? "");
+  const [typedName, setTypedName] = useState(defaultSelected ?? "");
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const popupRef = useRef<HTMLUListElement>(null);
@@ -66,40 +66,21 @@ const ItemNameCell = ({
     inputRect?.left,
   ]);
 
-  useEffect(() => {
-    if (isFocused) {
-      const handleClickOutside = (event: MouseEvent) => {
-        if (readonly) return;
-
-        if (
-          inputRef.current &&
-          !inputRef.current.contains(event.target as Node) &&
-          popupRef.current &&
-          !popupRef.current.contains(event.target as Node)
-        ) {
-          setIsFocused(false);
-        }
-      };
-
-      document.addEventListener("mousedown", handleClickOutside);
-
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }
-  }, [isFocused, readonly]);
-
   return (
     <label className="relative h-full w-full">
       <input
-        readOnly={readonly}
         ref={inputRef}
+        readOnly={readonly}
         value={typedName ?? ""}
         onChange={(e) => setTypedName(e.target.value)}
         className="ml-[2px] h-full w-[calc(100%_-_2px)] px-2.5 py-[10.5px] text-body-2 text-gray-90 focus:outline-green-60"
         onFocus={() => {
           if (readonly) return;
           setIsFocused(true);
+        }}
+        onBlur={() => {
+          if (readonly) return;
+          setIsFocused(false);
         }}
       />
       {isFocused &&
@@ -111,13 +92,25 @@ const ItemNameCell = ({
             ref={popupRef}
             className="flex w-full flex-col rounded-[12px] border border-gray-20 bg-white p-2 shadow shadow-popover"
           >
+            {filteredSelections.length === 0 && typedName.trim().length > 0 && (
+              <li className="px-2 py-[7.5px] text-body-2 text-gray-50">
+                검색 결과가 없습니다.
+              </li>
+            )}
+            {filteredSelections.length === 0 &&
+              typedName.trim().length === 0 && (
+                <li className="px-2 py-[7.5px] text-body-2 text-gray-50">
+                  검색어를 입력해 주세요.
+                </li>
+              )}
             {filteredSelections.map((item) => (
               <li
                 className={cn(
                   "group relative flex flex-row items-center gap-1 px-2 py-[7.5px] font-normal",
-                  selected === item.name_kr && "bg-gray-5",
+                  typedName === item.name_kr && "bg-gray-5",
                 )}
-                onClick={(e) => {
+                onMouseDown={(e) => {
+                  e.preventDefault();
                   onSelect(item);
                   setTypedName(item.name_kr);
                   setIsFocused(false);
@@ -138,7 +131,7 @@ const ItemNameCell = ({
                 >
                   {item.code}
                 </span>
-                {selected === item.name_kr && (
+                {typedName === item.name_kr && (
                   <div
                     className={
                       "absolute left-0 right-0 h-full w-[2px] bg-green-60"

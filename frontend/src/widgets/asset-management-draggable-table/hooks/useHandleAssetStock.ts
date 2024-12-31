@@ -1,25 +1,20 @@
 import {
   AssetManagementResponse,
   StockAssetParentWithType,
-  StockAssetSub,
   StockAssetSubWithType,
 } from "@/widgets/asset-management-draggable-table/types/table";
 import { keyStore } from "@/shared/lib/query-keys";
 import { CurrencyType } from "@/widgets/asset-management-draggable-table/constants/currencyType";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePostAssetStock } from "@/entities/assetManagement/queries/usePostAssetStock";
+import { usePostAssetStockParent } from "@/entities/assetManagement/queries/usePostAssetStockParent";
 import { usePatchAssetStock } from "@/entities/assetManagement/queries/usePatchAssetStock";
 import { useDeleteAssetStock } from "@/entities/assetManagement/queries/useDeleteAssetStock";
 import { useSetAtom } from "jotai/index";
 import { loginModalAtom } from "@/features";
-import { essentialFields } from "@/widgets/asset-management-draggable-table/constants/essentialFields";
-import { PostAssetStockRequestBody } from "@/entities/assetManagement/apis/postAssetStock";
-import { PatchAssetStockRequestBody } from "@/entities/assetManagement/apis/patchAssetStock";
-import { extractNumber, isNumber } from "@/shared/utils/number";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
 import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
-import { isSub } from "@/widgets/asset-management-draggable-table/utils/parseStockForMultipleCurrency";
+import { createEmptyStockAsset } from "@/entities/assetManagement/utils/factory";
 
 let tempId = -1;
 
@@ -44,63 +39,40 @@ export const useHandleAssetStock = ({
   itemNameList,
   tableData,
 }: UseHandleAssetStockParams) => {
-  const { mutate: originCreateAssetStock } = usePostAssetStock();
+  const { mutate: originCreateAssetStockParent } =
+    usePostAssetStockParent(itemNameList);
   const { mutate: originUpdateAssetStock } = usePatchAssetStock();
   const { mutate: deleteAssetStock } = useDeleteAssetStock();
 
   const updateAssetStock = useDebounce(originUpdateAssetStock, 500);
-  const createAssetStock = useDebounce(originCreateAssetStock, 500);
+  const createAssetStockParent = useDebounce(originCreateAssetStockParent, 500);
 
   const setIsOpenLoginModal = useSetAtom(loginModalAtom);
   const setErrorInfo = useSetAtom(cellErrorAtom);
 
   const queryClient = useQueryClient();
 
-  const handleAddRow = (parentTitle: string) => {
+  const addEmptyParentColumn = () => {
     if (!accessToken) {
       setIsOpenLoginModal(true);
       return;
     }
-    queryClient.setQueryData<AssetManagementResponse>(
-      keyStore.assetStock.getSummary.queryKey,
-      () => {
-        const prev = queryClient.getQueryData<AssetManagementResponse>(
-          keyStore.assetStock.getSummary.queryKey,
-        );
-        if (!prev) return;
 
-        const newStock = [...prev.stock_assets];
+    const emptyStock = createEmptyStockAsset();
 
-        const targetParentIndex = newStock.findIndex(
-          (stock) => stock.parent.종목명 === parentTitle,
-        );
-        if (targetParentIndex === -1) return;
+    queryClient.setQueryData(keyStore.assetStock.getSummary.queryKey, () => {
+      const prev = queryClient.getQueryData<AssetManagementResponse>(
+        keyStore.assetStock.getSummary.queryKey,
+      );
+      if (!prev) return;
 
-        newStock[targetParentIndex].sub.push({
-          id: tempId--,
-          종목명: { value: "", isRequired: true },
-          수량: { value: 0, isRequired: true },
-          계좌종류: { value: "", isRequired: false },
-          매매일자: { value: "", isRequired: false },
-          현재가: { value: null, isRequired: false },
-          배당금: { value: null, isRequired: false },
-          고가: { value: null, isRequired: false },
-          증권사: { value: "", isRequired: false },
-          저가: { value: null, isRequired: false },
-          시가: { value: null, isRequired: false },
-          수익률: { value: null, isRequired: false },
-          수익금: { value: null, isRequired: false },
-          거래가: { value: null, isRequired: false },
-          거래량: { value: null, isRequired: false },
-          주식통화: currencySetting,
-        });
+      const newStock = [...prev.stock_assets, emptyStock];
 
-        return {
-          ...prev,
-          stock_assets: newStock,
-        };
-      },
-    );
+      return {
+        ...prev,
+        stock_assets: newStock,
+      };
+    });
   };
 
   const handleDeleteRow = (id: number) => {
@@ -138,205 +110,53 @@ export const useHandleAssetStock = ({
     );
   };
 
-  const handleValueChange = (
-    key: string,
-    value: any,
-    id: number,
-    region?: "KRW" | "USD",
-  ) => {
+  const handleValueChange = (key: string, value: any, id: number) => {
     if (!accessToken) {
       setIsOpenLoginModal(true);
       return;
     }
 
     setErrorInfo(null);
+  };
 
-    if (id < 0) {
-      const everySubRow: StockAssetSubWithType[] = tableData.filter((stock) =>
-        isSub(stock),
-      );
-      const targetRow = everySubRow.find((sub) => sub.id === id);
-
-      if (!targetRow) return;
-
-      const cloneRow = JSON.parse(JSON.stringify(targetRow));
-
-      cloneRow[key].value = value;
-
-      const isAllFilled = essentialFields.every((field) => {
-        if (cloneRow?.[field].value === undefined) {
-          return key === field && value !== undefined;
-        }
-        return true;
-      });
-
-      if (isAllFilled) {
-        const name = cloneRow?.종목명.value;
-        const code = itemNameList.find((item) => item.name_kr === name)?.code;
-
-        if (!code) return;
-
-        const body: PostAssetStockRequestBody = {
-          account_type: (cloneRow?.계좌종류.value ?? null) as string | null,
-          buy_date: cloneRow?.구매일자.value as string,
-          investment_bank: (cloneRow?.증권사.value ?? null) as string | null,
-          purchase_currency_type: currencySetting,
-          purchase_price: (cloneRow?.매입가.value ?? null) as number | null,
-          quantity: cloneRow?.수량.value as number,
-          stock_code: code as string,
-          tempId: id,
-        };
-
-        createAssetStock({ accessToken: accessToken as string, body });
-      }
-    } else {
-      if (key === "종목명") {
-        const name = value;
-        const target = itemNameList.find((item) => item.name_kr === name);
-        const code = target?.code;
-
-        if (!code) return;
-
-        const body: PatchAssetStockRequestBody = {
-          id: id as number,
-          account_type: null,
-          buy_date: null,
-          investment_bank: null,
-          purchase_currency_type: null,
-          purchase_price: null,
-          quantity: null,
-          stock_code: code as string,
-        };
-
-        updateAssetStock({
-          accessToken: accessToken as string,
-          body,
-        });
-      } else if (key === "매입가") {
-        let price = Number(extractNumber(value));
-
-        if (isNumber(price)) {
-          const body: PatchAssetStockRequestBody = {
-            id: id as number,
-            buy_date: null,
-            account_type: null,
-            investment_bank: null,
-            purchase_currency_type: region ?? null,
-            purchase_price: price,
-            quantity: null,
-            stock_code: null,
-          };
-
-          if (isNumber(price)) {
-            updateAssetStock({
-              accessToken: accessToken as string,
-              body,
-            });
-          }
-        }
-
-        return queryClient.setQueryData<AssetManagementResponse>(
-          keyStore.assetStock.getSummary.queryKey,
-          () => {
-            const prev = queryClient.getQueryData<AssetManagementResponse>(
-              keyStore.assetStock.getSummary.queryKey,
-            );
-            if (!prev) return;
-
-            const targetRowIndex = prev.stock_assets.findIndex(
-              (stock) => stock.parent.종목명 === key,
-            );
-
-            if (targetRowIndex === -1) return;
-
-            const newStock = [...prev.stock_assets];
-            newStock[targetRowIndex].sub = newStock[targetRowIndex].sub.map(
-              (sub) => {
-                if (sub.id === id) {
-                  const updatedSub: StockAssetSub = {
-                    ...sub,
-                    [key as keyof StockAssetSub]: {
-                      ...sub[key],
-                      value: price,
-                    },
-                  };
-
-                  return updatedSub;
-                }
-                return sub;
-              },
-            );
-
-            return {
-              ...prev,
-              stock_assets: newStock,
-            };
-          },
-        );
-      } else {
-        const body: PatchAssetStockRequestBody = {
-          id: id as number,
-          buy_date: null,
-          account_type: null,
-          investment_bank: null,
-          purchase_currency_type: null,
-          purchase_price: null,
-          quantity: null,
-          stock_code: null,
-        };
-
-        body[changeFieldToForm[key]] = value;
-
-        updateAssetStock({
-          accessToken: accessToken as string,
-          body,
-        });
-      }
+  const handleStockNameChange = (id: string | number, item: ItemName) => {
+    if (!accessToken) {
+      setIsOpenLoginModal(true);
+      return;
     }
 
-    queryClient.setQueryData<AssetManagementResponse>(
+    const prev = queryClient.getQueryData<AssetManagementResponse>(
       keyStore.assetStock.getSummary.queryKey,
-      () => {
-        const prev = queryClient.getQueryData<AssetManagementResponse>(
-          keyStore.assetStock.getSummary.queryKey,
-        );
-        if (!prev) return;
-
-        const targetRowIndex = prev.stock_assets.findIndex(
-          (stock) => stock.parent.종목명 === key,
-        );
-
-        if (targetRowIndex === -1) return;
-
-        const newStock = [...prev.stock_assets];
-        newStock[targetRowIndex].sub = newStock[targetRowIndex].sub.map(
-          (sub) => {
-            if (sub.id === id) {
-              const updatedSub: StockAssetSub = {
-                ...sub,
-                [key as keyof StockAssetSub]: {
-                  ...sub[key],
-                  value,
-                },
-              };
-
-              return updatedSub;
-            }
-            return sub;
-          },
-        );
-
-        return {
-          ...prev,
-          stock_assets: newStock,
-        };
-      },
     );
+
+    if (!prev) return;
+
+    const existingColumnIndex = prev.stock_assets.findIndex(
+      (stock) => stock.parent.종목명 === item.name_kr,
+    );
+
+    if (existingColumnIndex !== -1) {
+      setErrorInfo({
+        field: "종목명",
+        rowId: id,
+        message: "이미 존재하는 종목이에요.",
+      });
+      return;
+    }
+
+    createAssetStockParent({
+      accessToken: accessToken,
+      body: {
+        stock_code: item.code,
+      },
+      rowId: id,
+    });
   };
 
   return {
-    handleAddRow,
+    addEmptyParentColumn,
     handleDeleteRow,
     handleValueChange,
+    handleStockNameChange,
   };
 };

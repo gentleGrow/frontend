@@ -18,9 +18,13 @@ import {
   UniversalDragEvent,
 } from "@/shared/hooks/useDragAndDrop";
 import useAutoScroll from "@/shared/hooks/useAutoScroll";
-import { CellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
+import {
+  cellErrorAtom,
+  CellErrorAtom,
+} from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 import { cn } from "@/lib/utils";
 import { filedWidth } from "@/widgets/asset-management-draggable-table/constants/fieldWidth";
+import { useSetAtom } from "jotai";
 
 interface FieldState {
   isRequired: boolean;
@@ -66,6 +70,8 @@ const Index = <T extends unknown>({
     string | null
   >(null);
 
+  const setErrorInfo = useSetAtom(cellErrorAtom);
+
   const draggingPosition = useRef<[number, number]>([0, 0]);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -77,8 +83,6 @@ const Index = <T extends unknown>({
   const preservedUserField = usePreservedReference(
     fields.filter((field) => field.isChecked),
   );
-
-  const preservedDataset = usePreservedReference(dataset);
 
   const { throttledFn: throttledOnDrag, cancel: cancelOnDrag } = useThrottle(
     (e: UniversalDragEvent) => {
@@ -210,7 +214,16 @@ const Index = <T extends unknown>({
   });
 
   return (
-    <div ref={containerRef} className={"w-full overflow-x-scroll"}>
+    <div
+      id="table"
+      ref={containerRef}
+      onMouseDownCapture={() => {
+        if (errorInfo) {
+          setErrorInfo(null);
+        }
+      }}
+      className="relative w-full overflow-x-scroll"
+    >
       <div
         className="overflow-visible rounded-[4px] border border-gray-20 bg-white"
         style={{
@@ -235,7 +248,7 @@ const Index = <T extends unknown>({
               <TableColumn
                 onDrag={onDrag}
                 field={field.name}
-                dataset={preservedDataset}
+                dataset={dataset}
                 headerBuilder={headerBuilder}
                 cellBuilder={cellBuilder}
                 onDragEnd={onDragEnd}
@@ -274,7 +287,7 @@ const Index = <T extends unknown>({
               onReorder={onReorder}
               onReset={onReset}
             />
-            {preservedDataset.map((_data: any, idx) => {
+            {dataset.map((_data: any, idx) => {
               return (
                 <DeleteRowIconButton
                   key={_data?.id ?? idx}
