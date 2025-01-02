@@ -7,7 +7,7 @@ import { keyStore } from "@/shared/lib/query-keys";
 import { CurrencyType } from "@/widgets/asset-management-draggable-table/constants/currencyType";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePostAssetStockParent } from "@/entities/assetManagement/queries/usePostAssetStockParent";
-import { useDeleteAssetStock } from "@/entities/assetManagement/queries/useDeleteAssetStock";
+import { useDeleteAssetStockSub } from "@/entities/assetManagement/queries/useDeleteAssetStockSub";
 import { useSetAtom } from "jotai/index";
 import { loginModalAtom } from "@/features";
 import { useDebounce } from "@/shared/hooks/useDebounce";
@@ -42,7 +42,7 @@ export const useHandleAssetStock = ({
   const { mutate: originCreateAssetStockParent } =
     usePostAssetStockParent(itemNameList);
   const { mutate: originPostAssetStockSub } = usePostAssetStockSub();
-  const { mutate: deleteAssetStock } = useDeleteAssetStock();
+  const { mutate: deleteAssetStockSub } = useDeleteAssetStockSub();
 
   const createAssetStockParent = useDebounce(originCreateAssetStockParent, 500);
 
@@ -94,39 +94,13 @@ export const useHandleAssetStock = ({
     });
   };
 
-  const handleDeleteRow = (id: number) => {
+  const handleDeleteAssetStockSub = (id: number) => {
     if (!accessToken) {
       setIsOpenLoginModal(true);
       return;
     }
 
-    deleteAssetStock({ accessToken: accessToken, id });
-
-    queryClient.setQueryData<AssetManagementResponse>(
-      keyStore.assetStock.getSummary.queryKey,
-      () => {
-        const prev = queryClient.getQueryData<AssetManagementResponse>(
-          keyStore.assetStock.getSummary.queryKey,
-        );
-        if (!prev) return;
-
-        const newData = { ...prev };
-
-        const targetRowIndex = newData.stock_assets.findIndex((stock) =>
-          stock.sub.some((sub) => sub.id === id),
-        );
-
-        if (!targetRowIndex) return;
-
-        const targetSub = newData.stock_assets[targetRowIndex].sub;
-
-        newData.stock_assets[targetRowIndex].sub = targetSub.filter(
-          (sub) => sub.id !== id,
-        );
-
-        return newData;
-      },
-    );
+    deleteAssetStockSub({ accessToken: accessToken, id });
   };
 
   const handleValueChange = (key: string, value: any, id: number) => {
@@ -174,7 +148,7 @@ export const useHandleAssetStock = ({
 
   return {
     addEmptyParentColumn,
-    handleDeleteRow,
+    handleDeleteAssetStockSub,
     handleValueChange,
     handleStockNameChange,
     handleAddEmptySubStock,

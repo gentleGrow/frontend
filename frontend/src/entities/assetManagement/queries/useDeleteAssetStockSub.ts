@@ -1,10 +1,10 @@
 import { keyStore } from "@/shared/lib/query-keys";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteAssetStock } from "../apis/deleteAssetStock";
+import { deleteAssetStockSub } from "../apis/deleteAssetStockSub";
 import { useSetAtom } from "jotai";
 import { lastUpdatedAtAtom } from "../atoms/lastUpdatedAtAtom";
 
-export const useDeleteAssetStock = () => {
+export const useDeleteAssetStockSub = () => {
   const queryClient = useQueryClient();
   const setLastUpdatedAt = useSetAtom(lastUpdatedAtAtom);
 
@@ -16,11 +16,11 @@ export const useDeleteAssetStock = () => {
     }: {
       accessToken: string;
       id: number;
-    }) => deleteAssetStock(accessToken, id),
+    }) => deleteAssetStockSub(accessToken, id),
 
-    onSuccess: () => {
+    onSuccess: async () => {
       setLastUpdatedAt(new Date());
-      void queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: keyStore.assetStock.getSummary.queryKey,
       });
     },

@@ -175,7 +175,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
 
   const {
     addEmptyParentColumn,
-    handleDeleteRow,
+    handleDeleteAssetStockSub,
     handleStockNameChange,
     handleAddEmptySubStock,
   } = useHandleAssetStock({
@@ -657,7 +657,14 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
         tableWidth={tableMinimumWidth}
         fieldWidth={(key) => fieldSize[key]}
         onAddRow={addEmptyParentColumn}
-        onDeleteRow={handleDeleteRow}
+        onDeleteRow={(id: number | string) => {
+          if (typeof id === "number") {
+            // TODO: 서브행 삭제
+            handleDeleteAssetStockSub(id);
+          } else {
+            // TODO: 부모행 삭제
+          }
+        }}
         onReorder={() => handleChange}
         onReset={handleReset}
         onResize={resizeFieldSize}
