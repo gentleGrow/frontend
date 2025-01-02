@@ -31,10 +31,7 @@ import {
 } from "@/widgets/asset-management-draggable-table/types/table";
 import AccordionToggleButton from "@/shared/ui/AccordionToggleButton";
 import SellBuyButton from "@/widgets/asset-management-draggable-table/ui/SellBuyButton";
-import {
-  createEmptyStockId,
-  isTempId,
-} from "@/entities/assetManagement/utils/tempIdUtils";
+import { isTempId } from "@/entities/assetManagement/utils/tempIdUtils";
 import ItemNameCell from "@/widgets/asset-management-draggable-table/ui/ItemNameCell";
 
 const autoFilledField = [
@@ -138,10 +135,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
         .map((stock) => [
           {
             ...stock.parent,
-            id:
-              stock.parent.종목명 === ""
-                ? createEmptyStockId()
-                : stock.parent.종목명,
+            id: stock.parent.종목명,
             type: ColumnType.Parent,
           } as StockAssetParentWithType,
           ...stock.sub.map(
@@ -169,6 +163,8 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
     [data.stock_assets, dollarExchange, openedFields, wonExchange],
   );
 
+  console.log(tableData);
+
   const receivedFields = data?.asset_fields;
 
   const errorInfo = useAtomValue(cellErrorAtom);
@@ -178,6 +174,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
     handleDeleteAssetStockSub,
     handleStockNameChange,
     handleAddEmptySubStock,
+    handleDeleteAssetStockParent,
   } = useHandleAssetStock({
     currencySetting,
     accessToken,
@@ -663,6 +660,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             handleDeleteAssetStockSub(id);
           } else {
             // TODO: 부모행 삭제
+            handleDeleteAssetStockParent(id);
           }
         }}
         onReorder={() => handleChange}

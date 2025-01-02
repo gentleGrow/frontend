@@ -15,6 +15,8 @@ import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
 import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 import { createEmptyStockAsset } from "@/entities/assetManagement/utils/factory";
 import { usePostAssetStockSub } from "@/entities/assetManagement/queries/usePostAssetStockSub";
+import { isTempId } from "@/entities/assetManagement/utils/tempIdUtils";
+import { useDeleteAssetStockParent } from "@/entities/assetManagement/queries/useDeleteAssetStockParent";
 
 let tempId = -1;
 
@@ -43,6 +45,7 @@ export const useHandleAssetStock = ({
     usePostAssetStockParent(itemNameList);
   const { mutate: originPostAssetStockSub } = usePostAssetStockSub();
   const { mutate: deleteAssetStockSub } = useDeleteAssetStockSub();
+  const { mutate: deleteAssetStockParent } = useDeleteAssetStockParent();
 
   const createAssetStockParent = useDebounce(originCreateAssetStockParent, 500);
 
@@ -112,6 +115,47 @@ export const useHandleAssetStock = ({
     setErrorInfo(null);
   };
 
+  const handleDeleteAssetStockParent = (id: string) => {
+    if (!accessToken) {
+      setIsOpenLoginModal(true);
+      return;
+    }
+
+    if (isTempId(id)) {
+      return queryClient.setQueryData(
+        keyStore.assetStock.getSummary.queryKey,
+        () => {
+          const prev = queryClient.getQueryData<AssetManagementResponse>(
+            keyStore.assetStock.getSummary.queryKey,
+          );
+          if (!prev) return;
+
+          const newStock = prev.stock_assets.filter(
+            (stock) => stock.parent.종목명 !== id,
+          );
+
+          return {
+            ...prev,
+            stock_assets: newStock,
+          };
+        },
+      );
+    }
+
+    const item = itemNameList.find((stock) => stock.name_kr === id);
+
+    if (!item) {
+      setErrorInfo({
+        field: "종목명",
+        rowId: id,
+        message: "잘못된 종목을 삭제하고 있어요.",
+      });
+      return;
+    }
+
+    deleteAssetStockParent({ accessToken: accessToken, item });
+  };
+
   const handleStockNameChange = (id: string | number, item: ItemName) => {
     if (!accessToken) {
       setIsOpenLoginModal(true);
@@ -152,5 +196,6 @@ export const useHandleAssetStock = ({
     handleValueChange,
     handleStockNameChange,
     handleAddEmptySubStock,
+    handleDeleteAssetStockParent,
   };
 };
