@@ -18,6 +18,7 @@ export const useGetAssetStocks = (
     queryFn: () => getAssetsStock(accessToken),
     staleTime: Infinity,
     gcTime: Infinity,
+    refetchOnWindowFocus: false,
     select: (oldData) => {
       const data = cloneDeep(oldData);
 
