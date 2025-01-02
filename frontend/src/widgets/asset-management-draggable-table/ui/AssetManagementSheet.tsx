@@ -173,13 +173,17 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
 
   const errorInfo = useAtomValue(cellErrorAtom);
 
-  const { addEmptyParentColumn, handleDeleteRow, handleStockNameChange } =
-    useHandleAssetStock({
-      currencySetting,
-      accessToken,
-      itemNameList,
-      tableData,
-    });
+  const {
+    addEmptyParentColumn,
+    handleDeleteRow,
+    handleStockNameChange,
+    handleAddEmptySubStock,
+  } = useHandleAssetStock({
+    currencySetting,
+    accessToken,
+    itemNameList,
+    tableData,
+  });
 
   if (tableData.length === 0) {
     addEmptyParentColumn();
@@ -284,7 +288,12 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                   />
                   <div className="flex w-full flex-row items-center justify-between px-2.5 py-[12.5]">
                     <div className="text-body-2 text-gray-90">{data}</div>
-                    <SellBuyButton type="button" onClick={() => {}} />
+                    <SellBuyButton
+                      type="button"
+                      onClick={() =>
+                        handleAddEmptySubStock(currentRow.종목명 as string)
+                      }
+                    />
                   </div>
                 </div>
               );

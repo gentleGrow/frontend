@@ -7,7 +7,6 @@ import { keyStore } from "@/shared/lib/query-keys";
 import { CurrencyType } from "@/widgets/asset-management-draggable-table/constants/currencyType";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePostAssetStockParent } from "@/entities/assetManagement/queries/usePostAssetStockParent";
-import { usePatchAssetStock } from "@/entities/assetManagement/queries/usePatchAssetStock";
 import { useDeleteAssetStock } from "@/entities/assetManagement/queries/useDeleteAssetStock";
 import { useSetAtom } from "jotai/index";
 import { loginModalAtom } from "@/features";
@@ -15,6 +14,7 @@ import { useDebounce } from "@/shared/hooks/useDebounce";
 import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
 import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 import { createEmptyStockAsset } from "@/entities/assetManagement/utils/factory";
+import { usePostAssetStockSub } from "@/entities/assetManagement/queries/usePostAssetStockSub";
 
 let tempId = -1;
 
@@ -41,10 +41,9 @@ export const useHandleAssetStock = ({
 }: UseHandleAssetStockParams) => {
   const { mutate: originCreateAssetStockParent } =
     usePostAssetStockParent(itemNameList);
-  const { mutate: originUpdateAssetStock } = usePatchAssetStock();
+  const { mutate: originPostAssetStockSub } = usePostAssetStockSub();
   const { mutate: deleteAssetStock } = useDeleteAssetStock();
 
-  const updateAssetStock = useDebounce(originUpdateAssetStock, 500);
   const createAssetStockParent = useDebounce(originCreateAssetStockParent, 500);
 
   const setIsOpenLoginModal = useSetAtom(loginModalAtom);
@@ -72,6 +71,26 @@ export const useHandleAssetStock = ({
         ...prev,
         stock_assets: newStock,
       };
+    });
+  };
+
+  const handleAddEmptySubStock = (stockName: string) => {
+    if (!accessToken) {
+      setIsOpenLoginModal(true);
+      return;
+    }
+
+    const stockCode = itemNameList.find(
+      (item) => item.name_kr === stockName,
+    )?.code;
+
+    if (!stockCode) return;
+
+    originPostAssetStockSub({
+      accessToken,
+      body: {
+        stock_code: stockCode,
+      },
     });
   };
 
@@ -158,5 +177,6 @@ export const useHandleAssetStock = ({
     handleDeleteRow,
     handleValueChange,
     handleStockNameChange,
+    handleAddEmptySubStock,
   };
 };
