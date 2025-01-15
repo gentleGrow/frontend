@@ -629,6 +629,9 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                   type={fieldNumberType(key)}
                   placeholder={"₩ 0"}
                   variants="default"
+                  onChange={(value) =>
+                    handleValueChange(key, value, id as number)
+                  }
                 />
               );
             case "거래량":
