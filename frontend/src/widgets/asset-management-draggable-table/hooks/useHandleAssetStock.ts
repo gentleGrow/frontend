@@ -106,12 +106,47 @@ export const useHandleAssetStock = ({
     deleteAssetStockSub({ accessToken: accessToken, id });
   };
 
-  const handleValueChange = (key: string, value: any, id: number) => {
+  const handleValueChange = (key: string, value: unknown, id: number) => {
     if (!accessToken) {
       setIsOpenLoginModal(true);
       return;
     }
 
+    queryClient.setQueryData<AssetManagementResponse>(
+      keyStore.assetStock.getSummary.queryKey,
+      () => {
+        const prev = queryClient.getQueryData<AssetManagementResponse>(
+          keyStore.assetStock.getSummary.queryKey,
+        );
+
+        if (!prev) return;
+
+        const newStock = prev.stock_assets.map((stock) => {
+          return {
+            ...stock,
+            sub: stock.sub.map((sub) => {
+              if (sub.id === id) {
+                return {
+                  ...sub,
+                  [key]: {
+                    ...sub[key],
+                    value,
+                  },
+                };
+              }
+              return sub;
+            }),
+          };
+        });
+
+        return {
+          ...prev,
+          stock_assets: newStock,
+        };
+      },
+    );
+
+    // TODO: 공용 자산 시트 데이터 수정 로직을 생성해 노출 시킨다.
     setErrorInfo(null);
   };
 

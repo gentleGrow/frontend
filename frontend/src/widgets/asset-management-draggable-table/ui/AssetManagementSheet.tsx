@@ -33,6 +33,9 @@ import AccordionToggleButton from "@/shared/ui/AccordionToggleButton";
 import SellBuyButton from "@/widgets/asset-management-draggable-table/ui/SellBuyButton";
 import { isTempId } from "@/entities/assetManagement/utils/tempIdUtils";
 import ItemNameCell from "@/widgets/asset-management-draggable-table/ui/ItemNameCell";
+import { format } from "date-fns";
+import AccountTypeCell from "@/widgets/asset-management-draggable-table/ui/AccountTypeCell";
+import SellBuyToggleButton from "@/widgets/asset-management-draggable-table/ui/SellBuyToggleButton";
 
 const autoFilledField = [
   "수익률",
@@ -106,6 +109,7 @@ const getSortType = (field: string | null): "date" | "number" | "string" => {
 const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
   accessToken,
   itemNameList,
+  accountList,
 }) => {
   const [openedFields, setOpenedFields] = useState<string[]>([]);
 
@@ -163,8 +167,6 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
     [data.stock_assets, dollarExchange, openedFields, wonExchange],
   );
 
-  console.log(tableData);
-
   const receivedFields = data?.asset_fields;
 
   const errorInfo = useAtomValue(cellErrorAtom);
@@ -174,6 +176,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
     handleDeleteAssetStockSub,
     handleStockNameChange,
     handleAddEmptySubStock,
+    handleValueChange,
     handleDeleteAssetStockParent,
   } = useHandleAssetStock({
     currencySetting,
@@ -333,18 +336,6 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
               );
             case "배당금":
               let value = data;
-              // const originCurrency = currentRow?.주식통화 ?? "KRW";
-              // const originCurrency = "KRW";
-              //
-              // if (originCurrency !== currentCurrency) {
-              //   value = data?.changedValue;
-              // } else {
-              //   if (currentCurrency === "KRW") {
-              //     value = ceil(value);
-              //   } else {
-              //     value = ceil(value, 2);
-              //   }
-              // }
 
               return (
                 <NumberInput
@@ -425,7 +416,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                   value={ceil(data ?? 0) + ""}
                   type={fieldNumberType(key)}
                   placeholder={"₩ 0"}
-                  variants="default"
+                  variants="gray-light"
                   autoFill
                 />
               );
@@ -435,7 +426,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                   value={ceil(data ?? 0) + ""}
                   type={fieldNumberType(key)}
                   placeholder={"₩ 0"}
-                  variants="default"
+                  variants="gray-light"
                   autoFill
                 />
               );
@@ -467,8 +458,6 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
           const isKrCode = isKrCodeRegex.test(code ?? "");
           const currentCurrency = isKrCode ? "KRW" : currencySetting;
 
-          // TODO: 지금은 UI만 그리게 해둔 상태임.
-          // TODO: 추후 제대로 동작할 수 있게 기능 보충 해야함.
           switch (key) {
             case "종목명":
               return (
@@ -479,22 +468,23 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             case "수량":
               return (
                 <NumberInput
-                  value={data?.value}
-                  // onChange={(value) => handleValueChange(key, value, id)}
+                  value={data?.value ?? 0}
+                  onChange={(value) =>
+                    handleValueChange(key, value, id as number)
+                  }
                   placeholder={!data ? "0" : ""}
                   type="amount"
                   variants={"default"}
-                  autoFill
                 />
               );
             case "매매일자":
               return (
-                <div className="pointer-events-none flex h-full w-full touch-none flex-row items-center justify-start bg-gray-5 px-[9px] text-gray-50">
+                <div className="flex h-full w-full flex-row items-center justify-start px-[9px]">
                   <DatePicker
                     date={data?.value ? new Date(data.value) : null}
                     onChange={(date) => {
-                      // const formatedDate = format(date, "yyyy-MM-dd");
-                      // handleValueChange(key, formatedDate, id);
+                      const formatedDate = format(date, "yyyy-MM-dd");
+                      handleValueChange(key, formatedDate, id as number);
                     }}
                   />
                 </div>
@@ -502,58 +492,52 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             case "매매":
               return (
                 <div className="h-fulㅇ flex w-full p-[9px]">
-                  <button className="flex h-full w-[42px] flex-row items-center justify-between rounded-full bg-alert px-[5px] py-[3.5px]">
-                    <span>매도</span>
-                    <span className="justifyㅇ-center flex h-full flex-col gap-0.5">
-                      <span className="h-[3px] w-[3px] rounded-full bg-white" />
-                      <span className="h-[3px] w-[3px] rounded-full bg-white" />
-                    </span>
-                  </button>
+                  <SellBuyToggleButton
+                    type={data?.value}
+                    onClick={(value) => {
+                      handleValueChange(key, value, id as number);
+                    }}
+                  />
                 </div>
               );
             case "계좌종류":
-              return <div className="h-full w-full bg-gray-5" />;
+              return (
+                <AccountTypeCell
+                  selected={data?.value}
+                  onSelect={(name) =>
+                    handleValueChange(key, name, id as number)
+                  }
+                  selections={accountList}
+                />
+              );
             case "현재가":
               return (
                 <NumberInput
-                  value={ceil(data?.value ?? 0) + ""}
+                  value={data?.value}
                   type={fieldNumberType(key)}
-                  placeholder={"₩ 0"}
-                  variants="gray-light"
+                  region={currentCurrency}
+                  placeholder={"자동 계산 필드입니다."}
                   autoFill
+                  variants={!data?.value ? "gray-light" : "default"}
                 />
               );
             case "배당금":
-              let value = data;
-              // const originCurrency = currentRow?.주식통화 ?? "KRW";
-              // const originCurrency = "KRW";
-              //
-              // if (originCurrency !== currentCurrency) {
-              //   value = data?.changedValue;
-              // } else {
-              //   if (currentCurrency === "KRW") {
-              //     value = ceil(value);
-              //   } else {
-              //     value = ceil(value, 2);
-              //   }
-              // }
-
               return (
                 <NumberInput
-                  value={ceil(value?.value) + ""}
+                  value={data?.value}
                   type={fieldNumberType(key)}
-                  region={"KRW"}
+                  region={currentCurrency}
                   placeholder={
-                    data === undefined
+                    data?.value === undefined || data?.value === null
                       ? "자동 계산 필드입니다."
-                      : data === 0
+                      : data.value === 0
                         ? "배당금이 없는 종목이에요."
                         : ""
                   }
                   variants={
-                    data === undefined
+                    data?.value === undefined || data?.value === null
                       ? "gray-light"
-                      : data === 0
+                      : data.value === 0
                         ? "gray-dark"
                         : "default"
                   }
@@ -563,10 +547,12 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             case "고가":
               return (
                 <NumberInput
+                  value={data?.value}
                   type={fieldNumberType(key)}
-                  placeholder={"₩ 0"}
-                  variants="gray-light"
+                  region={currentCurrency}
+                  placeholder={"자동 계산 필드입니다."}
                   autoFill
+                  variants={!data?.value ? "gray-light" : "default"}
                 />
               );
             case "증권사":
@@ -574,19 +560,23 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             case "저가":
               return (
                 <NumberInput
+                  value={data?.value}
                   type={fieldNumberType(key)}
-                  placeholder={"₩ 0"}
-                  variants="gray-light"
+                  region={currentCurrency}
+                  placeholder={"자동 계산 필드입니다."}
                   autoFill
+                  variants={!data?.value ? "gray-light" : "default"}
                 />
               );
             case "시가":
               return (
                 <NumberInput
+                  value={data?.value}
                   type={fieldNumberType(key)}
-                  placeholder={"₩ 0"}
-                  variants="gray-light"
+                  region={currentCurrency}
+                  placeholder={"자동 계산 필드입니다."}
                   autoFill
+                  variants={!data?.value ? "gray-light" : "default"}
                 />
               );
             case "수익률":
@@ -614,21 +604,23 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             case "수익금":
               return (
                 <NumberInput
-                  value={ceil(data?.value ?? 0) + ""}
+                  value={data?.value}
                   type={fieldNumberType(key)}
-                  placeholder={"₩ 0"}
-                  variants="default"
+                  region={currentCurrency}
+                  placeholder={"자동 계산 필드입니다."}
                   autoFill
+                  variants={!data?.value ? "gray-light" : "default"}
                 />
               );
             case "거래금":
               return (
                 <NumberInput
-                  value={ceil(data?.value ?? 0) + ""}
+                  value={data?.value}
                   type={fieldNumberType(key)}
-                  placeholder={"₩ 0"}
-                  variants="default"
+                  region={currentCurrency}
+                  placeholder={"자동 계산 필드입니다."}
                   autoFill
+                  variants={!data?.value ? "gray-light" : "default"}
                 />
               );
             case "거래가":
@@ -636,17 +628,18 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                 <NumberInput
                   type={fieldNumberType(key)}
                   placeholder={"₩ 0"}
-                  variants="gray-light"
-                  autoFill
+                  variants="default"
                 />
               );
             case "거래량":
               return (
                 <NumberInput
+                  value={data?.value}
                   type={fieldNumberType(key)}
-                  placeholder={"0"}
-                  variants="gray-light"
+                  region={currentCurrency}
+                  placeholder={"자동 계산 필드입니다."}
                   autoFill
+                  variants={!data?.value ? "gray-light" : "default"}
                 />
               );
           }
