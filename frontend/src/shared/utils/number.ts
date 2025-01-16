@@ -1,3 +1,5 @@
+import { ceil } from "es-toolkit/compat";
+
 export function commaizeNumber(value: string | number) {
   const numStr = String(value);
   const decimalPointIndex = numStr.indexOf(".");
@@ -64,4 +66,8 @@ export function containsInvalidInput(value: string): boolean {
   const isPlus = lastChar === "+";
 
   return !isNumber && !isDot && !isComma && !isMinus && !isPlus;
+}
+
+export function exchange(value: string | number, exchangeRate: number) {
+  return ceil(value, 0);
 }
