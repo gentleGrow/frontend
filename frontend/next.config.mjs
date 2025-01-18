@@ -1,11 +1,9 @@
-import { createVanillaExtractPlugin } from "@vanilla-extract/next-plugin";
 import path from "path";
 import { fileURLToPath } from "url";
 import { withSentryConfig } from "@sentry/nextjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const withVanillaExtract = createVanillaExtractPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -43,4 +41,4 @@ const sentryConfig = withSentryConfig(nextConfig, {
   silent: false, // Can be used to suppress logs
 });
 
-export default withVanillaExtract(sentryConfig);
+export default sentryConfig;
