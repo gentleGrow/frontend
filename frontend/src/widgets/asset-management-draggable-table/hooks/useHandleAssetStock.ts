@@ -17,16 +17,10 @@ import { createEmptyStockAsset } from "@/entities/assetManagement/utils/factory"
 import { usePostAssetStockSub } from "@/entities/assetManagement/queries/usePostAssetStockSub";
 import { isTempId } from "@/entities/assetManagement/utils/tempIdUtils";
 import { useDeleteAssetStockParent } from "@/entities/assetManagement/queries/useDeleteAssetStockParent";
+import { parseAssetStockKeyToJsonKey } from "@/entities/assetManagement/utils/parseAssetStockKeyToJsonKey";
+import { usePutAssetStock } from "@/entities/assetManagement/queries/usePutAssetStock";
 
 let tempId = -1;
-
-const changeFieldToForm = {
-  구매일자: "buy_date",
-  수량: "quantity",
-  계좌종류: "account_type",
-  증권사: "investment_bank",
-  매입가: "purchase_price",
-};
 
 interface UseHandleAssetStockParams {
   currencySetting: CurrencyType;
@@ -43,6 +37,7 @@ export const useHandleAssetStock = ({
 }: UseHandleAssetStockParams) => {
   const { mutate: originCreateAssetStockParent } =
     usePostAssetStockParent(itemNameList);
+  const { mutate: putAssetStock } = usePutAssetStock();
   const { mutate: originPostAssetStockSub } = usePostAssetStockSub();
   const { mutate: deleteAssetStockSub } = useDeleteAssetStockSub();
   const { mutate: deleteAssetStockParent } = useDeleteAssetStockParent();
@@ -123,10 +118,7 @@ export const useHandleAssetStock = ({
               if (sub.id === id) {
                 return {
                   ...sub,
-                  [key]: {
-                    ...sub[key],
-                    value,
-                  },
+                  [key]: value,
                 };
               }
               return sub;
@@ -140,9 +132,43 @@ export const useHandleAssetStock = ({
         };
       },
     );
-
-    // TODO: 공용 자산 시트 데이터 수정 로직을 생성해 노출 시킨다.
     setErrorInfo(null);
+
+    // 1. stock_code 를 찾는다.
+    const stockName = tableData.find((stock) => stock.id === id)?.종목명;
+
+    if (!stockName) {
+      setErrorInfo({
+        field: "종목명",
+        rowId: id,
+        message: "종목명이 없어요.",
+      });
+      return;
+    }
+
+    // TODO: 나중에 API 수정될거임 그거 수정한 이후 다시 작업하기 -> 수정사항 반영 완료 나머지 작업 진행하기
+    const stockItem = itemNameList.find((item) => item.name_kr === stockName);
+
+    if (!stockItem) {
+      setErrorInfo({
+        field: "종목명",
+        rowId: id,
+        message: "잘못된 종목이에요.",
+      });
+      return;
+    }
+
+    // 2. 어떤 필드가 변경되었는지 찾고 그에 상응하는 key 값으로 변경한다.
+    const parsedKey = parseAssetStockKeyToJsonKey(key);
+
+    putAssetStock({
+      body: {
+        [parsedKey]: value,
+        stock_code: stockItem?.code,
+        id,
+      },
+      accessToken,
+    });
   };
 
   const handleDeleteAssetStockParent = (id: string) => {

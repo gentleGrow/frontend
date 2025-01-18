@@ -25,7 +25,6 @@ import { useHandleAssetStock } from "@/widgets/asset-management-draggable-table/
 import { useInitializeAtoms } from "@/widgets/asset-management-draggable-table/atoms/useInitializeAtoms";
 import { ColumnType } from "@/features/assetManagement/consts/column-type";
 import {
-  AssetValue,
   StockAssetParentWithType,
   StockAssetSubWithType,
 } from "@/widgets/asset-management-draggable-table/types/table";
@@ -38,18 +37,6 @@ import AccountTypeCell from "@/widgets/asset-management-draggable-table/ui/Accou
 import SellBuyToggleButton from "@/widgets/asset-management-draggable-table/ui/SellBuyToggleButton";
 import { priceInputFields } from "@/widgets/asset-management-draggable-table/constants/priceInputFields";
 import { exchange } from "@/shared/utils/number";
-
-const autoFilledField = [
-  "수익률",
-  "시가",
-  "고가",
-  "저가",
-  "거래량",
-  "배당금",
-  "매입금",
-  "현재가",
-  "수익금",
-];
 
 const NumberFieldType = {
   Amount: "amount",
@@ -134,7 +121,6 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
   const dollarExchange = data.dollar_exchange ?? 0;
   const wonExchange = data.won_exchange ?? 0;
 
-  // TODO: 스톡 데이터 테이블 데이터로 파싱하는 로직 수정 하기
   const tableData = useMemo(
     () =>
       data.stock_assets
@@ -158,9 +144,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
 
           return (
             stock.type === ColumnType.Sub &&
-            openedFields.includes(
-              (stock.종목명 as unknown as AssetValue<string>).value,
-            )
+            openedFields.includes(stock.종목명 as unknown as string)
           );
         })
         .map((stock) =>
@@ -272,7 +256,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
           if (!currentRow?.id)
             throw new Error("currentRow 의 id 값이 정의되지 않았습니다.");
 
-          let value = data?.value;
+          let value = data;
 
           if (
             !isKrCode &&
@@ -295,8 +279,8 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
               ) : (
                 <div className="flex h-full w-full flex-row items-center">
                   <AccordionToggleButton
-                    onToggle={(changedValue) => {
-                      if (changedValue) {
+                    onToggle={(open) => {
+                      if (open) {
                         setOpenedFields((prev) => [...prev, data]);
                       } else {
                         setOpenedFields((prev) =>
@@ -321,7 +305,6 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
               return (
                 <NumberInput
                   value={data}
-                  // onChange={(value) => handleValueChange(key, value, id)}
                   placeholder={!data ? "0" : ""}
                   type="amount"
                   variants={"default"}
@@ -333,10 +316,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                 <div className="pointer-events-none flex h-full w-full touch-none flex-row items-center justify-start bg-gray-5 px-[9px] text-gray-50">
                   <DatePicker
                     date={data ? new Date(data) : null}
-                    onChange={(date) => {
-                      // const formatedDate = format(date, "yyyy-MM-dd");
-                      // handleValueChange(key, formatedDate, id);
-                    }}
+                    onChange={() => {}}
                   />
                 </div>
               );
@@ -355,11 +335,9 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                 />
               );
             case "배당금":
-              let value = data;
-
               return (
                 <NumberInput
-                  value={ceil(value) + ""}
+                  value={ceil(data) + ""}
                   type={fieldNumberType(key)}
                   region={"KRW"}
                   placeholder={
@@ -481,9 +459,11 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
               return (
                 <NumberInput
                   value={value ?? 0}
-                  onChange={(value) =>
-                    handleValueChange(key, value, id as number)
-                  }
+                  onChange={(value) => {
+                    if (value !== undefined) {
+                      handleValueChange(key, +value, id as number);
+                    }
+                  }}
                   placeholder={!data ? "0" : ""}
                   type="amount"
                   variants={"default"}

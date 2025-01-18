@@ -1,14 +1,14 @@
 import { keyStore } from "@/shared/lib/query-keys";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  patchAssetStock,
-  PatchAssetStockRequestBody,
-} from "@/entities/assetManagement/apis/patchAssetStock";
+  putAssetStock,
+  PutAssetStockRequestBody,
+} from "@/entities/assetManagement/apis/putAssetStock";
 import { useSetAtom } from "jotai";
 import { lastUpdatedAtAtom } from "@/entities/assetManagement/atoms/lastUpdatedAtAtom";
 import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 
-export const usePatchAssetStock = () => {
+export const usePutAssetStock = () => {
   const queryClient = useQueryClient();
 
   const setLastUpdatedAt = useSetAtom(lastUpdatedAtAtom);
@@ -20,9 +20,9 @@ export const usePatchAssetStock = () => {
       body,
       accessToken,
     }: {
-      body: PatchAssetStockRequestBody;
+      body: PutAssetStockRequestBody;
       accessToken: string;
-    }) => patchAssetStock(accessToken, body),
+    }) => putAssetStock(accessToken, body),
 
     onSuccess: async (data, variables) => {
       const response = (await data.json()) as {
