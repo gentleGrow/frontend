@@ -12,7 +12,7 @@ export const parseAssetStockKeyToJsonKey = (key: string): JsonKey => {
       return "account_type";
     case "증권사":
       return "investment_bank";
-    case "매입가":
+    case "거래가":
       return "trade_price";
     case "매매":
       return "trade";
