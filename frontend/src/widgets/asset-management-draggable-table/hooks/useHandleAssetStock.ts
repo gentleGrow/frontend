@@ -55,11 +55,6 @@ export const useHandleAssetStock = ({
   const queryClient = useQueryClient();
 
   const addEmptyParentColumn = () => {
-    if (!accessToken) {
-      setIsOpenLoginModal(true);
-      return;
-    }
-
     const emptyStock = createEmptyStockAsset();
 
     queryClient.setQueryData(keyStore.assetStock.getSummary.queryKey, () => {
