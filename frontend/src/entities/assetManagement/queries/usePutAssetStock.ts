@@ -1,5 +1,5 @@
 import { keyStore } from "@/shared/lib/query-keys";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
   putAssetStock,
   PutAssetStockRequestBody,
@@ -7,9 +7,12 @@ import {
 import { useSetAtom } from "jotai";
 import { lastUpdatedAtAtom } from "@/entities/assetManagement/atoms/lastUpdatedAtAtom";
 import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
+import { useInvalidateAssetStock } from "@/entities/assetManagement/queries/useInvalidateAssetStock";
+import { useDebounce } from "@toss/react";
 
 export const usePutAssetStock = () => {
-  const queryClient = useQueryClient();
+  const { invalidate } = useInvalidateAssetStock();
+  const debouncedInvalidate = useDebounce(invalidate, 200);
 
   const setLastUpdatedAt = useSetAtom(lastUpdatedAtAtom);
   const setCellError = useSetAtom(cellErrorAtom);
@@ -33,10 +36,7 @@ export const usePutAssetStock = () => {
 
       if (String(response.status_code).startsWith("2")) {
         setLastUpdatedAt(new Date());
-        await queryClient.invalidateQueries({
-          queryKey: keyStore.assetStock.getSummary.queryKey,
-          exact: true,
-        });
+        await debouncedInvalidate();
       } else {
         setCellError({
           rowId: variables.body.id,
