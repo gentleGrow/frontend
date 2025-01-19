@@ -260,11 +260,20 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
 
           if (
             !isKrCode &&
+            currentRow?.["주식통화"] !== "USD" &&
             currentCurrency === "USD" &&
             priceInputFields.includes(key)
           ) {
             value = exchange(value, dollarExchange);
-            console.log(value);
+          }
+
+          if (
+            !isKrCode &&
+            currentRow?.["주식통화"] !== "KRW" &&
+            currentCurrency === "KRW" &&
+            priceInputFields.includes(key)
+          ) {
+            value = exchange(value, wonExchange);
           }
 
           switch (isParent && key) {

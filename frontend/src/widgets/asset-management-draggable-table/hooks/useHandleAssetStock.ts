@@ -19,6 +19,7 @@ import { isTempId } from "@/entities/assetManagement/utils/tempIdUtils";
 import { useDeleteAssetStockParent } from "@/entities/assetManagement/queries/useDeleteAssetStockParent";
 import { parseAssetStockKeyToJsonKey } from "@/entities/assetManagement/utils/parseAssetStockKeyToJsonKey";
 import { usePutAssetStock } from "@/entities/assetManagement/queries/usePutAssetStock";
+import { useClientSubStock } from "@/entities/assetManagement/hooks/useClientSubStock";
 
 let tempId = -1;
 
@@ -41,6 +42,8 @@ export const useHandleAssetStock = ({
   const { mutate: originPostAssetStockSub } = usePostAssetStockSub();
   const { mutate: deleteAssetStockSub } = useDeleteAssetStockSub();
   const { mutate: deleteAssetStockParent } = useDeleteAssetStockParent();
+
+  const clientSubStock = useClientSubStock();
 
   const createAssetStockParent = useDebounce(originCreateAssetStockParent, 500);
 
@@ -102,36 +105,12 @@ export const useHandleAssetStock = ({
       return;
     }
 
-    queryClient.setQueryData<AssetManagementResponse>(
-      keyStore.assetStock.getSummary.queryKey,
-      () => {
-        const prev = queryClient.getQueryData<AssetManagementResponse>(
-          keyStore.assetStock.getSummary.queryKey,
-        );
+    clientSubStock.update(id, key, value);
 
-        if (!prev) return;
+    if (key === "거래가") {
+      clientSubStock.update(id, "주식통화", currencySetting);
+    }
 
-        const newStock = prev.stock_assets.map((stock) => {
-          return {
-            ...stock,
-            sub: stock.sub.map((sub) => {
-              if (sub.id === id) {
-                return {
-                  ...sub,
-                  [key]: value,
-                };
-              }
-              return sub;
-            }),
-          };
-        });
-
-        return {
-          ...prev,
-          stock_assets: newStock,
-        };
-      },
-    );
     setErrorInfo(null);
 
     // 1. stock_code 를 찾는다.
@@ -146,7 +125,6 @@ export const useHandleAssetStock = ({
       return;
     }
 
-    // TODO: 나중에 API 수정될거임 그거 수정한 이후 다시 작업하기 -> 수정사항 반영 완료 나머지 작업 진행하기
     const stockItem = itemNameList.find((item) => item.name_kr === stockName);
 
     if (!stockItem) {
@@ -163,6 +141,7 @@ export const useHandleAssetStock = ({
 
     putAssetStock({
       body: {
+        purchase_currency_type: key === "거래가" ? currencySetting : undefined,
         [parsedKey]: value,
         stock_code: stockItem?.code,
         id,

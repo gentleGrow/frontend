@@ -12,7 +12,7 @@ import { useDebounce } from "@toss/react";
 
 export const usePutAssetStock = () => {
   const { invalidate } = useInvalidateAssetStock();
-  const debouncedInvalidate = useDebounce(invalidate, 200);
+  const debouncedInvalidate = useDebounce(invalidate, 2000);
 
   const setLastUpdatedAt = useSetAtom(lastUpdatedAtAtom);
   const setCellError = useSetAtom(cellErrorAtom);
@@ -35,8 +35,8 @@ export const usePutAssetStock = () => {
       };
 
       if (String(response.status_code).startsWith("2")) {
-        setLastUpdatedAt(new Date());
         await debouncedInvalidate();
+        setLastUpdatedAt(new Date());
       } else {
         setCellError({
           rowId: variables.body.id,
