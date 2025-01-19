@@ -1,4 +1,4 @@
-import { fetchWithTimeout, getBaseUrl } from "@/shared";
+import { fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
 
 export interface ItemName {
   name_en: string;
@@ -8,7 +8,12 @@ export interface ItemName {
 
 export const getItemNameList = async (accessToken: string | null) => {
   const response = await fetchWithTimeout(
-    `${getBaseUrl()}/api/asset/v1/stocks`,
+    `${SERVICE_SERVER_URL}/api/asset/v1/stocks`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
   );
 
   if (!response.ok) {

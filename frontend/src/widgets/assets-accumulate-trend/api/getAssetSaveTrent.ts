@@ -1,9 +1,9 @@
-import { fetchWithTimeout, getBaseUrl, LineChartData } from "@/shared";
+import { fetchWithTimeout, LineChartData, SERVICE_SERVER_URL } from "@/shared";
 
 export const getAssetSaveTrent = async (accessToken: string | null) => {
-  let url = `${getBaseUrl()}/api/chart/v1/asset-save-trend`;
+  let url = `${SERVICE_SERVER_URL}/api/chart/v1/asset-save-trend`;
   if (!accessToken) {
-    url = `${getBaseUrl()}/api/chart/v1/sample/asset-save-trend`;
+    url = `${SERVICE_SERVER_URL}/api/chart/v1/sample/asset-save-trend`;
   }
 
   const response = await fetchWithTimeout(url, {

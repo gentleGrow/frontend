@@ -1,4 +1,4 @@
-import { fetchWithTimeout, getBaseUrl } from "@/shared";
+import { fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
 
 export interface PutAssetStockRequestBody {
   id: number;
@@ -16,7 +16,7 @@ export const putAssetStock = async (
   accessToken: string,
   body: PutAssetStockRequestBody,
 ) => {
-  return fetchWithTimeout(`${getBaseUrl()}/api/asset/v1/assetstock`, {
+  return fetchWithTimeout(`${SERVICE_SERVER_URL}/api/asset/v1/assetstock`, {
     method: "put",
     headers: {
       "Content-Type": "application/json",
