@@ -8,7 +8,7 @@ const API_URL =
   "http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo";
 
 if (!API_KEY) {
-  console.error("API key is not provided.");
+  console.error("holiday-kr.mjs: API key is not provided.");
   process.exit(1);
 }
 
