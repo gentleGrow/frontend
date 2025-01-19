@@ -17,16 +17,11 @@ import { createEmptyStockAsset } from "@/entities/assetManagement/utils/factory"
 import { usePostAssetStockSub } from "@/entities/assetManagement/queries/usePostAssetStockSub";
 import { isTempId } from "@/entities/assetManagement/utils/tempIdUtils";
 import { useDeleteAssetStockParent } from "@/entities/assetManagement/queries/useDeleteAssetStockParent";
+import { parseAssetStockKeyToJsonKey } from "@/entities/assetManagement/utils/parseAssetStockKeyToJsonKey";
+import { usePutAssetStock } from "@/entities/assetManagement/queries/usePutAssetStock";
+import { useClientSubStock } from "@/entities/assetManagement/hooks/useClientSubStock";
 
 let tempId = -1;
-
-const changeFieldToForm = {
-  구매일자: "buy_date",
-  수량: "quantity",
-  계좌종류: "account_type",
-  증권사: "investment_bank",
-  매입가: "purchase_price",
-};
 
 interface UseHandleAssetStockParams {
   currencySetting: CurrencyType;
@@ -43,9 +38,12 @@ export const useHandleAssetStock = ({
 }: UseHandleAssetStockParams) => {
   const { mutate: originCreateAssetStockParent } =
     usePostAssetStockParent(itemNameList);
+  const { mutate: putAssetStock } = usePutAssetStock();
   const { mutate: originPostAssetStockSub } = usePostAssetStockSub();
   const { mutate: deleteAssetStockSub } = useDeleteAssetStockSub();
   const { mutate: deleteAssetStockParent } = useDeleteAssetStockParent();
+
+  const clientSubStock = useClientSubStock();
 
   const createAssetStockParent = useDebounce(originCreateAssetStockParent, 500);
 
@@ -55,11 +53,6 @@ export const useHandleAssetStock = ({
   const queryClient = useQueryClient();
 
   const addEmptyParentColumn = () => {
-    if (!accessToken) {
-      setIsOpenLoginModal(true);
-      return;
-    }
-
     const emptyStock = createEmptyStockAsset();
 
     queryClient.setQueryData(keyStore.assetStock.getSummary.queryKey, () => {
@@ -106,13 +99,55 @@ export const useHandleAssetStock = ({
     deleteAssetStockSub({ accessToken: accessToken, id });
   };
 
-  const handleValueChange = (key: string, value: any, id: number) => {
+  const handleValueChange = (key: string, value: unknown, id: number) => {
     if (!accessToken) {
       setIsOpenLoginModal(true);
       return;
     }
 
+    clientSubStock.update(id, key, value);
+
+    if (key === "거래가") {
+      clientSubStock.update(id, "주식통화", currencySetting);
+    }
+
     setErrorInfo(null);
+
+    // 1. stock_code 를 찾는다.
+    const stockName = tableData.find((stock) => stock.id === id)?.종목명;
+
+    if (!stockName) {
+      setErrorInfo({
+        field: "종목명",
+        rowId: id,
+        message: "종목명이 없어요.",
+      });
+      return;
+    }
+
+    const stockItem = itemNameList.find((item) => item.name_kr === stockName);
+
+    if (!stockItem) {
+      setErrorInfo({
+        field: "종목명",
+        rowId: id,
+        message: "잘못된 종목이에요.",
+      });
+      return;
+    }
+
+    // 2. 어떤 필드가 변경되었는지 찾고 그에 상응하는 key 값으로 변경한다.
+    const parsedKey = parseAssetStockKeyToJsonKey(key);
+
+    putAssetStock({
+      body: {
+        purchase_currency_type: key === "거래가" ? currencySetting : undefined,
+        [parsedKey]: value,
+        stock_code: stockItem?.code,
+        id,
+      },
+      accessToken,
+    });
   };
 
   const handleDeleteAssetStockParent = (id: string) => {

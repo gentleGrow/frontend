@@ -110,7 +110,7 @@ const SortingButton = ({ sorting, isActive, onClick }: SortingButtonProps) => {
 
   return (
     <button
-      className={cn("z-50 group-hover:block", isActive ? "block" : "hidden")}
+      className={cn("z-50 group-hover:block", isActive ? "block" : "hidden", "", "", "",cn())}
       type="button"
       onPointerDown={(e) => {
         e.preventDefault();

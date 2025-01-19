@@ -29,6 +29,12 @@ const config: Config = {
         },
       },
       colors: {
+        "badge-sell-background": "rgba(10, 108, 255, 0.2)",
+        "badge-sell-midground": "rgba(10, 108, 255, 0.5)",
+        "badge-sell-foreground": "rgba(10, 108, 255, 1)",
+        "badge-buy-background": "rgba(248, 74, 74, 0.2)",
+        "badge-buy-midground": "rgba(248, 74, 74, 0.5)",
+        "badge-buy-foreground": "rgba(248, 74, 74, 1)",
         alert: "#F84A4A",
         decrease: "#0A6CFF",
         increaseBackground: "#FFECEC",

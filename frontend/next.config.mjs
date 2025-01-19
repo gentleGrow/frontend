@@ -1,11 +1,9 @@
-import { createVanillaExtractPlugin } from "@vanilla-extract/next-plugin";
 import path from "path";
 import { fileURLToPath } from "url";
 import { withSentryConfig } from "@sentry/nextjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const withVanillaExtract = createVanillaExtractPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -17,6 +15,13 @@ const nextConfig = {
       },
     ];
   },
+  experimental: {
+    turbo: {
+      resolveAlias: {
+        "@": path.resolve(__dirname, "src"), // @를 src 폴더로 매핑
+      }
+    }
+  },
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
@@ -26,7 +31,7 @@ const nextConfig = {
   },
 };
 
-export default withVanillaExtract(withSentryConfig(nextConfig, {
+const sentryConfig = withSentryConfig(nextConfig, {
   org: "gaemischool",
   project: "front",
 
@@ -34,4 +39,6 @@ export default withVanillaExtract(withSentryConfig(nextConfig, {
   authToken: process.env.SENTRY_AUTH_TOKEN,
 
   silent: false, // Can be used to suppress logs
-}));
+});
+
+export default sentryConfig;
