@@ -1,7 +1,7 @@
-import { fetchWithTimeout, getBaseUrl } from "@/shared";
+import { fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
 
 export const putAssetField = async (accessToken: string, newFields: string[]) =>
-  fetchWithTimeout(`${getBaseUrl()}/api/v1/asset-field`, {
+  fetchWithTimeout(`${SERVICE_SERVER_URL}/api/v1/asset-field`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
