@@ -30,7 +30,7 @@ export const usePutAssetStock = () => {
     onSuccess: async (data, variables) => {
       const response = (await data.json()) as {
         status_code: number;
-        content: string;
+        detail: string;
         field: string;
       };
 
@@ -41,7 +41,7 @@ export const usePutAssetStock = () => {
         setCellError({
           rowId: variables.body.id,
           field: response.field,
-          message: response.content,
+          message: response.detail,
         });
       }
     },
