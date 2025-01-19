@@ -1,10 +1,11 @@
-"use client";
+import { ReactNode } from "react";
+
 export default function FloatingButton({
   onClick,
   children,
 }: {
   onClick: () => void;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <button

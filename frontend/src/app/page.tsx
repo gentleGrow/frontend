@@ -13,6 +13,9 @@ import {
 } from "@/widgets";
 import FinishDeactivatedDialog from "@/widgets/deactivate-widget/ui/FinishDeactivatedDialog";
 import JoinDialog from "@/widgets/join-dialog/ui/JoinDialog";
+import { Suspense } from "react";
+
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   return (
@@ -46,7 +49,9 @@ export default async function Home() {
         </div>
       </div>
       <HomeGuestAccessGuideButton />
-      <FinishDeactivatedDialog />
+      <Suspense>
+        <FinishDeactivatedDialog />
+      </Suspense>
       <JoinDialog />
     </div>
   );

@@ -189,7 +189,7 @@ export default function LineChart({
         chartInstance.dispose();
       };
     }
-  }, [data]);
+  }, [data, type]);
 
   return (
     <div

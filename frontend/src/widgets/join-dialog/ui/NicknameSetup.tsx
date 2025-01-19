@@ -1,5 +1,5 @@
 import { Input, PrimaryButton } from "@/shared";
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import {
   DialogClose,
   DialogContent,
@@ -12,7 +12,6 @@ import hasSpecialChar from "../utils/hasSpecialChar";
 import updateNickname from "../api/updateNickname";
 import debounce from "lodash.debounce";
 import checkValidateNickname from "../api/checkValidateNickname";
-import { revalidatePath } from "next/cache";
 import { useRouter } from "next/navigation";
 
 export default function NicknameSetup({

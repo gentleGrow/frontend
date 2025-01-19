@@ -18,6 +18,6 @@ export const Default: Story = {
   args: {},
 };
 
-export const selectedItem: Story = {
+export const SelectedItem: Story = {
   args: { selectedItem: "홈" },
 };
