@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useId, useState } from "react";
+import React, { useEffect, useId, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   commaizeNumber,
@@ -40,9 +40,15 @@ const NumberInput = ({
   const id = useId();
   const [isFocused, setIsFocused] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [localValue, setLocalValue] = useState(value); // 내부 상태 추가
 
-  if (type === "ratio") {
-    if (!autoFill) assert("비율 타입은 autoFill 이 true 여야 합니다.");
+  // 컴포넌트가 새로운 value prop을 받았을 때 localValue 업데이트
+  useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+
+  if (type === "ratio" && !autoFill) {
+    assert("비율 타입은 autoFill 이 true 여야 합니다.");
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,29 +62,31 @@ const NumberInput = ({
     if (containsInvalidInput(target)) {
       setError(new Error("숫자만 입력해 주세요."));
     }
-    onChange?.(targetValue ?? "");
+
+    setLocalValue(targetValue ?? ""); // onChange 대신 localValue 업데이트
   };
 
   const formatValue = () => {
-    if (type === "price") {
-      if (!value) return "";
-      const price = value;
-      const prefix = region === "KRW" ? "₩ " : "$ ";
+    const valueToFormat = isFocused ? localValue : value; // 포커스 상태에 따라 다른 값 사용
 
-      const commizedValue = commaizeNumber(price);
-      return prefix + commizedValue;
+    if (!valueToFormat && valueToFormat !== "0") return "";
+
+    if (type === "price") {
+      const prefix = region === "KRW" ? "₩ " : "$ ";
+      return prefix + commaizeNumber(valueToFormat);
     }
 
     if (type === "amount") {
-      if (!value) return "";
-      return commaizeNumber(value);
+      return commaizeNumber(valueToFormat);
     }
 
     if (type === "ratio") {
-      if (value === undefined) return;
-      const prefix = Number(value) > 0 ? "+" : "";
-      return prefix + fixedNumberIfNeeds(Number(value)) + "%";
+      const numValue = Number(valueToFormat);
+      const prefix = numValue > 0 ? "+" : "";
+      return prefix + fixedNumberIfNeeds(numValue) + "%";
     }
+
+    return valueToFormat; // 기본값 처리
   };
 
   return (
@@ -106,6 +114,10 @@ const NumberInput = ({
         onChange={handleChange}
         onFocus={(e) => {
           setIsFocused(true);
+          if (type === "price" && !localValue) {
+            const prefix = region === "KRW" ? "₩ " : "$ ";
+            e.currentTarget.value = prefix;
+          }
         }}
         onClick={(e) => {
           if (type === "price" && !value) {
@@ -116,7 +128,13 @@ const NumberInput = ({
         onBlur={(e) => {
           setIsFocused(false);
           setError(null);
-          if (type === "price" && !value) {
+
+          // onBlur 에서 부모 컴포넌트에 값 전달
+          if (!error) {
+            onChange?.(localValue);
+          }
+
+          if (type === "price" && !localValue) {
             e.currentTarget.value = "";
           }
         }}
