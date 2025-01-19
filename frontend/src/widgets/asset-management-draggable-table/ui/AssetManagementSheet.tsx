@@ -10,7 +10,7 @@ import { useAtom } from "jotai/index";
 import { motion } from "framer-motion";
 import { allField } from "@/widgets/asset-management-draggable-table/constants/allField";
 import { ceil } from "es-toolkit/compat";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 import AssetManagementSheetFooter from "@/widgets/asset-management-draggable-table/ui/AssetManagementSheetFooter";
 import { useHandleAssetStockField } from "@/widgets/asset-management-draggable-table/hooks/useHandleAssetStockField";
@@ -104,6 +104,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
 
   const [currentSorting, setCurrentSorting] = useAtom(currentSortingTypeAtom);
   const [sortingField, setSortingField] = useAtom(sortingFieldAtom);
+  const setCellError = useSetAtom(cellErrorAtom);
 
   useInitializeAtoms();
 
@@ -474,6 +475,13 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
               return (
                 <NumberInput
                   value={value ?? 0}
+                  onError={(message) => {
+                    setCellError({
+                      message,
+                      field: "수량",
+                      rowId: id,
+                    });
+                  }}
                   onChange={(value) => {
                     if (value !== undefined) {
                       handleValueChange(key, +value, id as number);
@@ -640,6 +648,13 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                   variants="default"
                   onChange={(value) => {
                     handleValueChange(key, value, id as number);
+                  }}
+                  onError={(message) => {
+                    setCellError({
+                      message,
+                      field: "수량",
+                      rowId: id,
+                    });
                   }}
                 />
               );

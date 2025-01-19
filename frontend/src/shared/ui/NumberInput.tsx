@@ -26,6 +26,7 @@ interface NumberInputProps {
   region?: "USD" | "KRW";
   autoFill?: boolean;
   variants?: keyof typeof ColorVariants;
+  onError?: (message: string) => void;
 }
 
 const NumberInput = ({
@@ -36,10 +37,10 @@ const NumberInput = ({
   region,
   autoFill,
   variants = "default",
+  onError,
 }: NumberInputProps) => {
   const id = useId();
   const [isFocused, setIsFocused] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
   const [localValue, setLocalValue] = useState(value); // 내부 상태 추가
 
   // 컴포넌트가 새로운 value prop을 받았을 때 localValue 업데이트
@@ -52,15 +53,12 @@ const NumberInput = ({
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (error) {
-      setError(null);
-    }
     let target = e.currentTarget.value;
 
     const targetValue = extractNumber(target);
 
     if (containsInvalidInput(target)) {
-      setError(new Error("숫자만 입력해 주세요."));
+      onError?.("숫자만 입력해 주세요.");
     }
 
     setLocalValue(targetValue ?? ""); // onChange 대신 localValue 업데이트
@@ -94,8 +92,6 @@ const NumberInput = ({
       htmlFor={id}
       className={cn(
         "relative flex h-full w-full flex-wrap items-center px-2.5",
-        isFocused && !error && "rounded-[4px] border border-green-60",
-        error && "rounded-[4px] border border-alert",
         ColorVariants[variants],
       )}
     >
@@ -127,46 +123,12 @@ const NumberInput = ({
         }}
         onBlur={(e) => {
           setIsFocused(false);
-          setError(null);
-
-          // onBlur 에서 부모 컴포넌트에 값 전달
-          if (!error) {
-            onChange?.(localValue);
-          }
 
           if (type === "price" && !localValue) {
             e.currentTarget.value = "";
           }
         }}
       />
-      {error && (
-        <p className="absolute -top-[25px] left-0 z-50 flex min-w-[123px] flex-row items-center gap-0.5 rounded-[4px] bg-alert p-1 text-[10px] font-medium text-alert">
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle cx="8" cy="8" r="5.5" fill="white" stroke="#F84A4A" />
-            <rect
-              x="7.375"
-              y="4.38672"
-              width="1.25"
-              height="5"
-              fill="#F84A4A"
-            />
-            <rect
-              x="7.375"
-              y="10.3633"
-              width="1.25"
-              height="1.25"
-              fill="#F84A4A"
-            />
-          </svg>
-          <span className="text-white">{error.message}</span>
-        </p>
-      )}
     </label>
   );
 };
