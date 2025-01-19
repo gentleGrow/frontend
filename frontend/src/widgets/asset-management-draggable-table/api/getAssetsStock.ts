@@ -14,6 +14,8 @@ export const getAssetsStock = async (accessToken: string | null) => {
     return (await mockData.json()) as AssetManagementResponse;
   }
 
+  console.log("SERVICE_SERVER_URL: ", SERVICE_SERVER_URL);
+
   const response = await fetchWithTimeout(
     `${SERVICE_SERVER_URL}/api/asset/v1/assetstock`,
     {
