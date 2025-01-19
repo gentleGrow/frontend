@@ -276,6 +276,10 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             value = exchange(value, wonExchange);
           }
 
+          if (priceInputFields.includes(key)) {
+            value = ceil(value, currentCurrency === "KRW" ? 0 : 2);
+          }
+
           switch (isParent && key) {
             case "종목명":
               return isTempId(currentRow?.id + "") ? (
@@ -314,8 +318,8 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             case "수량":
               return (
                 <NumberInput
-                  value={data}
-                  placeholder={!data ? "0" : ""}
+                  value={value}
+                  placeholder={!value ? "0" : ""}
                   type="amount"
                   variants={"default"}
                   autoFill
@@ -325,7 +329,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
               return (
                 <div className="pointer-events-none flex h-full w-full touch-none flex-row items-center justify-start bg-gray-5 px-[9px] text-gray-50">
                   <DatePicker
-                    date={data ? new Date(data) : null}
+                    date={value ? new Date(value) : null}
                     onChange={() => {}}
                   />
                 </div>
@@ -337,7 +341,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             case "현재가":
               return (
                 <NumberInput
-                  value={ceil(data ?? 0) + ""}
+                  value={value}
                   type={fieldNumberType(key)}
                   placeholder={"₩ 0"}
                   variants="gray-light"
@@ -347,20 +351,20 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             case "배당금":
               return (
                 <NumberInput
-                  value={ceil(data) + ""}
+                  value={value}
                   type={fieldNumberType(key)}
-                  region={"KRW"}
+                  region={currentCurrency}
                   placeholder={
-                    data === undefined
+                    value === undefined
                       ? "자동 계산 필드입니다."
-                      : data === 0
+                      : value === 0
                         ? "배당금이 없는 종목이에요."
                         : ""
                   }
                   variants={
-                    data === undefined
+                    value === undefined
                       ? "gray-light"
-                      : data === 0
+                      : value === 0
                         ? "gray-dark"
                         : "default"
                   }
@@ -399,19 +403,19 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             case "수익률":
               return (
                 <NumberInput
-                  value={data ?? undefined}
+                  value={value ?? undefined}
                   placeholder="자동 계산 필드입니다."
                   type={fieldNumberType(key)}
                   variants={
-                    data === null
+                    value === null
                       ? "gray-light"
-                      : data === undefined
+                      : value === undefined
                         ? "gray-light"
-                        : data === 0
+                        : value === 0
                           ? "default"
-                          : data > 0
+                          : value > 0
                             ? "increase"
-                            : data < 0
+                            : value < 0
                               ? "decrease"
                               : "default"
                   }
@@ -421,7 +425,8 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             case "수익금":
               return (
                 <NumberInput
-                  value={ceil(data ?? 0) + ""}
+                  value={value}
+                  region={currentCurrency}
                   type={fieldNumberType(key)}
                   placeholder={"₩ 0"}
                   variants="gray-light"
@@ -431,7 +436,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             case "거래금":
               return (
                 <NumberInput
-                  value={ceil(data ?? 0) + ""}
+                  value={value}
                   type={fieldNumberType(key)}
                   placeholder={"₩ 0"}
                   variants="gray-light"
@@ -656,10 +661,8 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
         onAddRow={addEmptyParentColumn}
         onDeleteRow={(id: number | string) => {
           if (typeof id === "number") {
-            // TODO: 서브행 삭제
             handleDeleteAssetStockSub(id);
           } else {
-            // TODO: 부모행 삭제
             handleDeleteAssetStockParent(id);
           }
         }}
