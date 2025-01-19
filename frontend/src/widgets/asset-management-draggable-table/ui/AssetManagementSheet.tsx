@@ -264,6 +264,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             priceInputFields.includes(key)
           ) {
             value = exchange(value, dollarExchange);
+            console.log(value);
           }
 
           switch (isParent && key) {

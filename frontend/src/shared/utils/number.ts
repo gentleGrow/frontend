@@ -68,6 +68,13 @@ export function containsInvalidInput(value: string): boolean {
   return !isNumber && !isDot && !isComma && !isMinus && !isPlus;
 }
 
-export function exchange(value: string | number, exchangeRate: number) {
-  return ceil(value, 0);
+export function exchange(
+  value: string | number | undefined | null,
+  exchangeRate: number,
+) {
+  if (value === undefined || value === null) {
+    return value;
+  }
+
+  return ceil(Number(value) * exchangeRate, 2);
 }
