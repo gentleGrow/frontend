@@ -1,4 +1,3 @@
-"use client";
 import { LineButton, PrimaryButton } from "@/shared";
 import { useState } from "react";
 import {

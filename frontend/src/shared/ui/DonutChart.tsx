@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as echarts from "echarts";
 import { DonutChartData } from "../types/charts";
 
@@ -199,7 +199,7 @@ export default function DonutChart({
     };
 
     chartInstanceRef.current?.setOption(option);
-  }, [data]);
+  }, [data, chartName, isPortfolio, totalCurrentAmount]);
 
   useEffect(() => {
     setWindowWidth(window.innerWidth);
@@ -231,7 +231,7 @@ export default function DonutChart({
         chartInstanceRef.current = null;
       };
     }
-  }, [data, windowWidth, isPortfolio]);
+  }, [data, windowWidth, isPortfolio, setOption]);
 
   const chartHeight = isPortfolio
     ? 128 + 2 * 25 - 25 + 16

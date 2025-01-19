@@ -1,12 +1,16 @@
-import { getUser } from "@/entities";
-import { keyStore } from "@/shared/lib/query-keys";
-import { MyPage } from "@/widgets";
+import { redirect } from "next/navigation";
+
 import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
-import { redirect } from "next/navigation";
+
+import { MyPage } from "@/widgets";
+import { getUser } from "@/entities";
+import { keyStore } from "@/shared/lib/query-keys";
+
+export const dynamic = "force-dynamic";
 
 export default async function Page() {
   const queryClient = new QueryClient();

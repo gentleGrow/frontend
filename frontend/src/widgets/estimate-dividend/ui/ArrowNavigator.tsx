@@ -1,4 +1,3 @@
-"use client";
 import { LeftArrowButton, RightArrowButton } from "@/shared";
 
 export default function ArrowNavigator({
