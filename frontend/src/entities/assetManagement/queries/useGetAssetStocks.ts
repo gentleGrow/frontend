@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { keyStore } from "@/shared/lib/query-keys";
-import { getAssetsStock } from "@/widgets/asset-management-draggable-table/api/getAssetsStock";
+import { getAssetsStock } from "@/entities/assetManagement/apis/getAssetsStock";
 import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
 import { cloneDeep } from "es-toolkit";
 
