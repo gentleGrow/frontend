@@ -2,7 +2,7 @@
 
 import Table from "@/shared/ui/table/Table";
 import { FC, useMemo, useState } from "react";
-import { useGetAssetStocks } from "@/widgets/asset-management-draggable-table/quries/useGetAssetStocks";
+import { useGetAssetStocks } from "@/entities/assetManagement/queries/useGetAssetStocks";
 import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
 import { DatePicker, SegmentedButton, SegmentedButtonGroup } from "@/shared";
 import NumberInput from "@/shared/ui/NumberInput";
