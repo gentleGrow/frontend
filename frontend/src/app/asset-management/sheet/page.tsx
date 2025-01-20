@@ -5,6 +5,8 @@ import AssetManagementAccessGuideButton from "@/widgets/asset-management-guest-a
 import { cookies } from "next/headers";
 import { ACCESS_TOKEN } from "@/shared/constants/cookie";
 
+export const dynamic = "force-dynamic";
+
 const Sheet = async () => {
   const accessToken = cookies()?.get(ACCESS_TOKEN)?.value;
   const response = await Promise.all([
