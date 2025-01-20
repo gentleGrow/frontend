@@ -1,3 +1,3 @@
 export const getServiceUrl = () => {
-  return "http://api.gaemischool.com:8000";
+  return process.env.NEXT_PUBLIC_API_URL;
 };
