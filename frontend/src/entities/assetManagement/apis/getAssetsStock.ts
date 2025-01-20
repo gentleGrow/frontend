@@ -1,12 +1,9 @@
-import { fetchWithTimeout } from "@/shared";
 import { AssetManagementResponse } from "@/widgets/asset-management-draggable-table/types/table";
 import { getServiceUrl } from "@/shared/utils/getServiceUrl";
 
 export const getAssetsStock = async (accessToken: string | null) => {
-  console.log("getServiceUrl: ", getServiceUrl());
-
   if (!accessToken) {
-    const mockData = await fetchWithTimeout(
+    const mockData = await fetch(
       `${getServiceUrl()}/api/asset/v1/sample/assetstock`,
     );
 
@@ -17,14 +14,11 @@ export const getAssetsStock = async (accessToken: string | null) => {
     return (await mockData.json()) as AssetManagementResponse;
   }
 
-  const response = await fetchWithTimeout(
-    `${getServiceUrl()}/api/asset/v1/assetstock`,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+  const response = await fetch(`${getServiceUrl()}/api/asset/v1/assetstock`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
     },
-  );
+  });
 
   if (!response.ok) {
     throw new Error(`${response.status}: ${await response.json()}`);
