@@ -7,6 +7,15 @@ const __dirname = path.dirname(__filename);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  rewrites: async () => {
+
+    return [
+      {
+        source: "/api/:path*",
+        destination: "http://api.gaemischool.com:8000/api/:path*",
+      }
+    ]
+  },
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
