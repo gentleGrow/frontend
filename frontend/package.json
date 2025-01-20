@@ -25,6 +25,7 @@
     "@toss/async-boundary": "^1.5.2",
     "@yarnpkg/plugin-node-modules": "^3.0.0-rc.9",
     "add": "^2.0.6",
+    "axios": "^1.7.9",
     "chart.js": "^4.4.4",
     "class-variance-authority": "^0.7.0",
     "classnames": "^2.5.1",
