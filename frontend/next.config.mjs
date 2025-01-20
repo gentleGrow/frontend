@@ -19,7 +19,7 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "http://api.gaemischool.com:8000/:path"
+        destination: "http://api.gaemischool.com:8000/api/:path"
       }
     ]
   }
