@@ -14,16 +14,7 @@ const nextConfig = {
     };
     return config;
   },
-
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: "http://api.gaemischool.com:8000/api/:path"
-      }
-    ]
-  }
-};
+}
 
 const sentryConfig = withSentryConfig(nextConfig, {
   org: "gaemischool",
