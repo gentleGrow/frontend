@@ -2,13 +2,13 @@
 
 import Table from "@/shared/ui/table/Table";
 import { FC, useMemo, useState } from "react";
-import { useGetAssetStocks } from "@/entities/assetManagement/queries/useGetAssetStocks";
-import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
+import { useGetAssetStocks } from "@/entities/asset-management/queries/useGetAssetStocks";
+import { ItemName } from "@/entities/asset-management/apis/getItemNameList";
 import { DatePicker, SegmentedButton, SegmentedButtonGroup } from "@/shared";
 import NumberInput from "@/shared/ui/NumberInput";
 import { useAtom } from "jotai/index";
 import { motion } from "framer-motion";
-import { allField } from "@/widgets/asset-management-draggable-table/constants/allField";
+import { allField } from "@/entities/asset-management/constants/allField";
 import { ceil } from "es-toolkit/compat";
 import { useAtomValue, useSetAtom } from "jotai";
 import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
@@ -20,17 +20,17 @@ import { currentSortingTypeAtom } from "@/widgets/asset-management-draggable-tab
 import { sortingFieldAtom } from "@/widgets/asset-management-draggable-table/atoms/sortingFieldAtom";
 import AssetManagementSheetHeader from "@/widgets/asset-management-draggable-table/ui/AssetManagementSheetHeader";
 import { useAssetManagementSheetWidth } from "@/widgets/asset-management-draggable-table/hooks/useAssetManagementSheetWidth";
-import { CurrencyType } from "@/widgets/asset-management-draggable-table/constants/currencyType";
+import { CurrencyType } from "@/features/asset-management/consts/currencyType";
 import { useHandleAssetStock } from "@/widgets/asset-management-draggable-table/hooks/useHandleAssetStock";
-import { useInitializeAtoms } from "@/widgets/asset-management-draggable-table/atoms/useInitializeAtoms";
-import { ColumnType } from "@/features/assetManagement/consts/column-type";
+import { useInitializeAtoms } from "@/widgets/asset-management-draggable-table/hooks/useInitializeAtoms";
+import { ColumnType } from "@/features/asset-management/consts/column-type";
 import {
   StockAssetParentWithType,
   StockAssetSubWithType,
-} from "@/widgets/asset-management-draggable-table/types/table";
+} from "@/entities/asset-management/types/asset-management";
 import AccordionToggleButton from "@/shared/ui/AccordionToggleButton";
 import SellBuyButton from "@/widgets/asset-management-draggable-table/ui/SellBuyButton";
-import { isTempId } from "@/entities/assetManagement/utils/tempIdUtils";
+import { isTempId } from "@/entities/asset-management/utils/tempIdUtils";
 import ItemNameCell from "@/widgets/asset-management-draggable-table/ui/ItemNameCell";
 import { format } from "date-fns";
 import AccountTypeCell from "@/widgets/asset-management-draggable-table/ui/AccountTypeCell";

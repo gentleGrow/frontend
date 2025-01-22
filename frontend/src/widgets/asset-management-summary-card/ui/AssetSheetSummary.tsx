@@ -2,7 +2,7 @@
 
 import AssetManagementSummaryCard from "@/widgets/asset-management-summary-card/ui/AssetManagementSummaryCard";
 import AssetManagementMobileSummary from "@/widgets/asset-management-summary-card/ui/AssetManagementMobileSummary";
-import { useGetAssetStocks } from "@/entities/assetManagement/queries/useGetAssetStocks";
+import { useGetAssetStocks } from "@/entities/asset-management/queries/useGetAssetStocks";
 
 interface AssetSheetSummaryProps {
   accessToken: string | null;

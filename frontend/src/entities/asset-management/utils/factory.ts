@@ -1,5 +1,5 @@
-import { StockAsset } from "@/widgets/asset-management-draggable-table/types/table";
-import { createEmptyStockId } from "@/entities/assetManagement/utils/tempIdUtils";
+import { StockAsset } from "@/entities/asset-management/types/asset-management";
+import { createEmptyStockId } from "@/entities/asset-management/utils/tempIdUtils";
 
 export function createEmptyStockAsset(): StockAsset {
   return {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { fieldIemFactory } from "@/widgets/asset-management-draggable-table/utils/fieldItemFactory";
-import { usePutAssetField } from "@/entities/assetManagement/queries/usePutAssetField";
-import { allField } from "@/widgets/asset-management-draggable-table/constants/allField";
+import { usePutAssetField } from "@/entities/asset-management/queries/usePutAssetField";
+import { allField } from "@/entities/asset-management/constants/allField";
 
 interface UseHandleAssetStockFieldParams {
   fieldsList: {

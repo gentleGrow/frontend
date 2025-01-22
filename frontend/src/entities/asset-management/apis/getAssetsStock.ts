@@ -1,4 +1,4 @@
-import { AssetManagementResponse } from "@/widgets/asset-management-draggable-table/types/table";
+import { AssetStock } from "@/entities/asset-management/types/asset-management";
 import { baseAxios } from "@/shared/lib/axios";
 import { getServiceServerUrl } from "@/shared/utils/getServiceServerUrl";
 
@@ -8,7 +8,7 @@ export const getAssetsStock = async (accessToken: string | null) => {
       `${getServiceServerUrl()}/api/asset/v1/sample/assetstock`,
     );
 
-    return (await mockData.data) as AssetManagementResponse;
+    return (await mockData.data) as AssetStock;
   }
 
   const response = await baseAxios.get(
@@ -20,5 +20,5 @@ export const getAssetsStock = async (accessToken: string | null) => {
     },
   );
 
-  return (await response.data) as AssetManagementResponse;
+  return (await response.data) as AssetStock;
 };

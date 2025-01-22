@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
+import { ItemName } from "@/entities/asset-management/apis/getItemNameList";
 import { cn } from "@/lib/utils";
 import { createPortal } from "react-dom";
 import Fuse from "fuse.js";

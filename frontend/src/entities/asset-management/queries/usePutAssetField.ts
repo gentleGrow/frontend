@@ -1,7 +1,7 @@
-import { putAssetField } from "@/entities/assetManagement/apis/putAssetField";
+import { putAssetField } from "@/entities/asset-management/apis/putAssetField";
 import { keyStore } from "@/shared/lib/query-keys";
 import { useSetAtom } from "jotai";
-import { lastUpdatedAtAtom } from "@/entities/assetManagement/atoms/lastUpdatedAtAtom";
+import { lastUpdatedAtAtom } from "@/entities/asset-management/atoms/lastUpdatedAtAtom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const usePutAssetField = () => {

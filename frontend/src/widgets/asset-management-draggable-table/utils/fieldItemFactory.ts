@@ -1,5 +1,5 @@
 import { fieldIsRequired } from "@/widgets/asset-management-draggable-table/utils/fieldIsRequired";
-import { allField } from "@/widgets/asset-management-draggable-table/constants/allField";
+import { allField } from "@/entities/asset-management/constants/allField";
 
 export const fieldIemFactory = (
   field: (typeof allField)[number],

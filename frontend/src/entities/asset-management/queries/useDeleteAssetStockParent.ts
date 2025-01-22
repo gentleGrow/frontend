@@ -2,8 +2,8 @@ import { keyStore } from "@/shared/lib/query-keys";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { lastUpdatedAtAtom } from "../atoms/lastUpdatedAtAtom";
-import { deleteAssetStockParent } from "@/entities/assetManagement/apis/deleteAssetStockParent";
-import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
+import { deleteAssetStockParent } from "@/entities/asset-management/apis/deleteAssetStockParent";
+import { ItemName } from "@/entities/asset-management/apis/getItemNameList";
 
 export const useDeleteAssetStockParent = () => {
   const queryClient = useQueryClient();
