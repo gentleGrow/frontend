@@ -16,6 +16,7 @@ export default function SheetError({ error }: { error: Error }) {
       <p className="text-body-1 text-gray-60">
         새로고침 후 다시 시도해 주세요.
       </p>
+      <pre>{error.message}</pre>
     </div>
   );
 }

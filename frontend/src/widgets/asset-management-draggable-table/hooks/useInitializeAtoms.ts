@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useSetAtom } from "jotai";
-import { cellErrorAtom } from "./cellErrorAtom";
-import { currentSortingTypeAtom } from "./currentSortingTypeAtom";
-import { sortingFieldAtom } from "./sortingFieldAtom";
+import { cellErrorAtom } from "../atoms/cellErrorAtom";
+import { currentSortingTypeAtom } from "../atoms/currentSortingTypeAtom";
+import { sortingFieldAtom } from "../atoms/sortingFieldAtom";
 
 export const useInitializeAtoms = () => {
   const setCellErrorAtom = useSetAtom(cellErrorAtom);

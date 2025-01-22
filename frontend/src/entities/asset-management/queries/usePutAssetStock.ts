@@ -3,11 +3,11 @@ import { useMutation } from "@tanstack/react-query";
 import {
   putAssetStock,
   PutAssetStockRequestBody,
-} from "@/entities/assetManagement/apis/putAssetStock";
+} from "@/entities/asset-management/apis/putAssetStock";
 import { useSetAtom } from "jotai";
-import { lastUpdatedAtAtom } from "@/entities/assetManagement/atoms/lastUpdatedAtAtom";
+import { lastUpdatedAtAtom } from "@/entities/asset-management/atoms/lastUpdatedAtAtom";
 import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
-import { useInvalidateAssetStock } from "@/entities/assetManagement/queries/useInvalidateAssetStock";
+import { useInvalidateAssetStock } from "@/entities/asset-management/queries/useInvalidateAssetStock";
 import { useDebounce } from "@toss/react";
 
 export const usePutAssetStock = () => {

@@ -1,27 +1,26 @@
 import {
-  AssetManagementResponse,
+  AssetStock,
   StockAssetParentWithType,
   StockAssetSubWithType,
-} from "@/widgets/asset-management-draggable-table/types/table";
+} from "@/entities/asset-management/types/asset-management";
+
 import { keyStore } from "@/shared/lib/query-keys";
-import { CurrencyType } from "@/widgets/asset-management-draggable-table/constants/currencyType";
+import { CurrencyType } from "@/features/asset-management/consts/currencyType";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePostAssetStockParent } from "@/entities/assetManagement/queries/usePostAssetStockParent";
-import { useDeleteAssetStockSub } from "@/entities/assetManagement/queries/useDeleteAssetStockSub";
+import { usePostAssetStockParent } from "@/entities/asset-management/queries/usePostAssetStockParent";
+import { useDeleteAssetStockSub } from "@/entities/asset-management/queries/useDeleteAssetStockSub";
 import { useSetAtom } from "jotai/index";
 import { loginModalAtom } from "@/features";
 import { useDebounce } from "@/shared/hooks/useDebounce";
-import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
+import { ItemName } from "@/entities/asset-management/apis/getItemNameList";
 import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
-import { createEmptyStockAsset } from "@/entities/assetManagement/utils/factory";
-import { usePostAssetStockSub } from "@/entities/assetManagement/queries/usePostAssetStockSub";
-import { isTempId } from "@/entities/assetManagement/utils/tempIdUtils";
-import { useDeleteAssetStockParent } from "@/entities/assetManagement/queries/useDeleteAssetStockParent";
-import { parseAssetStockKeyToJsonKey } from "@/entities/assetManagement/utils/parseAssetStockKeyToJsonKey";
-import { usePutAssetStock } from "@/entities/assetManagement/queries/usePutAssetStock";
-import { useClientSubStock } from "@/entities/assetManagement/hooks/useClientSubStock";
-
-let tempId = -1;
+import { createEmptyStockAsset } from "@/entities/asset-management/utils/factory";
+import { usePostAssetStockSub } from "@/entities/asset-management/queries/usePostAssetStockSub";
+import { isTempId } from "@/entities/asset-management/utils/tempIdUtils";
+import { useDeleteAssetStockParent } from "@/entities/asset-management/queries/useDeleteAssetStockParent";
+import { parseAssetStockKeyToJsonKey } from "@/entities/asset-management/utils/parseAssetStockKeyToJsonKey";
+import { usePutAssetStock } from "@/entities/asset-management/queries/usePutAssetStock";
+import { useClientSubStock } from "@/entities/asset-management/hooks/useClientSubStock";
 
 interface UseHandleAssetStockParams {
   currencySetting: CurrencyType;
@@ -56,7 +55,7 @@ export const useHandleAssetStock = ({
     const emptyStock = createEmptyStockAsset();
 
     queryClient.setQueryData(keyStore.assetStock.getSummary.queryKey, () => {
-      const prev = queryClient.getQueryData<AssetManagementResponse>(
+      const prev = queryClient.getQueryData<AssetStock>(
         keyStore.assetStock.getSummary.queryKey,
       );
       if (!prev) return;
@@ -160,7 +159,7 @@ export const useHandleAssetStock = ({
       return queryClient.setQueryData(
         keyStore.assetStock.getSummary.queryKey,
         () => {
-          const prev = queryClient.getQueryData<AssetManagementResponse>(
+          const prev = queryClient.getQueryData<AssetStock>(
             keyStore.assetStock.getSummary.queryKey,
           );
           if (!prev) return;
@@ -197,7 +196,7 @@ export const useHandleAssetStock = ({
       return;
     }
 
-    const prev = queryClient.getQueryData<AssetManagementResponse>(
+    const prev = queryClient.getQueryData<AssetStock>(
       keyStore.assetStock.getSummary.queryKey,
     );
 

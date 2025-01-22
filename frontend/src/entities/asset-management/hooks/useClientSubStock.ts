@@ -1,15 +1,15 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { AssetManagementResponse } from "@/widgets/asset-management-draggable-table/types/table";
+import { AssetStock } from "@/entities/asset-management/types/asset-management";
 import { keyStore } from "@/shared/lib/query-keys";
 
 export const useClientSubStock = () => {
   const queryClient = useQueryClient();
 
   const update = (id: number, key: string, value: unknown) => {
-    queryClient.setQueryData<AssetManagementResponse>(
+    queryClient.setQueryData<AssetStock>(
       keyStore.assetStock.getSummary.queryKey,
       () => {
-        const prev = queryClient.getQueryData<AssetManagementResponse>(
+        const prev = queryClient.getQueryData<AssetStock>(
           keyStore.assetStock.getSummary.queryKey,
         );
 

@@ -1,4 +1,4 @@
-import { PutAssetStockRequestBody } from "@/entities/assetManagement/apis/putAssetStock";
+import { PutAssetStockRequestBody } from "@/entities/asset-management/apis/putAssetStock";
 
 type JsonKey = keyof PutAssetStockRequestBody;
 

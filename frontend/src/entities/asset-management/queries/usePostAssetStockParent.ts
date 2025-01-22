@@ -3,12 +3,12 @@ import { keyStore } from "@/shared/lib/query-keys";
 import {
   postAssetStock,
   PostAssetStockRequestBody,
-} from "@/entities/assetManagement/apis/postAssetStock";
+} from "@/entities/asset-management/apis/postAssetStock";
 import { useSetAtom } from "jotai";
-import { lastUpdatedAtAtom } from "@/entities/assetManagement/atoms/lastUpdatedAtAtom";
-import { AssetManagementResponse } from "@/widgets/asset-management-draggable-table/types/table";
+import { lastUpdatedAtAtom } from "@/entities/asset-management/atoms/lastUpdatedAtAtom";
+import { AssetStock } from "@/entities/asset-management/types/asset-management";
 import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
-import { ItemName } from "@/entities/assetManagement/apis/getItemNameList";
+import { ItemName } from "@/entities/asset-management/apis/getItemNameList";
 
 export const usePostAssetStockParent = (itemNames: ItemName[]) => {
   const queryClient = useQueryClient();
@@ -46,7 +46,7 @@ export const usePostAssetStockParent = (itemNames: ItemName[]) => {
         field: string;
       };
 
-      const prevData = queryClient.getQueryData<AssetManagementResponse>(
+      const prevData = queryClient.getQueryData<AssetStock>(
         keyStore.assetStock.getSummary.queryKey,
       );
 
@@ -72,7 +72,7 @@ export const usePostAssetStockParent = (itemNames: ItemName[]) => {
 
         newStock.push(...tempIdColumns);
 
-        queryClient.setQueryData<AssetManagementResponse>(
+        queryClient.setQueryData<AssetStock>(
           keyStore.assetStock.getSummary.queryKey,
           (prev) => {
             if (!prev) return;

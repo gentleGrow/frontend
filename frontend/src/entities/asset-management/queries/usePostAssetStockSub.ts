@@ -4,9 +4,9 @@ import { keyStore } from "@/shared/lib/query-keys";
 import {
   postAssetStock,
   PostAssetStockRequestBody,
-} from "@/entities/assetManagement/apis/postAssetStock";
+} from "@/entities/asset-management/apis/postAssetStock";
 import { useSetAtom } from "jotai";
-import { lastUpdatedAtAtom } from "@/entities/assetManagement/atoms/lastUpdatedAtAtom";
+import { lastUpdatedAtAtom } from "@/entities/asset-management/atoms/lastUpdatedAtAtom";
 import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 
 export const usePostAssetStockSub = () => {
