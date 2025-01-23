@@ -23,10 +23,9 @@ import {
   CellErrorAtom,
 } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 import { cn } from "@/lib/utils";
-import { filedWidth } from "@/widgets/asset-management-draggable-table/constants/fieldWidth";
 import { useSetAtom } from "jotai";
 
-interface FieldState {
+export interface FieldState {
   isRequired: boolean;
   isChecked: boolean;
   name: string;
@@ -43,12 +42,13 @@ export interface TableProps<T extends unknown> {
   onReset?: () => void;
   onDeleteRow: (id: number) => void;
   fixWidth?: boolean;
-  fieldWidth?: (key: string) => number;
+  defaultWidth?: (key: string) => number;
+  minWidth?: (key: string) => number;
   onResize?: (fieldName: string, size: number) => void;
   errorInfo: CellErrorAtom | null;
 }
 
-const Index = <T extends unknown>({
+const Index = <T extends unknown, C extends string[]>({
   fields,
   tableWidth,
   dataset,
@@ -58,7 +58,8 @@ const Index = <T extends unknown>({
   onDeleteRow,
   onReorder,
   onReset,
-  fieldWidth,
+  minWidth,
+  defaultWidth,
   fixWidth = false,
   onResize,
   errorInfo,
@@ -239,8 +240,8 @@ const Index = <T extends unknown>({
             <ResizablePanel
               key={field.name}
               className="-ml-[2px] flex flex-row"
-              defaultSize={filedWidth[field.name] ?? 10}
-              minSize={(filedWidth[field.name] ?? 10) / 2}
+              defaultSize={defaultWidth?.(field.name) ?? 10}
+              minSize={minWidth?.(field.name)}
               onResize={(size) => onResize?.(field.name, size)}
               order={index}
               id={field.name}

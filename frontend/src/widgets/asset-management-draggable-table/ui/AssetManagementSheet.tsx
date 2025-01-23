@@ -37,6 +37,7 @@ import AccountTypeCell from "@/widgets/asset-management-draggable-table/ui/Accou
 import SellBuyToggleButton from "@/widgets/asset-management-draggable-table/ui/SellBuyToggleButton";
 import { priceInputFields } from "@/widgets/asset-management-draggable-table/constants/priceInputFields";
 import { exchange } from "@/shared/utils/number";
+import { filedDefaultWidth } from "@/widgets/asset-management-draggable-table/constants/fieldWidth";
 
 const NumberFieldType = {
   Amount: "amount",
@@ -672,7 +673,8 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
           }
         }}
         tableWidth={tableMinimumWidth}
-        fieldWidth={(key) => fieldSize[key]}
+        defaultWidth={(key) => filedDefaultWidth[key]}
+        minWidth={(key) => (filedDefaultWidth[key] ?? 10) / 2}
         onAddRow={addEmptyParentColumn}
         onDeleteRow={(id: number | string) => {
           if (typeof id === "number") {
@@ -681,7 +683,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             handleDeleteAssetStockParent(id);
           }
         }}
-        onReorder={() => handleChange}
+        onReorder={(newFields) => handleChange(newFields)}
         onReset={handleReset}
         onResize={resizeFieldSize}
       />
