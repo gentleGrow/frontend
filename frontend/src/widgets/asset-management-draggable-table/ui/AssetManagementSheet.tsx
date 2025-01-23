@@ -15,7 +15,6 @@ import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/
 import AssetManagementSheetFooter from "@/widgets/asset-management-draggable-table/ui/AssetManagementSheetFooter";
 import { useHandleAssetStockField } from "@/widgets/asset-management-draggable-table/hooks/useHandleAssetStockField";
 import { parseStockForMultipleCurrency } from "@/widgets/asset-management-draggable-table/utils/parseStockForMultipleCurrency";
-import { numberFields } from "@/widgets/asset-management-draggable-table/constants/numberFields";
 import { currentSortingTypeAtom } from "@/widgets/asset-management-draggable-table/atoms/currentSortingTypeAtom";
 import { sortingFieldAtom } from "@/widgets/asset-management-draggable-table/atoms/sortingFieldAtom";
 import AssetManagementSheetHeader from "@/widgets/asset-management-draggable-table/ui/AssetManagementSheetHeader";
@@ -82,15 +81,27 @@ const defaultFields = [
   },
 ];
 
-const getSortType = (field: string | null): "date" | "number" | "string" => {
-  if (field === null) return "string";
+const getSortType = (
+  field: string | null,
+): "date" | "price" | "amount" | "ratio" | "string" => {
+  if (field === null) {
+    return "string";
+  }
 
-  if (field === "구매일자") {
+  if (field === "매매일자") {
     return "date";
   }
 
-  if (numberFields.includes(field)) {
-    return "number";
+  if (priceInputFields.includes(field)) {
+    return "price";
+  }
+
+  if (field === "수익률") {
+    return "ratio";
+  }
+
+  if (field === "수량") {
+    return "amount";
   }
 
   return "string";
