@@ -7,7 +7,7 @@ import { cloneDeep } from "es-toolkit";
 export const useGetAssetStocks = (
   accessToken: string | null,
   options?: {
-    sortBy: string | null;
+    sortingField: string | null;
     sortOrder: "asc" | "desc";
     type: "date" | "string" | "number";
     itemList: ItemName[];
@@ -24,7 +24,7 @@ export const useGetAssetStocks = (
 
       if (!options) return data;
 
-      if (options.sortBy === null) return data;
+      if (options.sortingField === null) return data;
 
       data.stock_assets.forEach((stockAsset) => {
         stockAsset.sub.sort((a, b) => {
@@ -32,22 +32,22 @@ export const useGetAssetStocks = (
             switch (options.type) {
               case "date":
                 return (
-                  new Date(a[options.sortBy!].value).getTime() -
-                  new Date(b[options.sortBy!].value).getTime()
+                  new Date(a[options.sortingField!]).getTime() -
+                  new Date(b[options.sortingField!]).getTime()
                 );
               case "string":
-                return a[options.sortBy!].value.localeCompare(
-                  b[options.sortBy!].value,
+                return a[options.sortingField!].localeCompare(
+                  b[options.sortingField!],
                 );
               default:
                 const aValue =
                   a.주식통화 === "KRW"
-                    ? a[options.sortBy!].value
-                    : a[options.sortBy!].value * data.won_exchange;
+                    ? a[options.sortingField!]
+                    : a[options.sortingField!] * data.won_exchange;
                 const bValue =
                   b.주식통화 === "KRW"
-                    ? b[options.sortBy!].value
-                    : b[options.sortBy!].value * data.won_exchange;
+                    ? b[options.sortingField!]
+                    : b[options.sortingField!] * data.won_exchange;
 
                 return aValue - bValue;
             }
@@ -56,22 +56,22 @@ export const useGetAssetStocks = (
           switch (options.type) {
             case "date":
               return (
-                new Date(b[options.sortBy!].value).getTime() -
-                new Date(a[options.sortBy!].value).getTime()
+                new Date(b[options.sortingField!].value).getTime() -
+                new Date(a[options.sortingField!].value).getTime()
               );
             case "string":
-              return b[options.sortBy!].value.localeCompare(
-                a[options.sortBy!].value,
+              return b[options.sortingField!].value.localeCompare(
+                a[options.sortingField!].value,
               );
             default:
               const aValue =
                 a.주식통화 === "KRW"
-                  ? a[options.sortBy!].value
-                  : a[options.sortBy!].value * data.won_exchange;
+                  ? a[options.sortingField!].value
+                  : a[options.sortingField!].value * data.won_exchange;
               const bValue =
                 b.주식통화 === "KRW"
-                  ? b[options.sortBy!].value
-                  : b[options.sortBy!].value * data.won_exchange;
+                  ? b[options.sortingField!].value
+                  : b[options.sortingField!].value * data.won_exchange;
 
               return bValue - aValue;
           }

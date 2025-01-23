@@ -103,8 +103,8 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
 }) => {
   const [openedFields, setOpenedFields] = useState<string[]>([]);
 
-  const [currentSorting, setCurrentSorting] = useAtom(currentSortingTypeAtom);
-  const [sortingField, setSortingField] = useAtom(sortingFieldAtom);
+  const [currentSorting] = useAtom(currentSortingTypeAtom);
+  const [sortingField] = useAtom(sortingFieldAtom);
   const setCellError = useSetAtom(cellErrorAtom);
 
   useInitializeAtoms();
@@ -114,7 +114,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
   );
 
   const { data } = useGetAssetStocks(accessToken, {
-    sortBy: sortingField,
+    sortingField: sortingField,
     sortOrder: currentSorting,
     type: getSortType(sortingField),
     itemList: itemNameList,

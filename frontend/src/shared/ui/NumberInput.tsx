@@ -124,9 +124,8 @@ const NumberInput = ({
         onBlur={(e) => {
           setIsFocused(false);
 
-          if (type === "price" && !localValue) {
-            e.currentTarget.value = "";
-          }
+          // onBlur에서 부모 컴포넌트에 값 전달
+          onChange?.(localValue);
         }}
       />
     </label>
