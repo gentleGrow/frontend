@@ -1,10 +1,10 @@
 import { useWindowWidth } from "@/shared/hooks/useWindowWidth";
 import { cellMinimumWidth } from "@/widgets/asset-management-draggable-table/constants/cellMinimumWidth";
 import { useState } from "react";
-import { filedWidth } from "@/widgets/asset-management-draggable-table/constants/fieldWidth";
+import { filedDefaultWidth } from "@/widgets/asset-management-draggable-table/constants/fieldWidth";
 
 export const useAssetManagementSheetWidth = (fieldList: string[]) => {
-  const [fieldSize, setFieldSize] = useState(filedWidth);
+  const [fieldSize, setFieldSize] = useState(filedDefaultWidth);
 
   const windowWidth = useWindowWidth();
 
