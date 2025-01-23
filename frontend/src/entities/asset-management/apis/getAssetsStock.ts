@@ -3,8 +3,6 @@ import { baseAxios } from "@/shared/lib/axios";
 import { getServiceServerUrl } from "@/shared/utils/getServiceServerUrl";
 
 export const getAssetsStock = async (accessToken: string | null) => {
-  console.log("getAssetsStock: ", getServiceServerUrl());
-
   if (!accessToken) {
     const mockData = await baseAxios.get(
       `${getServiceServerUrl()}/api/asset/v1/sample/assetstock`,
