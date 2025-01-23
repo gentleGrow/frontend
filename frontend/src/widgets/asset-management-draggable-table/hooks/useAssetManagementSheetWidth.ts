@@ -22,6 +22,7 @@ export const useAssetManagementSheetWidth = (fieldList: string[]) => {
   };
 
   return {
+    // TODO: fieldSize 로 나중에 리사이즈된 사이즈 영구 저장하는 기능을 구현하기
     fieldSize,
     isFixed,
     tableMinimumWidth,

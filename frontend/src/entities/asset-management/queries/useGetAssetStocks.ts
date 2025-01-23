@@ -7,9 +7,9 @@ import { cloneDeep } from "es-toolkit";
 export const useGetAssetStocks = (
   accessToken: string | null,
   options?: {
-    sortBy: string | null;
+    sortingField: string | null;
     sortOrder: "asc" | "desc";
-    type: "date" | "string" | "number";
+    type: "date" | "string" | "price" | "amount" | "ratio";
     itemList: ItemName[];
   },
 ) => {
@@ -24,7 +24,7 @@ export const useGetAssetStocks = (
 
       if (!options) return data;
 
-      if (options.sortBy === null) return data;
+      if (options.sortingField === null) return data;
 
       data.stock_assets.forEach((stockAsset) => {
         stockAsset.sub.sort((a, b) => {
@@ -32,48 +32,64 @@ export const useGetAssetStocks = (
             switch (options.type) {
               case "date":
                 return (
-                  new Date(a[options.sortBy!].value).getTime() -
-                  new Date(b[options.sortBy!].value).getTime()
+                  new Date(a[options.sortingField!]).getTime() -
+                  new Date(b[options.sortingField!]).getTime()
                 );
               case "string":
-                return a[options.sortBy!].value.localeCompare(
-                  b[options.sortBy!].value,
+                return a[options.sortingField!].localeCompare(
+                  b[options.sortingField!],
                 );
-              default:
+              case "price":
                 const aValue =
                   a.주식통화 === "KRW"
-                    ? a[options.sortBy!].value
-                    : a[options.sortBy!].value * data.won_exchange;
+                    ? a[options.sortingField!]
+                    : a[options.sortingField!] * data.won_exchange;
+
                 const bValue =
                   b.주식통화 === "KRW"
-                    ? b[options.sortBy!].value
-                    : b[options.sortBy!].value * data.won_exchange;
+                    ? b[options.sortingField!]
+                    : b[options.sortingField!] * data.won_exchange;
 
                 return aValue - bValue;
+              case "amount":
+                return a[options.sortingField!] - b[options.sortingField!];
+              case "ratio":
+                return a[options.sortingField!] - b[options.sortingField!];
+              default:
+                // 순서 변경하지 않음.
+                return 0;
             }
-          }
+          } else {
+            switch (options.type) {
+              case "date":
+                return (
+                  new Date(b[options.sortingField!]).getTime() -
+                  new Date(a[options.sortingField!]).getTime()
+                );
+              case "string":
+                return b[options.sortingField!].localeCompare(
+                  a[options.sortingField!].localeCompare,
+                );
+              case "price":
+                const aValue =
+                  a.주식통화 === "KRW"
+                    ? a[options.sortingField!]
+                    : a[options.sortingField!] * data.won_exchange;
 
-          switch (options.type) {
-            case "date":
-              return (
-                new Date(b[options.sortBy!].value).getTime() -
-                new Date(a[options.sortBy!].value).getTime()
-              );
-            case "string":
-              return b[options.sortBy!].value.localeCompare(
-                a[options.sortBy!].value,
-              );
-            default:
-              const aValue =
-                a.주식통화 === "KRW"
-                  ? a[options.sortBy!].value
-                  : a[options.sortBy!].value * data.won_exchange;
-              const bValue =
-                b.주식통화 === "KRW"
-                  ? b[options.sortBy!].value
-                  : b[options.sortBy!].value * data.won_exchange;
+                const bValue =
+                  b.주식통화 === "KRW"
+                    ? b[options.sortingField!]
+                    : b[options.sortingField!] * data.won_exchange;
 
-              return bValue - aValue;
+                return bValue - aValue;
+              case "amount":
+                return b[options.sortingField!] - a[options.sortingField!];
+              case "ratio":
+                return b[options.sortingField!] - a[options.sortingField!];
+              default:
+                // 순서 변경하지 않음.
+                return 0;
+            }
           }
         });
       });
