@@ -6,6 +6,9 @@ const config: Config = {
   theme: {
     extend: {
       screens: {
+        "mobile-459": {
+          min: "459px",
+        },
         tablet: {
           max: "1280px",
         },
@@ -75,10 +78,7 @@ const config: Config = {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
         },
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
+        primary: "rgba(5, 214, 101, 1)",
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
