@@ -1,23 +1,12 @@
-"use client";
-
-import { usePathname } from "next/navigation";
 import LogoLink from "./LogoLink";
 import Menus from "./Menu";
 import Profile from "./Profile";
-import { cn } from "@/lib/utils";
 
 export default function Header() {
-  const pathname = usePathname();
-
   return (
-    <header
-      className={cn(
-        "mx-auto flex h-[64px] w-full items-center justify-between px-[20px]",
-        pathname === "/asset-management/sheet" ? "" : "max-w-[1400px]",
-      )}
-    >
+    <header className="mx-auto flex h-[64px] w-full items-center justify-between px-[20px]">
       <div className="flex">
-        <div className="mr-[120px] mobile:hidden">
+        <div className="mr-[96px] mobile:hidden">
           <LogoLink />
         </div>
         <Menus />
