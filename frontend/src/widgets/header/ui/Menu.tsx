@@ -16,7 +16,7 @@ export default function Menu({
 }) {
   const pathname = usePathname() || "";
   return (
-    <nav className="flex space-x-[150px] mobile:space-x-[51px]">
+    <nav className="flex space-x-[120px] mobile:space-x-[51px]">
       {MENUS.map((menu) => {
         const isSelected =
           selectedItem.includes(menu.name) ||
