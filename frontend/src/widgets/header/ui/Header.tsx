@@ -4,7 +4,7 @@ import Profile from "./Profile";
 
 export default function Header() {
   return (
-    <header className="mx-auto flex h-[64px] w-full items-center justify-between px-[20px]">
+    <header className="shadow-header z-9999 mx-auto flex h-[64px] w-full items-center justify-between px-[20px]">
       <div className="flex">
         <div className="mr-[96px] mobile:hidden">
           <LogoLink />
