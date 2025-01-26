@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import "../../app/globals.css";
 import { IncDecRate } from "@/shared";
 
 const meta: Meta<typeof IncDecRate> = {

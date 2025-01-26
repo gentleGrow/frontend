@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import "../../app/globals.css";
 import { SegmentedButton } from "@/shared";
 
 const meta: Meta<typeof SegmentedButton> = {

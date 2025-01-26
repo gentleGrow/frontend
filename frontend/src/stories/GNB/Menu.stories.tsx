@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Menu } from "@/widgets";
-import "../../app/globals.css";
 
 const meta: Meta<typeof Menu> = {
   title: "React Components/GNB/Menu",
