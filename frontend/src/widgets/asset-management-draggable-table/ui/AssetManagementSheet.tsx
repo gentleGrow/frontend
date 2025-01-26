@@ -308,19 +308,26 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                   <AccordionToggleButton
                     onToggle={(open) => {
                       if (open) {
-                        setOpenedFields((prev) => [...prev, data]);
+                        setOpenedFields((prev) => [...prev, value]);
                       } else {
                         setOpenedFields((prev) =>
-                          prev.filter((field) => field !== data),
+                          prev.filter((field) => field !== value),
                         );
                       }
                     }}
-                    value={openedFields.includes(data)}
+                    value={openedFields.includes(value)}
                   />
-                  <div className="flex w-full flex-row items-center justify-between px-2.5 py-[12.5]">
-                    <div className="text-body-2 text-gray-90">{data}</div>
+                  <div className="relative flex w-full flex-row items-center justify-between px-2.5 py-[12.5]">
+                    <div className="text-body-2 text-gray-90">{value}</div>
                     <SellBuyButton
-                      type="button"
+                      openTooltip={(() => {
+                        return (
+                          errorInfo?.field === key &&
+                          errorInfo.message === "이미 존재하는 종목이에요." &&
+                          errorInfo?.value === value
+                        );
+                      })()}
+                      name={value}
                       onClick={() =>
                         handleAddEmptySubStock(currentRow.종목명 as string)
                       }

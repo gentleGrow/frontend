@@ -211,6 +211,7 @@ export const useHandleAssetStock = ({
         field: "종목명",
         rowId: id,
         message: "이미 존재하는 종목이에요.",
+        value: item.name_kr,
       });
       return;
     }
