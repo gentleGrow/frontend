@@ -20,7 +20,7 @@ export default function UserAgreement({
   const [isAgreedToTerms, setIsAgreedToTerms] = useState<boolean>(false);
   const [isAgreedToPrivacyPolicy, setIsAgreedToPrivacyPolicy] =
     useState<boolean>(false);
-  useState<boolean>(false);
+
   const handleAgreeAll = () => {
     if (isAgreedToTerms && isAgreedToPrivacyPolicy) {
       setIsAgreedToTerms(false);
@@ -30,6 +30,7 @@ export default function UserAgreement({
       setIsAgreedToPrivacyPolicy(true);
     }
   };
+
   return (
     <DialogContent className="w-full flex-col items-center justify-center p-[40px] pt-[64px] tablet:h-[100svh] tablet:max-w-full tablet:rounded-none tablet:pt-[140px] mobile-545:justify-normal">
       <DialogClose
@@ -85,20 +86,31 @@ export default function UserAgreement({
             </div>
           </LineButton>
           <div className="mt-[24px] space-y-[24px]">
-            <Checkbox
-              label="서비스 이용 약관 동의"
-              checked={isAgreedToTerms}
-              required={true}
-              onChange={() => setIsAgreedToTerms(!isAgreedToTerms)}
-            />
-            <Checkbox
-              label="개인정보 수집 및 이용 동의"
-              checked={isAgreedToPrivacyPolicy}
-              required={true}
-              onChange={() =>
-                setIsAgreedToPrivacyPolicy(!isAgreedToPrivacyPolicy)
-              }
-            />
+            <div className="flex w-full flex-row items-center justify-between">
+              <Checkbox
+                label="서비스 이용 약관 동의"
+                checked={isAgreedToTerms}
+                required={true}
+                onChange={() => setIsAgreedToTerms(!isAgreedToTerms)}
+              />
+
+              <button className="text-body-2 font-normal text-gray-60">
+                약관보기
+              </button>
+            </div>
+            <div className="flex w-full flex-row items-center justify-between">
+              <Checkbox
+                label="개인정보 수집 및 이용 동의"
+                checked={isAgreedToPrivacyPolicy}
+                required={true}
+                onChange={() =>
+                  setIsAgreedToPrivacyPolicy(!isAgreedToPrivacyPolicy)
+                }
+              />
+              <button className="text-body-2 font-normal text-gray-60">
+                약관보기
+              </button>
+            </div>
           </div>
           <DialogFooter className="mt-[32px] justify-center sm:justify-center">
             <PrimaryButton
