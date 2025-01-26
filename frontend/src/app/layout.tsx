@@ -8,6 +8,7 @@ import QueryClientProvider from "@/app/QueryClientProvider";
 import localFont from "next/font/local";
 
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const pretendard = localFont({
   src: "./fonts/PretendardVariable.woff2",
@@ -29,14 +30,16 @@ export default function RootLayout({
         <JotaiProvider>
           <AuthProvider>
             <QueryClientProvider>
-              <div className="relative flex min-h-dvh flex-col text-body-1 text-gray-100">
-                <div className="flex flex-1 flex-col">
-                  <Header />
-                  {children}
+              <TooltipProvider>
+                <div className="relative flex min-h-dvh flex-col text-body-1 text-gray-100">
+                  <div className="flex flex-1 flex-col">
+                    <Header />
+                    {children}
+                  </div>
+                  <LoginDialog />
+                  <Footer />
                 </div>
-                <LoginDialog />
-                <Footer />
-              </div>
+              </TooltipProvider>
             </QueryClientProvider>
           </AuthProvider>
         </JotaiProvider>
