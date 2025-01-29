@@ -9,6 +9,7 @@ import {
   fixedNumberIfNeeds,
 } from "@/shared/utils/number";
 import { assert } from "@/shared/utils/assert";
+import { isNumber } from "es-toolkit/compat";
 
 const ColorVariants = {
   default: "text-gray-90 bg-white",
@@ -125,7 +126,7 @@ const NumberInput = ({
           setIsFocused(false);
 
           // onBlur에서 부모 컴포넌트에 값 전달
-          if (localValue !== value) {
+          if (localValue !== value && isNumber(localValue)) {
             onChange?.(localValue);
           }
         }}

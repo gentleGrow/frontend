@@ -671,7 +671,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                   onError={(message) => {
                     setCellError({
                       message,
-                      field: "수량",
+                      field: "거래가",
                       rowId: id,
                     });
                   }}
