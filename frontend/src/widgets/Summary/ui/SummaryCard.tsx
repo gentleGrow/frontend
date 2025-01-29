@@ -4,9 +4,9 @@ import { IncDecRate } from "@/shared";
 import { commaizeNumber } from "@toss/utils";
 
 interface SummaryCardProps {
-  title: string;
-  amount: number;
-  rate: number;
+  title?: string;
+  amount?: number;
+  rate?: number;
 }
 
 export default function SummaryCard({ title, amount, rate }: SummaryCardProps) {
@@ -22,7 +22,7 @@ export default function SummaryCard({ title, amount, rate }: SummaryCardProps) {
                 className={`text-heading-1 text-alert ${amount === 0 && "text-gray-100"} ${amount && amount > 0 && "text-alert"} ${amount && amount < 0 && "text-decrease"}`}
               >
                 {amount && amount > 0 ? "+" : amount && amount < 0 ? "-" : ""}₩
-                {commaizeNumber(amount.toFixed(0))}
+                {commaizeNumber(amount?.toFixed(0) ?? "0")}
               </span>
             </div>
           )}
