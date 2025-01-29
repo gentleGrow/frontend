@@ -25,8 +25,7 @@ export default function SummaryCardMobile({
           <span
             className={`font-bold ${increaseAmount === 0 && "text-gray-100"} ${increaseAmount > 0 && "text-alert"} ${increaseAmount < 0 && "text-decrease"}`}
           >
-            {increaseAmount > 0 ? "+" : increaseAmount < 0 ? "-" : ""}₩
-            {increaseAmount.toFixed(0)}
+            {increaseAmount > 0 && "+"}₩{increaseAmount.toFixed(0)}
           </span>
         </div>
         <div className="mt-[27px] flex flex-col space-y-[8px]">
