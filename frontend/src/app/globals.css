@@ -4,6 +4,9 @@
 
 
 @layer base {
+  body, html {
+    font-synthesis: none;
+  }
   :root {
     --background: 0 0% 100%;
 
