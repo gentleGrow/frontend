@@ -1,8 +1,8 @@
 import SummaryCard from "@/widgets/Summary/ui/SummaryCard";
 
 interface AssetManagementSummaryCardProps {
-  title: string;
-  value: number;
+  title?: string;
+  value?: number;
   ratio?: number;
 }
 
