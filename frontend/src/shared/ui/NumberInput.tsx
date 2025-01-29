@@ -121,11 +121,13 @@ const NumberInput = ({
             e.currentTarget.value = prefix;
           }
         }}
-        onBlur={(e) => {
+        onBlur={(_e) => {
           setIsFocused(false);
 
           // onBlur에서 부모 컴포넌트에 값 전달
-          onChange?.(localValue);
+          if (localValue !== value) {
+            onChange?.(localValue);
+          }
         }}
       />
     </label>
