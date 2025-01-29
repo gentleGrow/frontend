@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode, useRef } from "react";
+import React, { ReactNode, useId, useRef, useState } from "react";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -64,19 +64,21 @@ const Index = <T extends unknown, C extends string[]>({
   onResize,
   errorInfo,
 }: TableProps<T>) => {
-  const [mostClosetFromRight, setMostClosetFromRight] = React.useState<
-    string | null
-  >(null);
-  const [mostClosetFromLeft, setMostClosetFromLeft] = React.useState<
-    string | null
-  >(null);
+  const tableId = useId();
+
+  const [mostClosetFromRight, setMostClosetFromRight] = useState<string | null>(
+    null,
+  );
+  const [mostClosetFromLeft, setMostClosetFromLeft] = useState<string | null>(
+    null,
+  );
 
   const setErrorInfo = useSetAtom(cellErrorAtom);
 
   const draggingPosition = useRef<[number, number]>([0, 0]);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const isDragging = React.useRef(false);
+  const isDragging = useRef(false);
   const { updatePointer, stopAutoScroll, startAutoScroll } =
     useAutoScroll(containerRef);
 
@@ -216,7 +218,7 @@ const Index = <T extends unknown, C extends string[]>({
 
   return (
     <div
-      id="table"
+      id={tableId}
       ref={containerRef}
       onMouseDownCapture={() => {
         if (errorInfo) {
@@ -247,6 +249,7 @@ const Index = <T extends unknown, C extends string[]>({
               id={field.name}
             >
               <TableColumn
+                tableId={tableId}
                 onDrag={onDrag}
                 field={field.name}
                 dataset={dataset}

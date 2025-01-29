@@ -14,6 +14,7 @@ export interface TableColumnProps {
   onDrag: (e: UniversalDragEvent) => void;
   isDraggable?: boolean;
   errorInfo?: CellErrorAtom | null;
+  tableId: string;
 }
 
 const TableColumn = <T,>({
@@ -25,6 +26,7 @@ const TableColumn = <T,>({
   onDrag,
   isDraggable = true,
   errorInfo,
+  tableId,
 }: TableColumnProps) => {
   return (
     <div
@@ -42,6 +44,7 @@ const TableColumn = <T,>({
       {dataset.map((data, idx) => (
         <Fragment key={data?.id ?? idx}>
           <TableCell
+            tableId={tableId}
             error={errorInfo?.rowId === data?.id && field === errorInfo?.field}
             errorMessage={errorInfo?.message}
           >
