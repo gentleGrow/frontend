@@ -2,13 +2,13 @@ import { IncDecRate } from "@/shared";
 
 export default function SummaryCardMobile({
   totalAmount,
-  reviewRate,
+  increaseAmount,
   investmentAmount,
   profit_amount,
   profit_rate,
 }: {
   totalAmount: number;
-  reviewRate: number;
+  increaseAmount: number;
   investmentAmount: number;
   profit_amount: number;
   profit_rate: number;
@@ -23,10 +23,10 @@ export default function SummaryCardMobile({
         <div className="flex items-center space-x-[7px]">
           <p className="text-sm font-medium">지난 달 보다 </p>
           <span
-            className={`font-bold ${reviewRate === 0 && "text-gray-100"} ${reviewRate > 0 && "text-alert"} ${reviewRate < 0 && "text-decrease"}`}
+            className={`font-bold ${increaseAmount === 0 && "text-gray-100"} ${increaseAmount > 0 && "text-alert"} ${increaseAmount < 0 && "text-decrease"}`}
           >
-            {reviewRate > 0 ? "+" : reviewRate < 0 ? "-" : ""}
-            {reviewRate.toFixed(0)}%
+            {increaseAmount > 0 ? "+" : increaseAmount < 0 ? "-" : ""}₩
+            {increaseAmount.toFixed(0)}
           </span>
         </div>
         <div className="mt-[27px] flex flex-col space-y-[8px]">

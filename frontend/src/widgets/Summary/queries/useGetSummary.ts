@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { keyStore } from "@/shared/lib/query-keys";
-import fetchSummary from "../api/fetchSummary";
+import { fetchSummary } from "@/widgets/Summary/api/fetchSummary";
 
 export const useGetSummary = () =>
   useSuspenseQuery({
