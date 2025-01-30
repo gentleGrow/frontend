@@ -11,7 +11,6 @@ import PercentWithTitle from "./PercentWithTitle";
 import { PerformanceAnalysisData } from "../api/fetchPerformanceAnalysis";
 
 const PERIODS = [
-  { period: "5일", performanceDataKey: "fiveDayPerformanceData" },
   { period: "1달", performanceDataKey: "monthlyPerformanceData" },
   { period: "3달", performanceDataKey: "threeMonthPerformanceData" },
   { period: "6달", performanceDataKey: "sixMonthPerformanceData" },
@@ -24,7 +23,7 @@ export default function InvestmentPerformanceChartClient({
   performanceData: PerformanceAnalysisData;
 }) {
   const [currentPerformanceDataKey, setCurrentPerformanceDataKey] =
-    useState<string>("fiveDayPerformanceData");
+    useState<string>("monthlyPerformanceData");
   const currentData = performanceData[currentPerformanceDataKey];
   return (
     <div className="relative h-[388px] w-full rounded-xl border border-gray-20 bg-white p-[16px] mobile:h-[500px] mobile:rounded-none mobile:border-none">
