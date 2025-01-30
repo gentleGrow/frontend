@@ -18,8 +18,7 @@ export default function LineChart({
 
       const setOption = () => {
         const isSmallScreen = window.innerWidth <= 1024;
-
-        const option = {
+        chartInstance.setOption({
           title: {
             text: `(${data.unit})`,
             left: isSmallScreen ? "3%" : -6,
@@ -130,19 +129,12 @@ export default function LineChart({
               type: "line",
               data: data.values1.values,
               showSymbol: false,
-              symbolSize: 8,
               itemStyle: {
                 color: "#0B99FF",
               },
               lineStyle: {
                 color: "#0B99FF",
                 width: 2,
-              },
-              emphasis: {
-                focus: "series",
-                showSymbol: true,
-                symbol: "circle",
-                symbolSize: 8,
               },
             },
             {
@@ -150,7 +142,6 @@ export default function LineChart({
               type: "line",
               data: data.values2.values,
               showSymbol: false,
-              symbolSize: 8,
               itemStyle: {
                 color: "#4460F1",
               },
@@ -158,26 +149,23 @@ export default function LineChart({
                 color: "#4460F1",
                 width: 2,
               },
-              emphasis: {
-                focus: "series",
-                showSymbol: true,
-                symbol: "circle",
-                symbolSize: 8,
-              },
             },
           ],
           legend: {
             itemGap: 48,
             data: [{ name: data.values1.name }, { name: data.values2.name }],
+            itemWidth: 12,
+            itemHeight: 4,
             bottom: 0,
             textStyle: {
               color: "#2A2D31",
             },
-            icon: "path://M2,2 h8.4 a0.5,0.5 0 0 1 0.5,0.5 v1 a0.5,0.5 0 0 1 -0.5,0.5 h-8.4 a0.5,0.5 0 0 1 -0.5,-0.5 v-1 a0.5,0.5 0 0 1 0.5,-0.5 z",
+            icon: `<svg width="12" height="5" viewBox="0 0 12 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect y="0.5" width="12" height="4" rx="1"/>
+</svg>
+`,
           },
-        };
-
-        chartInstance.setOption(option);
+        });
       };
 
       setOption();
