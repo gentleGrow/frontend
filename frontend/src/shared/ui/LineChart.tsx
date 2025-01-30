@@ -32,6 +32,7 @@ export default function LineChart({
           },
           tooltip: {
             trigger: "axis",
+            padding: 0,
             formatter: (params) => {
               const date = data.dates[params[0].dataIndex];
               const myReturn = Number(params[0].data.toFixed(0)).toLocaleString(
@@ -41,32 +42,36 @@ export default function LineChart({
                 "ko-KR",
               );
               return `
-                <div style="width:137px; height:70px; display:flex; flex-direction: column; ">
-                  <div style="font-size:12px;margin-bottom:2px;color:#4F555E;">${date}</div>
-                  <div style="display:flex;align-items:center;font-size:12px;margin-bottom:2px;">
-                    <svg width="16" height="8" viewBox="0 0 16 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <rect y="3" width="16" height="2" rx="1" fill="#0B99FF"/>
-                      <g filter="url(#filter0_d_1862_2295)">
-                        <circle cx="8" cy="4" r="3" fill="#0B99FF"/>
-                        <circle cx="8" cy="4" r="2.5" stroke="white"/>
-                      </g>
-                    </svg>
-                    <span style="margin-left:8px; color:#2A2D31;">${data.values1.name} </span>
-                    <span style="display:block; width:100%; text-align:right; font-weight:bold;color:#0B99FF;margin-left:4px;">${myReturn}${data.unit}</span>
-                  </div>
-                  <div style="display:flex;align-items:center;font-size:12px;margin-bottom:2px;">
-                    <svg width="16" height="8" viewBox="0 0 16 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <rect y="3" width="16" height="2" rx="1" fill="#4460F1"/>
-                      <g filter="url(#filter0_d_1862_2295)">
-                        <circle cx="8" cy="4" r="3" fill="#4460F1"/>
-                        <circle cx="8" cy="4" r="2.5" stroke="white"/>
-                      </g>
-                    </svg>
-                    <span style="margin-left:8px; color:#2A2D31;">${data.values2.name}</span>
-                    <span style="display:block; width:100%; text-align:right; font-weight:bold;color:#4460F1;margin-left:4px;">${kospi}${data.unit}</span>
-                  </div>
-                </div>
-              `;
+  <div class="flex flex-col p-2 items-center gap-1 h-fit">
+    <div class="w-full text-gray-70 text-body-5">${date}</div>
+    <div class="flex flex-row items-center gap-3 justify-between w-full">
+      <div class="flex flex-row items-center gap-1">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="my-auto translate-y-[-0.5px]">
+          <rect y="6" width="16" height="2" rx="1" fill="#0B99FF"/>
+          <g filter="url(#filter0_d_1862_2295)">
+            <circle cx="8" cy="7" r="3" fill="#0B99FF"/>
+            <circle cx="8" cy="7" r="2.5" stroke="white"/>
+          </g>
+        </svg>
+        <span class="text-body-5 text-gray-100 leading-none">${data.values1.name}</span>
+      </div>
+      <span class="text-body-4 text-[#0B99FF] font-bold leading-none">${myReturn}${data.unit}</span>
+    </div>
+    <div class="flex flex-row items-center gap-1 justify-between w-full">
+      <div class="flex flex-row items-center gap-1">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="my-auto">
+          <rect y="6" width="16" height="2" rx="1" fill="#4460F1"/>
+          <g filter="url(#filter0_d_1862_2295)">
+            <circle cx="8" cy="7" r="3" fill="#4460F1"/>
+            <circle cx="8" cy="7" r="2.5" stroke="white"/>
+          </g>
+        </svg>
+        <span class="text-body-5 text-gray-100 leading-none">${data.values2.name}</span>
+      </div>
+      <span class="text-body-4 text-[#4460F1] font-bold leading-none">${kospi}${data.unit}</span>
+    </div>
+  </div>
+`;
             },
             backgroundColor: "rgba(255, 255, 255, 0.9)",
             borderColor: "transparent",
