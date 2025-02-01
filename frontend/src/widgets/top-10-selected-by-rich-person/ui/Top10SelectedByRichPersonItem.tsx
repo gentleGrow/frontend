@@ -27,10 +27,7 @@ export default function Top10SelectedByRichPersonItem({
           {stock.name}
         </p>
         <p className="block min-w-[102px] flex-1 items-center truncate text-right text-body-3">
-          ₩
-          {commaizeNumber(
-            Number(stock.price.toFixed(0)).toLocaleString("ko-KR"),
-          )}
+          ₩{commaizeNumber(Number(stock.price.toFixed(0)))}
         </p>
       </div>
       <div className="flex shrink-0 items-center overflow-hidden">
