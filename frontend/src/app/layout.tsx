@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Footer, Header } from "@/widgets";
+import { Footer, Header, LoginFloatingCTAButton } from "@/widgets";
 import AuthProvider from "./AuthProvider";
 import JotaiProvider from "./JotaiProvider";
 import { LoginDialog } from "@/features";
@@ -36,6 +36,7 @@ export default function RootLayout({
                     <Header />
                     {children}
                   </div>
+                  <LoginFloatingCTAButton />
                   <LoginDialog />
                   <Footer />
                 </div>

@@ -1,7 +1,6 @@
 import { AssetManagementDraggableTable, AssetSheetSummary } from "@/widgets";
 import { getItemNameList } from "@/entities/asset-management/apis/getItemNameList";
 import { getBrokerAccountList } from "@/entities/asset-management/apis/getBrokerAccountList";
-import AssetManagementAccessGuideButton from "@/widgets/asset-management-guest-access-guide-button/ui/AssetManagementAccessGuideButton";
 import { cookies } from "next/headers";
 import { ACCESS_TOKEN } from "@/shared/constants/cookie";
 import AssetSheetSummarySkeleton from "@/widgets/asset-management-summary-card/ui/AssetManagementSkeleton";
@@ -30,7 +29,6 @@ const Sheet = async () => {
           itemNameList={response[0]}
         />
       </Suspense>
-      {!accessToken ? <AssetManagementAccessGuideButton /> : null}
     </div>
   );
 };

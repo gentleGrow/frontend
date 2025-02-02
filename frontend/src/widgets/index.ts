@@ -12,7 +12,7 @@ export { default as EstimateDividend } from "./estimate-dividend/ui/EstimateDivi
 export { default as ExplorePortfolio } from "./explore-portfolio/ui/ExplorePortfolio";
 export { default as RichPortfolio } from "./rich-portfolios/ui/RichPortfolio";
 export { default as Summary } from "./Summary/ui/Summary";
-export { default as HomeGuestAccessGuideButton } from "./HomeGuestAccessGuide/ui/HomeGuestAccessGuideButton";
+export { default as LoginFloatingCTAButton } from "@/widgets/login-floating-cta-button/ui/LoginFloatingCTAButton";
 export { default as AssetManagementDraggableTable } from "./asset-management-draggable-table/ui/AssetManagementSheet";
 export { default as Footer } from "./footer/ui/Footer";
 export { default as AssetSheetSummary } from "./asset-management-summary-card/ui/AssetSheetSummary";

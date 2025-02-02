@@ -1,5 +1,3 @@
-// pages/asset/overview/page.tsx
-
 import {
   EstimateDividend,
   InvestmentPerformanceChart,
@@ -7,12 +5,10 @@ import {
   Summary,
 } from "@/widgets";
 import AssetsAccumulateTrend from "@/widgets/assets-accumulate-trend/ui/AssetsAccumulateTrend";
-import AssetManagementAccessGuideButton from "@/widgets/asset-management-guest-access-guide-button/ui/AssetManagementAccessGuideButton";
-import { cookies } from "next/headers";
-import { ACCESS_TOKEN } from "@/shared/constants/cookie";
+import { getUser } from "@/entities";
 
-const Overview = () => {
-  const accessToken = cookies()?.get(ACCESS_TOKEN)?.value;
+const Overview = async () => {
+  const user = await getUser();
 
   return (
     <div className="flex flex-col gap-4">
@@ -29,7 +25,6 @@ const Overview = () => {
         <AssetsAccumulateTrend />
         <EstimateDividend />
       </div>
-      {!accessToken ? <AssetManagementAccessGuideButton /> : null}
     </div>
   );
 };
