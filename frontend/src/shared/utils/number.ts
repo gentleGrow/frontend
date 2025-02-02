@@ -1,4 +1,4 @@
-import { ceil } from "es-toolkit/compat";
+import { round } from "es-toolkit";
 
 export function commaizeNumber(value: string | number) {
   const numStr = String(value);
@@ -76,5 +76,5 @@ export function exchange(
     return value;
   }
 
-  return ceil(Number(value) * exchangeRate, 2);
+  return round(Number(value) * exchangeRate, 2);
 }
