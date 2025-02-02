@@ -31,6 +31,7 @@ export default function LineChart({
           },
           tooltip: {
             trigger: "axis",
+            extraCssText: "box-shadow: 1px 1px 4px 2px #00000033;",
             padding: 0,
             formatter: (params) => {
               const date = data.dates[params[0].dataIndex];
