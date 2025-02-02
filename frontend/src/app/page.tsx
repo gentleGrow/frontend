@@ -2,7 +2,6 @@ import {
   DailyInvestmentTip,
   EstimateDividend,
   ExplorePortfolio,
-  HomeGuestAccessGuideButton,
   InvestmentPerformanceChart,
   MarketIndex,
   MyStocks,
@@ -48,7 +47,6 @@ export default async function Home() {
           <ExplorePortfolio />
         </div>
       </div>
-      <HomeGuestAccessGuideButton />
       <Suspense>
         <FinishDeactivatedDialog />
       </Suspense>
