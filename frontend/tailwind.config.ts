@@ -130,6 +130,7 @@ const config: Config = {
         popover: "0px 0px 7px 0px rgba(0, 0, 0, 0.1)",
         deleteRow: "0px 0px 4px 0px rgba(0, 0, 0, 0.2)",
         header: "0px 3px 5px 0px rgba(42, 45, 49, 0.03)",
+        "chart-tooltip": "1px 1px 4px 2px #00000033",
       },
       zIndex: {
         "9999": "9999",

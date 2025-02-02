@@ -80,6 +80,7 @@ export default function DonutChart({
       tooltip: {
         trigger: "item",
         confine: true,
+        extraCssText: "box-shadow: 1px 1px 4px 2px #00000033;",
         padding: 0,
         formatter: (params: any) => {
           return `
