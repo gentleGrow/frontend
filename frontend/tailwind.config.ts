@@ -6,8 +6,14 @@ const config: Config = {
   theme: {
     extend: {
       screens: {
+        "min-376": {
+          min: "376px",
+        },
         "mobile-459": {
           min: "459px",
+        },
+        "min-545": {
+          min: "545px",
         },
         tablet: {
           max: "1280px",

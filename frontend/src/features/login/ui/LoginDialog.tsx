@@ -19,7 +19,7 @@ export default function LoginDialog({}: {}) {
   return (
     <Dialog open={isOpenLoginModal}>
       <DialogContent
-        className="p-0 px-[40px] tablet:flex tablet:h-full tablet:min-w-full tablet:items-center tablet:justify-center tablet:rounded-none"
+        className="z-9999 p-0 px-[40px] tablet:flex tablet:h-full tablet:min-w-full tablet:items-center tablet:justify-center tablet:rounded-none"
         onPointerDownOutside={() => {
           setIsOpenLoginModal(false);
         }}
@@ -50,8 +50,12 @@ export default function LoginDialog({}: {}) {
           <div className="space-y-[16px] text-center">
             <h1 className="text-heading-1">시작하기</h1>
             <p className="inline-block max-w-[394px] text-[16px] font-medium leading-[24px]">
-              투자 현황을 기록하고 분석해 더 나은 투자를 만들어 갑니다. 간편
-              로그인으로 쉽고 빠르게 서비스를 시작하세요.
+              투자 현황을 기록하고 분석해 더 나은
+              <br className="min-545:hidden" />
+              투자를 만들어 갑니다.
+              <br className="min-545:block hidden" /> 간편 로그인으로 쉽고
+              <br className="min-545:hidden" />
+              빠르게 서비스를 시작하세요.
             </p>
           </div>
           <div className="flex w-full flex-col space-y-[24px]">
