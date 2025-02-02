@@ -9,7 +9,6 @@ import NumberInput from "@/shared/ui/NumberInput";
 import { useAtom } from "jotai/index";
 import { motion } from "framer-motion";
 import { allField } from "@/entities/asset-management/constants/allField";
-import { ceil } from "es-toolkit/compat";
 import { useAtomValue, useSetAtom } from "jotai";
 import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 import AssetManagementSheetFooter from "@/widgets/asset-management-draggable-table/ui/AssetManagementSheetFooter";
@@ -37,6 +36,7 @@ import SellBuyToggleButton from "@/widgets/asset-management-draggable-table/ui/S
 import { priceInputFields } from "@/widgets/asset-management-draggable-table/constants/priceInputFields";
 import { exchange } from "@/shared/utils/number";
 import { filedDefaultWidth } from "@/widgets/asset-management-draggable-table/constants/fieldWidth";
+import { round } from "es-toolkit";
 
 const NumberFieldType = {
   Amount: "amount",
@@ -273,24 +273,31 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
 
           if (
             !isKrCode &&
-            currentRow?.["주식통화"] !== "USD" &&
+            (currentRow?.["주식통화"] === "KRW" ||
+              currentRow?.["주식통화"] === null) &&
             currentCurrency === "USD" &&
-            priceInputFields.includes(key)
+            priceInputFields.includes(key) &&
+            !isParent
           ) {
             value = exchange(value, dollarExchange);
           }
 
           if (
             !isKrCode &&
-            currentRow?.["주식통화"] !== "KRW" &&
+            currentRow?.["주식통화"] === "USD" &&
             currentCurrency === "KRW" &&
-            priceInputFields.includes(key)
+            priceInputFields.includes(key) &&
+            !isParent
           ) {
             value = exchange(value, wonExchange);
           }
 
+          if (isParent && !isKrCode && priceInputFields.includes(key)) {
+            value = exchange(value, wonExchange);
+          }
+
           if (priceInputFields.includes(key)) {
-            value = ceil(value, currentCurrency === "KRW" ? 0 : 2);
+            value = round(value, currentCurrency === "KRW" ? 0 : 2);
           }
 
           switch (isParent && key) {
