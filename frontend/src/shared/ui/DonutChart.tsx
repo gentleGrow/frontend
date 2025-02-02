@@ -2,6 +2,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as echarts from "echarts";
 import { DonutChartData } from "../types/charts";
+import { commaizeNumber } from "@toss/utils";
+import { ceil } from "es-toolkit/compat";
 
 export default function DonutChart({
   chartName,
@@ -78,10 +80,17 @@ export default function DonutChart({
       tooltip: {
         trigger: "item",
         confine: true,
+        padding: 0,
         formatter: (params: any) => {
-          return `<span style="font-size:12px; line-height:18px; color:#2A2D31; word-break: break-all;white-space: pre-wrap;"> ${
-            params.name
-          } · <span style="font-weight:bold; word-break: break-all;white-space: pre-wrap;">${params.percent}</span>%<br/><span style="font-weight:bold; word-break: break-all;white-space: pre-wrap;">₩${Number(Number(params.value).toFixed(0)).toLocaleString("ko-kr")}원</span></span>`;
+          return `
+<div class="px-2 py-1.5 flex flex-col">
+  <div class="flex flex-row gap-1 items-center flex-nowrap">
+    <span class="text-[12px] leading-[18px] text-gray-100 font-normal">${params.name}</span> 
+    <span class="w-0.5 h-0.5 bg-gray-100" ></span>
+    <span class="text-[12px] leading-[18px] text-gray-100 font-semibold">${params.percent}%</span>
+  </div>
+  <div class="text-[12px] font-semibold leading-[18px]">₩${commaizeNumber(ceil(params.value))}원</div>
+</div>`;
         },
         backgroundColor: "rgba(255, 255, 255, 0.9)",
         borderColor: "transparent",
@@ -90,9 +99,9 @@ export default function DonutChart({
         },
         position: function (
           point: any,
-          params: any,
-          dom: any,
-          rect: any,
+          _params: any,
+          _dom: any,
+          _rect: any,
           size: any,
         ) {
           const x = point[0];
