@@ -22,8 +22,7 @@ export default function LoginFloatingCTAButtonClient({
           setIsOpenLoginModal(true);
         }}
       >
-        가데이터로 구성한 화면입니다. 자산 시트를 작성하고 나만의 데이터를
-        확인하세요.
+        로그인하고 나만의 분석 화면을 만들어 보세요.
       </FloatingButton>
     </div>
   );
