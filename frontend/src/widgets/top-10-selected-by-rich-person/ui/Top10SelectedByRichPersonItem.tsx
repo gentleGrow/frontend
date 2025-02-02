@@ -26,7 +26,7 @@ export default function Top10SelectedByRichPersonItem({
         <p className="block w-full max-w-[128px] truncate text-body-2 except-mobile:max-w-[128px]">
           {stock.name}
         </p>
-        <p className="block min-w-[102px] flex-1 items-center truncate text-right text-body-3">
+        <p className="block min-w-[102px] flex-1 items-center truncate text-right text-body-3 xl:min-w-[108px]">
           ₩{commaizeNumber(Number(stock.price.toFixed(0)))}
         </p>
       </div>
