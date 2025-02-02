@@ -9,12 +9,11 @@ export default function FloatingButton({
 }) {
   return (
     <button
-      className="relative mx-4 flex min-h-[42px] w-max shrink-0 items-center justify-center rounded-full bg-gradient-to-b from-[#05D665] to-[#5DF1CD] px-[105px] py-[9px] font-bold text-white transition-shadow hover:shadow-lg mobile:w-[90%]"
+      className="relative flex min-h-[42px] w-[90%] min-w-[330px] items-center justify-center rounded-[20px] bg-gradient-to-b from-[#05D665] to-[#5DF1CD] pl-5 pr-[60px] font-bold text-white transition-shadow hover:shadow-lg"
       onClick={onClick}
     >
-      <p className="flex"> {children}</p>
-
-      <div className="absolute right-[20px]">
+      <p className="w-full truncate">{children}</p>
+      <div className="absolute right-5 top-1/2 -translate-y-1/2">
         <svg
           width="24"
           height="24"
