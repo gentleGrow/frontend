@@ -26,7 +26,8 @@ const SellBuyButton: FC<SellBuyButtonProps> = ({
           + 매매
         </button>
       </Tooltip.Trigger>
-      {document.body &&
+      {typeof window !== "undefined" &&
+        document.body &&
         createPortal(
           <Tooltip.Content>
             {name} 추가 매매 건은 이 버튼으로 추가해주세요.
