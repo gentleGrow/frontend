@@ -1,7 +1,7 @@
 "use client";
 
 import Table from "@/shared/ui/table/Table";
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { useGetAssetStocks } from "@/entities/asset-management/queries/useGetAssetStocks";
 import { ItemName } from "@/entities/asset-management/apis/getItemNameList";
 import { DatePicker, SegmentedButton, SegmentedButtonGroup } from "@/shared";
@@ -113,6 +113,8 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
   itemNameList,
   accountList,
 }) => {
+  const isInitialMount = useRef(true);
+
   const [openedFields, setOpenedFields] = useAtom(openedFieldAtom);
   const [currentSorting] = useAtom(currentSortingTypeAtom);
   const [sortingField] = useAtom(sortingFieldAtom);
@@ -130,6 +132,15 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
     type: getSortType(sortingField),
     itemList: itemNameList,
   });
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      setOpenedFields(
+        new Set(data.stock_assets.map((stock) => stock.parent.종목명)),
+      );
+      isInitialMount.current = false;
+    }
+  }, [setOpenedFields, data.stock_assets]);
 
   const totalStockAmount = data.stock_assets.reduce(
     (acc, cur) => acc + cur.sub.length,
