@@ -232,7 +232,9 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
           건
         </div>
         <div className="flex flex-row items-center gap-3">
-          <div className="shrink-0">해외 주식 통화 설정</div>
+          <div className="shrink-0 text-body-3 font-semibold text-gray-100">
+            해외 주식 통화 설정
+          </div>
           <div className="w-[56px] shrink-0">
             <SegmentedButtonGroup>
               <SegmentedButton
