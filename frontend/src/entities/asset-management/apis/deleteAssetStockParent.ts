@@ -1,10 +1,17 @@
-import { fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
+import { fetchWithTimeout } from "@/shared";
+import { getServiceServerUrl } from "@/shared/utils/getServiceServerUrl";
 
-export const deleteAssetStockParent = async (accessToken: string, id: string) =>
-  fetchWithTimeout(`${SERVICE_SERVER_URL}/api/asset/v1/assetstock/${id}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
+export const deleteAssetStockParent = async (
+  accessToken: string,
+  code: string,
+) =>
+  fetchWithTimeout(
+    `${getServiceServerUrl()}/api/asset/v1/assetstock/stock/${code}`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
     },
-  });
+  );
