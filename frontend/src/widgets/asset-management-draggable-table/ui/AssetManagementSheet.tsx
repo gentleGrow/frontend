@@ -131,6 +131,11 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
     itemList: itemNameList,
   });
 
+  const totalStockAmount = data.stock_assets.reduce(
+    (acc, cur) => acc + cur.sub.length,
+    0,
+  );
+
   const dollarExchange = data.dollar_exchange ?? 0;
   const wonExchange = data.won_exchange ?? 0;
 
@@ -223,7 +228,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
     >
       <header className="flex w-full flex-row items-center justify-between">
         <div className="text-[20px] font-normal">
-          총 <span className="font-bold text-green-60">{tableData.length}</span>
+          총 <span className="font-bold text-green-60">{totalStockAmount}</span>
           건
         </div>
         <div className="flex flex-row items-center gap-3">
