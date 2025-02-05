@@ -299,8 +299,12 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             value = exchange(value, wonExchange);
           }
 
-          if (isParent && !isKrCode && priceInputFields.includes(key)) {
-            value = exchange(value, wonExchange);
+          if (
+            isParent &&
+            priceInputFields.includes(key) &&
+            currentCurrency === "USD"
+          ) {
+            value = exchange(value, dollarExchange);
           }
 
           if (priceInputFields.includes(key)) {
