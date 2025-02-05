@@ -2,14 +2,10 @@
 
 import React, { useEffect, useId, useState } from "react";
 import { cn } from "@/lib/utils";
-import {
-  commaizeNumber,
-  containsInvalidInput,
-  extractNumber,
-  fixedNumberIfNeeds,
-} from "@/shared/utils/number";
+import { commaizeNumber, fixedNumberIfNeeds } from "@/shared/utils/number";
 import { assert } from "@/shared/utils/assert";
 import { isNumber } from "es-toolkit/compat";
+import { decommaizeNumber } from "@toss/utils";
 
 const ColorVariants = {
   default: "text-gray-90 bg-white",
@@ -21,8 +17,8 @@ const ColorVariants = {
 
 interface NumberInputProps {
   placeholder?: string;
-  value?: string;
-  onChange?: (value?: string) => void;
+  value?: number;
+  onChange?: (value: number) => void;
   type?: "ratio" | "price" | "amount";
   region?: "USD" | "KRW";
   autoFill?: boolean;
@@ -44,6 +40,25 @@ const NumberInput = ({
   const [isFocused, setIsFocused] = useState(false);
   const [localValue, setLocalValue] = useState(value); // 내부 상태 추가
 
+  const removePricePrefix = (priceStr: string) =>
+    priceStr.slice(2, priceStr.length);
+
+  const removeRatioSuffix = (ratioStr: string) =>
+    ratioStr.slice(0, ratioStr.length - 1);
+
+  const parseNumber = (value: string) => {
+    switch (type) {
+      case "ratio":
+        return decommaizeNumber(removeRatioSuffix(value));
+      case "price":
+        return decommaizeNumber(removePricePrefix(value));
+      case "amount":
+        return decommaizeNumber(value);
+      default:
+        return null;
+    }
+  };
+
   // 컴포넌트가 새로운 value prop을 받았을 때 localValue 업데이트
   useEffect(() => {
     setLocalValue(value);
@@ -54,21 +69,27 @@ const NumberInput = ({
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let target = e.currentTarget.value;
+    let targetValue = e.currentTarget.value;
 
-    const targetValue = extractNumber(target);
+    const parsedValue = parseNumber(targetValue);
 
-    if (containsInvalidInput(target)) {
+    if (parsedValue === null) {
+      throw new Error(
+        "유효하지 않은 숫자 타입 입니다. NumberInput 컴포넌트의 타입을 확인해 주세요.",
+      );
+    }
+
+    if (!isNumber(parsedValue)) {
       onError?.("숫자만 입력해 주세요.");
     }
 
-    setLocalValue(targetValue ?? ""); // onChange 대신 localValue 업데이트
+    setLocalValue(parsedValue); // onChange 대신 localValue 업데이트
   };
 
   const formatValue = () => {
     const valueToFormat = isFocused ? localValue : value; // 포커스 상태에 따라 다른 값 사용
 
-    if (!valueToFormat && valueToFormat !== "0") return "";
+    if (!valueToFormat && valueToFormat !== 0) return "";
 
     if (type === "price") {
       const prefix = region === "KRW" ? "₩ " : "$ ";
@@ -126,7 +147,7 @@ const NumberInput = ({
           setIsFocused(false);
 
           // onBlur에서 부모 컴포넌트에 값 전달
-          if (localValue !== value && isNumber(localValue)) {
+          if (isNumber(localValue)) {
             onChange?.(localValue);
           }
         }}
