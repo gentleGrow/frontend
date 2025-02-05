@@ -48,7 +48,7 @@ export interface TableProps<T extends unknown> {
   errorInfo: CellErrorAtom | null;
 }
 
-const Index = <T extends unknown, C extends string[]>({
+const Index = <T extends unknown>({
   fields,
   tableWidth,
   dataset,

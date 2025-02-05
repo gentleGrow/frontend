@@ -137,8 +137,7 @@ const HandleColumDisplayButton = ({
           </PopoverClose>
         </header>
         <p className="flex flex-col gap-0.5 rounded-[4px] bg-gray-5 p-2 text-[11px] font-normal text-gray-70">
-          <span>*최대 10개까지 추가할 수 있습니다.</span>
-          <span>*종목명, 수량, 구매일자는 필수 항목입니다.</span>
+          <span>*종목명, 매매, 수량, 매매일자는 필수 항목입니다.</span>
         </p>
         <DragAndDropDropdown
           items={fields}
