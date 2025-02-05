@@ -37,6 +37,7 @@ import { priceInputFields } from "@/widgets/asset-management-draggable-table/con
 import { exchange } from "@/shared/utils/number";
 import { filedDefaultWidth } from "@/widgets/asset-management-draggable-table/constants/fieldWidth";
 import { round } from "es-toolkit";
+import { openedFieldAtom } from "@/features/asset-management";
 
 const NumberFieldType = {
   Amount: "amount",
@@ -112,8 +113,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
   itemNameList,
   accountList,
 }) => {
-  const [openedFields, setOpenedFields] = useState<string[]>([]);
-
+  const [openedFields, setOpenedFields] = useAtom(openedFieldAtom);
   const [currentSorting] = useAtom(currentSortingTypeAtom);
   const [sortingField] = useAtom(sortingFieldAtom);
   const setCellError = useSetAtom(cellErrorAtom);
@@ -162,7 +162,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
 
           return (
             stock.type === ColumnType.Sub &&
-            openedFields.includes(stock.종목명 as unknown as string)
+            openedFields.has(stock.종목명 as unknown as string)
           );
         })
         .map((stock) =>
@@ -322,14 +322,16 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                   <AccordionToggleButton
                     onToggle={(open) => {
                       if (open) {
-                        setOpenedFields((prev) => [...prev, value]);
+                        setOpenedFields((prev) => new Set(prev.add(value)));
                       } else {
-                        setOpenedFields((prev) =>
-                          prev.filter((field) => field !== value),
-                        );
+                        setOpenedFields((prev) => {
+                          prev.delete(value);
+
+                          return new Set(prev);
+                        });
                       }
                     }}
-                    value={openedFields.includes(value)}
+                    value={openedFields.has(value)}
                   />
                   <div className="relative flex w-full flex-row items-center justify-between px-2.5 py-[12.5]">
                     <div className="text-body-2 text-gray-90">{value}</div>

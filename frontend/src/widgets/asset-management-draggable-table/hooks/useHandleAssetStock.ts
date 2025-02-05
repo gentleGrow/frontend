@@ -21,6 +21,7 @@ import { useDeleteAssetStockParent } from "@/entities/asset-management/queries/u
 import { parseAssetStockKeyToJsonKey } from "@/entities/asset-management/utils/parseAssetStockKeyToJsonKey";
 import { usePutAssetStock } from "@/entities/asset-management/queries/usePutAssetStock";
 import { useClientSubStock } from "@/entities/asset-management/hooks/useClientSubStock";
+import { openedFieldAtom } from "@/features/asset-management";
 
 interface UseHandleAssetStockParams {
   currencySetting: CurrencyType;
@@ -38,7 +39,7 @@ export const useHandleAssetStock = ({
   const { mutate: originCreateAssetStockParent } =
     usePostAssetStockParent(itemNameList);
   const { mutate: putAssetStock } = usePutAssetStock();
-  const { mutate: originPostAssetStockSub } = usePostAssetStockSub();
+  const { mutate: postAssetStockSub } = usePostAssetStockSub();
   const { mutate: deleteAssetStockSub } = useDeleteAssetStockSub();
   const { mutate: deleteAssetStockParent } = useDeleteAssetStockParent();
 
@@ -48,6 +49,7 @@ export const useHandleAssetStock = ({
 
   const setIsOpenLoginModal = useSetAtom(loginModalAtom);
   const setErrorInfo = useSetAtom(cellErrorAtom);
+  const setOpenedFields = useSetAtom(openedFieldAtom);
 
   const queryClient = useQueryClient();
 
@@ -75,13 +77,15 @@ export const useHandleAssetStock = ({
       return;
     }
 
+    setOpenedFields((prev) => new Set(prev.add(stockName)));
+
     const stockCode = itemNameList.find(
       (item) => item.name_kr === stockName,
     )?.code;
 
     if (!stockCode) return;
 
-    originPostAssetStockSub({
+    postAssetStockSub({
       accessToken,
       body: {
         stock_code: stockCode,
