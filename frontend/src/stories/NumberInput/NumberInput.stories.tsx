@@ -18,22 +18,22 @@ type Story = StoryObj<typeof NumberInput>;
 
 export const NumberInputStory: Story = {
   render: () => {
-    const [value, setValue] = useState<string>();
+    const [value, setValue] = useState(0);
     return <NumberInput value={value} onChange={setValue} />;
   },
 };
 
 export const AmountInputStory: Story = {
   render: () => {
-    const [value, setValue] = useState<string>();
+    const [value, setValue] = useState(0);
     return <NumberInput value={value} onChange={setValue} type="amount" />;
   },
 };
 
 export const PriceInputStory: Story = {
   render: () => {
-    const [value, setValue] = useState<string>();
-    const [usValue, setUsValue] = useState<string>();
+    const [value, setValue] = useState(0);
+    const [usValue, setUsValue] = useState(0);
 
     return (
       <div className="flex flex-col gap-4">
@@ -64,7 +64,7 @@ export const PriceInputStory: Story = {
 
 export const AutoFillRatioInputStory: Story = {
   render: () => {
-    const [value, setValue] = useState<string | undefined>("10");
+    const [value, setValue] = useState(10);
 
     const variants =
       Number(value) > 0
@@ -88,7 +88,7 @@ export const AutoFillRatioInputStory: Story = {
 
 export const AutoFillPriceInputStory: Story = {
   render: () => {
-    const [value, setValue] = useState<string | undefined>("1000");
+    const [value, setValue] = useState(1000);
     return (
       <NumberInput
         value={value}
@@ -104,7 +104,7 @@ export const AutoFillPriceInputStory: Story = {
 
 export const AutoFillNoCreditInputStory: Story = {
   render: () => {
-    const [value, setValue] = useState<string | undefined>(undefined);
+    const [value, setValue] = useState(100);
     return (
       <NumberInput
         value={value}
