@@ -8,8 +8,6 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const requestUrl = new URL(req.url);
 
-  console.log(requestUrl);
-
   try {
     const authenticationCode = requestUrl.searchParams.get("code");
 
