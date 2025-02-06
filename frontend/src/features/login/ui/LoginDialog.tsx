@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Dialog,
   DialogClose,
@@ -11,10 +12,20 @@ import NaverLoginButton from "../NaverLoginButton";
 import GoogleLoginButton from "../GoogleLoginButton";
 import { loginModalAtom } from "../atoms/loginAtoms";
 import { useAtomValue, useSetAtom } from "jotai";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
-export default function LoginDialog({}: {}) {
+export default function LoginDialog() {
   const isOpenLoginModal = useAtomValue(loginModalAtom);
   const setIsOpenLoginModal = useSetAtom(loginModalAtom);
+  const searchParams = useSearchParams();
+  const loginErrorMsg = searchParams.get("error");
+
+  useEffect(() => {
+    if (loginErrorMsg) {
+      setIsOpenLoginModal(true);
+    }
+  }, [loginErrorMsg, setIsOpenLoginModal]);
 
   return (
     <Dialog open={isOpenLoginModal}>
@@ -53,10 +64,15 @@ export default function LoginDialog({}: {}) {
               투자 현황을 기록하고 분석해 더 나은
               <br className="min-545:hidden" />
               투자를 만들어 갑니다.
-              <br className="min-545:block hidden" /> 간편 로그인으로 쉽고
+              <br className="hidden min-545:block" /> 간편 로그인으로 쉽고
               <br className="min-545:hidden" />
               빠르게 서비스를 시작하세요.
             </p>
+            {loginErrorMsg && (
+              <div className="mt-4 text-body-5 text-alert">
+                로그인에 실패했습니다. 다시 시도해 주세요: {loginErrorMsg}
+              </div>
+            )}
           </div>
           <div className="flex w-full flex-col space-y-[24px]">
             <KakaoLoginButton />
