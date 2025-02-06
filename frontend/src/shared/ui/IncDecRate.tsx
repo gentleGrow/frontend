@@ -5,11 +5,7 @@ export default function IncDecRate({
   rate: number;
   className?: string;
 }) {
-  // 양수는 올림, 음수는 내림하여 둘째 자리까지 표시
-  const roundedRate =
-    rate > 0
-      ? (Math.ceil(rate * 100) / 100).toFixed(0)
-      : (Math.floor(rate * 100) / 100).toFixed(0);
+  const roundedRate = (Math.ceil(rate * 100) / 100).toFixed(2);
 
   return (
     <div

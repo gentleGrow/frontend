@@ -17,7 +17,7 @@ export function fixedNumberIfNeeds(value: number) {
   const decimalPart = decimalSliced[1] as string | undefined;
 
   if (decimalPart !== undefined && hasMoreThanTwoDecimalPlaces(decimalPart)) {
-    return `${value.toFixed(0)}`;
+    return `${value.toFixed(2)}`;
   }
 
   return integerPart;
