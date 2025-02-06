@@ -26,6 +26,7 @@ export async function GET(req: NextRequest) {
     const accessTokenResponse = await fetchWithTimeout(
       "https://nid.naver.com/oauth2.0/token",
       {
+        timeout: 10000,
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
