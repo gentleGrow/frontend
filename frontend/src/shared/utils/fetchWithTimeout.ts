@@ -1,6 +1,6 @@
-import type { Agent } from 'https';
+import type { Agent } from "https";
 
-interface Options extends RequestInit {
+export interface Options extends RequestInit {
   timeout?: number;
   revalidate?: number;
   agent?: Agent; // 명확한 타입 지정

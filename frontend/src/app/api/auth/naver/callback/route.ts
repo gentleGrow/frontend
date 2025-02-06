@@ -5,6 +5,7 @@ import {
 } from "@/shared";
 import { NextRequest, NextResponse } from "next/server";
 import { Agent } from "https";
+import { fetchWithRetry } from "@/shared/utils/fetchWithRetry";
 
 const keepAliveAgent = new Agent({
   keepAlive: true,
@@ -31,7 +32,7 @@ export async function GET(req: NextRequest) {
       throw new Error("환경 변수 설정이 올바르지 않습니다.");
     }
 
-    const accessTokenResponse = await fetchWithTimeout(
+    const accessTokenResponse = await fetchWithRetry(
       "https://nid.naver.com/oauth2.0/token",
       {
         method: "POST",
@@ -82,12 +83,18 @@ export async function GET(req: NextRequest) {
     const redirectUrl = new URL("/", requestUrl);
     return NextResponse.redirect(redirectUrl);
   } catch (error) {
-    console.error(error);
+    console.error("Naver OAuth Error:", error);
+
+    // 구체적인 에러 메시지 생성
+    let errorMessage = "네이버 로그인 중 오류가 발생했습니다.";
+    if (error instanceof Error) {
+      if (error.message.includes("ECONNRESET")) {
+        errorMessage = "네트워크 연결이 불안정합니다. 다시 시도해 주세요.";
+      }
+    }
+
     const redirectUrl = new URL("/", requestUrl);
-    redirectUrl.searchParams.set(
-      "error",
-      (error as Error)?.message ?? "알 수 없는 오류로 실패했습니다",
-    );
+    redirectUrl.searchParams.set("error", errorMessage);
     return NextResponse.redirect(redirectUrl);
   }
 }
