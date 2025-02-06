@@ -71,6 +71,7 @@ export async function GET(req: NextRequest) {
     const redirectUrl = new URL("/", requestUrl);
     return NextResponse.redirect(redirectUrl);
   } catch (error) {
+    console.error(error);
     const redirectUrl = new URL("/", requestUrl);
     redirectUrl.searchParams.set(
       "error",
