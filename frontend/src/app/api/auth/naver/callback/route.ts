@@ -4,6 +4,14 @@ import {
   setCookieForJWT,
 } from "@/shared";
 import { NextRequest, NextResponse } from "next/server";
+import { Agent } from "https";
+
+const keepAliveAgent = new Agent({
+  keepAlive: true,
+  keepAliveMsecs: 3000,
+  maxSockets: 160,
+  timeout: 60000,
+});
 
 export async function GET(req: NextRequest) {
   const requestUrl = new URL(req.url);
@@ -26,9 +34,11 @@ export async function GET(req: NextRequest) {
     const accessTokenResponse = await fetchWithTimeout(
       "https://nid.naver.com/oauth2.0/token",
       {
-        timeout: 10000,
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Connection: "keep-alive",
+        },
         body: new URLSearchParams({
           grant_type: "authorization_code",
           client_id: process.env.NAVER_CLIENT_ID,
@@ -37,6 +47,8 @@ export async function GET(req: NextRequest) {
           code: authenticationCode,
           state: process.env.NAVER_STATE_STRING || "",
         }),
+        agent: keepAliveAgent,
+        timeout: 29000,
       },
     );
 
