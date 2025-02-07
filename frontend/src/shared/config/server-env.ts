@@ -21,7 +21,7 @@ const serverEnvSchema = z.object({
   GA_ID: z.string().min(1),
 
   // 기타
-  NAVER_STATE_STRING: z.string().min(1),
+  STATE_STRING: z.string().min(1),
 });
 
 function validateServerEnv() {
@@ -40,7 +40,7 @@ function validateServerEnv() {
       SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
       KR_HOLIDAYS_API_KEY: process.env.KR_HOLIDAYS_API_KEY,
       GA_ID: process.env.GA_ID,
-      NAVER_STATE_STRING: process.env.NAVER_STATE_STRING,
+      STATE_STRING: process.env.NAVER_STATE_STRING,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
