@@ -6,8 +6,20 @@ import { ACCESS_TOKEN } from "@/shared/constants/cookie";
 import AssetSheetSummarySkeleton from "@/widgets/asset-management-summary-card/ui/AssetManagementSkeleton";
 import AssetManagementDraggableTableSkeleton from "@/widgets/asset-management-draggable-table/ui/AssetManagementDraggableTableSkeleton";
 import { Suspense } from "react";
+import { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "자산 관리 시트",
+  description:
+    "직관적인 인터페이스로 자산을 쉽게 입력하고 관리하세요. 실시간 저장과 자동 계산으로 더욱 편리한 자산 관리가 가능합니다.",
+  openGraph: {
+    title: "자산 관리 시트 | Ollass",
+    description:
+      "직관적인 인터페이스로 자산을 쉽게 입력하고 관리하세요. 실시간 저장과 자동 계산으로 더욱 편리한 자산 관리가 가능합니다.",
+  },
+};
 
 const Sheet = async () => {
   const accessToken = cookies()?.get(ACCESS_TOKEN)?.value;
