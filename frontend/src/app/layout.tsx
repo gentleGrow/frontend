@@ -100,8 +100,8 @@ export default function RootLayout({
       </Head>
       <body className={`${pretendard.className}`}>
         <JotaiProvider>
-          <AuthProvider>
-            <QueryClientProvider>
+          <QueryClientProvider>
+            <AuthProvider>
               <TooltipProvider>
                 <div className="relative flex min-h-dvh flex-col text-body-1 text-gray-100">
                   <div className="flex flex-1 flex-col">
@@ -113,8 +113,8 @@ export default function RootLayout({
                   <Footer />
                 </div>
               </TooltipProvider>
-            </QueryClientProvider>
-          </AuthProvider>
+            </AuthProvider>
+          </QueryClientProvider>
         </JotaiProvider>
         <div id="drag-overlay" className="absolute left-0 top-0"></div>
       </body>

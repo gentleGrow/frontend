@@ -4,7 +4,6 @@ import { User } from "../types/user";
 
 interface AuthContextType {
   user: User | null;
-  logout: () => void;
   initializeUser: () => void;
 }
 
