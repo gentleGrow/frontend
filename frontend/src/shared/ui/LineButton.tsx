@@ -17,6 +17,7 @@ export default function LineButton({
   onClick?: () => void;
   props?: Record<string, any>;
   children?: ReactNode;
+  type?: HTMLButtonElement["type"];
 }) {
   const { className, ...restProps } = props || {};
 
