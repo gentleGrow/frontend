@@ -22,7 +22,7 @@ function TooltipTrigger({ children }: PropsWithChildren) {
 function TooltipContent({ children }: PropsWithChildren) {
   return (
     <TooltipContentOrigin
-      className="flex w-[230px] -translate-y-[6px] translate-x-1 flex-col items-center space-y-1 overflow-visible rounded-[8px] bg-gray-70 p-2.5 text-xs font-normal text-white"
+      className="flex max-w-[230px] -translate-y-[6px] translate-x-1 flex-col items-center space-y-1 overflow-visible rounded-[8px] bg-gray-70 p-2.5 text-xs font-normal text-white"
       sideOffset={5}
       side="top"
     >
