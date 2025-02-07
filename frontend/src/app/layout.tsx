@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Footer, Header, LoginFloatingCTAButton } from "@/widgets";
-import AuthProvider from "./AuthProvider";
+import AuthProvider from "../entities/user/hooks/AuthProvider";
 import JotaiProvider from "./JotaiProvider";
 import { LoginDialog } from "@/features";
 import QueryClientProvider from "@/app/QueryClientProvider";

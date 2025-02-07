@@ -1,8 +1,18 @@
 "use client";
-import { AuthContext, User } from "@/entities";
 import getUser from "@/entities/user/api/getUser";
-import React, { useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { User } from "@/entities";
+
+interface AuthContextType {
+  user: User | null;
+  initializeUser: () => void;
+  logout: () => void;
+}
+
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined,
+);
 
 export default function AuthProvider({
   children,
@@ -19,12 +29,18 @@ export default function AuthProvider({
     setUser(user);
   };
 
+  const logout = () => {
+    setUser(null);
+  };
+
   useEffect(() => {
     initializeUser();
   }, [initializeUser]);
 
   return (
-    <AuthContext.Provider value={{ user, initializeUser }}>
+    <AuthContext.Provider
+      value={{ user, initializeUser: originInitializeUser, logout }}
+    >
       {!isPendingInitializeUser && children}
     </AuthContext.Provider>
   );
