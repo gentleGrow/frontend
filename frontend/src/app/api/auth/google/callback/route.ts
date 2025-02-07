@@ -34,15 +34,7 @@ export async function GET(req: Request) {
     );
 
     if (!jwtResponse.ok)
-      throw new Error(
-        `서비스 서버에서 오류가 발생했습니다.: ${await jwtResponse.text()}`,
-      );
-
-    if (!jwtResponse.ok) {
-      throw new Error(
-        `서비스 서버에서 오류가 발생했습니다.: ${await jwtResponse.text()}`,
-      );
-    }
+      throw new Error("서비스 서버에서 오류가 발생했습니다.");
 
     const jwtData = await jwtResponse.json();
 
@@ -50,7 +42,8 @@ export async function GET(req: Request) {
     const redirectUrl = new URL("/", requestUrl);
     return NextResponse.redirect(redirectUrl);
   } catch (error) {
-    const redirectUrl = new URL("/?login=failed", requestUrl);
+    const redirectUrl = new URL("/", requestUrl);
+    redirectUrl.searchParams.set("error", (error as Error)?.message ?? "");
     return NextResponse.redirect(redirectUrl);
   }
 }
