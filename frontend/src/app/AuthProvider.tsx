@@ -1,7 +1,8 @@
 "use client";
-import { AuthContext, logout as logoutUser, User } from "@/entities";
+import { AuthContext, User } from "@/entities";
 import getUser from "@/entities/user/api/getUser";
 import React, { useEffect, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 
 export default function AuthProvider({
   children,
@@ -10,20 +11,21 @@ export default function AuthProvider({
 }) {
   const [user, setUser] = useState<User | null>(null);
 
-  const logout = () => {
-    setUser(null);
-    logoutUser();
-  };
-  const initializeUser = async () => {
+  const { mutate: initializeUser, isPending: isPendingInitializeUser } =
+    useMutation({ mutationFn: () => originInitializeUser() });
+
+  const originInitializeUser = async () => {
     const user = await getUser();
     setUser(user);
   };
+
   useEffect(() => {
     initializeUser();
-  }, []);
+  }, [initializeUser]);
+
   return (
-    <AuthContext.Provider value={{ user, initializeUser, logout }}>
-      {children}
+    <AuthContext.Provider value={{ user, initializeUser }}>
+      {!isPendingInitializeUser && children}
     </AuthContext.Provider>
   );
 }

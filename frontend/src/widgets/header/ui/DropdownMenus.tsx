@@ -10,10 +10,12 @@ import { loginModalAtom } from "@/features";
 import { useSetAtom } from "jotai";
 import Link from "next/link";
 import React from "react";
+
 export default function DropdownMenus() {
   const { user } = useUser();
   const { logoutUser } = useUserLogout();
   const setIsOpenLoginModal = useSetAtom(loginModalAtom);
+
   return (
     <>
       <DropdownMenuLabel
