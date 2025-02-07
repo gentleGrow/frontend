@@ -2,7 +2,7 @@ export { default as Input } from "./ui/Input";
 export { default as InputWithImage } from "./ui/InputWithInput";
 
 export { default as LineButton } from "./ui/LineButton";
-export { default as getGoogleOAuth2Client } from "./utils/getGoogleOAuth2Client";
+export { default as getGoogleOAuth2Client } from "../app/api/auth/google/helpers/getGoogleOAuth2Client";
 export { default as setCookieForJWT } from "./utils/setJWTCookie";
 export {
   SERVICE_SERVER_URL,

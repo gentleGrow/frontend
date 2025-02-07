@@ -22,9 +22,7 @@ export async function GET(req: Request) {
       throw new Error("Google로부터 ID 토큰을 가져오는 작업을 실패했습니다.");
     }
 
-    let jwtResponse;
-
-    jwtResponse = await fetchWithTimeout(
+    const jwtResponse = await fetchWithTimeout(
       `${SERVICE_SERVER_URL}/api/auth/v1/google`,
       {
         method: "POST",
@@ -39,6 +37,7 @@ export async function GET(req: Request) {
     const jwtData = await jwtResponse.json();
 
     setJWTCookie(jwtData.access_token, jwtData.refresh_token);
+
     const redirectUrl = new URL("/", requestUrl);
     return NextResponse.redirect(redirectUrl);
   } catch (error) {

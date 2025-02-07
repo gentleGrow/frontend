@@ -40,7 +40,7 @@ function validateServerEnv() {
       SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
       KR_HOLIDAYS_API_KEY: process.env.KR_HOLIDAYS_API_KEY,
       GA_ID: process.env.GA_ID,
-      STATE_STRING: process.env.NAVER_STATE_STRING,
+      STATE_STRING: process.env.STATE_STRING,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -58,5 +58,3 @@ function validateServerEnv() {
 }
 
 export const serverEnv = validateServerEnv();
-
-export type ServerEnv = z.infer<typeof serverEnvSchema>;
