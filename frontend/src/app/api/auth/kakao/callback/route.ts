@@ -1,10 +1,7 @@
-import {
-  fetchWithTimeout,
-  SERVICE_SERVER_URL,
-  setCookieForJWT,
-} from "@/shared";
+import { fetchWithTimeout, setCookieForJWT } from "@/shared";
 import { NextRequest, NextResponse } from "next/server";
 import { fetchWithRetry } from "@/shared/utils/fetchWithRetry";
+import { getServiceServerUrl } from "@/shared/utils/getServiceServerUrl";
 import { Agent } from "https";
 
 const keepAliveAgent = new Agent({
@@ -24,7 +21,7 @@ export async function GET(req: NextRequest) {
     const authenticationCode = requestUrl.searchParams.get("code");
 
     if (!authenticationCode) {
-      throw new Error("Kakao 계정 인증코드가 없습니다.");
+      throw new Error("카카오 계정 인증코드가 없습니다.");
     }
 
     const idTokenResponse = await fetchWithTimeout(
@@ -41,33 +38,29 @@ export async function GET(req: NextRequest) {
           redirect_uri: process.env.KAKAO_REDIRECT_URI,
           code: authenticationCode,
         }),
+        agent: keepAliveAgent,
       },
     );
 
     if (!idTokenResponse.ok) {
-      throw new Error(
-        `Kakao로부터 ID 토큰을 가져오는 작업이 실패했습니다.: ${await idTokenResponse.text()}`,
-      );
+      throw new Error("카카오 로그인에 실패했습니다.");
     }
 
     const idTokenData = await idTokenResponse.json();
     const idToken = idTokenData.id_token;
 
     const jwtResponse = await fetchWithRetry(
-      `${SERVICE_SERVER_URL}/api/auth/v1/kakao`,
+      `${getServiceServerUrl()}/api/auth/v1/kakao`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id_token: idToken }),
-        agent: keepAliveAgent,
         timeout: 29000,
       },
     );
 
     if (!jwtResponse.ok) {
-      throw new Error(
-        `서비스 서버에서 오류가 발생했습니다.: ${await jwtResponse.text()}`,
-      );
+      throw new Error("서비스 서버에서 오류가 발생했습니다.");
     }
 
     const jwtData = await jwtResponse.json();

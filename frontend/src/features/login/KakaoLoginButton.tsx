@@ -1,12 +1,11 @@
 import { LineButton } from "@/shared";
-import { clientEnv } from "@/shared/config/client-env";
 
 export default function KakaoLoginButton() {
   return (
     <LineButton
       title="카카오로 계속하기"
       onClick={() => {
-        window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${clientEnv.NEXT_PUBLIC_KAKAO_CLIENT_ID}&redirect_uri=${clientEnv.NEXT_PUBLIC_KAKAO_REDIRECT_URI}&response_type=code&scope=openid`;
+        window.location.href = "/api/auth/kakao";
       }}
       props={{
         className: "bg-[#FEE500] border-[#FEE500]",

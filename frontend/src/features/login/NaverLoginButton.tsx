@@ -1,4 +1,3 @@
-import { clientEnv } from "@/shared/config/client-env";
 import { LineButton } from "@/shared";
 
 export default function NaverLoginButton() {
@@ -6,7 +5,7 @@ export default function NaverLoginButton() {
     <LineButton
       title="네이버로 계속하기"
       onClick={() => {
-        window.location.href = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${clientEnv.NEXT_PUBLIC_NAVER_CLIENT_ID}&redirect_uri=${clientEnv.NEXT_PUBLIC_NAVER_REDIRECT_URI}&state=${clientEnv.NEXT_PUBLIC_NAVER_STATE_STRING}`;
+        window.location.href = "/api/auth/naver";
       }}
       props={{
         className: "bg-[#03C75A] text-white border-[#03C75A]",
