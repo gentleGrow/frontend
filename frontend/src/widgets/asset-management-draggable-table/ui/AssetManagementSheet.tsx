@@ -45,6 +45,12 @@ const NumberFieldType = {
   Rate: "ratio",
 } as const;
 
+const isAssetStockSub = (
+  row: StockAssetSubWithType | StockAssetParentWithType,
+): row is StockAssetSubWithType => {
+  return row.type === ColumnType.Sub;
+};
+
 const fieldNumberType = (field: string): "amount" | "price" | "ratio" => {
   if (field === "수량" || field === "거래량") {
     return NumberFieldType.Amount;
@@ -514,6 +520,10 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
               );
           }
 
+          if (!isAssetStockSub(currentRow)) {
+            throw new Error("이후는 서브 타입임이 보장되어야 합니다.");
+          }
+
           switch (key) {
             case "종목명":
               return (
@@ -645,7 +655,9 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                 />
               );
             case "수익률":
-              return (
+              return currentRow.매매 === "매도" ? (
+                <div className="h-full w-full bg-gray-10" />
+              ) : (
                 <NumberInput
                   value={value ?? undefined}
                   placeholder="자동 계산 필드입니다."
@@ -667,7 +679,9 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                 />
               );
             case "수익금":
-              return (
+              return currentRow.매매 === "매도" ? (
+                <div className="h-full w-full bg-gray-10" />
+              ) : (
                 <NumberInput
                   value={value}
                   type={fieldNumberType(key)}
