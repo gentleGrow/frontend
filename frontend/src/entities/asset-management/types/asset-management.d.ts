@@ -28,6 +28,7 @@ export interface StockAssetSub {
   수익률: number | null;
   수익금: number | null;
   거래가: number | null;
+  매매: "매수" | "매도";
   수량: number;
   종목명: string;
   거래량: number | null;
