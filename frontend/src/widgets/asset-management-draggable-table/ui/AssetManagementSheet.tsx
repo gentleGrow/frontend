@@ -534,7 +534,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
             case "수량":
               return (
                 <NumberInput
-                  value={value ?? 0}
+                  value={value}
                   onError={(message) => {
                     setCellError({
                       message,
