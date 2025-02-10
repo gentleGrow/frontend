@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useId, useState } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { commaizeNumber, fixedNumberIfNeeds } from "@/shared/utils/number";
 import { assert } from "@/shared/utils/assert";
@@ -31,83 +31,111 @@ const NumberInput = ({
   onChange,
   placeholder,
   type,
-  region,
+  region = "KRW",
   autoFill,
   variants = "default",
   onError,
 }: NumberInputProps) => {
   const id = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [isFocused, setIsFocused] = useState(false);
-  const [localValue, setLocalValue] = useState(value); // 내부 상태 추가
+  const [localValue, setLocalValue] = useState(value);
 
-  const removePricePrefix = (priceStr: string) =>
-    priceStr.slice(2, priceStr.length);
+  const getCurrencyPrefix = () => (region === "KRW" ? "₩ " : "$ ");
 
-  const removeRatioSuffix = (ratioStr: string) =>
-    ratioStr.slice(0, ratioStr.length - 1);
+  const formatValue = () => {
+    if (!isFocused) {
+      // 포커스가 없을 때는 일반적인 표시 형식
+      if (!value && value !== 0) return "";
 
-  const parseNumber = (value: string) => {
-    switch (type) {
-      case "ratio":
-        return decommaizeNumber(removeRatioSuffix(value));
-      case "price":
-        return decommaizeNumber(removePricePrefix(value));
-      case "amount":
-        return decommaizeNumber(value);
-      default:
-        return null;
+      if (type === "price") {
+        return getCurrencyPrefix() + commaizeNumber(value);
+      }
+
+      if (type === "amount") {
+        return commaizeNumber(value);
+      }
+
+      if (type === "ratio") {
+        const numValue = Number(value);
+        const prefix = numValue > 0 ? "+" : "";
+        return prefix + fixedNumberIfNeeds(numValue) + "%";
+      }
+
+      return value;
+    } else {
+      // 포커스 상태일 때
+      if (type === "price") {
+        if (!localValue && localValue !== 0) {
+          return getCurrencyPrefix();
+        }
+        return getCurrencyPrefix() + commaizeNumber(localValue);
+      }
+
+      if (!localValue && localValue !== 0) return "";
+
+      if (type === "amount") {
+        return commaizeNumber(localValue);
+      }
+
+      if (type === "ratio") {
+        return String(localValue);
+      }
+
+      return localValue;
     }
   };
 
-  // 컴포넌트가 새로운 value prop을 받았을 때 localValue 업데이트
+  const handleFocus = () => {
+    setIsFocused(true);
+
+    // 커서를 값의 끝으로 이동
+    requestAnimationFrame(() => {
+      if (inputRef.current) {
+        const length = inputRef.current.value.length;
+        inputRef.current.setSelectionRange(length, length);
+      }
+    });
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+    if (isNumber(localValue)) {
+      onChange?.(localValue);
+    }
+  };
+
+  const parseNumber = (value: string) => {
+    let parsedValue: string | null = value;
+
+    if (type === "price") {
+      parsedValue = value.replace(getCurrencyPrefix(), "");
+    } else if (type === "ratio") {
+      parsedValue = value.replace("%", "");
+    }
+
+    return decommaizeNumber(parsedValue);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const targetValue = e.currentTarget.value;
+    const parsedValue = parseNumber(targetValue);
+
+    if (!isNumber(parsedValue)) {
+      onError?.("숫자만 입력해 주세요.");
+      return;
+    }
+
+    setLocalValue(parsedValue);
+  };
+
   useEffect(() => {
     setLocalValue(value);
   }, [value]);
 
   if (type === "ratio" && !autoFill) {
-    assert("비율 타입은 autoFill 이 true 여야 합니다.");
+    assert("비율 타입은 autoFill이 true여야 합니다.");
   }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let targetValue = e.currentTarget.value;
-
-    const parsedValue = parseNumber(targetValue);
-
-    if (parsedValue === null) {
-      throw new Error(
-        "유효하지 않은 숫자 타입 입니다. NumberInput 컴포넌트의 타입을 확인해 주세요.",
-      );
-    }
-
-    if (!isNumber(parsedValue)) {
-      onError?.("숫자만 입력해 주세요.");
-    }
-
-    setLocalValue(parsedValue); // onChange 대신 localValue 업데이트
-  };
-
-  const formatValue = () => {
-    const valueToFormat = isFocused ? localValue : value; // 포커스 상태에 따라 다른 값 사용
-
-    if (!valueToFormat && valueToFormat !== 0) return "";
-
-    if (type === "price") {
-      const prefix = region === "KRW" ? "₩ " : "$ ";
-      return prefix + commaizeNumber(valueToFormat);
-    }
-
-    if (type === "amount") {
-      return commaizeNumber(valueToFormat);
-    }
-
-    if (type === "ratio") {
-      const numValue = Number(valueToFormat);
-      const prefix = numValue > 0 ? "+" : "";
-      return prefix + fixedNumberIfNeeds(numValue) + "%";
-    }
-
-    return valueToFormat; // 기본값 처리
-  };
 
   return (
     <label
@@ -118,11 +146,12 @@ const NumberInput = ({
       )}
     >
       <input
+        ref={inputRef}
         disabled={autoFill}
         readOnly={autoFill}
         id={id}
         className={cn(
-          "h-full w-full bg-transparent text-right text-body-2 text-inherit focus:outline-none",
+          "h-full w-full bg-transparent text-right text-body-2 text-inherit focus:outline-none focus:placeholder:text-transparent",
           variants === "gray-dark"
             ? "placeholder:text-gray-60"
             : "placeholder:text-gray-50",
@@ -130,27 +159,8 @@ const NumberInput = ({
         placeholder={placeholder}
         value={formatValue()}
         onChange={handleChange}
-        onFocus={(e) => {
-          setIsFocused(true);
-          if (type === "price" && !localValue) {
-            const prefix = region === "KRW" ? "₩ " : "$ ";
-            e.currentTarget.value = prefix;
-          }
-        }}
-        onClick={(e) => {
-          if (type === "price" && !value) {
-            const prefix = region === "KRW" ? "₩ " : "$ ";
-            e.currentTarget.value = prefix;
-          }
-        }}
-        onBlur={(_e) => {
-          setIsFocused(false);
-
-          // onBlur에서 부모 컴포넌트에 값 전달
-          if (isNumber(localValue)) {
-            onChange?.(localValue);
-          }
-        }}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
       />
     </label>
   );
