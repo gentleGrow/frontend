@@ -72,6 +72,7 @@ const ItemNameCell = ({
         ref={inputRef}
         readOnly={readonly}
         value={typedName ?? ""}
+        placeholder="종목명을 입력해 주세요."
         onChange={(e) => setTypedName(e.target.value)}
         className="ml-[2px] h-full w-[calc(100%_-_2px)] px-2.5 py-[10.5px] text-body-2 text-gray-90 focus:outline-green-60"
         onFocus={() => {
