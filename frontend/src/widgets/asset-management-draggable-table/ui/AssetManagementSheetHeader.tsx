@@ -19,7 +19,14 @@ interface AssetManagementSheetHeaderProps {
 
 type Field = (typeof allField)[number];
 
-const needTooltipFields = ["수익률", "저가", "고가", "시가"] as const;
+const needTooltipFields = [
+  "수익률",
+  "저가",
+  "고가",
+  "시가",
+  "수익금",
+  "배당금",
+] as const;
 
 type TooltipNeedField = (typeof needTooltipFields)[number];
 
@@ -32,12 +39,31 @@ const checkIsTooltipNeed = (field: Field): field is TooltipNeedField => {
   return false;
 };
 
+const getTitle = (field: Field) => {
+  switch (field) {
+    case "거래가":
+      return "매수가/매도가";
+    case "거래금":
+      return "매수금/매도금";
+    default:
+      return field;
+  }
+};
+
 const getTooltipContent = (field: TooltipNeedField) => {
   switch (field) {
     case "수익률":
-      return `주식을 매수한 평균 매입가입니다. 주가의 변동으로 처음 매입했던
-            가격과 다른 가격으로 매수될 경우 평균을 내서 해당 보유 주식의 전체
-            매수 가격을 표기하는 방법이에요.`;
+      return `매수 기준으로 계산되는 
+예상 추정치로 실제 값과
+다를 수 있습니다.`;
+    case "수익금":
+      return `매수 기준으로 계산되는 
+예상 추정치로 실제 값과
+다를 수 있습니다.`;
+    case "배당금":
+      return `매수 기준으로 계산되는 
+예상 추정치로 실제 값과
+다를 수 있습니다.`;
     case "시가":
       return `매매일자 기준 가격입니다.`;
     case "저가":
@@ -85,7 +111,7 @@ const AssetManagementSheetHeader = ({
       )}
     >
       <span className="flex flex-row items-center gap-1">
-        {field}
+        {getTitle(field as Field)}
         {essentialFields.includes(field) && (
           <span className="text-green-60">*</span>
         )}
