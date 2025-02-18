@@ -7,10 +7,10 @@ import {
   NoDataMessage,
   SegmentedButton,
   SegmentedButtonGroup,
+  TooltipWithIcon,
 } from "@/shared";
-import { useState } from "react";
+import React, { useState } from "react";
 import ArrowNavigator from "./ArrowNavigator";
-import React from "react";
 
 export default function EstimateDividendClient({
   estimatedDividendAll,
@@ -28,20 +28,25 @@ export default function EstimateDividendClient({
     <div
       className={`relative ${selectedTab === "모두" ? "h-[390px]" : "h-full"} w-full rounded-xl border border-gray-20 bg-white p-[16px] mobile:rounded-none ${selectedTab === "모두" ? "mobile:h-[500px]" : "h-full min-h-[388px]"} mobile:border-none`}
     >
-      <h2 className="text-heading-2 text-gray-80">예상 배당액</h2>
-      <div className="mt-[16px] flex w-full justify-between except-mobile:absolute except-mobile:right-[16px] except-mobile:top-[12px] except-mobile:mt-0">
-        <div className="w-[176px] shrink-0 mobile:hidden" />
-        <div className="w-full except-mobile:w-[148px]">
-          <SegmentedButtonGroup>
-            <SegmentedButton onClick={() => setSelectedTab("모두")}>
-              모두
-            </SegmentedButton>
-            <SegmentedButton onClick={() => setSelectedTab("종목별")}>
-              종목별
-            </SegmentedButton>
-          </SegmentedButtonGroup>
+      <header className="flex flex-col except-mobile:flex-row except-mobile:items-center">
+        <h2 className="flex flex-row items-center gap-1 text-heading-2 text-gray-80">
+          <span className="text-nowrap">예상 배당액</span>
+          <TooltipWithIcon text="예상 추정치로 실제 배당금과 다를 수 있습니다." />
+        </h2>
+        <div className="mt-[16px] flex w-full justify-between except-mobile:mt-0">
+          <div className="w-[176px] shrink-0 mobile:hidden" />
+          <div className="w-full except-mobile:w-[148px]">
+            <SegmentedButtonGroup>
+              <SegmentedButton onClick={() => setSelectedTab("모두")}>
+                모두
+              </SegmentedButton>
+              <SegmentedButton onClick={() => setSelectedTab("종목별")}>
+                종목별
+              </SegmentedButton>
+            </SegmentedButtonGroup>
+          </div>
         </div>
-      </div>
+      </header>
       {selectedTab === "모두" &&
         estimatedDividendAll[barChartNavItems[currentNavItemIndex]]?.xAxises
           .length !== 0 && (
