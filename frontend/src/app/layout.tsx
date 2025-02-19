@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ReactNode } from "react";
 import "./globals.css";
 import { Footer, Header, LoginFloatingCTAButton } from "@/widgets";
 import AuthProvider from "./AuthProvider";
@@ -91,7 +92,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="ko">
@@ -108,9 +109,9 @@ export default function RootLayout({
                     <Header />
                     {children}
                   </div>
+                  <Footer />
                   <LoginFloatingCTAButton />
                   <LoginDialog />
-                  <Footer />
                 </div>
               </TooltipProvider>
             </AuthProvider>
