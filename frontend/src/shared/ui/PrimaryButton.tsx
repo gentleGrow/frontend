@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { ReactNode, ButtonHTMLAttributes } from "react";
+import { ButtonHTMLAttributes, ReactNode } from "react";
 
 type PrimaryButtonProps = {
   isHover?: boolean;
@@ -21,7 +21,7 @@ export default function PrimaryButton(props: PrimaryButtonProps) {
   } = props;
 
   const finalClassName = clsx(
-    "relative rounded-md text-center  bg-green-60 font-semibold leading-[24px] text-white disabled:bg-gray-10 disabled:text-gray-50",
+    "relative rounded-md text-center  bg-primary font-semibold leading-[24px] text-white disabled:bg-gray-10 disabled:text-gray-50",
     buttonSize === "large" ? "h-12 w-full " : "h-9 w-fit px-[29.5px] text-sm",
     !isDisabled && "hover:bg-green-70",
     className,

@@ -24,7 +24,7 @@ const CustomCheckbox: React.FC<CheckboxProps> = ({
         onChange={onChange}
       />
       <div
-        className={`flex h-4 w-4 items-center justify-center rounded-[2px] border ${checked ? "border-transparent bg-green-50 hover:bg-green-70" : "border-gray-30 hover:border-gray-50"} `}
+        className={`flex h-4 w-4 items-center justify-center rounded-[2px] border ${checked ? "border-transparent bg-primary hover:bg-green-70" : "border-gray-30 hover:border-gray-50"} `}
       >
         {checked && (
           <svg
