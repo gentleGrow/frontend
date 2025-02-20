@@ -1,7 +1,6 @@
 import { SegmentedButtonProps } from "../types/component-props";
 
 export default function SegmentedButton({
-  numberOfButtons,
   isSelected = false,
   isHover = false,
   onClick,
