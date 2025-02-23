@@ -1,7 +1,7 @@
 import {
   fetchWithTimeout,
+  getServiceUrl,
   RESPONSE_STATUS,
-  SERVICE_SERVER_URL,
   setCookieForJWT,
 } from "@/shared";
 import { REFRESH_TOKEN } from "@/shared/constants/cookie";
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
       );
     }
     const refreshResponse = await fetchWithTimeout(
-      `${SERVICE_SERVER_URL}/api/auth/v1/refresh`,
+      `${getServiceUrl()}/api/auth/v1/refresh`,
       {
         method: "POST",
         headers: {

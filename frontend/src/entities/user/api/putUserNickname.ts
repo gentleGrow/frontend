@@ -1,12 +1,12 @@
 "use server";
-import { fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
+import { fetchWithTimeout, getServiceUrl } from "@/shared";
 import { ACCESS_TOKEN } from "@/shared/constants/cookie";
 import { cookies } from "next/headers";
 
 const putUserNickname = async (nickname: string) => {
   try {
     const response = await fetchWithTimeout(
-      `${SERVICE_SERVER_URL}/api/auth/v1/nickname`,
+      `${getServiceUrl()}/api/auth/v1/nickname`,
       {
         method: "PUT",
         headers: {

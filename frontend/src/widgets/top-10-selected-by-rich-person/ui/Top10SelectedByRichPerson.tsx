@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Top10SelectedByRichPersonItem from "./Top10SelectedByRichPersonItem";
 import fetchRichPicks from "../api/fetchRichPicks";
 
@@ -10,7 +9,6 @@ export default async function Top10SelectedByRichPerson() {
         <h2 className="text-heading-2 text-gray-80">
           부자들이 선택한 종목 TOP10
         </h2>
-        <Image src={"/images/tip.svg"} width={16} height={16} alt="tip" />
       </div>
       <div>
         <ul>

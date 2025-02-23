@@ -23,8 +23,8 @@ export default function Deactivate() {
   const isDisabled = !isReasonValid || !isAgreed;
 
   return (
-    <section className="max-w-[557px]">
-      <h2 className="mb-3 text-[28px] font-bold text-gray-100">회원 탈퇴</h2>
+    <section className="mb-16 max-w-[557px]">
+      <h2 className="mb-3 text-[36px] font-bold text-gray-100">회원 탈퇴</h2>
       <p className="text-sm font-medium text-gray-70">
         서비스를 이용하시는 데 불편을 드려 죄송합니다.
         <br />
@@ -56,14 +56,14 @@ export default function Deactivate() {
               className="h-[64px] min-h-0 resize-none border-none focus:ring-0 focus-visible:!ring-0 focus-visible:!ring-offset-0"
             />
             <div className="absolute bottom-[30.5px] left-1/2 h-[1px] w-[96%] -translate-x-1/2 bg-gray-10" />
-            <span className="absolute bottom-[10px] right-[10px] text-body-5 text-gray-60">
+            <span className="absolute bottom-[10px] right-[10px] text-body-2 text-gray-60">
               {reasonText.length}/200
             </span>
           </div>
         )}
       </div>
       <div className="mb-5 flex w-full justify-center rounded-lg bg-gray-5 py-[6px]">
-        <p className="text-center text-sm font-medium leading-[20px] text-gray-80">
+        <p className="text-center text-body-2 font-medium leading-[20px] text-gray-80">
           탈퇴하실 경우 모든 데이터는 삭제됩니다.
           <br />
           삭제된 데이터는 복구할 수 없습니다.

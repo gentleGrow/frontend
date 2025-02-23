@@ -1,8 +1,4 @@
-import {
-  fetchWithTimeout,
-  SERVICE_SERVER_URL,
-  setCookieForJWT,
-} from "@/shared";
+import { fetchWithTimeout, getServiceUrl, setCookieForJWT } from "@/shared";
 import { NextRequest, NextResponse } from "next/server";
 import { Agent } from "https";
 import { fetchWithRetry } from "@/shared/utils/fetchWithRetry";
@@ -63,7 +59,7 @@ export async function GET(req: NextRequest) {
     const accessToken = accessTokenData.access_token;
 
     const jwtResponse = await fetchWithTimeout(
-      `${SERVICE_SERVER_URL}/api/auth/v1/naver`,
+      `${getServiceUrl()}/api/auth/v1/naver`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

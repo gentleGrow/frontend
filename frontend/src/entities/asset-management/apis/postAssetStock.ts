@@ -1,4 +1,4 @@
-import { fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
+import { fetchWithTimeout, getServiceUrl } from "@/shared";
 
 export interface PostAssetStockRequestBody {
   trade_date?: string;
@@ -15,7 +15,7 @@ export const postAssetStock = async (
   accessToken: string,
   body: PostAssetStockRequestBody,
 ) => {
-  return fetchWithTimeout(`${SERVICE_SERVER_URL}/api/asset/v1/assetstock`, {
+  return fetchWithTimeout(`${getServiceUrl()}/api/asset/v1/assetstock`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

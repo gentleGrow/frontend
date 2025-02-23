@@ -16,6 +16,19 @@ interface DragAndDropDropdownProps {
   onCheckboxClicked: (name: string) => void;
 }
 
+// TODO: 현재는 여기서 도메인 로직을 처리하는데, 이는 복잡도를 해결하기에 시간이 오래 걸릴거 같아 이렇게 처리함 추후 해결해야함.
+const parseField = (field: string) => {
+  if (field === "거래가") {
+    return "매수가/매도가";
+  }
+
+  if (field === "거래금") {
+    return "매수금/매도금";
+  }
+
+  return field;
+};
+
 const DragAndDropDropdown = ({
   items,
   onCheckboxClicked,
@@ -84,7 +97,7 @@ const DragAndDropDropdownDraggableItem = ({
       <div className="flex flex-row items-center gap-[4.5px]">
         <CheckBox checked={isChecked} onChange={onCheckboxClicked} />
         <span className="text-body-2 text-gray-90 except-mobile:group-hover:font-semibold">
-          {item.name}
+          {parseField(item.name)}
         </span>
       </div>
       <button

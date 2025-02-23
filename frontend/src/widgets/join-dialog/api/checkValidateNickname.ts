@@ -1,10 +1,10 @@
 "use server";
-import { fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
+import { fetchWithTimeout, getServiceUrl } from "@/shared";
 
 const checkValidateNickname = async (nickname: string) => {
   try {
     const response = await fetchWithTimeout(
-      `${SERVICE_SERVER_URL}/api/auth/v1/nickname?nickname=${nickname}`,
+      `${getServiceUrl()}/api/auth/v1/nickname?nickname=${nickname}`,
     );
 
     if (!response.ok) {

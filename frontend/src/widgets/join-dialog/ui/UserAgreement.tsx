@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/shared/ui/checkbox/index";
+import Link from "next/link";
 
 export default function UserAgreement({
   nextStep,
@@ -94,9 +95,13 @@ export default function UserAgreement({
                 onChange={() => setIsAgreedToTerms(!isAgreedToTerms)}
               />
 
-              <button className="text-body-2 font-normal text-gray-60">
+              <Link
+                href="https://www.notion.so/1a317a072f87802aa638c2ff4b0a9b91?pvs=4"
+                target="_blank"
+                className="text-body-2 font-normal text-gray-60"
+              >
                 약관보기
-              </button>
+              </Link>
             </div>
             <div className="flex w-full flex-row items-center justify-between">
               <Checkbox
@@ -107,9 +112,13 @@ export default function UserAgreement({
                   setIsAgreedToPrivacyPolicy(!isAgreedToPrivacyPolicy)
                 }
               />
-              <button className="text-body-2 font-normal text-gray-60">
+              <Link
+                href="https://www.notion.so/1a317a072f8780b4ac71f8713359b644?pvs=4"
+                target="_blang"
+                className="text-body-2 font-normal text-gray-60"
+              >
                 약관보기
-              </button>
+              </Link>
             </div>
           </div>
           <DialogFooter className="mt-[32px] justify-center sm:justify-center">

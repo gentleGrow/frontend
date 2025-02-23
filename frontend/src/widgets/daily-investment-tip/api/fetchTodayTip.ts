@@ -1,9 +1,9 @@
-import { fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
+import { fetchWithTimeout, getServiceUrl } from "@/shared";
 
 const fetchTodayTip = async (): Promise<string> => {
   try {
     const response = await fetchWithTimeout(
-      `${SERVICE_SERVER_URL}/api/chart/v1/tip`,
+      `${getServiceUrl()}/api/chart/v1/tip`,
     );
     if (!response.ok) {
       throw new Error(`${response.status}: ${await response.json()}`);

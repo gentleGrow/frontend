@@ -1,7 +1,7 @@
 import axios from "axios";
-import { SERVICE_SERVER_URL } from "@/shared";
+import { getServiceUrl } from "@/shared/constants/api";
 
 export const baseAxios = axios.create({
-  baseURL: SERVICE_SERVER_URL,
+  baseURL: getServiceUrl(),
   timeout: 10000,
 });

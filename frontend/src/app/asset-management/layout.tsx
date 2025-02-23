@@ -17,7 +17,7 @@ const AssetManagement: React.FC<{ children: React.ReactNode }> = ({
       layout={!isMobile}
       className={cn(
         "mx-auto flex w-full flex-1 flex-col gap-4 bg-gray-5 except-mobile:px-5",
-        pathname === "/asset-management/sheet" ? "" : "max-w-[1400px]",
+        pathname === "/asset-management" ? "" : "max-w-[1400px]",
       )}
     >
       <AssetManagementTabBar />

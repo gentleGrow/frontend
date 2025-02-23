@@ -4,11 +4,7 @@ export { default as InputWithImage } from "./ui/InputWithInput";
 export { default as LineButton } from "./ui/LineButton";
 export { default as getGoogleOAuth2Client } from "../app/api/auth/google/helpers/getGoogleOAuth2Client";
 export { default as setCookieForJWT } from "./utils/setJWTCookie";
-export {
-  SERVICE_SERVER_URL,
-  RESPONSE_STATUS,
-  API_CHART_SUFFIX,
-} from "./constants/api";
+export { RESPONSE_STATUS, API_CHART_SUFFIX } from "./constants/api";
 export { default as SegmentedButton } from "./ui/SegmentedButton";
 export { default as SegmentedButtonGroup } from "./ui/SegmentedButtonGroup";
 export { default as DonutChart } from "./ui/DonutChart";
@@ -38,3 +34,5 @@ export { default as DatePicker } from "./ui/DatePicker";
 export { default as DragAndDropDropdown } from "./ui/DragAndDropDropdown";
 export { default as CheckBox } from "./ui/CheckBox";
 export { default as TooltipWithIcon } from "./ui/TooltipWithIcon";
+
+export { getServiceUrl } from "./constants/api";
