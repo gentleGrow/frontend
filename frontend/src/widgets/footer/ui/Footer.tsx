@@ -20,11 +20,19 @@ const Footer = () => {
             "gap-9 mobile-459:gap-9",
           )}
         >
-          <Link href="" className="text-body-3 text-gray-90 hover:text-primary">
+          <Link
+            href="https://www.notion.so/1a317a072f87802aa638c2ff4b0a9b91?pvs=4"
+            className="text-body-3 text-gray-90 hover:text-primary"
+            target="_blank"
+          >
             서비스 이용약관
           </Link>
           <div className="h-3 w-px rounded-full bg-gray-30" />
-          <Link href="" className="text-body-3 text-gray-90 hover:text-primary">
+          <Link
+            href="https://www.notion.so/1a317a072f8780b4ac71f8713359b644?pvs=4"
+            className="text-body-3 text-gray-90 hover:text-primary"
+            target="_blank"
+          >
             개인정보처리방침
           </Link>
           <div className="h-3 w-px rounded-full bg-gray-30" />
