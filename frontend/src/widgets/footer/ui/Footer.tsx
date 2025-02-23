@@ -32,7 +32,7 @@ const Footer = () => {
             ollass@gmail.com
           </span>
         </div>
-        <div className="block flex flex-row items-center justify-start mobile-459:hidden">
+        <div className="flex flex-row items-center justify-start mobile-459:hidden">
           <span className="text-body-2 text-gray-90">ollass@gmail.com</span>
         </div>
       </div>
