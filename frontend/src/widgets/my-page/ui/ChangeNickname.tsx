@@ -7,6 +7,15 @@ import { useState } from "react";
 export default function ChangeNickname({ user }: { user: User }) {
   const [nickname, setNickname] = useState(user?.nickname);
   const { updateNickname, updateNicknameStatus } = useUserUpdate();
+
+  const handleNickname = (value: string) => {
+    if (value.trim().length > 12) {
+      return;
+    }
+
+    setNickname(value);
+  };
+
   return (
     <article>
       <label className="text-heading-2 text-gray-100" htmlFor="nickname">
@@ -20,7 +29,7 @@ export default function ChangeNickname({ user }: { user: User }) {
           id="nickname"
           type="text"
           value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
+          onChange={(e) => handleNickname(e.target.value)}
         />
 
         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-body-5 text-gray-60">
