@@ -10,7 +10,7 @@ const Footer = () => {
     <footer
       className={cn(
         "mx-auto w-full bg-gray-5 px-5 pb-[42px] pt-5 mobile-459:pt-8",
-        pathname === "/asset-management/sheet" ? "" : "max-w-[1400px]",
+        pathname.includes("asset-management") ? "" : "max-w-[1400px]",
       )}
     >
       <div className="flex flex-col gap-3 pb-[18px] mobile-459:block">
