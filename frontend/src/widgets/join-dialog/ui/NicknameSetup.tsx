@@ -182,7 +182,7 @@ export default function NicknameSetup({
                 }
 
                 initializeUser();
-                router.push("/asset-management/sheet");
+                router.push("/asset-management");
               }}
             >
               완료하기
