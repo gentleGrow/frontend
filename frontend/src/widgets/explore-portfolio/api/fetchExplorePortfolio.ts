@@ -1,4 +1,5 @@
-import { DonutChartData, fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
+import { DonutChartData, fetchWithTimeout, getServiceUrl } from "@/shared";
+
 interface Portfolio {
   name: string;
   data: DonutChartData[];
@@ -6,7 +7,7 @@ interface Portfolio {
 const fetchExplorePortfolio = async (): Promise<Portfolio[]> => {
   try {
     const response = await fetchWithTimeout(
-      `${SERVICE_SERVER_URL}/api/chart/v1/people-portfolio`,
+      `${getServiceUrl()}/api/chart/v1/people-portfolio`,
     );
     if (!response.ok) {
       throw new Error(`${response.status}: ${await response.json()}`);

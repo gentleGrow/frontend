@@ -1,4 +1,4 @@
-import { fetchWithTimeout, LineChartData, SERVICE_SERVER_URL } from "@/shared";
+import { fetchWithTimeout, getServiceUrl, LineChartData } from "@/shared";
 import { ACCESS_TOKEN } from "@/shared/constants/cookie";
 import { cookies } from "next/headers";
 import { checkIsJoined } from "@/features/login/api/checkIsJoined";
@@ -22,16 +22,16 @@ const createEmptyChartData = (): LineChartData => ({
 const fetchSamplePerformanceAnalysis = async () => {
   return await Promise.all([
     fetchWithTimeout(
-      `${SERVICE_SERVER_URL}/api/chart/v1/sample/performance-analysis?interval=1month`,
+      `${getServiceUrl()}/api/chart/v1/sample/performance-analysis?interval=1month`,
     ),
     fetchWithTimeout(
-      `${SERVICE_SERVER_URL}/api/chart/v1/sample/performance-analysis?interval=3month`,
+      `${getServiceUrl()}/api/chart/v1/sample/performance-analysis?interval=3month`,
     ),
     fetchWithTimeout(
-      `${SERVICE_SERVER_URL}/api/chart/v1/sample/performance-analysis?interval=6month`,
+      `${getServiceUrl()}/api/chart/v1/sample/performance-analysis?interval=6month`,
     ),
     fetchWithTimeout(
-      `${SERVICE_SERVER_URL}/api/chart/v1/sample/performance-analysis?interval=1year`,
+      `${getServiceUrl()}/api/chart/v1/sample/performance-analysis?interval=1year`,
     ),
   ]);
 };
@@ -39,7 +39,7 @@ const fetchSamplePerformanceAnalysis = async () => {
 const fetchUserPerformanceAnalysis = async () => {
   return await Promise.all([
     fetchWithTimeout(
-      `${SERVICE_SERVER_URL}/api/chart/v1/performance-analysis?interval=1month`,
+      `${getServiceUrl()}/api/chart/v1/performance-analysis?interval=1month`,
       {
         method: "GET",
         headers: {
@@ -49,7 +49,7 @@ const fetchUserPerformanceAnalysis = async () => {
       },
     ),
     fetchWithTimeout(
-      `${SERVICE_SERVER_URL}/api/chart/v1/performance-analysis?interval=3month`,
+      `${getServiceUrl()}/api/chart/v1/performance-analysis?interval=3month`,
       {
         method: "GET",
         headers: {
@@ -59,7 +59,7 @@ const fetchUserPerformanceAnalysis = async () => {
       },
     ),
     fetchWithTimeout(
-      `${SERVICE_SERVER_URL}/api/chart/v1/performance-analysis?interval=6month`,
+      `${getServiceUrl()}/api/chart/v1/performance-analysis?interval=6month`,
       {
         method: "GET",
         headers: {
@@ -69,7 +69,7 @@ const fetchUserPerformanceAnalysis = async () => {
       },
     ),
     fetchWithTimeout(
-      `${SERVICE_SERVER_URL}/api/chart/v1/performance-analysis?interval=1year`,
+      `${getServiceUrl()}/api/chart/v1/performance-analysis?interval=1year`,
       {
         method: "GET",
         headers: {

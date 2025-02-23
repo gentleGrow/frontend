@@ -1,7 +1,6 @@
-import { fetchWithTimeout, setCookieForJWT } from "@/shared";
+import { fetchWithTimeout, getServiceUrl, setCookieForJWT } from "@/shared";
 import { NextRequest, NextResponse } from "next/server";
 import { fetchWithRetry } from "@/shared/utils/fetchWithRetry";
-import { getServiceServerUrl } from "@/shared/utils/getServiceServerUrl";
 import { Agent } from "https";
 
 const keepAliveAgent = new Agent({
@@ -50,7 +49,7 @@ export async function GET(req: NextRequest) {
     const idToken = idTokenData.id_token;
 
     const jwtResponse = await fetchWithRetry(
-      `${getServiceServerUrl()}/api/auth/v1/kakao`,
+      `${getServiceUrl()}/api/auth/v1/kakao`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

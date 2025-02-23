@@ -1,4 +1,4 @@
-import { fetchWithTimeout, SERVICE_SERVER_URL } from "@/shared";
+import { fetchWithTimeout, getServiceUrl } from "@/shared";
 import { ACCESS_TOKEN } from "@/shared/constants/cookie";
 import { cookies } from "next/headers";
 
@@ -14,7 +14,7 @@ export interface Summary {
 
 export const fetchSummary = async (): Promise<Summary> => {
   const response = await fetchWithTimeout(
-    `${SERVICE_SERVER_URL}/api/chart/v1/summary`,
+    `${getServiceUrl()}/api/chart/v1/summary`,
     {
       method: "GET",
       headers: {
@@ -34,7 +34,7 @@ export const fetchSummary = async (): Promise<Summary> => {
 
 export const fetchSampleSummary = async (): Promise<Summary> => {
   const response = await fetchWithTimeout(
-    `${SERVICE_SERVER_URL}/api/chart/v1/sample/summary`,
+    `${getServiceUrl()}/api/chart/v1/sample/summary`,
   );
   if (!response.ok) {
     throw new Error(`${response.status}: ${await response.json()}`);

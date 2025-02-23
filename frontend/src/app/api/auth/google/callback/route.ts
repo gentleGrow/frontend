@@ -1,7 +1,7 @@
 import {
   fetchWithTimeout,
   getGoogleOAuth2Client,
-  SERVICE_SERVER_URL,
+  getServiceUrl,
 } from "@/shared";
 import setJWTCookie from "@/shared/utils/setJWTCookie";
 import { NextResponse } from "next/server";
@@ -23,7 +23,7 @@ export async function GET(req: Request) {
     }
 
     const jwtResponse = await fetchWithTimeout(
-      `${SERVICE_SERVER_URL}/api/auth/v1/google`,
+      `${getServiceUrl()}/api/auth/v1/google`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

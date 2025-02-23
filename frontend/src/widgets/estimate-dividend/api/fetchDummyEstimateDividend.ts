@@ -2,7 +2,7 @@ import {
   DonutChartData,
   EstimateDividendAllData,
   fetchWithTimeout,
-  SERVICE_SERVER_URL,
+  getServiceUrl,
 } from "@/shared";
 
 const fetchDummyEstimateDividend = async (
@@ -10,7 +10,7 @@ const fetchDummyEstimateDividend = async (
 ): Promise<EstimateDividendAllData | DonutChartData[]> => {
   try {
     const response = await fetchWithTimeout(
-      `${SERVICE_SERVER_URL}/api/chart/v1/sample/estimate-dividend?category=${category}`,
+      `${getServiceUrl()}/api/chart/v1/sample/estimate-dividend?category=${category}`,
     );
     if (!response.ok) {
       throw new Error(`${response.status}: ${await response.json()}`);
