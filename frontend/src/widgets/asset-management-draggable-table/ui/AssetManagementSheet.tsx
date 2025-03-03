@@ -518,6 +518,15 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                   autoFill
                 />
               );
+            case "종가":
+              return (
+                <NumberInput
+                  type={fieldNumberType(key)}
+                  placeholder={"0"}
+                  variants="gray-light"
+                  autoFill
+                />
+              );
           }
 
           if (!isAssetStockSub(currentRow)) {
@@ -731,6 +740,15 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                   placeholder={"자동 계산 필드입니다."}
                   autoFill
                   variants={!value ? "gray-light" : "default"}
+                />
+              );
+            case "종가":
+              return (
+                <NumberInput
+                  type={fieldNumberType(key)}
+                  placeholder={"자동 계산 필드입니다."}
+                  variants="gray-light"
+                  autoFill
                 />
               );
           }
