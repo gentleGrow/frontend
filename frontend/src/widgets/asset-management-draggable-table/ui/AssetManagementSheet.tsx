@@ -746,7 +746,7 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
               return (
                 <NumberInput
                   type={fieldNumberType(key)}
-                  placeholder={"0"}
+                  placeholder={"자동 계산 필드입니다."}
                   variants="gray-light"
                   autoFill
                 />
