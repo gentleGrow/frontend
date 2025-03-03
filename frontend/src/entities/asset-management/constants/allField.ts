@@ -15,4 +15,5 @@ export const allField = [
   "거래금",
   "거래가",
   "거래량",
+  "종가",
 ] as const;
