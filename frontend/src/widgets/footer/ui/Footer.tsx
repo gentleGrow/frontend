@@ -37,7 +37,7 @@ const Footer = () => {
           </Link>
           <div className="h-3 w-px rounded-full bg-gray-30" />
           <span className="hidden text-body-2 text-gray-90 mobile-459:block">
-            ollass@gmail.com
+            ollass.help@gmail.com
           </span>
         </div>
         <div className="flex flex-row items-center justify-start mobile-459:hidden">
