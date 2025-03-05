@@ -9,7 +9,7 @@ const Footer = () => {
   return (
     <footer
       className={cn(
-        "mx-auto w-full bg-gray-5 px-5 pb-[42px] pt-5 mobile-459:pt-8",
+        "mx-auto w-full bg-gray-5 px-5 pb-[42px] pt-5 mobile-459:pt-[52px]",
         pathname.includes("asset-management") ? "" : "max-w-[1400px]",
       )}
     >
@@ -37,7 +37,7 @@ const Footer = () => {
           </Link>
           <div className="h-3 w-px rounded-full bg-gray-30" />
           <span className="hidden text-body-2 text-gray-90 mobile-459:block">
-            ollass@gmail.com
+            ollass.help@gmail.com
           </span>
         </div>
         <div className="flex flex-row items-center justify-start mobile-459:hidden">
@@ -50,6 +50,9 @@ const Footer = () => {
         해야 합니다.
         <br />본 서비스에서 제공하는 수익률, 배당금, 투자 예상 금액 등은 예상
         추정치이며, 실제 가격 및 수익률과 다를 수 있습니다.
+      </p>
+      <p className="mt-[18px] text-center text-body-2 font-normal leading-[16.71px] text-gray-50">
+        ⓒ 2025. ollass All rights reserved.
       </p>
     </footer>
   );

@@ -6,7 +6,7 @@ export default function PriceDisplay({ price }) {
   }).format(price);
 
   return (
-    <div className="w-full overflow-hidden truncate font-semibold leading-[33px] except-mobile:text-[28px]">
+    <div className="w-full overflow-hidden truncate font-bold leading-[33.6px] except-mobile:text-[28px]">
       {formattedNumber}
     </div>
   );
