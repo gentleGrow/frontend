@@ -9,12 +9,14 @@ import { lastUpdatedAtAtom } from "@/entities/asset-management/atoms/lastUpdated
 import { AssetStock } from "@/entities/asset-management/types/asset-management";
 import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 import { ItemName } from "@/entities/asset-management/apis/getItemNameList";
+import { openedFieldAtom } from "@/features/asset-management";
 
 export const usePostAssetStockParent = (itemNames: ItemName[]) => {
   const queryClient = useQueryClient();
 
   const setLastUpdatedAt = useSetAtom(lastUpdatedAtAtom);
   const setCellError = useSetAtom(cellErrorAtom);
+  const setOpenedField = useSetAtom(openedFieldAtom);
 
   return useMutation({
     mutationKey: keyStore.assetStock.postAssetStock.queryKey,
@@ -89,6 +91,11 @@ export const usePostAssetStockParent = (itemNames: ItemName[]) => {
           exact: true,
         });
 
+        setOpenedField((prev) => {
+          const newField = new Set(prev);
+          newField.add(stockName.name_kr);
+          return newField;
+        });
         setLastUpdatedAt(new Date());
 
         return;
