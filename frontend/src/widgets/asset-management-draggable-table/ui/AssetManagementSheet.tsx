@@ -355,7 +355,9 @@ const AssetManagementSheet: FC<AssetManagementDraggableTableProps> = ({
                     value={openedFields.has(value)}
                   />
                   <div className="relative flex w-full flex-row items-center justify-between px-2.5 py-[12.5]">
-                    <div className="text-body-2 text-gray-90">{value}</div>
+                    <div className="w-full truncate text-body-2 text-gray-90">
+                      {value}
+                    </div>
                     <SellBuyButton
                       openTooltip={(() => {
                         return (
