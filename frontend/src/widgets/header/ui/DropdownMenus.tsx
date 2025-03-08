@@ -64,10 +64,6 @@ export default function DropdownMenus() {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator className="my-2" />
-          <DropdownMenuItem className="px-4 py-[9.5px] text-body-3">
-            고객센터
-          </DropdownMenuItem>
-          <DropdownMenuSeparator className="my-2" />
           <DropdownMenuItem
             onClick={() => logoutUser()}
             className="px-4 py-[9.5px] text-body-3"
