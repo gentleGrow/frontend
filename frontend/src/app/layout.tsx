@@ -11,6 +11,7 @@ import localFont from "next/font/local";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Head from "next/head";
+import { getUser } from "@/entities";
 
 const pretendard = localFont({
   src: "./fonts/PretendardVariable.woff2",
@@ -89,11 +90,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: ReactNode;
 }>) {
+  const user = await getUser();
+
   return (
     <html lang="ko">
       <Head>
@@ -102,11 +105,11 @@ export default function RootLayout({
       <body className={`${pretendard.className}`}>
         <JotaiProvider>
           <QueryClientProvider>
-            <AuthProvider>
+            <AuthProvider user={user}>
               <TooltipProvider>
                 <div className="relative flex min-h-dvh flex-col text-body-1 text-gray-100">
                   <div className="flex flex-1 flex-col">
-                    <Header />
+                    {user !== undefined && <Header />}
                     {children}
                   </div>
                   <Footer />

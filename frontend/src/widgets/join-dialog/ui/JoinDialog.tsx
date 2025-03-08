@@ -9,7 +9,7 @@ import { deleteCookie } from "@/shared";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/shared/constants/cookie";
 
 export default function JoinDialog() {
-  const { user, initializeUser } = useUser();
+  const { user, setUser } = useUser();
   const [state, setState] = useState<"agreement" | "nickname">("agreement");
   if (!user || (user && user.isJoined)) {
     return null;
@@ -17,8 +17,9 @@ export default function JoinDialog() {
   const handleClose = () => {
     deleteCookie(ACCESS_TOKEN);
     deleteCookie(REFRESH_TOKEN);
-    initializeUser();
+    setUser(null);
   };
+
   return (
     <Dialog open={user && !user.isJoined}>
       {state === "agreement" ? (
@@ -27,10 +28,7 @@ export default function JoinDialog() {
           nextStep={() => setState("nickname")}
         />
       ) : (
-        <NicknameSetup
-          initializeUser={initializeUser}
-          handleClose={handleClose}
-        />
+        <NicknameSetup handleClose={handleClose} />
       )}
     </Dialog>
   );

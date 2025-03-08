@@ -5,8 +5,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DropdownMenus from "./DropdownMenus";
+import { useUser } from "@/entities";
+import useUserLogout from "@/entities/user/model/useUserLogout";
 
 export default function Profile() {
+  const { user } = useUser();
+  const { logoutUser } = useUserLogout();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -44,7 +49,7 @@ export default function Profile() {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="p-3">
-        <DropdownMenus />
+        <DropdownMenus user={user} logout={logoutUser} />
       </DropdownMenuContent>
     </DropdownMenu>
   );
