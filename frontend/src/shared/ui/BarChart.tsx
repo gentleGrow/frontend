@@ -29,7 +29,6 @@ export default function BarChart({ chartData }: { chartData: BarChartData }) {
             let posY = rect.y - tooltipHeight - 10;
 
             const viewWidth = size.viewSize[0];
-            const viewHeight = size.viewSize[1];
 
             if (posX < 0) {
               posX = 0;
@@ -87,8 +86,6 @@ export default function BarChart({ chartData }: { chartData: BarChartData }) {
       yAxis: {
         type: "value",
         name: `(${chartData.unit})`,
-        min: 0,
-        max: 50,
         axisLabel: {
           margin: 12,
         },

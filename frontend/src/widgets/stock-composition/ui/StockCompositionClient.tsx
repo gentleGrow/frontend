@@ -6,8 +6,8 @@ import {
   SegmentedButton,
   SegmentedButtonGroup,
 } from "@/shared";
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+
 export default function StockCompositionClient({
   compositionData,
   accountData,
