@@ -25,7 +25,7 @@ export default function DonutChart({
     const isMobile =
       isPortfolio || window.matchMedia("(max-width: 1024px)").matches;
     const gap = 56;
-    const legendWidth = isMobile ? window.innerWidth * 0.6 : 174;
+    const legendWidth = isMobile ? window.innerWidth * 0.7 : 200;
 
     const containerWidth = chartRef.current?.offsetWidth || window.innerWidth;
 
@@ -58,7 +58,7 @@ export default function DonutChart({
       const nameMaxWidth = containerWidth > 60 ? containerWidth - 60 : 84;
       maxNameLength = Math.floor((nameMaxWidth - 60) / 5);
     } else if (isMobile) {
-      maxNameLength = Math.floor((containerWidth - 64 - 70) / 5);
+      maxNameLength = Math.floor((containerWidth - 64 - 70 - 24) / 5);
     } else {
       maxNameLength = containerWidth < 390 ? 10 * (containerWidth / 390) : 10;
     }
@@ -152,24 +152,23 @@ export default function DonutChart({
                   ? containerWidth - 38
                   : 84
                 : isMobile
-                  ? window.innerWidth - 64 - 70
+                  ? window.innerWidth - 64 - 70 - 24
                   : containerWidth < 390
                     ? 84 * (containerWidth / 390)
-                    : 84,
+                    : 100,
               align: "left",
+              overflow: "truncate",
+              ellipsis: "...",
             },
             space: {
-              width:
-                !isMobile && !isPortfolio && containerWidth < 390
-                  ? 24 * (containerWidth / 390)
-                  : 24,
+              width: 24,
             },
             percent: {
               align: "right",
               width:
                 !isMobile && !isPortfolio && containerWidth < 390
-                  ? 20 * (containerWidth / 390)
-                  : 20,
+                  ? 30 * (containerWidth / 390)
+                  : 30,
               fontWeight: "bold",
             },
           },
