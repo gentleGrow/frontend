@@ -20,7 +20,7 @@ const SellBuyButton: FC<SellBuyButtonProps> = ({
       <Tooltip.Trigger>
         <button
           type="button"
-          className="rounded-[4px] border border-gray-20 px-1.5 py-[5px] text-sm font-semibold text-gray-60 hover:bg-gray-10"
+          className="flex-shrink-0 rounded-[4px] border border-gray-20 px-1.5 py-[5px] text-sm font-semibold text-gray-60 hover:bg-gray-10"
           onClick={onClick}
         >
           + 매매
