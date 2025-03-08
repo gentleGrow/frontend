@@ -4,16 +4,18 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import useUser from "@/entities/user/model/useUser";
-import useUserLogout from "@/entities/user/model/useUserLogout";
 import { loginModalAtom } from "@/features";
 import { useSetAtom } from "jotai";
 import Link from "next/link";
 import React from "react";
+import { User } from "@/entities";
 
-export default function DropdownMenus() {
-  const { user } = useUser();
-  const { logoutUser } = useUserLogout();
+interface DropdownMenusProps {
+  user: User | null;
+  logout: () => void;
+}
+
+export default function DropdownMenus({ user, logout }: DropdownMenusProps) {
   const setIsOpenLoginModal = useSetAtom(loginModalAtom);
 
   return (
@@ -56,7 +58,7 @@ export default function DropdownMenus() {
         </div>
       </DropdownMenuLabel>
 
-      {user?.isJoined ? (
+      {user?.isJoined === true && (
         <>
           <DropdownMenuItem className="px-4 py-[9.5px] text-body-3">
             <Link href="/my-page" className="h-full w-full">
@@ -65,13 +67,14 @@ export default function DropdownMenus() {
           </DropdownMenuItem>
           <DropdownMenuSeparator className="my-2" />
           <DropdownMenuItem
-            onClick={() => logoutUser()}
+            onClick={() => logout()}
             className="px-4 py-[9.5px] text-body-3"
           >
             로그아웃
           </DropdownMenuItem>
         </>
-      ) : (
+      )}
+      {user?.isJoined === false && (
         <>
           <DropdownMenuSeparator
             hidden={user?.isJoined ? false : true}
