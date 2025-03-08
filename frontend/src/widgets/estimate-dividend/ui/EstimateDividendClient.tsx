@@ -9,7 +9,7 @@ import {
   SegmentedButtonGroup,
   TooltipWithIcon,
 } from "@/shared";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import ArrowNavigator from "./ArrowNavigator";
 
 export default function EstimateDividendClient({
@@ -24,6 +24,36 @@ export default function EstimateDividendClient({
   const [currentNavItemIndex, setCurrentNavItemIndex] = useState<number>(
     barChartNavItems.length - 1 <= 0 ? 0 : barChartNavItems.length - 1,
   );
+
+  // Sort the donut chart data by current_amount in descending order
+  const sortedDividendByStock = useMemo(() => {
+    return [...estimatedDividendByStock].sort((a, b) => 
+      (b.current_amount || 0) - (a.current_amount || 0)
+    );
+  }, [estimatedDividendByStock]);
+
+  // Prepare bar chart data with proper formatting to ensure correct y-axis values and stack heights
+  const prepareBarChartData = useMemo(() => {
+    if (barChartNavItems.length > 0 && 
+        estimatedDividendAll[barChartNavItems[currentNavItemIndex]]) {
+      const chartData = estimatedDividendAll[barChartNavItems[currentNavItemIndex]];
+      
+      // Remove total property but keep the rest of the data
+      const { total, ...rest } = chartData;
+      
+      // Ensure the data is properly formatted for the bar chart
+      return {
+        ...rest,
+        // Make sure data values are properly passed as numbers
+        data: rest.data.map(value => Number(value)),
+        // Ensure unit is set for y-axis display
+        unit: "원"
+      };
+    }
+    
+    return { xAxises: [], data: [], unit: "원", total: 0 };
+  }, [barChartNavItems, currentNavItemIndex, estimatedDividendAll]);
+
   return (
     <div
       className={`relative ${selectedTab === "모두" ? "h-[390px]" : "h-full"} w-full rounded-xl border border-gray-20 bg-white p-[16px] mobile:rounded-none ${selectedTab === "모두" ? "mobile:h-[500px]" : "h-full min-h-[388px]"} mobile:border-none`}
@@ -87,29 +117,18 @@ export default function EstimateDividendClient({
         estimatedDividendAll[barChartNavItems[currentNavItemIndex]]?.xAxises
           .length !== 0 ? (
           <BarChart
-            chartData={
-              barChartNavItems.length > 0 &&
-              estimatedDividendAll[barChartNavItems[currentNavItemIndex]]
-                ? {
-                    ...(({ total, ...rest }) => rest)(
-                      estimatedDividendAll[
-                        barChartNavItems[currentNavItemIndex]
-                      ],
-                    ),
-                  }
-                : { xAxises: [], data: [], unit: "", total: 0 }
-            }
+            chartData={prepareBarChartData}
           />
         ) : (
           <div className={`${selectedTab === "종목별" && "hidden"}`}>
             <NoDataMessage />
           </div>
         )}
-        {selectedTab === "종목별" && estimatedDividendByStock[0].name !== "" ? (
+        {selectedTab === "종목별" && sortedDividendByStock[0].name !== "" ? (
           <div className="pt-[41px]">
             <DonutChart
               chartName="예상 배당액"
-              data={estimatedDividendByStock}
+              data={sortedDividendByStock}
             />
           </div>
         ) : (

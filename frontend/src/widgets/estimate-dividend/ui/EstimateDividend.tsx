@@ -8,14 +8,13 @@ export default async function EstimateDividend() {
   const user = await getUser();
   const [estimatedDividendAll, estimatedDividendByStock] = await Promise.all([
     (user && user.isJoined
-      ? fetchEstimateDividend("every")
-      : fetchDummyEstimateDividend(
-          "every",
-        )) as Promise<EstimateDividendAllData>,
+      ? await fetchEstimateDividend("every")
+      : await fetchDummyEstimateDividend("every")) as EstimateDividendAllData,
     (user && user.isJoined
-      ? fetchEstimateDividend("type")
-      : fetchDummyEstimateDividend("type")) as Promise<DonutChartData[]>,
+      ? await fetchEstimateDividend("type")
+      : await fetchDummyEstimateDividend("type")) as DonutChartData[],
   ]);
+
   return (
     <EstimateDividendClient
       estimatedDividendAll={estimatedDividendAll}
