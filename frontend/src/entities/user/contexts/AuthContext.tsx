@@ -4,7 +4,7 @@ import { User } from "../types/user";
 
 interface AuthContextType {
   user: User | null;
-  initializeUser: () => void;
+  setUser: (user: User | null) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(

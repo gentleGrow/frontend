@@ -8,11 +8,9 @@ import { useSetAtom } from "jotai";
 import { lastUpdatedAtAtom } from "@/entities/asset-management/atoms/lastUpdatedAtAtom";
 import { cellErrorAtom } from "@/widgets/asset-management-draggable-table/atoms/cellErrorAtom";
 import { useInvalidateAssetStock } from "@/entities/asset-management/queries/useInvalidateAssetStock";
-import { useDebounce } from "@toss/react";
 
 export const usePutAssetStock = () => {
   const { invalidate } = useInvalidateAssetStock();
-  const debouncedInvalidate = useDebounce(invalidate, 2000);
 
   const setLastUpdatedAt = useSetAtom(lastUpdatedAtAtom);
   const setCellError = useSetAtom(cellErrorAtom);
@@ -35,7 +33,7 @@ export const usePutAssetStock = () => {
       };
 
       if (String(response.status_code).startsWith("2")) {
-        await debouncedInvalidate();
+        await invalidate();
         setLastUpdatedAt(new Date());
       } else {
         setCellError({

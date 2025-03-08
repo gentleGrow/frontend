@@ -13,15 +13,16 @@ import updateNickname from "../api/updateNickname";
 import debounce from "lodash.debounce";
 import checkValidateNickname from "../api/checkValidateNickname";
 import { useRouter } from "next/navigation";
+import { getUser, useUser } from "@/entities";
 
 export default function NicknameSetup({
-  initializeUser,
   handleClose,
 }: {
-  initializeUser: () => void;
   handleClose: () => void;
 }) {
   const router = useRouter();
+  const { setUser } = useUser();
+
   const [nickname, setNickname] = useState<string>("");
   const [isUsed, setIsUsed] = useState<boolean>(false);
   const [isOnFocus, setIsOnFocus] = useState<boolean>(false);
@@ -181,8 +182,13 @@ export default function NicknameSetup({
                   return;
                 }
 
-                initializeUser();
-                router.push("/asset-management");
+                const user = await getUser();
+
+                if (!user) {
+                  return;
+                }
+
+                setUser(user);
               }}
             >
               완료하기

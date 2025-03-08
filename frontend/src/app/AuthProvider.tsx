@@ -1,31 +1,20 @@
 "use client";
 import { AuthContext, User } from "@/entities";
-import getUser from "@/entities/user/api/getUser";
-import React, { useEffect, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import React, { PropsWithChildren, useState } from "react";
+
+interface AuthProviderProps extends PropsWithChildren {
+  user: User | null;
+}
 
 export default function AuthProvider({
   children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [user, setUser] = useState<User | null>(null);
-
-  const { mutate: initializeUser, isPending: isPendingInitializeUser } =
-    useMutation({ mutationFn: () => originInitializeUser() });
-
-  const originInitializeUser = async () => {
-    const user = await getUser();
-    setUser(user);
-  };
-
-  useEffect(() => {
-    initializeUser();
-  }, [initializeUser]);
+  user: initialUserState,
+}: AuthProviderProps) {
+  const [user, setUser] = useState<User | null>(initialUserState);
 
   return (
-    <AuthContext.Provider value={{ user, initializeUser }}>
-      {!isPendingInitializeUser && children}
+    <AuthContext.Provider value={{ user, setUser }}>
+      {children}
     </AuthContext.Provider>
   );
 }
