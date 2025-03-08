@@ -199,10 +199,12 @@ export default function DonutChart({
           labelLine: {
             show: false,
           },
-          data: data?.map((item) => ({
-            value: isPortfolio ? item.percent_ratio : item.current_amount,
-            name: item.name,
-          })),
+          data: data
+            ?.map((item) => ({
+              value: isPortfolio ? item.percent_ratio : item.current_amount,
+              name: item.name,
+            }))
+            .toSorted((a, b) => (a?.value ?? 0) - (b?.value ?? 0)),
         },
       ],
     };
