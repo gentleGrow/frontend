@@ -8,9 +8,8 @@ import { LoginDialog } from "@/features";
 import QueryClientProvider from "@/app/QueryClientProvider";
 import localFont from "next/font/local";
 
-import { GoogleAnalytics } from "@next/third-parties/google";
+import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Head from "next/head";
 import { getUser } from "@/entities";
 
 const pretendard = localFont({
@@ -47,6 +46,9 @@ export const metadata: Metadata = {
     email: false,
     address: false,
     telephone: false,
+  },
+  appleWebApp: {
+    title: "Ollass",
   },
   openGraph: {
     title: "Ollass - 똑똑한 자산 관리의 시작",
@@ -99,9 +101,8 @@ export default async function RootLayout({
 
   return (
     <html lang="ko">
-      <Head>
-        <meta name="apple-mobile-web-app-title" content="Ollass" />
-      </Head>
+      <GoogleAnalytics gaId="G-PG7PJNPHLH" />
+      <GoogleTagManager gtmId="GTM-KKVNDB8Z" />
       <body className={`${pretendard.className}`}>
         <JotaiProvider>
           <QueryClientProvider>
