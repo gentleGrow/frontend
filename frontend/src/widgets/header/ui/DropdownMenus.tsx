@@ -74,12 +74,9 @@ export default function DropdownMenus({ user, logout }: DropdownMenusProps) {
           </DropdownMenuItem>
         </>
       )}
-      {user?.isJoined === false && (
+      {user?.isJoined !== true && (
         <>
-          <DropdownMenuSeparator
-            hidden={user?.isJoined ? false : true}
-            className="my-2"
-          />
+          <DropdownMenuSeparator hidden={!user?.isJoined} className="my-2" />
           <DropdownMenuItem
             className="px-4 py-[9.5px] text-body-3"
             onClick={() => {
