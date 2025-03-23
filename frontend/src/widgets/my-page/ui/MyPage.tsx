@@ -1,10 +1,10 @@
 "use client";
-import useUser from "@/entities/user/model/useUser";
+import useFetchUser from "@/entities/user/model/useFetchUser";
 import ChangeNickname from "./ChangeNickname";
 import DeactivateAccount from "./DeactivateAccount";
 
 export default function MyPage() {
-  const { user } = useUser();
+  const { user } = useFetchUser();
   if (!user) return null;
   return (
     <section className="max-w-[557px]">
