@@ -31,16 +31,16 @@ export default function NicknameSetup({
   const isNicknameInvalid =
     hasSpecialChar(nickname) || nickname.length < 2 || nickname.length > 12;
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedCheckNickname = useCallback(
-    debounce(async (newNickname: string) => {
-      const isUsed = await checkValidateNickname(newNickname);
+  const debouncedCheckNickname = useCallback((newNickname: string) => {
+    const checkNickname = debounce(async (nickname: string) => {
+      const isUsed = await checkValidateNickname(nickname);
       setIsUsed(isUsed);
     }, 300, {
       trailing: true,
-    }),
-    [],
-  );
+    });
+    
+    checkNickname(newNickname);
+  }, []);
 
   const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newNickname = e.target.value;
