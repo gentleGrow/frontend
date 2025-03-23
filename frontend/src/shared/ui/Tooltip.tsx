@@ -6,6 +6,7 @@ import {
   TooltipContent as TooltipContentOrigin,
   TooltipTrigger as TooltipTriggerOrigin,
 } from "@/components/ui/tooltip";
+import { createPortal } from "react-dom";
 
 interface TooltipProps extends PropsWithChildren {
   open?: boolean;
@@ -20,15 +21,19 @@ function TooltipTrigger({ children }: PropsWithChildren) {
 }
 
 function TooltipContent({ children }: PropsWithChildren) {
-  return (
+  if (typeof window === "undefined") return null;
+
+  return createPortal(
     <TooltipContentOrigin
       className="flex max-w-[230px] -translate-y-[6px] translate-x-1 flex-col items-center space-y-1 overflow-visible rounded-[8px] bg-gray-70 p-2.5 text-xs font-normal text-white"
       sideOffset={5}
       side="top"
+      style={{ zIndex: 99999 }}
     >
       {children}
-      <div className="triable-down absolute -bottom-[9px] left-1/2 z-9999 -translate-x-[6px]" />
-    </TooltipContentOrigin>
+      <div className="triable-down absolute -bottom-[9px] left-1/2 z-[99999] -translate-x-[6px]" />
+    </TooltipContentOrigin>,
+    document.body
   );
 }
 
