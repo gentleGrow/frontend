@@ -14,13 +14,13 @@ const REASONS = [
   "기타 (직접 입력)",
 ];
 export default function Deactivate() {
-  const { deactivateUser } = useUserDelete();
+  const { deactivateUser, deactivateUserStatus } = useUserDelete();
   const [selectedReason, setSelectedReason] = useState<number | null>(null);
   const [reasonText, setReasonText] = useState<string>("");
   const [isAgreed, setIsAgreed] = useState<boolean>(false);
   const isReasonValid =
     selectedReason !== null && (selectedReason !== 5 || reasonText.length > 0);
-  const isDisabled = !isReasonValid || !isAgreed;
+  const isDisabled = !isReasonValid || !isAgreed || deactivateUserStatus === "pending";
 
   return (
     <section className="mb-16 max-w-[557px]">
@@ -88,7 +88,7 @@ export default function Deactivate() {
         }
         disabled={isDisabled}
       >
-        탈퇴하기
+        {deactivateUserStatus === "pending" ? "처리 중..." : "탈퇴하기"}
       </PrimaryButton>
     </section>
   );
