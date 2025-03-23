@@ -27,6 +27,7 @@ export default function NicknameSetup({
   const [isUsed, setIsUsed] = useState<boolean>(false);
   const [isOnFocus, setIsOnFocus] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const isNicknameInvalid =
     hasSpecialChar(nickname) || nickname.length < 2 || nickname.length > 12;
 
@@ -44,6 +45,35 @@ export default function NicknameSetup({
     setNickname(newNickname);
     debouncedCheckNickname(newNickname);
   };
+
+  const handleSubmit = async () => {
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
+    try {
+      const isUpdated = await updateNickname(nickname);
+      if (!isUpdated) {
+        setErrorMessage(
+          "회원가입 도중 오류가 발생했어요. 다시 시도해 주세요.",
+        );
+        return;
+      }
+
+      const user = await getUser();
+      if (!user) {
+        setErrorMessage("사용자 정보를 가져오는데 실패했어요.");
+        return;
+      }
+
+      setUser(user);
+      router.replace("/");
+    } catch (error) {
+      setErrorMessage("알 수 없는 오류가 발생했어요.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <DialogContent className="w-full flex-col items-center justify-center p-[40px] pt-[64px] tablet:h-[100svh] tablet:max-w-full tablet:rounded-none tablet:pt-[140px] mobile-545:justify-normal">
       <DialogClose
@@ -87,6 +117,7 @@ export default function NicknameSetup({
               onBlur={() => setIsOnFocus(false)}
               onFocus={() => setIsOnFocus(true)}
               onChange={handleNicknameChange}
+              isDisabled={isSubmitting}
             />
 
             <div className="text-body-5 text-gray-100">
@@ -133,7 +164,7 @@ export default function NicknameSetup({
                       "2~12자 내로 입력해 주세요."}
                   </span>
                 </div>
-              ) : !isOnFocus ? (
+              ) : (
                 <div className="flex items-center space-x-1 text-green-60">
                   <svg
                     width="16"
@@ -157,7 +188,7 @@ export default function NicknameSetup({
                   </svg>
                   <span>정말 멋진 닉네임이에요!</span>
                 </div>
-              ) : null}
+              )}
             </div>
 
             <span
@@ -172,26 +203,10 @@ export default function NicknameSetup({
           <DialogFooter className="mt-[52px] flex flex-col space-y-2 sm:flex-col">
             <p className="text-center text-xs text-alert">{errorMessage}</p>
             <PrimaryButton
-              isDisabled={isUsed || isNicknameInvalid || nickname.length < 2}
-              onClick={async () => {
-                const isUpdated = await updateNickname(nickname);
-                if (!isUpdated) {
-                  setErrorMessage(
-                    "회원가입 도중 오류가 발생했어요. 다시 시도해 주세요.",
-                  );
-                  return;
-                }
-
-                const user = await getUser();
-
-                if (!user) {
-                  return;
-                }
-
-                setUser(user);
-              }}
+              isDisabled={isUsed || isNicknameInvalid || nickname.length < 2 || isSubmitting}
+              onClick={handleSubmit}
             >
-              완료하기
+              {isSubmitting ? "처리 중..." : "완료하기"}
             </PrimaryButton>
           </DialogFooter>
         </div>
