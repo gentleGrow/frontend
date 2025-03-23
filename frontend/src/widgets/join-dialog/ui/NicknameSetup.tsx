@@ -10,10 +10,10 @@ import {
 } from "@/components/ui/dialog";
 import hasSpecialChar from "../utils/hasSpecialChar";
 import updateNickname from "../api/updateNickname";
-import debounce from "lodash.debounce";
 import checkValidateNickname from "../api/checkValidateNickname";
 import { useRouter } from "next/navigation";
 import { getUser, useUser } from "@/entities";
+import { debounce } from "lodash";
 
 export default function NicknameSetup({
   handleClose,
@@ -36,7 +36,9 @@ export default function NicknameSetup({
     debounce(async (newNickname: string) => {
       const isUsed = await checkValidateNickname(newNickname);
       setIsUsed(isUsed);
-    }, 300),
+    }, 300, {
+      trailing: true,
+    }),
     [],
   );
 
